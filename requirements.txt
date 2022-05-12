@@ -1,0 +1,51 @@
+
+# server
+uvicorn[standard]
+greenlet # coroutines/concurrency
+raven # Sentry.io performance
+
+# security
+httpx_oauth
+requests
+cryptography
+
+# api
+fastapi
+fastapi-users[sqlalchemy]
+pydantic[email]
+python-multipart # form data
+
+# tasks
+celery
+redis
+flower==0.9.7
+
+# database
+PyMySQL
+sqlalchemy[mypy]
+sqlalchemy-stubs
+sqlalchemy-utils
+databases[aiomysql]
+alembic
+
+# async
+asyncio
+aiohttp
+aiomysql
+aiofiles
+
+# templating
+email-validator
+emails
+jinja2
+
+# testing
+pytest
+pytest-cov
+pytest-asyncio
+
+# tooling
+python-dotenv
+autopep8
+pep8
+mypy

@@ -1,0 +1,36 @@
+
+# undesirables
+.DS_Store
+__pycache__
+**/__pycache__
+venv
+.env
+
+# DB migration
+alembic
+
+# PyTest
+htmlcov
+.mypy_cache
+.coverage
+.cache
+
+# unused
+unused
+
+# logs
+*.log
+
+# vscode
+*.code-workspace
+
+# app loaders managed by parent repo GCAPI
+prestart.sh
+start.sh
+start-reload.sh
+prestart-worker.sh
+start-worker.sh
+wait-for-it.sh
+
+# examples
+ex_*

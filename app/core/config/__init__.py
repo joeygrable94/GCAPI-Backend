@@ -1,0 +1,101 @@
+import os
+from typing import Any, Dict, List, Optional, Union
+from xmlrpc.client import Boolean
+
+from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, validator
+
+
+class Settings(BaseSettings):
+
+    DEBUG_MODE: bool = os.environ.get('APP_DEBUG', True)
+    # LOG: NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
+    LOGGING_LEVEL: str = 'DEBUG'
+    LOGGER_NAME: str = os.environ.get('STACK_NAME', 'GCAPI')
+
+    PROJECT_NAME: str = os.environ.get('PROJECT_NAME', '')
+    PROJECT_VERSION: str = os.environ.get('PROJECT_VERSION', '0.0.1')
+
+    API_VERSION: str = os.environ.get('API_VERSION', 'v1')
+    API_PREFIX: str = f'/api/{API_VERSION}'
+
+    SERVER_NAME: str = os.environ.get('DOMAIN', 'localhost')
+    SERVER_HOST: AnyHttpUrl = os.environ.get('DOMAIN_HOST', 'http://localhost')
+    SECRET_KEY: str = os.environ.get('SECRET_KEY', '')
+    # seconds * minutes * hours * days = total seconds
+    ACCESS_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1
+
+    # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
+    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = os.environ.get('BACKEND_CORS_ORIGINS')
+    @validator("BACKEND_CORS_ORIGINS", pre=True)
+    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
+        if isinstance(v, str) and not v.startswith("["):
+            return [i.strip() for i in v.split(",")]
+        elif isinstance(v, (list, str)):
+            return v
+        raise ValueError(v)
+
+    SENTRY_DSN: Optional[HttpUrl] = os.environ.get('SENTRY_DSN', '')
+    @validator("SENTRY_DSN", pre=True)
+    def sentry_dsn_can_be_blank(cls, v: str) -> Optional[str]:
+        if len(v) == 0:
+            return None
+        return v
+
+    DATABASE_SERVER: str = os.environ.get('DATABASE_SERVER', '')
+    DATABASE_USER: str = os.environ.get('DATABASE_USER', '')
+    DATABASE_PASSWORD: str = os.environ.get('DATABASE_PASSWORD', '')
+    DATABASE_NAME: str = os.environ.get('DATABASE_NAME', '')
+    SQLALCHEMY_DATABASE_URI: Optional[str] = os.environ.get('SQLALCHEMY_DATABASE_URI', None)
+
+    # SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = os.environ.get('SQLALCHEMY_DATABASE_URI', None)
+    # @validator("SQLALCHEMY_DATABASE_URI", pre=True)
+    # def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+    #     if isinstance(v, str):
+    #         return v
+    #     return PostgresDsn.build(
+    #         scheme="postgresql",
+    #         user=values.get("DATABASE_USER"),
+    #         password=values.get("DATABASE_PASSWORD"),
+    #         host=values.get("DATABASE_SERVER"),
+    #         path=f"/{values.get('DATABASE_NAME') or ''}",
+    #     )
+
+    C_BROKER_URI: str = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379')
+    C_BACKEND_URI: str = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379')
+
+    SMTP_TLS: bool = os.environ.get('SMTP_TLS', True)
+    SMTP_PORT: Optional[int] = os.environ.get('SMTP_PORT', None)
+    SMTP_HOST: Optional[str] = os.environ.get('SMTP_HOST', None)
+    SMTP_USER: Optional[str] = os.environ.get('SMTP_USER', None)
+    SMTP_PASSWORD: Optional[str] = os.environ.get('SMTP_PASSWORD', None)
+    EMAILS_FROM_EMAIL: Optional[EmailStr] = os.environ.get('SMTP_EMAILS_FROM_EMAIL', None)
+    EMAILS_FROM_NAME: Optional[str] = os.environ.get('SMTP_EMAILS_FROM_NAME', None)
+
+    @validator("EMAILS_FROM_NAME")
+    def get_project_name(cls, v: Optional[str], values: Dict[str, Any]) -> str:
+        if not v:
+            return values["PROJECT_NAME"]
+        return v
+
+    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
+    EMAIL_TEMPLATES_DIR: str = "/app/templates/email-templates/build"
+    EMAILS_ENABLED: bool = False
+
+    @validator("EMAILS_ENABLED", pre=True)
+    def get_emails_enabled(cls, v: bool, values: Dict[str, Any]) -> bool:
+        return bool(
+            values.get("SMTP_HOST")
+            and values.get("SMTP_PORT")
+            and values.get("EMAILS_FROM_EMAIL")
+        )
+
+    EMAIL_PROVIDER_RESTRICTION: bool = os.environ.get('EMAIL_PROVIDER_RESTRICTION', True)
+    ALLOWED_EMAIL_PROVIDER_LIST: Optional[list] = os.environ.get('ALLOWED_EMAIL_PROVIDER_LIST', ['getcommunity.com'])
+
+    EMAIL_TEST_USER: EmailStr = os.environ.get('SMTP_EMAIL_TEST_USER', 'test@example.com')  # type: ignore
+    FIRST_SUPERUSER: EmailStr = os.environ.get('FIRST_SUPERUSER')
+    FIRST_SUPERUSER_PASSWORD: str = os.environ.get('FIRST_SUPERUSER_PASSWORD')
+    USERS_OPEN_REGISTRATION: bool = os.environ.get('USERS_OPEN_REGISTRATION', False)
+
+    class Config:
+        case_sensitive = True
