@@ -6,7 +6,8 @@ __pycache__
 venv
 .env
 
-# DB migration
+# database
+*.db
 alembic
 
 # PyTest
@@ -24,7 +25,7 @@ unused
 # vscode
 *.code-workspace
 
-# app loaders managed by parent repo GCAPI
+# managed by parent repo GCAPI
 prestart.sh
 start.sh
 start-reload.sh
