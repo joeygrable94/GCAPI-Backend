@@ -1,5 +1,6 @@
 
 # undesirables
+.git
 .DS_Store
 __pycache__
 **/__pycache__
@@ -12,6 +13,7 @@ alembic
 
 # PyTest
 htmlcov
+.pytest_cache
 .mypy_cache
 .coverage
 .cache
