@@ -5,7 +5,7 @@ greenlet # coroutines/concurrency
 raven # Sentry.io performance
 
 # security
-httpx_oauth
+httpx-oauth
 requests
 cryptography
 
@@ -18,7 +18,6 @@ python-multipart # form data
 # tasks
 celery
 redis
-flower==0.9.7
 
 # database
 PyMySQL
@@ -31,6 +30,7 @@ alembic
 # async
 asyncio
 aiohttp
+aiosqlite
 aiomysql
 aiofiles
 
@@ -49,3 +49,6 @@ python-dotenv
 autopep8
 pep8
 mypy
+isort
+black
+autoflake8
