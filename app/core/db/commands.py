@@ -4,7 +4,7 @@ from alembic import config as migrationConfig
 from app import config
 from app.core.logger import logger
 from app.core.db.session import async_engine
-from app.core.crud.crud_user import create_user
+from app.core.crud.make_user import create_user
 
 
 async def check_db_connected():

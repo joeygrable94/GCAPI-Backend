@@ -3,7 +3,7 @@ import asyncio
 
 from app import config
 from app.core.logger import logger
-from app.core.crud.crud_user import create_user
+from app.core.crud.make_user import create_user
 
 from app.core.db.base import Base  # noqa: F401
 # make sure all SQL Alchemy models are imported (app.db.base) before initializing DB
