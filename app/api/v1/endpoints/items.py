@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_users_db_sqlalchemy import AsyncSession
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.schemas import UserRead, Item, ItemCreate, ItemUpdate, ItemInDB
+from app.core.schemas import UserRead, Item, ItemCreate, ItemUpdate
 from app.core.user_manager import current_active_user
 from app.core import crud
 from app.api.deps import get_async_session

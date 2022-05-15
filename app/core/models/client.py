@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 class Client(TableBase):
     __tablename__           = 'client'
-    key_id                  = Column(String(8), unique=True, nullable=False)
     title                   = Column(String(96))
     content                 = Column(Text)
     # web_sites               = relationship('WebSite', backref=backref('client', lazy=True))

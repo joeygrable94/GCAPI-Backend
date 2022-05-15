@@ -8,7 +8,12 @@ from app.core.schemas import UserCreate, UserRead, UserUpdate
 
 def configure_routers(app):
     # import routers
-    from app.api.v1.endpoints import public_routes, users_router, items_router
+    from app.api.v1.endpoints import (
+        public_routes,
+        users_router,
+        items_router,
+        clients_router,
+    )
     # public routes
     app.include_router(public_routes, prefix=f"{config.API_PREFIX}", tags=["public"])
     # auth routes
@@ -21,6 +26,7 @@ def configure_routers(app):
     app.include_router(fastapi_users.get_users_router(UserRead, UserUpdate), prefix=f"{config.API_PREFIX}/users", tags=["users"])
     # core api routes
     app.include_router(items_router, prefix=f"{config.API_PREFIX}/items", tags=["items"])
+    app.include_router(clients_router, prefix=f"{config.API_PREFIX}/clients", tags=["clients"])
 
 
 def configure_static(app):
@@ -31,16 +37,16 @@ def configure_events(app):
     from app.core.db.commands import (
         check_db_connected,
         check_db_disconnected,
-        # create_db_and_tables,
-        # create_initial_data,
+        create_db_and_tables,
+        create_initial_data,
         # run_async_upgrade,
     )
     # startup actions
     @app.on_event("startup")
     async def on_startup():
         await check_db_connected()
-        # await create_db_and_tables()
-        # await create_initial_data()
+        await create_db_and_tables()
+        await create_initial_data()
         # await run_async_upgrade()
     # shutdown actions
     @app.on_event("shutdown")
