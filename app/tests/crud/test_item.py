@@ -1,5 +1,5 @@
 import pytest
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import crud
 from app.core.schemas.item import ItemCreate, ItemUpdate
@@ -8,15 +8,30 @@ from app.tests.utils.utils import random_lower_string
 
 
 @pytest.mark.asyncio
-async def test_create_item(db: Session) -> None:
+async def test_create_item(
+    db: AsyncSession
+) -> None:
     title = random_lower_string()
-    description = random_lower_string()
-    item_in = ItemCreate(title=title, description=description)
-    user = await create_random_user(db)
-    item = await crud.item.create_with_user(db=db, obj_in=item_in, owner_id=user.id)
+    content = random_lower_string()
+    item_in = ItemCreate(title=title, content=content)
+    item = await crud.item.create(db=db, obj_in=item_in)
     assert item.title == title
-    assert item.description == description
-    assert item.owner_id == user.id
+    assert item.content == content
+
+
+'''
+@pytest.mark.asyncio
+async def test_create_item(
+    db: AsyncSession
+) -> None:
+    title = random_lower_string()
+    content = random_lower_string()
+    item_in = ItemCreate(title=title, content=content)
+    user = await create_random_user(db)
+    item = await crud.item.create_with_user(db=db, obj_in=item_in, user_id=user.id)
+    assert item.title == title
+    assert item.content == content
+    assert item.user_id == user.id
 
 
 @pytest.mark.asyncio
@@ -64,3 +79,4 @@ async def test_delete_item(db: Session) -> None:
     assert item2.title == title
     assert item2.description == description
     assert item2.owner_id == user.id
+'''
