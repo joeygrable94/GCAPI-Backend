@@ -1,10 +1,10 @@
 from app.core.logger import logger
-from app.core.db.init_db import init_db
-from app.core.db.session import session_local
+from app.db.init_db import init_db
+from app.db.session import session
 
 
 def init() -> None:
-    db = session_local()
+    db = session()
     init_db(db)
 
 
