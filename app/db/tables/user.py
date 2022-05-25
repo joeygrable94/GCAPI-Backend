@@ -1,10 +1,13 @@
+from tokenize import String
+from xmlrpc.client import Boolean
+from sqlalchemy import Column
 from sqlalchemy.orm import relationship, backref, validates
 
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID
 
-from app import config
-from app.core.db.utilities import email_pattern
-from app.core.models.table_model import TableBase
+from app.core.config import settings
+from app.db.utilities import email_pattern
+from app.db.tables.base import TableBase
 
 
 class User(SQLAlchemyBaseUserTableUUID, TableBase):
@@ -13,7 +16,6 @@ class User(SQLAlchemyBaseUserTableUUID, TableBase):
     '''
     __tablename__           = 'user'
     items                   = relationship('Item', backref=backref('user', lazy='noload'))
-    notes                   = relationship('Note', backref=backref('user', lazy='noload'))
     clients                 = relationship('Client', secondary='user_client', backref=backref('users', lazy='noload'))
 
     @validates('email')
@@ -23,8 +25,8 @@ class User(SQLAlchemyBaseUserTableUUID, TableBase):
         if not email_pattern.fullmatch(v):
             raise ValueError('Invalid characters in the username/email')
         # username in email provider list
-        if config.EMAIL_PROVIDER_RESTRICTION:
-            if not any( provider in v for provider in config.ALLOWED_EMAIL_PROVIDER_LIST ):
+        if settings.EMAIL_PROVIDER_RESTRICTION:
+            if not any( provider in v for provider in settings.ALLOWED_EMAIL_PROVIDER_LIST ):
                 raise ValueError('Invalid email provider')
         return v
 

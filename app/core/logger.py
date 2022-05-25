@@ -9,7 +9,7 @@ __license__ = 'GPLv3'
 import logging
 from logging import handlers
 from unicodedata import name
-from app import config
+from app.core.config import settings
 
 '''
 levels: 'NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'
@@ -149,5 +149,5 @@ class Logger:
 	def warning(self, *args):
 		self.logger.warning(default_theme.style_right+''.join(str(i) for i in args)+default_theme.style_normal)
 
-logger = Logger(name=config.LOGGER_NAME,
-				level=config.LOGGING_LEVEL)
+logger = Logger(name=settings.LOGGER_NAME,
+				level=settings.LOGGING_LEVEL)

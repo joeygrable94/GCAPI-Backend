@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Column, String, Text
 from sqlalchemy.orm import relationship, backref
 
-from app.core.models.table_model import TableBase
+from app.db.tables.base import TableBase
 
 if TYPE_CHECKING:
     # from .service import Service  # noqa: F401

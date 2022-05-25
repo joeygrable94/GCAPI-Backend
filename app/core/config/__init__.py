@@ -1,5 +1,8 @@
-import os
 from typing import Any, Dict, List, Optional, Union
+
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, validator
 
@@ -40,11 +43,13 @@ class Settings(BaseSettings):
             return None
         return v
 
+    DB_ECHO_LOG: bool = False if os.environ.get('APP_DEBUG', True) else False
     DATABASE_SERVER: str = os.environ.get('DATABASE_SERVER', '')
     DATABASE_USER: str = os.environ.get('DATABASE_USER', '')
     DATABASE_PASSWORD: str = os.environ.get('DATABASE_PASSWORD', '')
     DATABASE_NAME: str = os.environ.get('DATABASE_NAME', '')
-    SQLALCHEMY_DATABASE_URI: Optional[str] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite+aiosqlite:///./app.db')
+    DATABASE_URL: str = os.environ.get('DATABASE_URI', 'sqlite:///./app.db')
+    ASYNC_DATABASE_URI: str = os.environ.get('ASYNC_DATABASE_URI', 'sqlite+aiosqlite:///./app.db')
 
     C_BROKER_URI: str = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379')
     C_BACKEND_URI: str = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379')
@@ -84,3 +89,7 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive = True
+
+
+mode = os.environ.get('APP_MODE')
+settings = Settings()

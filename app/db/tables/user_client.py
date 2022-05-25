@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import CHAR, Column, ForeignKey
 
-from app.core.models.table_model import TableBase
+from app.db.tables.base import TableBase
 
 if TYPE_CHECKING:
     from .user import User  # noqa: F401

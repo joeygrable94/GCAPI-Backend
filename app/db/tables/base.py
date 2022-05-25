@@ -1,7 +1,7 @@
 from sqlalchemy import CHAR, Column, DateTime
 
-from app.core.db.utilities import _get_date, _get_uuid
-from app.core.db.base_class import Base
+from app.db.utilities import _get_date, _get_uuid
+from app.db.base_class import Base
 
 
 class TableBase(Base):
