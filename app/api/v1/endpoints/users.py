@@ -2,8 +2,8 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.schemas import UserRead
 from app.core.user_manager import current_active_super_user
+from app.db.schemas import UserRead
 from app.api.deps import get_user_db
 
 

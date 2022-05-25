@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
-public_routes = APIRouter()
+public_router = APIRouter()
 
-@public_routes.get("/status")
+@public_router.get("/status")
 async def status():
     return {"status": "ok"}
 
-# @public_routes.get("/")
+# @public_router.get("/")
 # async def index(request: Request):
 # 	return templates.TemplateResponse("pages/index.html", {"request":request})
 
