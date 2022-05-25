@@ -28,6 +28,7 @@ databases[aiomysql]
 alembic
 
 # async
+anyio[trio]
 asyncio
 aiohttp
 aiosqlite
@@ -40,6 +41,8 @@ emails
 jinja2
 
 # testing
+httpx
+asgi-lifespan
 pytest
 pytest-cov
 pytest-asyncio

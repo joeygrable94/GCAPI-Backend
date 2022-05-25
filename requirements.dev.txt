@@ -28,6 +28,7 @@ databases[aiomysql]==0.5.5
 alembic==1.7.7
 
 # async
+anyio[trio]==3.5.0
 asyncio==3.4.3
 aiohttp==3.8.1
 aiosqlite==0.17.0
@@ -40,6 +41,8 @@ emails==0.6
 Jinja2==3.1.2
 
 # testing
+httpx==0.22.0
+asgi-lifespan==1.0.1
 pytest==7.1.2
 pytest-asyncio==0.18.3
 pytest-cov==3.0.0
