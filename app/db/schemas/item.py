@@ -8,6 +8,7 @@ from app.db.schemas.base import BaseSchema
 class ItemBase(BaseSchema):
     title: str
     content: str
+    user_id: Optional[UUID4]
 
 
 class ItemCreate(ItemBase):
@@ -21,4 +22,3 @@ class ItemUpdate(ItemBase):
 
 class ItemRead(ItemBase):
     id: UUID4
-    user_id: Optional[UUID4]

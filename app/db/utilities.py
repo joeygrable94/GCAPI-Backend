@@ -9,7 +9,7 @@ def _get_date():
     return datetime.now()
 
 def _get_uuid():
-    return str(uuid.uuid4())
+    return uuid.uuid4()
 
 
 # regex meaning

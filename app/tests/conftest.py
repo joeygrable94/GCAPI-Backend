@@ -1,4 +1,4 @@
-from typing import AsyncGenerator, Callable
+from typing import AsyncGenerator, Callable, Dict
 
 import os
 import warnings
@@ -14,8 +14,12 @@ import pytest_asyncio
 
 from app.core.config import settings
 from app.db.session import async_engine, async_session
-from app.api.deps import get_async_db
+from app.api.deps import get_async_db, get_user_db
 from app.main import create_app
+from app.tests.utils.user import (
+    authentication_token_from_email,
+    get_superuser_token_headers,
+)
 
 pytestmark = pytest.mark.asyncio
 
@@ -48,6 +52,37 @@ def override_get_db(db_session: AsyncSession) -> Callable:
 
 
 @pytest_asyncio.fixture(scope="session")
+async def user_db_session() -> AsyncSession:
+    from app.core.user_crud import (
+        get_async_db_context,
+        get_user_db_context,
+    )
+    async with get_async_db_context() as session:
+        async with get_user_db_context(session) as user_db:
+            yield user_db
+
+
+@pytest_asyncio.fixture(scope="session")
+async def user_manager() -> AsyncSession:
+    from app.core.user_crud import (
+        get_async_db_context,
+        get_user_db_context,
+        get_user_manager_context,
+    )
+    async with get_async_db_context() as session:
+        async with get_user_db_context(session) as user_db:
+            async with get_user_manager_context(user_db) as user_manager:
+                yield user_manager
+
+
+@pytest_asyncio.fixture(scope="session")
+def override_get_user_db(user_db_session: AsyncSession) -> Callable:
+    async def _override_get_user_db():
+        yield user_db_session
+    return _override_get_user_db
+
+
+@pytest_asyncio.fixture(scope="session")
 def apply_migrations():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     os.environ["TESTING"] = "1"
@@ -57,14 +92,19 @@ def apply_migrations():
     alembic.command.downgrade(config, "base")
 
 
-@pytest_asyncio.fixture
-def app(override_get_db: Callable, apply_migrations: None) -> FastAPI:
+@pytest_asyncio.fixture(scope="module")
+def app(
+    override_get_db: Callable,
+    override_get_user_db: Callable,
+    apply_migrations: None
+    ) -> FastAPI:
     app = create_app()
     app.dependency_overrides[get_async_db] = override_get_db
+    app.dependency_overrides[get_user_db] = override_get_user_db
     return app
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope="module")
 async def client(app: FastAPI) -> AsyncClient:
     async with LifespanManager(app):
         async with AsyncClient(
@@ -73,3 +113,18 @@ async def client(app: FastAPI) -> AsyncClient:
             headers={"Content-Type": "application/json"}
         ) as client:
             yield client
+
+
+@pytest_asyncio.fixture(scope="module")
+def superuser_token_headers(client: AsyncClient) -> Dict[str, str]:
+    return get_superuser_token_headers(client)
+
+
+@pytest_asyncio.fixture(scope="module")
+def normal_user_token_headers(client: AsyncClient, db_session: AsyncSession) -> Dict[str, str]:
+    return authentication_token_from_email(
+        client=client,
+        email=settings.EMAIL_TEST_USER,
+        db=db_session
+    )
+

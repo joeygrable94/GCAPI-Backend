@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from pymysql import NULL
 
 from sqlalchemy import CHAR, Column, ForeignKey, String, Text
 

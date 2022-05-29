@@ -7,7 +7,7 @@ from app.db.tables import Client
 from app.db.schemas import ClientCreate, ClientRead, ClientUpdate
 
 
-class ItemsRepository(BaseRepository[ClientCreate, ClientUpdate, ClientRead, Client]):
+class ClientsRepository(BaseRepository[ClientCreate, ClientUpdate, ClientRead, Client]):
 
     @property
     def _table(self) -> Type[Client]:

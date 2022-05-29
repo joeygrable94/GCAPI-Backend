@@ -1,46 +1,61 @@
+import fastapi_users
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core import crud
-from app.core.schemas.item import ItemCreate, ItemUpdate
+from app.db.repositories.item import ItemsRepository
+from app.db.schemas import ItemRead, ItemCreate, ItemUpdate, user
+from app.tests.conftest import user_manager
 from app.tests.utils.user import create_random_user
 from app.tests.utils.utils import random_lower_string
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.mark.asyncio
+
 async def test_create_item(
-    db: AsyncSession
+    db_session: AsyncSession
 ) -> None:
-    title = random_lower_string()
-    content = random_lower_string()
-    item_in = ItemCreate(title=title, content=content)
-    item = await crud.item.create(db=db, obj_in=item_in)
+    title: str = random_lower_string()
+    content: str = random_lower_string()
+    item_repo: ItemsRepository = ItemsRepository(session=db_session)
+    item = await item_repo.create(
+        ItemCreate(
+            title=title,
+            content=content,
+            user_id=None
+        )
+    )
     assert item.title == title
     assert item.content == content
+    assert item.user_id == None
 
 
 '''
-@pytest.mark.asyncio
-async def test_create_item(
-    db: AsyncSession
+async def test_create_item_with_user(
+    db_session: AsyncSession,
+    user_manager: fastapi_users.BaseUserManager
 ) -> None:
-    title = random_lower_string()
-    content = random_lower_string()
-    item_in = ItemCreate(title=title, content=content)
-    user = await create_random_user(db)
-    item = await crud.item.create_with_user(db=db, obj_in=item_in, user_id=user.id)
+    title: str = random_lower_string()
+    content: str = random_lower_string()
+    user = await create_random_user(user_manager)
+    item_repo: ItemsRepository = ItemsRepository(session=db_session)
+    item = await item_repo.create(
+        ItemCreate(
+            title=title,
+            content=content,
+            user_id=user.id
+        )
+    )
     assert item.title == title
     assert item.content == content
     assert item.user_id == user.id
 
 
-@pytest.mark.asyncio
 async def test_get_item(db: Session) -> None:
     title = random_lower_string()
     description = random_lower_string()
     item_in = ItemCreate(title=title, description=description)
     user = await create_random_user(db)
-    item = await crud.item.create_with_user(db=db, obj_in=item_in, owner_id=user.id)
+    item = await crud.item.create(db=db, obj_in=item_in, owner_id=user.id)
     stored_item = await crud.item.get(db=db, id=item.id)
     assert stored_item
     assert item.id == stored_item.id
@@ -49,13 +64,12 @@ async def test_get_item(db: Session) -> None:
     assert item.owner_id == stored_item.owner_id
 
 
-@pytest.mark.asyncio
 async def test_update_item(db: Session) -> None:
     title = random_lower_string()
     description = random_lower_string()
     item_in = ItemCreate(title=title, description=description)
     user = await create_random_user(db)
-    item = await crud.item.create_with_user(db=db, obj_in=item_in, owner_id=user.id)
+    item = await crud.item.create(db=db, obj_in=item_in, owner_id=user.id)
     description2 = random_lower_string()
     item_update = ItemUpdate(description=description2)
     item2 = await crud.item.update(db=db, db_obj=item, obj_in=item_update)
@@ -65,13 +79,12 @@ async def test_update_item(db: Session) -> None:
     assert item.owner_id == item2.owner_id
 
 
-@pytest.mark.asyncio
 async def test_delete_item(db: Session) -> None:
     title = random_lower_string()
     description = random_lower_string()
     item_in = ItemCreate(title=title, description=description)
     user = await create_random_user(db)
-    item = await crud.item.create_with_user(db=db, obj_in=item_in, owner_id=user.id)
+    item = await crud.item.create(db=db, obj_in=item_in, owner_id=user.id)
     item2 = await crud.item.remove(db=db, id=item.id)
     item3 = await crud.item.get(db=db, id=item.id)
     assert item3 is None

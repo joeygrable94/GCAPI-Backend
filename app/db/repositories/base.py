@@ -81,7 +81,7 @@ class BaseRepository(Generic[SCHEMA_CREATE, SCHEMA_UPDATE, SCHEMA_READ, TABLE], 
         entry = self._table(id=self.generate_uuid(), **schema.dict())
         self._db.add(entry)
         await self._db.commit()
-        return self._schema_create.from_orm(entry)
+        return self._schema_read.from_orm(entry)
 
     async def read(self, entry_id: UUID4) -> SCHEMA_READ:
         query = (
