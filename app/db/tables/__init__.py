@@ -5,8 +5,7 @@
 # from .core_web_vital import CoreWebVital
 # from .keyword_corpus import KeywordCorpus
 
-from .item import Item
-
-from .user_client import UserClient
 from .client import Client
+from .item import Item
 from .user import User
+from .user_client import UserClient

@@ -1,14 +1,11 @@
 from typing import Type
 
-from pydantic import UUID4
-
 from app.db.repositories.base import BaseRepository
-from app.db.tables import Client
 from app.db.schemas import ClientCreate, ClientRead, ClientUpdate
+from app.db.tables import Client
 
 
 class ClientsRepository(BaseRepository[ClientCreate, ClientUpdate, ClientRead, Client]):
-
     @property
     def _table(self) -> Type[Client]:
         return Client

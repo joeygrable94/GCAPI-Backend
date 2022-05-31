@@ -1,12 +1,12 @@
-from typing import Generator, Any, Dict
-
-import uuid
 import re
+import uuid
 from datetime import datetime
+from typing import Any, Dict, Generator
 
 
 def _get_date():
     return datetime.now()
+
 
 def _get_uuid():
     return uuid.uuid4()
@@ -14,15 +14,16 @@ def _get_uuid():
 
 # regex meaning
 # checks to confirm a valid email address
-email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+email_pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b")
 
 
 # https://pydantic-docs.helpmanual.io/usage/types/#custom-data-types
 # regex meaning
 # first str before ':' should only be in a-z, 0-9, -, _
-# second or after str after first ':' should only be in a-z, 0-9, -, _, @, . (think of email)
+# second or after str after first ':' should only be in a-z, 0-9, -, _, @, .
 # ':some_str' should appear at least 1, and can appear more than 1
 scope_regex = re.compile(r"^[a-z0-9-_]+(:[a-z0-9-_@.]+)+$")
+
 
 class Scope(str):
     @classmethod

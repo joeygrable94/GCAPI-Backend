@@ -1,55 +1,43 @@
-import fastapi_users
 import pytest
+from fastapi_users import BaseUserManager
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.item import ItemsRepository
-from app.db.schemas import ItemRead, ItemCreate, ItemUpdate, user
-from app.tests.conftest import user_manager
+from app.db.schemas import ItemCreate  # ItemRead,; ItemUpdate,; UserRead,
 from app.tests.utils.user import create_random_user
 from app.tests.utils.utils import random_lower_string
 
 pytestmark = pytest.mark.asyncio
 
 
-async def test_create_item(
-    db_session: AsyncSession
-) -> None:
+async def test_create_item(db_session: AsyncSession) -> None:
     title: str = random_lower_string()
     content: str = random_lower_string()
     item_repo: ItemsRepository = ItemsRepository(session=db_session)
     item = await item_repo.create(
-        ItemCreate(
-            title=title,
-            content=content,
-            user_id=None
-        )
+        ItemCreate(title=title, content=content, user_id=None)
     )
     assert item.title == title
     assert item.content == content
-    assert item.user_id == None
+    assert item.user_id is None
 
 
-'''
 async def test_create_item_with_user(
-    db_session: AsyncSession,
-    user_manager: fastapi_users.BaseUserManager
+    db_session: AsyncSession, user_manager: BaseUserManager
 ) -> None:
     title: str = random_lower_string()
     content: str = random_lower_string()
     user = await create_random_user(user_manager)
     item_repo: ItemsRepository = ItemsRepository(session=db_session)
     item = await item_repo.create(
-        ItemCreate(
-            title=title,
-            content=content,
-            user_id=user.id
-        )
+        ItemCreate(title=title, content=content, user_id=user.id)
     )
     assert item.title == title
     assert item.content == content
     assert item.user_id == user.id
 
 
+"""
 async def test_get_item(db: Session) -> None:
     title = random_lower_string()
     description = random_lower_string()
@@ -92,4 +80,4 @@ async def test_delete_item(db: Session) -> None:
     assert item2.title == title
     assert item2.description == description
     assert item2.owner_id == user.id
-'''
+"""

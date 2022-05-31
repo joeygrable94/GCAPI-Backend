@@ -1,13 +1,13 @@
 from fastapi_users_db_sqlalchemy import GUID
 from sqlalchemy import Column, DateTime
 
-from app.db.utilities import _get_date, _get_uuid
 from app.db.base_class import Base
+from app.db.utilities import _get_date, _get_uuid
 
 
 class TableBase(Base):
-    __abstract__            = True
-    __mapper_args__         = {'always_refresh': True}
-    id                      = Column(GUID, primary_key=True, unique=True, nullable=False, default=_get_uuid)
-    created_on              = Column(DateTime(timezone=True), default=_get_date)
-    updated_on              = Column(DateTime(timezone=True), default=_get_date, onupdate=_get_date)
+    __abstract__ = True
+    __mapper_args__ = {"always_refresh": True}
+    id = Column(GUID, primary_key=True, unique=True, nullable=False, default=_get_uuid)
+    created_on = Column(DateTime(timezone=True), default=_get_date)
+    updated_on = Column(DateTime(timezone=True), default=_get_date, onupdate=_get_date)

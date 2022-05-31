@@ -1,10 +1,10 @@
 from typing import Optional
-import fastapi_users
 
+import fastapi_users
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.item import ItemsRepository
-from app.db.schemas import ItemRead, ItemCreate
+from app.db.schemas import ItemCreate, ItemRead
 from app.tests.utils.user import create_random_user
 from app.tests.utils.utils import random_lower_string
 
@@ -22,7 +22,6 @@ async def create_random_item(
     content = random_lower_string()
     items_repo: ItemsRepository = ItemsRepository(session=db_session)
     item = await items_repo.create(
-        ItemCreate(title=title, content=content),
-        uid=user_id
+        ItemCreate(title=title, content=content), uid=user_id
     )
     return item

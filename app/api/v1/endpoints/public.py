@@ -2,9 +2,11 @@ from fastapi import APIRouter
 
 public_router = APIRouter()
 
+
 @public_router.get("/status")
 async def status():
     return {"status": "ok"}
+
 
 # @public_router.get("/")
 # async def index(request: Request):

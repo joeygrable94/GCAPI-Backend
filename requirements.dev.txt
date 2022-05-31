@@ -2,7 +2,6 @@
 # server
 uvicorn[standard]==0.17.6
 greenlet==1.1.2
-raven==6.10.0
 
 # security
 httpx-oauth==0.6.0
@@ -11,20 +10,22 @@ cryptography==37.0.2
 
 # api
 fastapi==0.75.2
-fastapi-users[sqlalchemy]==10.0.2
+fastapi-users[sqlalchemy]==10.0.6
 pydantic[email]==1.9.0
 python-multipart==0.0.5
 
 # tasks
 celery==4.4.7
+celery-stubs==0.1.2
 redis==4.3.1
+# raven==6.10.0
 
 # database
 PyMySQL==1.0.2
 sqlalchemy[mypy]==1.4.36
 sqlalchemy-stubs==0.4
 sqlalchemy-utils==0.38.2
-databases[aiomysql]==0.5.5
+databases==0.5.5
 alembic==1.7.7
 
 # async
@@ -54,4 +55,5 @@ pep8==1.7.1
 mypy==0.950
 isort==5.10.1
 black==22.3.0
-autoflake8==0.3.2
+flake8==4.0.1
+autoflake==1.4

@@ -1,16 +1,18 @@
 # USER CRUD
 
 import contextlib
+
 from fastapi_users.exceptions import UserAlreadyExists
+
+from app.api.deps import get_async_db, get_user_db
 from app.core.logger import logger
 from app.core.user_manager import get_user_manager
 from app.db.schemas import UserCreate
-from app.api.deps import get_async_db, get_user_db
-
 
 get_async_db_context = contextlib.asynccontextmanager(get_async_db)
 get_user_db_context = contextlib.asynccontextmanager(get_user_db)
 get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
+
 
 async def create_user(email: str, password: str, is_superuser: bool = False):
     try:

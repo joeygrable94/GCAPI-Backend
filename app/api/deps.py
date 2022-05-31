@@ -1,10 +1,11 @@
-from typing import Generator, AsyncGenerator
+from typing import AsyncGenerator, Generator
 
 from fastapi import Depends
+from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi_users.db import SQLAlchemyUserDatabase
+
+from app.db.session import async_session, session
 from app.db.tables import User
-from app.db.session import session, async_session
 
 
 def get_db() -> Generator:

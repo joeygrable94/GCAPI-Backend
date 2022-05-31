@@ -1,17 +1,17 @@
 from typing import Dict
-import fastapi_users
 
-from httpx import AsyncClient
+from fastapi_users import BaseUserManager
 from fastapi_users.exceptions import UserAlreadyExists
+from httpx import AsyncClient
 
 from app.core.config import settings
 from app.core.logger import logger
-from app.db.schemas import UserRead, UserCreate, UserUpdate
+from app.db.schemas import UserCreate, UserRead, UserUpdate
 from app.tests.utils.utils import random_email, random_lower_string
 
 
 async def create_random_user(
-    user_manager: fastapi_users.BaseUserManager,
+    user_manager: BaseUserManager,
 ) -> UserRead:
     email = random_email()
     password = random_lower_string()
@@ -27,16 +27,14 @@ async def create_random_user(
     return user
 
 
-async def get_superuser_token_headers(
-    client: AsyncClient
-) -> Dict[str, str]:
+async def get_superuser_token_headers(client: AsyncClient) -> Dict[str, str]:
     response = await client.post(
         "/auth/jwt/login",
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         data={
             "username": settings.FIRST_SUPERUSER,
             "password": settings.FIRST_SUPERUSER_PASSWORD,
-        }
+        },
     )
     auth_data = response.json()
     auth_token = auth_data["access_token"]
@@ -45,17 +43,10 @@ async def get_superuser_token_headers(
 
 
 async def user_authentication_headers(
-    *,
-    client: AsyncClient,
-    email: str,
-    password: str
+    *, client: AsyncClient, email: str, password: str
 ) -> Dict[str, str]:
     response = await client.post(
-        "/auth/jwt/login",
-        data={
-            "username": email,
-            "password": password
-        }
+        "/auth/jwt/login", data={"username": email, "password": password}
     )
     auth_data = response.json()
     auth_token = auth_data["access_token"]
@@ -67,31 +58,19 @@ async def authentication_token_from_email(
     *,
     client: AsyncClient,
     email: str,
-    user_manager: fastapi_users.BaseUserManager,
+    user_manager: BaseUserManager,
 ) -> Dict[str, str]:
-    '''
+    """
     Return a valid token for the user with given email.
     If the user doesn't exist it is created first.
-    '''
+    """
     password = random_lower_string()
     user = await user_manager.get_by_email(user_email=email)
     if not user:
         try:
-            user = await user_manager.create(
-                UserCreate(
-                    email=email,
-                    password=password
-                )
-            )
+            user = await user_manager.create(UserCreate(email=email, password=password))
         except UserAlreadyExists:
             logger.info(f"User {email} already exists")
     else:
-        user = await user_manager.update(
-            UserUpdate(password=password)
-        )
-    return user_authentication_headers(
-        client=client,
-        email=email,
-        password=password
-    )
-
+        user = await user_manager.update(UserUpdate(password=password))
+    return user_authentication_headers(client=client, email=email, password=password)

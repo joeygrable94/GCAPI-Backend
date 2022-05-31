@@ -1,23 +1,18 @@
 from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi_users_db_sqlalchemy import AsyncSession
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.user_manager import current_active_user
 from app.api.deps import get_async_db
+from app.core.user_manager import current_active_user
 from app.db.repositories.item import ItemsRepository
-from app.db.schemas import UserRead, ItemCreate, ItemRead, ItemUpdate
+from app.db.schemas import ItemCreate, ItemRead, ItemUpdate, UserRead
 
 items_router = APIRouter()
 
 
-@items_router.get(
-    '/',
-    response_model=List[ItemRead],
-    name="items:read_items"
-)
+@items_router.get("/", response_model=List[ItemRead], name="items:read_items")
 async def items_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
@@ -30,11 +25,7 @@ async def items_list(
     return items
 
 
-@items_router.post(
-    '/',
-    response_model=ItemRead,
-    name="items:create_item"
-)
+@items_router.post("/", response_model=ItemRead, name="items:create_item")
 async def items_create(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -46,11 +37,7 @@ async def items_create(
     return item
 
 
-@items_router.get(
-    '/{id}',
-    response_model=ItemRead,
-    name="items:read_item"
-)
+@items_router.get("/{id}", response_model=ItemRead, name="items:read_item")
 async def items_read(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -61,22 +48,16 @@ async def items_read(
     item = await items_repo.read(entry_id=id)
     if not item:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Item not found'
+            status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
         )
     if not current_user.is_superuser or not current_user.id == item.user_id:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Not enough permissions'
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Not enough permissions"
         )
     return item
 
 
-@items_router.patch(
-    '/{id}',
-    response_model=ItemRead,
-    name="items:update_item"
-)
+@items_router.patch("/{id}", response_model=ItemRead, name="items:update_item")
 async def items_update(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -88,23 +69,17 @@ async def items_update(
     item = await items_repo.read(entry_id=id)
     if not item:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Item not found'
+            status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
         )
     if not current_user.is_superuser or not current_user.id == item.user_id:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Not enough permissions'
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Not enough permissions"
         )
     item = await items_repo.update(entry_id=id, schema=item_in)
     return item
 
 
-@items_router.delete(
-    '/{id}',
-    response_model=ItemRead,
-    name="items:delete_item"
-)
+@items_router.delete("/{id}", response_model=ItemRead, name="items:delete_item")
 async def items_delete(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -115,13 +90,11 @@ async def items_delete(
     item = await items_repo.read(entry_id=id)
     if not item:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Item not found'
+            status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
         )
     if not current_user.is_superuser or not current_user.id == item.user_id:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Not enough permissions'
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Not enough permissions"
         )
     item = await items_repo.delete(entry_id=id)
     return item
