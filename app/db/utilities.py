@@ -3,12 +3,14 @@ import uuid
 from datetime import datetime
 from typing import Any, Dict, Generator
 
+from pydantic import UUID4
 
-def _get_date():
+
+def _get_date() -> datetime:
     return datetime.now()
 
 
-def _get_uuid():
+def _get_uuid() -> UUID4:
     return uuid.uuid4()
 
 

@@ -1,10 +1,12 @@
+from typing import Dict
+
 from fastapi import APIRouter
 
 public_router = APIRouter()
 
 
 @public_router.get("/status")
-async def status():
+async def status() -> Dict[str, str]:
     return {"status": "ok"}
 
 

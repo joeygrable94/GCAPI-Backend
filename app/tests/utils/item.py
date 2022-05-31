@@ -1,6 +1,7 @@
 from typing import Optional
 
 import fastapi_users
+from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.item import ItemsRepository
@@ -13,7 +14,7 @@ async def create_random_item(
     db_session: AsyncSession,
     user_manager: fastapi_users.BaseUserManager,
     *,
-    user_id: Optional[int] = None
+    user_id: Optional[UUID4] = None
 ) -> ItemRead:
     if user_id is None:
         user = await create_random_user(user_manager)
@@ -22,6 +23,6 @@ async def create_random_item(
     content = random_lower_string()
     items_repo: ItemsRepository = ItemsRepository(session=db_session)
     item = await items_repo.create(
-        ItemCreate(title=title, content=content), uid=user_id
+        ItemCreate(title=title, content=content, user_id=user_id)
     )
     return item

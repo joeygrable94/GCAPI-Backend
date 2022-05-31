@@ -1,6 +1,5 @@
 import abc
-from typing import Dict, Generic, List, Mapping, Type, TypeVar
-from uuid import uuid4
+from typing import Any, Dict, Generic, List, Type, TypeVar
 
 from pydantic import UUID4
 from sqlalchemy import Table
@@ -10,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.errors import DoesNotExist
 from app.db.schemas.base import BaseSchema
+from app.db.utilities import _get_uuid
 
 SCHEMA_CREATE = TypeVar("SCHEMA_CREATE", bound=BaseSchema)
 SCHEMA_UPDATE = TypeVar("SCHEMA_UPDATE", bound=BaseSchema)
@@ -20,7 +20,7 @@ TABLE = TypeVar("TABLE", bound=Table)
 class BaseRepository(
     Generic[SCHEMA_CREATE, SCHEMA_UPDATE, SCHEMA_READ, TABLE], metaclass=abc.ABCMeta
 ):
-    def __init__(self, session: AsyncSession, *args, **kwargs) -> None:
+    def __init__(self, session: AsyncSession, *args: Any, **kwargs: Any) -> None:
         self._db: AsyncSession = session
 
     @property
@@ -45,7 +45,7 @@ class BaseRepository(
 
     @staticmethod
     def generate_uuid() -> UUID4:
-        return uuid4()
+        return _get_uuid()
 
     @staticmethod
     def paginate(page: int = 1) -> tuple[int, int]:
@@ -68,12 +68,13 @@ class BaseRepository(
             values["id"] = self.generate_uuid()
         return values
 
-    async def _list(self, skip: int = 0, limit: int = 100) -> List[Mapping]:
-        query = sql_select(self._table).offset(skip).limit(limit)
+    async def _list(self, skip: int = 0, limit: int = 100) -> List[SCHEMA_READ]:
+        query = sql_select(self._table).offset(skip).limit(limit)  # type: ignore
         result = await self._db.execute(query)
-        return result.scalars().all()
+        data = result.scalars().all()
+        return list(data)
 
-    async def list(self, page: int = 1) -> List[Mapping]:
+    async def list(self, page: int = 1) -> List[SCHEMA_READ]:
         skip, limit = self.paginate(page)
         return await self._list(skip=skip, limit=limit)
 
@@ -84,7 +85,7 @@ class BaseRepository(
         return self._schema_read.from_orm(entry)
 
     async def read(self, entry_id: UUID4) -> SCHEMA_READ:
-        query = sql_select(self._table).where(self._table.id == entry_id)
+        query = sql_select(self._table).where(self._table.id == entry_id)  # type: ignore
         result = await self._db.execute(query)
         entry = result.scalars().first()
         if not entry:
@@ -96,8 +97,8 @@ class BaseRepository(
         if not entry:
             raise DoesNotExist(f"{self._table.__name__}<id:{entry_id}> does not exist")
         query = (
-            sql_update(self._table)
-            .where(entry.id == entry_id)
+            sql_update(self._table)  # type: ignore
+            .where(entry.id == entry_id)  # type: ignore
             .values(**schema.dict())
             .execution_options(synchronize_session="fetch")
         )

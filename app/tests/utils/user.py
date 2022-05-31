@@ -42,7 +42,22 @@ async def get_superuser_token_headers(client: AsyncClient) -> Dict[str, str]:
     return auth_header
 
 
-async def user_authentication_headers(
+async def get_testuser_token_headers(client: AsyncClient) -> Dict[str, str]:
+    response = await client.post(
+        "/auth/jwt/login",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data={
+            "username": settings.TEST_NORMAL_USER,
+            "password": settings.TEST_NORMAL_USER_PASSWORD,
+        },
+    )
+    auth_data = response.json()
+    auth_token = auth_data["access_token"]
+    auth_header = {"Authorization": f"Bearer {auth_token}"}
+    return auth_header
+
+
+async def get_user_authentication_headers(
     *, client: AsyncClient, email: str, password: str
 ) -> Dict[str, str]:
     response = await client.post(
@@ -64,7 +79,7 @@ async def authentication_token_from_email(
     Return a valid token for the user with given email.
     If the user doesn't exist it is created first.
     """
-    password = random_lower_string()
+    password = settings.TEST_NORMAL_USER_PASSWORD
     user = await user_manager.get_by_email(user_email=email)
     if not user:
         try:
@@ -72,5 +87,7 @@ async def authentication_token_from_email(
         except UserAlreadyExists:
             logger.info(f"User {email} already exists")
     else:
-        user = await user_manager.update(UserUpdate(password=password))
-    return user_authentication_headers(client=client, email=email, password=password)
+        user = await user_manager.update(UserUpdate(password=password), user=user)
+    return await get_user_authentication_headers(
+        client=client, email=email, password=password
+    )

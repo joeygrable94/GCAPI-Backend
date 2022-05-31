@@ -15,8 +15,8 @@ if TYPE_CHECKING:
 
 class Client(TableBase):
     __tablename__ = "client"
-    title = Column(String(96))
-    content = Column(Text)
+    title = Column(String(96), nullable=False)
+    content = Column(Text, nullable=True)
     # web_sites = relationship(
     #     'WebSite',
     #     backref=backref('client', lazy=True)
@@ -32,6 +32,6 @@ class Client(TableBase):
     #     cascade='save-update'
     # )
 
-    def __repr__(self):
-        repr_str = f"Client({self.name}, since {self.created_on})"
+    def __repr__(self) -> str:
+        repr_str = f"Client({self.title}, since {self.created_on})"
         return repr_str

@@ -1,7 +1,7 @@
 import asyncio
 import os
 import warnings
-from typing import Any, AsyncGenerator, Callable, Coroutine, Dict, Generator
+from typing import Any, AsyncGenerator, Callable, Dict, Generator
 
 import alembic
 import pytest
@@ -9,7 +9,7 @@ import pytest_asyncio
 from alembic.config import Config
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import AsyncClient, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db, get_user_db
@@ -17,13 +17,13 @@ from app.core.config import settings
 from app.db.session import async_engine, async_session
 from app.main import create_app
 from app.tests.utils.user import (authentication_token_from_email,
-                                  get_superuser_token_headers)
+                                  get_superuser_token_headers, get_testuser_token_headers)
 
 pytestmark = pytest.mark.asyncio
 
 
 @pytest_asyncio.fixture(scope="session")
-def event_loop(request) -> Generator:
+def event_loop(request: Request) -> Generator:
     """Create an instance of the default event loop for each test case."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
@@ -45,7 +45,7 @@ async def db_session() -> AsyncGenerator:
 
 @pytest_asyncio.fixture(scope="session")
 def override_get_db(db_session: AsyncSession) -> Callable:
-    async def _override_get_db():
+    async def _override_get_db() -> AsyncGenerator:
         yield db_session
 
     return _override_get_db
@@ -72,15 +72,17 @@ async def user_manager() -> AsyncGenerator:
 
 
 @pytest_asyncio.fixture(scope="session")
-def override_get_user_db(user_db_session: AsyncSession) -> Callable:
-    async def _override_get_user_db():
+def override_get_user_db(
+    user_db_session: AsyncSession,
+) -> Callable[[], AsyncGenerator[Any, Any]]:
+    async def _override_get_user_db() -> AsyncGenerator:
         yield user_db_session
 
     return _override_get_user_db
 
 
 @pytest_asyncio.fixture(scope="session")
-def apply_migrations():
+def apply_migrations() -> Generator:
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     os.environ["TESTING"] = "1"
     config = Config("alembic.ini")
@@ -111,14 +113,14 @@ async def client(app: FastAPI) -> AsyncGenerator:
 
 
 @pytest_asyncio.fixture(scope="module")
-def superuser_token_headers(client: AsyncClient) -> Coroutine[Any, Any, Dict[str, str]]:
-    return get_superuser_token_headers(client)
+async def superuser_token_headers(client: AsyncClient) -> Dict[str, str]:
+    return await get_superuser_token_headers(client)
 
 
 @pytest_asyncio.fixture(scope="module")
-def normal_user_token_headers(
+async def normal_user_token_headers(
     client: AsyncClient, user_manager: AsyncSession
-) -> Coroutine[Any, Any, Dict[str, str]]:
-    return authentication_token_from_email(
-        client=client, email=settings.EMAIL_TEST_USER, user_manager=user_manager
+) -> Dict[str, str]:
+    return await authentication_token_from_email(
+        client=client, email=settings.TEST_NORMAL_USER, user_manager=user_manager
     )

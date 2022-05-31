@@ -1,4 +1,5 @@
 import time
+from typing import Any
 
 from fastapi import FastAPI
 from requests import Request
@@ -10,7 +11,7 @@ from app.core.user_manager import auth_backend, fastapi_users
 from app.db.schemas import UserCreate, UserRead, UserUpdate
 
 
-def configure_routers(app):
+def configure_routers(app: FastAPI) -> None:
     # import routers
     from app.api.v1.endpoints import items_router, public_router, users_router
 
@@ -61,24 +62,24 @@ def configure_routers(app):
     # )
 
 
-def configure_static(app):
+def configure_static(app: FastAPI) -> None:
     app.mount("/static", static_files, name="static")
 
 
-def configure_events(app):
-    from app.db.commands import check_db_connected, check_db_disconnected
+def configure_events(app: FastAPI) -> None:
+    from app.db.commands import (check_db_connected, check_db_disconnected,
+                                 create_db_and_tables, create_initial_data)
 
-    # from app.db.commands import create_db_and_tables, create_initial_data
     # startup actions
     @app.on_event("startup")
-    async def on_startup():
+    async def on_startup() -> None:
         await check_db_connected()
         # await create_db_and_tables()
         # await create_initial_data()
 
     # middlewares
     @app.middleware("http")
-    async def add_process_time_header(request: Request, call_next):
+    async def add_process_time_header(request: Request, call_next: Any) -> None:
         start_time = time.perf_counter()
         response = await call_next(request)
         process_time = time.perf_counter() - start_time
@@ -87,11 +88,11 @@ def configure_events(app):
 
     # shutdown actions
     @app.on_event("shutdown")
-    async def on_shutdown():
+    async def on_shutdown() -> None:
         await check_db_disconnected()
 
 
-def create_app():
+def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.PROJECT_NAME,
         version=settings.PROJECT_VERSION,
@@ -114,4 +115,4 @@ def create_app():
     return app
 
 
-app = create_app()
+app: FastAPI = create_app()

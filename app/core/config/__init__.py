@@ -50,9 +50,7 @@ class Settings(BaseSettings):
             return None
         return v
 
-    DB_ECHO_LOG: Union[str, bool] = (
-        False if os.environ.get("APP_DEBUG", True) else False
-    )
+    DB_ECHO_LOG: bool = False if bool(os.environ.get("APP_DEBUG", True)) else False
     DATABASE_SERVER: str = os.environ.get("DATABASE_SERVER", "")
     DATABASE_USER: str = os.environ.get("DATABASE_USER", "")
     DATABASE_PASSWORD: str = os.environ.get("DATABASE_PASSWORD", "")
@@ -96,7 +94,7 @@ class Settings(BaseSettings):
     EMAIL_PROVIDER_RESTRICTION: Union[str, bool] = os.environ.get(
         "EMAIL_PROVIDER_RESTRICTION", True
     )
-    ALLOWED_EMAIL_PROVIDER_LIST: Union[str, List[Any], None] = os.environ.get(
+    ALLOWED_EMAIL_PROVIDER_LIST: Union[str, List[Any]] = os.environ.get(
         "ALLOWED_EMAIL_PROVIDER_LIST", ["getcommunity.com"]
     )
 
@@ -106,6 +104,10 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER: str = os.environ.get("FIRST_SUPERUSER", "admin@getcommunity.com")
     FIRST_SUPERUSER_PASSWORD: str = os.environ.get(
         "FIRST_SUPERUSER_PASSWORD", "password"
+    )
+    TEST_NORMAL_USER: str = os.environ.get("TEST_NORMAL_USER", "joey@getcommunity.com")
+    TEST_NORMAL_USER_PASSWORD: str = os.environ.get(
+        "TEST_NORMAL_USER_PASSWORD", "password"
     )
     USERS_OPEN_REGISTRATION: Union[str, bool] = os.environ.get(
         "USERS_OPEN_REGISTRATION", False

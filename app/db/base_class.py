@@ -1,20 +1,26 @@
-from datetime import datetime
-from typing import Optional
+from typing import Any
 
-from pydantic import UUID4, Field
-from sqlalchemy.ext.declarative import as_declarative, declared_attr
+from pydantic import Field
+from sqlalchemy import Column, MetaData
+from sqlalchemy.orm import declarative_base  # type: ignore
+from sqlalchemy.orm import declarative_mixin  # type: ignore
 
 from app.db.utilities import _get_uuid
 
+Base = declarative_base(metadata=MetaData())
 
-@as_declarative()
-class Base:
-    __name__: str
-    id: UUID4 = Field(default_factory=_get_uuid)
-    created_on: Optional[datetime]
-    updated_on: Optional[datetime]
 
-    @declared_attr
-    def __tablename__(cls) -> str:
-        """Generate __tablename__ automatically"""
-        return cls.__name__.lower()
+@declarative_mixin
+class BaseMixin:
+    __tablename__: str
+    __table_args__ = {"mysql_engine": "InnoDB"}
+    __mapper_args__ = {"always_refresh": True}
+    id: Column[Any] = Field(default_factory=_get_uuid)
+    created_on: Column[Any]
+    updated_on: Column[Any]
+
+
+@declarative_mixin
+class UserBaseMixin:
+    created_on: Column[Any]
+    updated_on: Column[Any]

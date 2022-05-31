@@ -6,7 +6,7 @@ from app.core.user_crud import create_user
 from app.db.session import async_engine
 
 
-async def check_db_connected():
+async def check_db_connected() -> None:
     try:
         if not str(settings.DATABASE_URL).__contains__("sqlite"):
             database = databases.Database(settings.DATABASE_URL)
@@ -20,7 +20,7 @@ async def check_db_connected():
         raise e
 
 
-async def check_db_disconnected():
+async def check_db_disconnected() -> None:
     try:
         if not str(settings.DATABASE_URL).__contains__("sqlite"):
             database = databases.Database(settings.DATABASE_URL)
@@ -33,7 +33,7 @@ async def check_db_disconnected():
         raise e
 
 
-async def create_db_and_tables():
+async def create_db_and_tables() -> None:
     from app.db.base import Base
 
     async with async_engine.begin() as conn:
@@ -41,9 +41,14 @@ async def create_db_and_tables():
         logger.info("+ ASYCN F(X) --> Database tables created.")
 
 
-async def create_initial_data():
+async def create_initial_data() -> None:
     await create_user(
         email=settings.FIRST_SUPERUSER,
         password=settings.FIRST_SUPERUSER_PASSWORD,
         is_superuser=True,
+    )
+    await create_user(
+        email=settings.TEST_NORMAL_USER,
+        password=settings.TEST_NORMAL_USER_PASSWORD,
+        is_superuser=False,
     )

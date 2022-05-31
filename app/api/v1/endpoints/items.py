@@ -16,12 +16,11 @@ items_router = APIRouter()
 async def items_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
-    uid: UUID4 = None,
+    user_id: UUID4 = None,
     current_user: UserRead = Depends(current_active_user),
 ) -> List[ItemRead]:
     items_repo: ItemsRepository = ItemsRepository(session=db)
-    items = await items_repo.list(page=page)
-    print(uid)
+    items = await items_repo.list(page=page, user_id=user_id)
     return items
 
 
@@ -33,7 +32,9 @@ async def items_create(
     current_user: UserRead = Depends(current_active_user),
 ) -> ItemRead:
     items_repo: ItemsRepository = ItemsRepository(session=db)
-    item = await items_repo.create(current_user.id, item_in)
+    if not item_in.user_id:
+        item_in.user_id = current_user.id
+    item = await items_repo.create(item_in)
     return item
 
 

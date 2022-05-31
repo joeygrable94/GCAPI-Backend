@@ -1,24 +1,26 @@
+from typing import TYPE_CHECKING, Any
+
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTableUUID
 from sqlalchemy.orm import backref, relationship, validates
 
 from app.core.config import settings
-from app.db.tables.base import TableBase
+from app.db.tables.base import UserTableBase
 from app.db.utilities import email_pattern
 
+if TYPE_CHECKING:
+    from .client import Client  # noqa: F401
+    from .item import Item  # noqa: F401
+    from .user_client import UserClient  # noqa: F401
 
-class User(SQLAlchemyBaseUserTableUUID, TableBase):
-    """See SQLAlchemy Relationship Loading Techniques:
-    - https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html
-    """
 
-    __tablename__ = "user"
+class User(UserTableBase, SQLAlchemyBaseUserTableUUID):
     items = relationship("Item", backref=backref("user", lazy="noload"))
     clients = relationship(
         "Client", secondary="user_client", backref=backref("users", lazy="noload")
     )
 
     @validates("email")
-    def validate_email(self, k, v):
+    def validate_email(self, k: Any, v: Any) -> Any:
         assert isinstance(v, str)
         if not email_pattern.fullmatch(v):
             raise ValueError("Invalid characters in the username/email")
@@ -29,6 +31,6 @@ class User(SQLAlchemyBaseUserTableUUID, TableBase):
                 raise ValueError("Invalid email provider")
         return v
 
-    def __repr__(self):
-        repr_str = f"User({self.email} created on {self.created_on} [{self.id}])"
+    def __repr__(self) -> str:
+        repr_str = f"User({self.email} created {self.created_on}, UUID[{self.id}])"
         return repr_str

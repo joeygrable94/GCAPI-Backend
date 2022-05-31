@@ -16,6 +16,7 @@ __version__ = "0.1"
 __license__ = "GPLv3"
 
 import logging
+from typing import Any
 
 from app.core.config import settings
 
@@ -43,10 +44,10 @@ class Color:
 
 
 class ColorTheme:
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<%s>" % self.__class__.__name__
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: Any) -> Any:
         return lambda x: x
 
 
@@ -55,7 +56,7 @@ class NoTheme(ColorTheme):
 
 
 class AnsiColorTheme(ColorTheme):
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: Any) -> Any:
         if attr.startswith("__"):
             raise AttributeError(attr)
         s = "style_%s" % attr
@@ -65,7 +66,9 @@ class AnsiColorTheme(ColorTheme):
         else:
             before = after = ""
 
-        def do_style(val, fmt=None, before=before, after=after):
+        def do_style(
+            val: Any, fmt: Any = None, before: Any = before, after: Any = after
+        ) -> Any:
             if fmt is None:
                 if type(val) is not str:
                     val = str(val)
@@ -131,7 +134,7 @@ default_theme = DefaultTheme()
 
 
 class Logger:
-    def __init__(self, name="myapp", level="INFO"):
+    def __init__(self, name: str = "myapp", level: str = "INFO") -> None:
         self.file_frmt = logging.Formatter(
             "%(levelname)s:     %(message)s [%(asctime)s]"
         )
@@ -149,35 +152,35 @@ class Logger:
         self.logger.addHandler(self.ch)
         self.logger.addHandler(self.fh)
 
-    def log(self, *args):
+    def log(self, *args: Any) -> Any:
         self.logger.info(
             default_theme.style_normal
             + "".join(str(i) for i in args)
             + default_theme.style_normal
         )
 
-    def debug(self, *args):
+    def debug(self, *args: Any) -> Any:
         self.logger.debug(
             default_theme.style_prompt
             + "".join(str(i) for i in args)
             + default_theme.style_normal
         )
 
-    def info(self, *args):
+    def info(self, *args: Any) -> Any:
         self.logger.info(
             default_theme.style_normal
             + "".join(str(i) for i in args)
             + default_theme.style_normal
         )
 
-    def exception(self, *args):
+    def exception(self, *args: Any) -> Any:
         self.logger.exception(
             default_theme.style_fail
             + "".join(str(i) for i in args)
             + default_theme.style_normal
         )
 
-    def warning(self, *args):
+    def warning(self, *args: Any) -> Any:
         self.logger.warning(
             default_theme.style_right
             + "".join(str(i) for i in args)
