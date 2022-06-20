@@ -1,22 +1,22 @@
 from typing import Dict
 
-from fastapi_users import BaseUserManager
 from fastapi_users.exceptions import UserAlreadyExists
 from httpx import AsyncClient
 
 from app.core.config import settings
 from app.core.logger import logger
+from app.db.repositories.user import UsersRepository
 from app.db.schemas import UserCreate, UserRead, UserUpdate
 from app.tests.utils.utils import random_email, random_lower_string
 
 
 async def create_random_user(
-    user_manager: BaseUserManager,
+    user_repo: UsersRepository,
 ) -> UserRead:
     email = random_email()
     password = random_lower_string()
-    user = await user_manager.create(
-        UserCreate(
+    user = await user_repo.create(
+        schema=UserCreate(
             email=email,
             password=password,
             is_active=True,
@@ -29,7 +29,7 @@ async def create_random_user(
 
 async def get_superuser_token_headers(client: AsyncClient) -> Dict[str, str]:
     response = await client.post(
-        "/auth/jwt/login",
+        "auth/jwt/login",
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         data={
             "username": settings.FIRST_SUPERUSER,
@@ -44,7 +44,7 @@ async def get_superuser_token_headers(client: AsyncClient) -> Dict[str, str]:
 
 async def get_testuser_token_headers(client: AsyncClient) -> Dict[str, str]:
     response = await client.post(
-        "/auth/jwt/login",
+        "auth/jwt/login",
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         data={
             "username": settings.TEST_NORMAL_USER,
@@ -61,7 +61,9 @@ async def get_user_authentication_headers(
     *, client: AsyncClient, email: str, password: str
 ) -> Dict[str, str]:
     response = await client.post(
-        "/auth/jwt/login", data={"username": email, "password": password}
+        "auth/jwt/login",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data={"username": email, "password": password},
     )
     auth_data = response.json()
     auth_token = auth_data["access_token"]
@@ -73,21 +75,25 @@ async def authentication_token_from_email(
     *,
     client: AsyncClient,
     email: str,
-    user_manager: BaseUserManager,
+    user_repo: UsersRepository,
 ) -> Dict[str, str]:
     """
     Return a valid token for the user with given email.
     If the user doesn't exist it is created first.
     """
     password = settings.TEST_NORMAL_USER_PASSWORD
-    user = await user_manager.get_by_email(user_email=email)
+    user = await user_repo.read_by_email(email=email)
     if not user:
         try:
-            user = await user_manager.create(UserCreate(email=email, password=password))
+            user = await user_repo.create(
+                schema=UserCreate(email=email, password=password)
+            )
         except UserAlreadyExists:
             logger.info(f"User {email} already exists")
     else:
-        user = await user_manager.update(UserUpdate(password=password), user=user)
+        user = await user_repo.update(
+            user_id=user.id, schema=UserUpdate(password=password)
+        )
     return await get_user_authentication_headers(
         client=client, email=email, password=password
     )

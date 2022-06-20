@@ -12,6 +12,8 @@ class Item(TableBase):
     __tablename__ = "item"
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=True)
+
+    # relationships
     user_id = Column(CHAR(36), ForeignKey("user.id"), nullable=True)
 
     def __repr__(self) -> str:

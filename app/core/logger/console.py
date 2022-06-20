@@ -18,8 +18,6 @@ __license__ = "GPLv3"
 import logging
 from typing import Any
 
-from app.core.config import settings
-
 
 class Color:
     """
@@ -186,6 +184,3 @@ class Logger:
             + "".join(str(i) for i in args)
             + default_theme.style_normal
         )
-
-
-logger = Logger(name=settings.LOGGER_NAME, level=settings.LOGGING_LEVEL)

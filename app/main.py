@@ -7,34 +7,35 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.templates import static_files
-from app.core.user_manager import auth_backend, fastapi_users
+from app.core.user_manager import api_users, auth_backend
 from app.db.schemas import UserCreate, UserRead, UserUpdate
 
 
 def configure_routers(app: FastAPI) -> None:
     # import routers
-    from app.api.v1.endpoints import items_router, public_router, users_router
+    from app.api.v1.endpoints import (clients_router, items_router,
+                                      public_router, users_router)
 
     # public routes
     app.include_router(public_router, prefix=f"{settings.API_PREFIX}", tags=["public"])
     # auth routes
     app.include_router(
-        fastapi_users.get_auth_router(auth_backend),
+        api_users.get_auth_router(auth_backend),
         prefix=f"{settings.API_PREFIX}/auth/jwt",
         tags=["auth"],
     )
     app.include_router(
-        fastapi_users.get_register_router(UserRead, UserCreate),
+        api_users.get_register_router(UserRead, UserCreate),
         prefix=f"{settings.API_PREFIX}/auth",
         tags=["auth"],
     )
     app.include_router(
-        fastapi_users.get_reset_password_router(),
+        api_users.get_reset_password_router(),
         prefix=f"{settings.API_PREFIX}/auth",
         tags=["auth"],
     )
     app.include_router(
-        fastapi_users.get_verify_router(UserRead),
+        api_users.get_verify_router(UserRead),
         prefix=f"{settings.API_PREFIX}/auth",
         tags=["auth"],
     )
@@ -45,7 +46,7 @@ def configure_routers(app: FastAPI) -> None:
         tags=["users"],
     )
     app.include_router(
-        fastapi_users.get_users_router(UserRead, UserUpdate),
+        api_users.get_users_router(UserRead, UserUpdate),
         prefix=f"{settings.API_PREFIX}/users",
         tags=["users"],
     )
@@ -55,11 +56,9 @@ def configure_routers(app: FastAPI) -> None:
         prefix=f"{settings.API_PREFIX}/items",
         tags=["items"],
     )
-    # app.include_router(
-    #     clients_router,
-    #     prefix=f"{settings.API_PREFIX}/clients",
-    #     tags=["clients"]
-    # )
+    app.include_router(
+        clients_router, prefix=f"{settings.API_PREFIX}/clients", tags=["clients"]
+    )
 
 
 def configure_static(app: FastAPI) -> None:

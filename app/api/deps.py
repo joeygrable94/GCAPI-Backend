@@ -1,4 +1,4 @@
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator
 
 from fastapi import Depends
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
@@ -11,7 +11,7 @@ from app.db.tables import User
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
         yield session
-        await session.commit()
+        # await session.commit()
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_db)) -> AsyncGenerator:

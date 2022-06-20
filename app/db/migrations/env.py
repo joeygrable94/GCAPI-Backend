@@ -14,8 +14,6 @@ from app.db.base import Base  # noqa
 # access to the values within the .ini file in use.
 config = context.config
 
-print(settings.DATABASE_URL)
-
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 # Interpret the config file for Python logging.

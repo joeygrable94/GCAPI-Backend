@@ -6,19 +6,20 @@ from app.db.schemas.base import BaseSchema
 
 
 class ItemBase(BaseSchema):
-    title: Optional[str] = ""
-    content: Optional[str] = ""
-    user_id: Optional[UUID4]
+    title: str = ""
+    content: str = ""
 
 
 class ItemCreate(ItemBase):
-    pass
+    user_id: Optional[UUID4]
 
 
 class ItemUpdate(ItemBase):
     title: Optional[str]
     content: Optional[str]
+    user_id: Optional[UUID4]
 
 
 class ItemRead(ItemBase):
     id: UUID4
+    user_id: Optional[UUID4]

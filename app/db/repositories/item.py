@@ -3,27 +3,30 @@ from typing import List, Type
 from app.db.repositories.base import BaseRepository
 from app.db.schemas import ItemCreate, ItemRead, ItemUpdate
 from app.db.tables import Item
-from .base import sql_select
+
+from .base import PER_PAGE_MAX_COUNT, sql_select
 
 
-class ItemsRepository(BaseRepository[ItemCreate, ItemUpdate, ItemRead, Item]):
-    @property
-    def _table(self) -> Type[Item]:
-        return Item
-
+class ItemsRepository(BaseRepository[ItemCreate, ItemRead, ItemUpdate, Item]):
     @property
     def _schema_create(self) -> Type[ItemCreate]:
         return ItemCreate
+
+    @property
+    def _schema_read(self) -> Type[ItemRead]:
+        return ItemRead
 
     @property
     def _schema_update(self) -> Type[ItemUpdate]:
         return ItemUpdate
 
     @property
-    def _schema_read(self) -> Type[ItemRead]:
-        return ItemRead
+    def _table(self) -> Type[Item]:
+        return Item
 
-    async def _list_by_user(self, skip: int = 0, limit: int = 100, user_id: str = None) -> List[ItemRead]:
+    async def _list_by_user(
+        self, skip: int = 0, limit: int = PER_PAGE_MAX_COUNT, user_id: str = None
+    ) -> List[ItemRead]:
         if not user_id:
             return list()
         query = (

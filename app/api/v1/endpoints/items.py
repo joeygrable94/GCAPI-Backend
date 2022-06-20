@@ -51,11 +51,11 @@ async def items_read(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
         )
-    if not current_user.is_superuser or not current_user.id == item.user_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Not enough permissions"
-        )
-    return item
+    if current_user.is_superuser or current_user.id == item.user_id:
+        return item
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST, detail="Not enough permissions"
+    )
 
 
 @items_router.patch("/{id}", response_model=ItemRead, name="items:update_item")
@@ -72,12 +72,12 @@ async def items_update(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
         )
-    if not current_user.is_superuser or not current_user.id == item.user_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Not enough permissions"
-        )
-    item = await items_repo.update(entry_id=id, schema=item_in)
-    return item
+    if current_user.is_superuser or current_user.id == item.user_id:
+        item = await items_repo.update(entry_id=id, schema=item_in)
+        return item
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST, detail="Not enough permissions"
+    )
 
 
 @items_router.delete("/{id}", response_model=ItemRead, name="items:delete_item")
@@ -93,9 +93,9 @@ async def items_delete(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
         )
-    if not current_user.is_superuser or not current_user.id == item.user_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Not enough permissions"
-        )
-    item = await items_repo.delete(entry_id=id)
-    return item
+    if current_user.is_superuser or current_user.id == item.user_id:
+        item = await items_repo.delete(entry_id=id)
+        return item
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST, detail="Not enough permissions"
+    )

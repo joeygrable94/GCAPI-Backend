@@ -14,10 +14,10 @@ if TYPE_CHECKING:
 
 
 class User(UserTableBase, SQLAlchemyBaseUserTableUUID):
+
+    # relationships
+    clients = relationship("Client", secondary="user_client", back_populates="users")
     items = relationship("Item", backref=backref("user", lazy="noload"))
-    clients = relationship(
-        "Client", secondary="user_client", backref=backref("users", lazy="noload")
-    )
 
     @validates("email")
     def validate_email(self, k: Any, v: Any) -> Any:

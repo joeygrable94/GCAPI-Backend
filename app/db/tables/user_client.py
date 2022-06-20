@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 
 class UserClient(TableBase):
     __tablename__ = "user_client"
+
+    # relationships
     user_id = Column(CHAR(36), ForeignKey("user.id"), nullable=False)
     client_id = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
 

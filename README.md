@@ -1,18 +1,25 @@
+# Security
 
-openssl rand -hex 32
+## Generate Secrets
 
+`openssl rand -hex 32`
 
-# Alembic
-Alembic init app/db/migrations
+## Alembic for DB Migrations
 
-<!-- alembic.ini -->
-[alembic]
-script_location = app/db/migrations
+`alembic init app/db/migrations`
 
+    <!-- alembic.ini -->
+    [alembic]
+    script_location = app/db/migrations
 
-docker-compose run backend alembic revision --autogenerate
-docker-compose run backend alembic upgrade head
+`docker-compose run backend alembic revision --autogenerate`
 
+`docker-compose run backend alembic upgrade head`
 
-See SQLAlchemy Relationship Loading Techniques:
-- https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html
+## SQLAlchemy ORM
+
+- [SQLAlchemy Relationship Loading Techniques](https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html)
+
+## Testing
+
+- [PyTest Raising Exceptions](https://docs.pytest.org/en/6.2.x/assert.html)

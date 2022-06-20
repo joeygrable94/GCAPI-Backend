@@ -1,0 +1,21 @@
+from typing import TYPE_CHECKING
+
+from sqlalchemy import CHAR, Column, ForeignKey
+
+from app.db.tables.base import TableBase
+
+if TYPE_CHECKING:
+    from .client import Client  # noqa: F401
+    from .website import Website  # noqa: F401
+
+
+class ClientWebsite(TableBase):
+    __tablename__ = "client_website"
+    client_id = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
+    website_id = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
+
+    def __repr__(self) -> str:
+        repr_str = (
+            f"ClientWebsite({self.id}, [C({self.client_id}), W({self.website_id})])"
+        )
+        return repr_str

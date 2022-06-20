@@ -22,7 +22,7 @@ redis==4.3.1
 
 # database
 PyMySQL==1.0.2
-sqlalchemy[mypy]==1.4.36
+sqlalchemy[mypy]==1.4.37
 sqlalchemy-stubs==0.4
 sqlalchemy-utils==0.38.2
 databases==0.5.5
