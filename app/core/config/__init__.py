@@ -27,7 +27,9 @@ class Settings(BaseSettings):
         "SECRET_KEY", "54295fb3ad6577bf6ec55fc8a4e2ce86b4a490b5f1666f1e871e94855f6dc0a7"
     )
     # seconds * minutes * hours * days = total seconds
-    ACCESS_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1
+    ACCESS_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1 # = 3600
+    RESET_PASSWORD_TOKEN_AUDIENCE = "users:reset"
+    VERIFY_USER_TOKEN_AUDIENCE = "users:verify"
 
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     BACKEND_CORS_ORIGINS: Union[str, List[AnyHttpUrl]] = os.environ.get(

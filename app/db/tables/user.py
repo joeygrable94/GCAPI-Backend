@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, Any
 
-from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTableUUID
+from sqlalchemy import Column, String, Boolean
 from sqlalchemy.orm import backref, relationship, validates
 
 from app.core.config import settings
-from app.db.tables.base import UserTableBase
+from app.db.tables.base import TableBase
 from app.db.utilities import email_pattern
 
 if TYPE_CHECKING:
@@ -13,7 +13,13 @@ if TYPE_CHECKING:
     from .user_client import UserClient  # noqa: F401
 
 
-class User(UserTableBase, SQLAlchemyBaseUserTableUUID):
+class User(TableBase):
+    __tablename__ = "user"
+    email: str = Column(String(length=320), unique=True, index=True, nullable=False)
+    hashed_password: str = Column(String(length=1024), nullable=False)
+    is_active: bool = Column(Boolean, default=True, nullable=False)
+    is_superuser: bool = Column(Boolean, default=False, nullable=False)
+    is_verified: bool = Column(Boolean, default=False, nullable=False)
 
     # relationships
     clients = relationship("Client", secondary="user_client", back_populates="users")

@@ -1,8 +1,7 @@
 from typing import Generic, Optional, TypeVar
-import uuid
 
-# from fastapi_users import schemas
-from pydantic import UUID4, BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr
+
 from app.core.user_manager.models import ID
 
 
@@ -36,7 +35,7 @@ class BaseUser(Generic[ID], CreateUpdateDictModel):
         orm_mode = True
 
 
-class UserCreate(CreateUpdateDictModel):
+class BaseUserCreate(CreateUpdateDictModel):
     email: EmailStr
     password: str
     is_active: Optional[bool] = True
@@ -44,7 +43,7 @@ class UserCreate(CreateUpdateDictModel):
     is_verified: Optional[bool] = False
 
 
-class UserUpdate(CreateUpdateDictModel):
+class BaseUserUpdate(CreateUpdateDictModel):
     password: Optional[str]
     email: Optional[EmailStr]
     is_active: Optional[bool]
@@ -52,11 +51,6 @@ class UserUpdate(CreateUpdateDictModel):
     is_verified: Optional[bool]
 
 
-class UserRead(BaseUser[uuid.UUID]):
-    id: UUID4
-
-
 U = TypeVar("U", bound=BaseUser)
-UC = TypeVar("UC", bound=UserCreate)
-UU = TypeVar("UU", bound=UserUpdate)
-UR = TypeVar("UR", bound=UserRead)
+UC = TypeVar("UC", bound=BaseUserCreate)
+UU = TypeVar("UU", bound=BaseUserUpdate)

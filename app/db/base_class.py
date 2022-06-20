@@ -7,7 +7,8 @@ from sqlalchemy.orm import declarative_mixin  # type: ignore
 
 from app.db.utilities import _get_uuid
 
-Base = declarative_base(metadata=MetaData())
+metadata = MetaData()
+Base = declarative_base(metadata=metadata)
 
 
 @declarative_mixin
@@ -16,11 +17,5 @@ class BaseMixin:
     __table_args__ = {"mysql_engine": "InnoDB"}
     __mapper_args__ = {"always_refresh": True}
     id: Column[Any] = Field(default_factory=_get_uuid)
-    created_on: Column[Any]
-    updated_on: Column[Any]
-
-
-@declarative_mixin
-class UserBaseMixin:
     created_on: Column[Any]
     updated_on: Column[Any]

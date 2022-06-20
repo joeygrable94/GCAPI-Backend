@@ -1,16 +1,19 @@
 import re
+from time import timezone
 import uuid
 from datetime import datetime
 from typing import Any, Dict, Generator
 
 from pydantic import UUID4
 
+UUID_ID: UUID4 = uuid.UUID
+
 
 def _get_date() -> datetime:
-    return datetime.now()
+    return datetime.now(timezone.utc)
 
 
-def _get_uuid() -> UUID4:
+def _get_uuid() -> UUID_ID:
     return uuid.uuid4()
 
 

@@ -1,11 +1,11 @@
 from typing import AsyncGenerator
 
 from fastapi import Depends
-from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import async_session
 from app.db.tables import User
+from app.core.user_manager.manager import SQLAlchemyUserDatabase
 
 
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:

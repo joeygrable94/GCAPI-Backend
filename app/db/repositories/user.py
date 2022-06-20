@@ -8,15 +8,14 @@ from pydantic import UUID4
 from app.core.logger import logger
 from app.core.user_manager import UserManager
 from app.db.errors import DoesNotExist
-from app.db.repositories.base import BaseUserRepository
+from app.db.repositories.base import BaseRepository
 from app.db.schemas import UserCreate, UserRead, UserUpdate
-from app.db.schemas import ClientRead
 from app.db.tables import User
 
 from .base import PER_PAGE_MAX_COUNT, sql_select
 
 
-class UsersRepository(BaseUserRepository[UserCreate, UserUpdate, UserRead, User]):
+class UsersRepository(BaseRepository[UserCreate, UserUpdate, UserRead, User]):
     def __init__(self, session: AsyncSession, *args: Any, **kwargs: Any) -> None:
         self._db: AsyncSession = session
         self._user_db: SQLAlchemyUserDatabase = SQLAlchemyUserDatabase(session, User)
