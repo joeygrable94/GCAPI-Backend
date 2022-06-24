@@ -14,8 +14,9 @@ if TYPE_CHECKING:
 class WebsiteMap(TableBase):
     __tablename__ = "website_map"
     title = Column(String(255), nullable=False, default="unnamed")
-    filename = Column(String(120), nullable=False, default="sample.xml")
-    processed = Column(Boolean(), nullable=False, default=False)
+    file_name = Column(String(255), nullable=False, default="/")
+    file_path = Column(String(120), nullable=False, default="sample.xml")
+    is_processed = Column(Boolean(), nullable=False, default=False)
 
     # relationships
     website_id = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
