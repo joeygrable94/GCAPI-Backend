@@ -22,8 +22,8 @@ class GoogleCloudProperty(TableBase):
     project_name = Column(String(255), nullable=False)
     hashed_api_key = Column(String(64), nullable=False)
     hashed_project_id = Column(String(64), nullable=False)
-    hashed_service_account = Column(String(64), nullable=False)
     hashed_project_number = Column(String(64), nullable=False)
+    hashed_service_account = Column(String(64), nullable=False)
 
     # relationships
     client_id = Column(CHAR(36), ForeignKey("client.id"), nullable=False)

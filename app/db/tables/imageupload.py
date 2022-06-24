@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 class ImageUpload(TableBase):
     __tablename__ = "imageupload"
-    filename = Column(String(120), nullable=False, default="default.jpg")
-    filepath = Column(String(255), nullable=False, default="uploads/tmp")
+    file_name = Column(String(120), nullable=False, default="default.jpg")
+    file_path = Column(String(255), nullable=False, default="uploads/tmp")
     title = Column(String(255), nullable=True)
     caption = Column(String(255), nullable=True)
     is_geotagged = Column(Boolean(), nullable=True, default=False)
