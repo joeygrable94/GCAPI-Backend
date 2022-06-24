@@ -1,9 +1,9 @@
 from typing import Generic, Optional, TypeVar
 import uuid
 
-# from fastapi_users import schemas
-from pydantic import UUID4, BaseModel, EmailStr
-from app.core.user_manager.models import ID
+from pydantic import BaseModel, EmailStr
+from app.core.user_manager.types import ID
+from app.core.user_manager.generics import UUID_ID
 
 
 class CreateUpdateDictModel(BaseModel):
@@ -15,7 +15,6 @@ class CreateUpdateDictModel(BaseModel):
                 "is_superuser",
                 "is_active",
                 "is_verified",
-                "oauth_accounts",
             },
         )
 
@@ -53,7 +52,7 @@ class UserUpdate(CreateUpdateDictModel):
 
 
 class UserRead(BaseUser[uuid.UUID]):
-    id: UUID4
+    id: UUID_ID
 
 
 U = TypeVar("U", bound=BaseUser)

@@ -5,11 +5,10 @@ from typing import Callable, List, Optional, Sequence, Tuple, cast
 from fastapi import Depends, HTTPException, status
 from makefun import with_signature
 
-from fastapi_users import models
-from fastapi_users.authentication.backend import AuthenticationBackend
-from fastapi_users.authentication.strategy import Strategy
-from fastapi_users.manager import BaseUserManager, UserManagerDependency
-from fastapi_users.types import DependencyCallable
+from app.core.user_manager.types import UP, ID, DependencyCallable
+from app.core.user_manager.authentication.backend import AuthenticationBackend
+from app.core.user_manager.authentication.strategy import Strategy
+from app.core.user_manager.manager import UserManager, UserManagerDependency
 
 INVALID_CHARS_PATTERN = re.compile(r"[^0-9a-zA-Z_]")
 INVALID_LEADING_CHARS_PATTERN = re.compile(r"^[^a-zA-Z_]+")
@@ -51,7 +50,7 @@ class Authenticator:
     def __init__(
         self,
         backends: Sequence[AuthenticationBackend],
-        get_user_manager: UserManagerDependency[models.UP, models.ID],
+        get_user_manager: UserManagerDependency[UP, ID],
     ):
         self.backends = backends
         self.get_user_manager = get_user_manager
@@ -148,14 +147,14 @@ class Authenticator:
     async def _authenticate(
         self,
         *args,
-        user_manager: BaseUserManager[models.UP, models.ID],
+        user_manager: UserManager[UP, ID],
         optional: bool = False,
         active: bool = False,
         verified: bool = False,
         superuser: bool = False,
         **kwargs,
-    ) -> Tuple[Optional[models.UP], Optional[str]]:
-        user: Optional[models.UP] = None
+    ) -> Tuple[Optional[UP], Optional[str]]:
+        user: Optional[UP] = None
         token: Optional[str] = None
         enabled_backends: Sequence[AuthenticationBackend] = kwargs.get(
             "enabled_backends", self.backends
@@ -163,7 +162,7 @@ class Authenticator:
         for backend in self.backends:
             if backend in enabled_backends:
                 token = kwargs[name_to_variable_name(backend.name)]
-                strategy: Strategy[models.UP, models.ID] = kwargs[
+                strategy: Strategy[UP, ID] = kwargs[
                     name_to_strategy_variable_name(backend.name)
                 ]
                 if token is not None:

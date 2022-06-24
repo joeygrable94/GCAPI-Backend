@@ -1,6 +1,6 @@
 from typing import Dict
 
-from fastapi_users.exceptions import UserAlreadyExists
+from app.core.user_manager.exceptions import UserAlreadyExists
 from httpx import AsyncClient
 
 from app.core.config import settings

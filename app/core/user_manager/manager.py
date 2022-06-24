@@ -21,64 +21,10 @@ from app.core.user_manager.exceptions import (
 from app.core.config import settings
 from app.core.user_manager.jwt import SecretType, decode_jwt, generate_jwt
 from app.core.user_manager.password import PasswordHelper, PasswordHelperProtocol
-from app.core.user_manager.models import ID, UP
-from app.core.user_manager.schemas import UC, UU
+from app.core.user_manager.types import ID, UP, DependencyCallable
+from app.db.schemas.user import UC, UU
 
-
-class SQLAlchemyUserDatabase(Generic[UP, ID]):
-    """
-    Database adapter for SQLAlchemy.
-
-    :param session: SQLAlchemy session instance.
-    :param user_table: SQLAlchemy user model.
-    """
-
-    session: AsyncSession
-    user_table: Type[UP]
-
-    def __init__(
-        self,
-        session: AsyncSession,
-        user_table: Type[UP],
-    ):
-        self.session = session
-        self.user_table = user_table
-
-    async def _get_user(self, statement: Select) -> Optional[UP]:
-        results = await self.session.execute(statement)
-        user = results.first()
-        if user is None:
-            return None
-        return user[0]
-
-    async def get(self, id: ID) -> Optional[UP]:
-        statement = select(self.user_table).where(self.user_table.id == id)
-        return await self._get_user(statement)
-
-    async def get_by_email(self, email: str) -> Optional[UP]:
-        statement = select(self.user_table).where(
-            func.lower(self.user_table.email) == func.lower(email)
-        )
-        return await self._get_user(statement)
-
-    async def create(self, create_dict: Dict[str, Any]) -> UP:
-        user = self.user_table(**create_dict)
-        self.session.add(user)
-        await self.session.commit()
-        await self.session.refresh(user)
-        return user
-
-    async def update(self, user: UP, update_dict: Dict[str, Any]) -> UP:
-        for key, value in update_dict.items():
-            setattr(user, key, value)
-        self.session.add(user)
-        await self.session.commit()
-        await self.session.refresh(user)
-        return user
-
-    async def delete(self, user: UP) -> None:
-        await self.session.delete(user)
-        await self.session.commit()
+from app.core.user_manager.sqlalchemy_adapter import SQLAlchemyUserDatabase
 
 
 class UserManager(Generic[UP, ID]):
@@ -532,3 +478,6 @@ class UserManager(Generic[UP, ID]):
             else:
                 validated_update_dict[field] = value
         return await self.user_db.update(user, validated_update_dict)
+
+
+UserManagerDependency = DependencyCallable[UserManager[UP, ID]]

@@ -1,5 +1,4 @@
 import re
-from time import timezone
 import uuid
 from datetime import datetime
 from typing import Any, Dict, Generator
@@ -10,7 +9,7 @@ UUID_ID: UUID4 = uuid.UUID
 
 
 def _get_date() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now()
 
 
 def _get_uuid() -> UUID_ID:

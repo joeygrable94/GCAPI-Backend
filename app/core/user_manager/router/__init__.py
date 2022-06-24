@@ -1,15 +1,6 @@
-from fastapi_users.router.auth import get_auth_router
-from fastapi_users.router.common import ErrorCode
-from fastapi_users.router.register import get_register_router
-from fastapi_users.router.reset import get_reset_password_router
-from fastapi_users.router.users import get_users_router
-from fastapi_users.router.verify import get_verify_router
-
-__all__ = [
-    "ErrorCode",
-    "get_auth_router",
-    "get_register_router",
-    "get_reset_password_router",
-    "get_users_router",
-    "get_verify_router",
-]
+from app.core.user_manager.router.auth import get_auth_router
+from app.core.user_manager.router.common import ErrorCode
+from app.core.user_manager.router.register import get_register_router
+from app.core.user_manager.router.reset import get_reset_password_router
+from app.core.user_manager.router.users import get_users_router
+from app.core.user_manager.router.verify import get_verify_router

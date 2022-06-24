@@ -1,8 +1,7 @@
 from typing import Any, List
 
 from fastapi import APIRouter, Depends
-from fastapi_users_db_sqlalchemy import AsyncSession
-from pydantic import UUID4
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db
 from app.db.repositories.user import UsersRepository

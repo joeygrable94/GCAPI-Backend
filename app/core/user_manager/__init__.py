@@ -1,18 +1,26 @@
 import uuid
-from typing import AsyncGenerator, Optional
+from typing import AsyncGenerator
 
-from fastapi import Depends, Request
-from fastapi_users import FastAPIUsers
+from fastapi import Depends
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.user_manager.base import FastAPIUsers
 from app.core.user_manager.authentication import (
     AuthenticationBackend,
     BearerTransport,
     JWTStrategy
 )
 
-from app.api.deps import get_user_db
+from app.api.deps import get_async_db
 from app.core.config import settings
 from app.db.tables import User
-from app.core.user_manager.manager import SQLAlchemyUserDatabase, UserManager
+from app.core.user_manager.manager import UserManager
+from app.core.user_manager.sqlalchemy_adapter import SQLAlchemyUserDatabase
+
+
+async def get_user_db(session: AsyncSession = Depends(get_async_db)) -> AsyncGenerator:
+    yield SQLAlchemyUserDatabase(session, User)
+
 
 async def get_user_manager(
     user_db: SQLAlchemyUserDatabase = Depends(get_user_db),

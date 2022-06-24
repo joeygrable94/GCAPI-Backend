@@ -3,7 +3,7 @@ from typing import Generic, List, Optional
 import jwt
 
 from app.core.user_manager.exceptions import UserNotExists, InvalidID
-from app.core.user_manager.models import UP, ID
+from app.core.user_manager.types import UP, ID
 from app.core.user_manager.authentication.strategy.base import (
     Strategy,
     StrategyDestroyNotSupportedError,

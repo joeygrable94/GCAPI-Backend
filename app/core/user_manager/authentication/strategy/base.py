@@ -1,6 +1,6 @@
 from typing import Generic, Optional, Protocol  # pragma: no cover
 
-from app.core.user_manager.models import UP, ID
+from app.core.user_manager.types import UP, ID
 from app.core.user_manager.manager import UserManager
 
 

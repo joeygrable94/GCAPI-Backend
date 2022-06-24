@@ -6,8 +6,7 @@ from sqlalchemy import select as sql_select
 from app.db.repositories.base import BaseRepository
 from app.db.schemas import ClientCreate, ClientRead, ClientUpdate
 from app.db.tables import Client
-
-PER_PAGE_MAX_COUNT: int = 100
+from .base import PER_PAGE_MAX_COUNT
 
 
 class ClientsRepository(BaseRepository[ClientCreate, ClientRead, ClientUpdate, Client]):

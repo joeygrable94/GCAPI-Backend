@@ -5,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import async_session
 from app.db.tables import User
-from app.core.user_manager.manager import SQLAlchemyUserDatabase
 
 
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
@@ -13,6 +12,3 @@ async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
         yield session
         # await session.commit()
 
-
-async def get_user_db(session: AsyncSession = Depends(get_async_db)) -> AsyncGenerator:
-    yield SQLAlchemyUserDatabase(session, User)

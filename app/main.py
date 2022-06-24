@@ -67,12 +67,14 @@ def configure_static(app: FastAPI) -> None:
 
 def configure_events(app: FastAPI) -> None:
     from app.db.commands import (check_db_connected, check_db_disconnected,
-                                 create_db_and_tables, create_initial_data)
+                                 drop_db_and_tables, create_db_and_tables,
+                                 create_initial_data)
 
     # startup actions
     @app.on_event("startup")
     async def on_startup() -> None:
         await check_db_connected()
+        # await drop_db_and_tables()
         # await create_db_and_tables()
         # await create_initial_data()
 

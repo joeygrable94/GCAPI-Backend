@@ -1,15 +1,16 @@
 from typing import Any, List, Type
 
-from fastapi_users import schemas
-from fastapi_users.exceptions import UserAlreadyExists
-from fastapi_users_db_sqlalchemy import AsyncSession, SQLAlchemyUserDatabase
+from app.core.user_manager.exceptions import UserAlreadyExists
+
+from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import UUID4
 
 from app.core.logger import logger
 from app.core.user_manager import UserManager
+from app.core.user_manager.sqlalchemy_adapter import SQLAlchemyUserDatabase
 from app.db.errors import DoesNotExist
 from app.db.repositories.base import BaseRepository
-from app.db.schemas import UserCreate, UserRead, UserUpdate
+from app.db.schemas.user import UC, UserCreate, UserRead, UserUpdate
 from app.db.tables import User
 
 from .base import PER_PAGE_MAX_COUNT, sql_select
@@ -88,7 +89,7 @@ class UsersRepository(BaseRepository[UserCreate, UserUpdate, UserRead, User]):
         except DoesNotExist:
             logger.debug(f"<User email={user_id}> does not exist")
 
-    async def verify_password(self, password: str, check_user: schemas.UC) -> bool:
+    async def verify_password(self, password: str, check_user: UC) -> bool:
         try:
             is_valid = await self._user_manager.validate_password(
                 password=password, user=check_user
