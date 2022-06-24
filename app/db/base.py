@@ -1,5 +1,37 @@
 from app.db.base_class import Base  # noqa: F401
-from app.db.tables import Client  # noqa: F401
-from app.db.tables import Item  # noqa: F401
-from app.db.tables import User  # noqa: F401
-from app.db.tables import UserClient  # noqa: F401
+from app.db.tables import (
+    Client,  # noqa: F401
+    ClientWebsite,  # noqa: F401
+    GCFT,  # noqa: F401
+    GCFTSnap,  # noqa: F401
+    GCFTSnapActiveDuration,  # noqa: F401
+    GCFTSnapBrowserReport,  # noqa: F401
+    GCFTSnapHotspotClick,  # noqa: F401
+    GCFTSnapTrafficSource,  # noqa: F401
+    GCFTSnapView,  # noqa: F401
+    GeoCoord,  # noqa: F401
+    GoogleAnalytics4Property,  # noqa: F401
+    GoogleAnalytics4Stream,  # noqa: F401
+    GoogleCloudProperty,  # noqa: F401
+    GoogleSearchConsoleProperty,  # noqa: F401
+    GoogleSearchConsoleCountry,  # noqa: F401
+    GoogleSearchConsoleDevice,  # noqa: F401
+    GoogleSearchConsolePage,  # noqa: F401
+    GoogleSearchConsoleQuery,  # noqa: F401
+    GoogleSearchConsoleSearchAppearance,  # noqa: F401
+    GoogleUniversalAnalyticsProperty,  # noqa: F401
+    GoogleUniversalAnalyticsView,  # noqa: F401
+    ImageUpload,  # noqa: F401
+    IpAddress,  # noqa: F401
+    Item,  # noqa: F401
+    Note,  # noqa: F401
+    SharpSpring,  # noqa: F401
+    User,  # noqa: F401
+    UserClient,  # noqa: F401
+    UserIpAddress,  # noqa: F401
+    Website,  # noqa: F401
+    WebsiteKeywordCorpus,  # noqa: F401
+    WebsiteMap,  # noqa: F401
+    WebsitePage,  # noqa: F401
+    WebsitePageSpeedInsights,  # noqa: F401
+)
