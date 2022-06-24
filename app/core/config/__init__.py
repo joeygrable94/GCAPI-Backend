@@ -57,7 +57,7 @@ class Settings(BaseSettings):
     DATABASE_USER: str = os.environ.get("DATABASE_USER", "")
     DATABASE_PASSWORD: str = os.environ.get("DATABASE_PASSWORD", "")
     DATABASE_NAME: str = os.environ.get("DATABASE_NAME", "")
-    DATABASE_URL: str = os.environ.get("DATABASE_URI", "sqlite:///./app.db")
+    DATABASE_URI: str = os.environ.get("DATABASE_URI", "sqlite:///./app.db")
     ASYNC_DATABASE_URI: str = os.environ.get(
         "ASYNC_DATABASE_URI", "sqlite+aiosqlite:///./app.db"
     )

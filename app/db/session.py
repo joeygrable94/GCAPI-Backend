@@ -6,7 +6,7 @@ from app.core.config import settings
 
 # Session
 engine = create_engine(
-    settings.DATABASE_URL, pool_pre_ping=True, echo=settings.DB_ECHO_LOG
+    settings.DATABASE_URI, pool_pre_ping=True, echo=settings.DB_ECHO_LOG
 )
 
 session = sessionmaker(autocommit=False, autoflush=False, bind=engine)

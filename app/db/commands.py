@@ -8,8 +8,8 @@ from app.db.session import async_engine
 
 async def check_db_connected() -> None:
     try:
-        if not str(settings.DATABASE_URL).__contains__("sqlite"):
-            database = databases.Database(settings.DATABASE_URL)
+        if not str(settings.DATABASE_URI).__contains__("sqlite"):
+            database = databases.Database(settings.DATABASE_URI)
             if not database.is_connected:
                 await database.connect()
                 await database.execute("SELECT 1")
@@ -22,8 +22,8 @@ async def check_db_connected() -> None:
 
 async def check_db_disconnected() -> None:
     try:
-        if not str(settings.DATABASE_URL).__contains__("sqlite"):
-            database = databases.Database(settings.DATABASE_URL)
+        if not str(settings.DATABASE_URI).__contains__("sqlite"):
+            database = databases.Database(settings.DATABASE_URI)
             if database.is_connected:
                 await database.disconnect()
                 logger.info("+ ASYNC F(X) --> MYSQL DISCONNECTED!")
