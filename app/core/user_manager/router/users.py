@@ -52,7 +52,7 @@ def get_users_router(
     )
     async def me(
         user: UP = Depends(get_current_active_user),
-    ):
+    ) -> Any:
         return user_schema.from_orm(user)
 
     @router.patch(
@@ -96,7 +96,7 @@ def get_users_router(
         user_update: user_update_schema,  # type: ignore
         user: UP = Depends(get_current_active_user),
         user_manager: UserManager[UP, ID] = Depends(get_user_manager),
-    ):
+    ) -> Any:
         try:
             user = await user_manager.update(
                 user_update, user, safe=True, request=request
@@ -133,7 +133,7 @@ def get_users_router(
             },
         },
     )
-    async def get_user(user=Depends(get_user_or_404)):
+    async def get_user(user: Any = Depends(get_user_or_404)) -> Any:
         return user_schema.from_orm(user)
 
     @router.patch(
@@ -181,9 +181,9 @@ def get_users_router(
     async def update_user(
         user_update: user_update_schema,  # type: ignore
         request: Request,
-        user=Depends(get_user_or_404),
+        user: UP = Depends(get_user_or_404),
         user_manager: UserManager[UP, ID] = Depends(get_user_manager),
-    ):
+    ) -> Any:
         try:
             user = await user_manager.update(
                 user_update, user, safe=False, request=request
@@ -222,9 +222,9 @@ def get_users_router(
         },
     )
     async def delete_user(
-        user=Depends(get_user_or_404),
+        user: Any = Depends(get_user_or_404),
         user_manager: UserManager[UP, ID] = Depends(get_user_manager),
-    ):
+    ) -> Any:
         await user_manager.delete(user)
         return None
 

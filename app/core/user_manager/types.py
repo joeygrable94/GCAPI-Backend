@@ -27,7 +27,7 @@ class UserProtocol(Protocol[ID]):
     is_superuser: bool
     is_verified: bool
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         ...  # pragma: no cover
 
 

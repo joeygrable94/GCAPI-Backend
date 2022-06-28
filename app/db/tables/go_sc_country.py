@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import (CHAR, Column, DateTime, Float, ForeignKey, Integer,
                         String)
@@ -15,8 +15,8 @@ class GoogleSearchConsoleCountry(TableBase):
     keys: Column[str] = Column(String(10), nullable=False)
     clicks: Column[int] = Column(Integer, nullable=False)
     impressions: Column[int] = Column(Integer, nullable=False)
-    ctr: Column[float] = Column(Float(20), nullable=False)
-    position: Column[float] = Column(Float(20), nullable=False)
+    ctr: Column[Any] = Column(Float(20), nullable=False)
+    position: Column[Any] = Column(Float(20), nullable=False)
     date_end: Column[datetime] = Column(DateTime(timezone=True), nullable=False)
     date_start: Column[datetime] = Column(DateTime(timezone=True), nullable=False)
 

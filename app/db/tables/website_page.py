@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class WebsitePage(TableBase):
     __tablename__: str = "website_page"
     path: Column[str] = Column(Text, nullable=False, default="/")
-    status: Column[int] = Column(String(24), nullable=False, default=200)
+    status: Column[str] = Column(String(24), nullable=False, default=200)
 
     # relationships
     website_id: Column[str] = Column(CHAR(36), ForeignKey("website.id"), nullable=False)

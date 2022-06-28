@@ -121,5 +121,5 @@ class Settings(BaseSettings):
         case_sensitive: bool = True
 
 
-mode: str = os.environ.get("APP_MODE")
+mode: Optional[str] = os.environ.get("APP_MODE")
 settings: Settings = Settings()

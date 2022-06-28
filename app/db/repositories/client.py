@@ -1,4 +1,4 @@
-from typing import Any, List, Type
+from typing import Any, List, Optional, Type, Union
 
 from pydantic import UUID4
 
@@ -11,16 +11,8 @@ from .base import PER_PAGE_MAX_COUNT, sql_select
 
 class ClientsRepository(BaseRepository[ClientCreate, ClientRead, ClientUpdate, Client]):
     @property
-    def _schema_create(self) -> Type[ClientCreate]:
-        return ClientCreate
-
-    @property
     def _schema_read(self) -> Type[ClientRead]:
         return ClientRead
-
-    @property
-    def _schema_update(self) -> Type[ClientUpdate]:
-        return ClientUpdate
 
     @property
     def _table(self) -> Type[Client]:
@@ -28,20 +20,22 @@ class ClientsRepository(BaseRepository[ClientCreate, ClientRead, ClientUpdate, C
 
     async def _list_by_user(
         self, skip: int = 0, limit: int = PER_PAGE_MAX_COUNT, user_id: UUID4 = None
-    ) -> List[ClientRead]:
+    ) -> Optional[Union[List[ClientRead], List]]:
         if not user_id:
             return list()
         query: Any = (
-            sql_select(self._table)
+            sql_select(self._table)  # type: ignore
             .where(self._table.user_id == user_id)
             .offset(skip)
-            .limit(limit)  # type: ignore
+            .limit(limit)
         )
         result: Any = await self._db.execute(query)
         data: Any = result.scalars().all()
         return list(data)
 
-    async def list(self, page: int = 1, user_id: UUID4 = None) -> List[ClientRead]:
+    async def list(
+        self, page: int = 1, user_id: UUID4 = None
+    ) -> Optional[Union[List[ClientRead], List]]:
         skip, limit = self.paginate(page)
         if user_id:
             return await self._list_by_user(skip=skip, limit=limit, user_id=user_id)

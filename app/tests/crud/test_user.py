@@ -1,7 +1,6 @@
 from typing import Any
 
 import pytest
-from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.user import UsersRepository
@@ -15,7 +14,7 @@ async def test_create_user(
     db_session: AsyncSession,
 ) -> None:
     user_repo: UsersRepository = UsersRepository(session=db_session)
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     user: Any = await user_repo.create(
         schema=UserCreate(email=username, password=password)
@@ -33,7 +32,7 @@ async def test_read_user(
     db_session: AsyncSession,
 ) -> None:
     user_repo: UsersRepository = UsersRepository(session=db_session)
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     user: Any = await user_repo.create(
         UserCreate(email=username, password=password, is_superuser=True)
@@ -49,7 +48,7 @@ async def test_update_user(
     db_session: AsyncSession,
 ) -> None:
     user_repo: UsersRepository = UsersRepository(session=db_session)
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     user_in = UserCreate(email=username, password=password, is_superuser=True)
     user: Any = await user_repo.create(schema=user_in)
@@ -73,7 +72,7 @@ async def test_delete_user(
     db_session: AsyncSession,
 ) -> None:
     user_repo: UsersRepository = UsersRepository(session=db_session)
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     user: Any = await user_repo.create(
         schema=UserCreate(email=username, password=password, is_superuser=True)
@@ -87,7 +86,7 @@ async def test_check_if_user_is_active(
     db_session: AsyncSession,
 ) -> None:
     user_repo: UsersRepository = UsersRepository(session=db_session)
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     user: Any = await user_repo.create(
         schema=UserCreate(email=username, password=password)
@@ -99,7 +98,7 @@ async def test_check_if_user_is_active_inactive(
     db_session: AsyncSession,
 ) -> None:
     user_repo: UsersRepository = UsersRepository(session=db_session)
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     user: Any = await user_repo.create(
         schema=UserCreate(email=username, password=password, is_active=False)
@@ -111,7 +110,7 @@ async def test_check_if_user_is_superuser(
     db_session: AsyncSession,
 ) -> None:
     user_repo: UsersRepository = UsersRepository(session=db_session)
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     user: Any = await user_repo.create(
         UserCreate(email=username, password=password, is_superuser=True)
@@ -123,7 +122,7 @@ async def test_check_if_user_is_superuser_normal_user(
     db_session: AsyncSession,
 ) -> None:
     user_repo: UsersRepository = UsersRepository(session=db_session)
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     user: Any = await user_repo.create(
         schema=UserCreate(email=username, password=password)

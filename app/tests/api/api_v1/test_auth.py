@@ -2,7 +2,6 @@ from typing import Any, Dict, Optional
 
 import pytest
 from httpx import AsyncClient, Response
-from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -65,7 +64,7 @@ async def test_auth_register_user_as_superuser(
     superuser_token_headers: Dict[str, str],
     db_session: AsyncSession,
 ) -> None:
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     data: Dict[str, str] = {"email": username, "password": password}
     response: Response = await client.post(
@@ -84,7 +83,7 @@ async def test_auth_register_user_as_superuser(
 async def test_auth_register_user_as_testuser(
     client: AsyncClient, testuser_token_headers: Dict[str, str]
 ) -> None:
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     data: Dict[str, str] = {"email": username, "password": password}
     response: Response = await client.post(
@@ -100,7 +99,7 @@ async def test_auth_register_user_as_superuser_existing_username(
     superuser_token_headers: Dict[str, str],
     db_session: AsyncSession,
 ) -> None:
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     users_repo: UsersRepository = UsersRepository(session=db_session)
     user: Optional[UserRead] = await users_repo.create(  # noqa: F841

@@ -2,7 +2,6 @@ from typing import Any, Dict, Optional
 
 import pytest
 from httpx import AsyncClient, Response
-from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -20,12 +19,12 @@ async def test_list_users_as_superuser(
     db_session: AsyncSession,
 ) -> None:
     users_repo: UsersRepository = UsersRepository(session=db_session)
-    username_1: EmailStr = random_email()
+    username_1: str = random_email()
     password_1: str = random_lower_string()
     user_1: Any = await users_repo.create(
         UserCreate(email=username_1, password=password_1)
     )
-    username_2: EmailStr = random_email()
+    username_2: str = random_email()
     password_2: str = random_lower_string()
     user_2: Any = await users_repo.create(
         UserCreate(email=username_2, password=password_2)
@@ -48,12 +47,12 @@ async def test_list_users_as_testuser(
     db_session: AsyncSession,
 ) -> None:
     users_repo: UsersRepository = UsersRepository(session=db_session)
-    username_1: EmailStr = random_email()
+    username_1: str = random_email()
     password_1: str = random_lower_string()
     user_1: Optional[UserRead] = await users_repo.create(  # noqa: F841
         UserCreate(email=username_1, password=password_1)
     )
-    username_2: EmailStr = random_email()
+    username_2: str = random_email()
     password_2: str = random_lower_string()
     user_2: Optional[UserRead] = await users_repo.create(  # noqa: F841
         UserCreate(email=username_2, password=password_2)
@@ -123,7 +122,7 @@ async def test_get_user_by_id_as_superuser(
     superuser_token_headers: Dict[str, str],
     db_session: AsyncSession,
 ) -> None:
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     users_repo: UsersRepository = UsersRepository(session=db_session)
     user: Any = await users_repo.create(UserCreate(email=username, password=password))
@@ -144,7 +143,7 @@ async def test_get_user_by_id_as_testuser(
     testuser_token_headers: Dict[str, str],
     db_session: AsyncSession,
 ) -> None:
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     users_repo: UsersRepository = UsersRepository(session=db_session)
     user: Any = await users_repo.create(UserCreate(email=username, password=password))
@@ -162,7 +161,7 @@ async def test_delete_user_by_id_as_superuser(
     superuser_token_headers: Dict[str, str],
     db_session: AsyncSession,
 ) -> None:
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     users_repo: UsersRepository = UsersRepository(session=db_session)
     user: Any = await users_repo.create(UserCreate(email=username, password=password))
@@ -181,7 +180,7 @@ async def test_delete_user_by_id_as_testuser(
     testuser_token_headers: Dict[str, str],
     db_session: AsyncSession,
 ) -> None:
-    username: EmailStr = random_email()
+    username: str = random_email()
     password: str = random_lower_string()
     users_repo: UsersRepository = UsersRepository(session=db_session)
     user: Any = await users_repo.create(UserCreate(email=username, password=password))

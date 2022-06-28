@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Any, Type
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
@@ -55,7 +55,7 @@ def get_register_router(
         request: Request,
         user_create: user_create_schema,  # type: ignore
         user_manager: UserManager[UP, ID] = Depends(get_user_manager),
-    ):
+    ) -> Any:
         try:
             created_user = await user_manager.create(
                 user_create, safe=True, request=request

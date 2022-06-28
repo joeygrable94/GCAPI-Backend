@@ -1,18 +1,18 @@
 import abc
-from typing import Any, Dict, Generic, List, Type, TypeVar
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
 from pydantic import UUID4
-from sqlalchemy import Table
 from sqlalchemy import select as sql_select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.schemas.base import BaseSchema
+from app.db.tables.base import TableBase
 from app.db.utilities import _get_uuid
 
 SCHEMA_CREATE = TypeVar("SCHEMA_CREATE", bound=BaseSchema)
 SCHEMA_READ = TypeVar("SCHEMA_READ", bound=BaseSchema)
 SCHEMA_UPDATE = TypeVar("SCHEMA_UPDATE", bound=BaseSchema)
-TABLE = TypeVar("TABLE", bound=Table)
+TABLE = TypeVar("TABLE", bound=TableBase)
 PER_PAGE_MAX_COUNT: int = 100
 
 
@@ -24,17 +24,7 @@ class BaseRepository(
 
     @property
     @abc.abstractmethod
-    def _schema_create(self) -> Type[SCHEMA_CREATE]:
-        pass
-
-    @property
-    @abc.abstractmethod
-    def _schema_read(self) -> Type[SCHEMA_READ]:
-        pass
-
-    @property
-    @abc.abstractmethod
-    def _schema_update(self) -> Type[SCHEMA_UPDATE]:
+    def _schema_read(self) -> Any:
         pass
 
     @property
@@ -80,32 +70,38 @@ class BaseRepository(
 
     async def _list(
         self, skip: int = 0, limit: int = PER_PAGE_MAX_COUNT
-    ) -> List[SCHEMA_READ]:
-        query: Any = sql_select(self._table).offset(skip).limit(limit)
+    ) -> Optional[Union[List[SCHEMA_READ], List]]:
+        query: Any = sql_select(self._table).offset(skip).limit(limit)  # type: ignore
         result: Any = await self._db.execute(query)
         data: Any = result.scalars().all()
         return list(data)
 
-    async def list(self, page: int = 1) -> List[SCHEMA_READ]:
+    async def list(self, page: int = 1) -> Optional[Union[List[SCHEMA_READ], List]]:
         skip, limit = self.paginate(page)
         return await self._list(skip=skip, limit=limit)
 
-    async def create(self, schema: SCHEMA_CREATE) -> SCHEMA_READ:
+    async def create(self, schema: Union[SCHEMA_CREATE, Any]) -> SCHEMA_READ:
         entry: Any = self._table(id=self.generate_uuid(), **schema.dict())
         self._db.add(entry)
         await self._db.commit()
         return self._schema_read.from_orm(entry)
 
-    async def read(self, entry_id: UUID4) -> SCHEMA_READ:
-        query: Any = sql_select(self._table).where(self._table.id == entry_id)
+    async def read(self, entry_id: UUID4) -> Optional[SCHEMA_READ]:
+        query: Any = sql_select(self._table).where(  # type: ignore
+            self._table.id == entry_id
+        )
         result: Any = await self._db.execute(query)
         entry: Any = result.scalars().first()
         if not entry:
             return None
         return self._schema_read.from_orm(entry)
 
-    async def update(self, entry_id: UUID4, schema: SCHEMA_UPDATE) -> SCHEMA_READ:
-        query: Any = sql_select(self._table).where(self._table.id == entry_id)
+    async def update(
+        self, entry_id: UUID4, schema: Union[SCHEMA_UPDATE, Any]
+    ) -> Optional[SCHEMA_READ]:
+        query: Any = sql_select(self._table).where(  # type: ignore
+            self._table.id == entry_id
+        )
         result: Any = await self._db.execute(query)
         entry: Any = result.scalars().first()
         if not entry:
@@ -116,7 +112,7 @@ class BaseRepository(
         await self._db.refresh(entry)
         return self._schema_read.from_orm(entry)
 
-    async def delete(self, entry_id: UUID4) -> SCHEMA_READ:
+    async def delete(self, entry_id: UUID4) -> Optional[SCHEMA_READ]:
         entry: Any = await self._db.get(self._table, entry_id)
         if not entry:
             return None

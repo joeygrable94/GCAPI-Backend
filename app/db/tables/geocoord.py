@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import Column, Float, String
 
@@ -16,10 +16,10 @@ class GeoCoord(TableBase):
         default="135-145, South Olive Street, Orange, \
             Orange County, California, 92866, United States",
     )
-    latitude: Column[float] = Column(
+    latitude: Column[Any] = Column(
         Float(18), nullable=False, default=33.7870144761984600
     )
-    longitude: Column[float] = Column(
+    longitude: Column[Any] = Column(
         Float(18), nullable=False, default=-117.853817613489810
     )
 

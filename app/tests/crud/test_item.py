@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -53,7 +53,7 @@ async def test_get_item(
     item: ItemRead = await item_repo.create(
         ItemCreate(title=title, content=content, user_id=user.id)
     )
-    stored_item: ItemRead = await item_repo.read(entry_id=item.id)
+    stored_item: Optional[ItemRead] = await item_repo.read(entry_id=item.id)
     assert stored_item
     assert item.id == stored_item.id
     assert item.title == stored_item.title
@@ -73,9 +73,11 @@ async def test_update_item(
         ItemCreate(title=title, content=content, user_id=user.id)
     )
     content2: str = random_lower_string()
-    item2: ItemRead = await item_repo.update(
+    item2: Optional[ItemRead] = await item_repo.update(
         entry_id=item.id, schema=ItemUpdate(content=content2)
     )
+    assert item is not None
+    assert item2 is not None
     assert item.id == item2.id
     assert item.title == item2.title
     assert item2.content == content2

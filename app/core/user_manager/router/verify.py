@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Any, Type
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
 from pydantic import EmailStr
@@ -15,7 +15,7 @@ from app.db.schemas.user import U
 def get_verify_router(
     get_user_manager: UserManagerDependency[UP, ID],
     user_schema: Type[U],
-):
+) -> APIRouter:
     router = APIRouter()
 
     @router.post(
@@ -27,7 +27,7 @@ def get_verify_router(
         request: Request,
         email: EmailStr = Body(..., embed=True),
         user_manager: UserManager[UP, ID] = Depends(get_user_manager),
-    ):
+    ) -> Any:
         try:
             user = await user_manager.get_by_email(email)
             await user_manager.request_verify(user, request)
@@ -71,7 +71,7 @@ def get_verify_router(
         request: Request,
         token: str = Body(..., embed=True),
         user_manager: UserManager[UP, ID] = Depends(get_user_manager),
-    ):
+    ) -> Any:
         try:
             return await user_manager.verify(token, request)
         except (InvalidVerifyToken, UserNotExists):

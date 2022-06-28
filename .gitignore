@@ -38,3 +38,6 @@ wait-for-it.sh
 
 # examples
 ex_*
+
+# DB migrations
+app/**/migrations/versions

@@ -1,10 +1,10 @@
 from typing import Any, Dict, Generic, Optional, Type
 
-from sqlalchemy import func, select
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql import Select
 
 from app.core.user_manager.types import ID, UP
+from app.db.repositories.base import sql_select
 
 
 class SQLAlchemyUserDatabase(Generic[UP, ID]):
@@ -26,7 +26,7 @@ class SQLAlchemyUserDatabase(Generic[UP, ID]):
         self.session: Any = session
         self.user_table: Any = user_table
 
-    async def _get_user(self, statement: Select) -> Optional[UP]:
+    async def _get_user(self, statement: Any) -> Optional[UP]:
         results: Any = await self.session.execute(statement)
         user: Any = results.first()
         if user is None:
@@ -34,11 +34,13 @@ class SQLAlchemyUserDatabase(Generic[UP, ID]):
         return user[0]
 
     async def get(self, id: ID) -> Optional[UP]:
-        statement: Any = select(self.user_table).where(self.user_table.id == id)
+        statement: Any = sql_select(self.user_table).where(  # type: ignore
+            self.user_table.id == id
+        )
         return await self._get_user(statement)
 
     async def get_by_email(self, email: str) -> Optional[UP]:
-        statement: Any = select(self.user_table).where(
+        statement: Any = sql_select(self.user_table).where(  # type: ignore
             func.lower(self.user_table.email) == func.lower(email)
         )
         return await self._get_user(statement)

@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Optional, Union
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import UUID4
@@ -18,13 +18,17 @@ async def clients_list(
     page: int = 1,
     user_id: UUID4 = None,
     current_user: UserRead = Depends(current_active_user),
-) -> List[ClientRead]:
+) -> Union[List[ClientRead], List[Any], None]:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
     if user_id:
-        clients: List[ClientRead] = await clients_repo.list(page=page, user_id=user_id)
+        clients: Union[List[ClientRead], List[Any], None] = await clients_repo.list(
+            page=page, user_id=user_id
+        )
     else:
         clients = await clients_repo.list(page=page)
-    return clients
+    if clients:
+        return clients
+    return list()
 
 
 @clients_router.post("/", response_model=ClientRead, name="clients:create_client")
@@ -47,7 +51,7 @@ async def clients_read(
     current_user: UserRead = Depends(current_active_user),
 ) -> ClientRead:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
-    client: ClientRead = await clients_repo.read(entry_id=id)
+    client: Optional[ClientRead] = await clients_repo.read(entry_id=id)
     if not client:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Client not found"
@@ -64,7 +68,7 @@ async def clients_update(
     current_user: UserRead = Depends(current_active_user),
 ) -> Any:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
-    client: ClientRead = await clients_repo.read(entry_id=id)
+    client: Optional[ClientRead] = await clients_repo.read(entry_id=id)
     if not client:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Client not found"
@@ -81,7 +85,7 @@ async def clients_delete(
     current_user: UserRead = Depends(current_active_user),
 ) -> Any:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
-    client: ClientRead = await clients_repo.read(entry_id=id)
+    client: Optional[ClientRead] = await clients_repo.read(entry_id=id)
     if not client:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Client not found"

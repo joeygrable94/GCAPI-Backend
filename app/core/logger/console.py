@@ -62,17 +62,17 @@ class AnsiColorTheme(ColorTheme):
             before: Any = getattr(self, s)
             after: Any = self.style_normal
         else:
-            before: Any = ""
-            after: Any = ""
+            before = ""
+            after = ""
 
         def do_style(
             val: Any, fmt: Any = None, before: Any = before, after: Any = after
         ) -> Any:
             if fmt is None:
                 if type(val) is not str:
-                    val: Any = str(val)
+                    val = str(val)
             else:
-                val: Any = fmt % val
+                val = fmt % val
             return before + val + after
 
         return do_style

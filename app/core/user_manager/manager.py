@@ -65,9 +65,9 @@ class UserManager(Generic[UP, ID]):
         :return: An ID object.
         """
         if isinstance(value, uuid.UUID):
-            return value
+            return value  # type: ignore
         try:
-            return uuid.UUID(value)
+            return uuid.UUID(value)  # type: ignore
         except ValueError as e:
             raise InvalidID() from e
 

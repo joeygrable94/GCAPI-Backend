@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import CHAR, Column, Float, ForeignKey
 
@@ -11,20 +11,20 @@ if TYPE_CHECKING:
 
 class WebsitePageSpeedInsights(TableBase):
     __tablename__: str = "website_pagespeedinsights"
-    ps_grade: Column[float] = Column(Float)
-    ps_value: Column[float] = Column(Float)
-    fcp_grade: Column[float] = Column(Float)
-    fcp_value: Column[float] = Column(Float)
-    lcp_grade: Column[float] = Column(Float)
-    lcp_value: Column[float] = Column(Float)
-    cls_grade: Column[float] = Column(Float)
-    cls_value: Column[float] = Column(Float)
-    si_grade: Column[float] = Column(Float)
-    si_value: Column[float] = Column(Float)
-    tbt_grade: Column[float] = Column(Float)
-    tbt_value: Column[float] = Column(Float)
-    i_grade: Column[float] = Column(Float)
-    i_value: Column[float] = Column(Float)
+    ps_grade: Column[Any] = Column(Float, nullable=False, default=0.0)
+    ps_value: Column[Any] = Column(Float, nullable=False, default=0.0)
+    fcp_grade: Column[Any] = Column(Float, nullable=False, default=0.0)
+    fcp_value: Column[Any] = Column(Float, nullable=False, default=0.0)
+    lcp_grade: Column[Any] = Column(Float, nullable=False, default=0.0)
+    lcp_value: Column[Any] = Column(Float, nullable=False, default=0.0)
+    cls_grade: Column[Any] = Column(Float, nullable=False, default=0.0)
+    cls_value: Column[Any] = Column(Float, nullable=False, default=0.0)
+    si_grade: Column[Any] = Column(Float, nullable=False, default=0.0)
+    si_value: Column[Any] = Column(Float, nullable=False, default=0.0)
+    tbt_grade: Column[Any] = Column(Float, nullable=False, default=0.0)
+    tbt_value: Column[Any] = Column(Float, nullable=False, default=0.0)
+    i_grade: Column[Any] = Column(Float, nullable=False, default=0.0)
+    i_value: Column[Any] = Column(Float, nullable=False, default=0.0)
 
     # relationships
     page_id = Column(CHAR(36), ForeignKey("website_page.id"), nullable=False)

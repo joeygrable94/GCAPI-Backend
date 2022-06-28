@@ -1,6 +1,6 @@
 import re
 from inspect import Parameter, Signature
-from typing import Callable, List, Optional, Sequence, Tuple, cast
+from typing import Any, Callable, List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends, HTTPException, status
 from makefun import with_signature
@@ -61,8 +61,8 @@ class Authenticator:
         active: bool = False,
         verified: bool = False,
         superuser: bool = False,
-        get_enabled_backends: Optional[EnabledBackendsDependency] = None,
-    ):
+        get_enabled_backends: Optional[Any] = None,
+    ) -> Any:
         """
         Return a dependency callable to retrieve currently authenticated user and token.
 
@@ -87,7 +87,7 @@ class Authenticator:
         signature = self._get_dependency_signature(get_enabled_backends)
 
         @with_signature(signature)
-        async def current_user_token_dependency(*args, **kwargs):
+        async def current_user_token_dependency(*args: Any, **kwargs: Any) -> Any:
             return await self._authenticate(
                 *args,
                 optional=optional,
@@ -105,8 +105,8 @@ class Authenticator:
         active: bool = False,
         verified: bool = False,
         superuser: bool = False,
-        get_enabled_backends: Optional[EnabledBackendsDependency] = None,
-    ):
+        get_enabled_backends: Optional[Any] = None,
+    ) -> Any:
         """
         Return a dependency callable to retrieve currently authenticated user.
 
@@ -131,7 +131,7 @@ class Authenticator:
         signature = self._get_dependency_signature(get_enabled_backends)
 
         @with_signature(signature)
-        async def current_user_dependency(*args, **kwargs):
+        async def current_user_dependency(*args: Any, **kwargs: Any) -> Any:
             user, _ = await self._authenticate(
                 *args,
                 optional=optional,
@@ -146,13 +146,13 @@ class Authenticator:
 
     async def _authenticate(
         self,
-        *args,
+        *args: Any,
         user_manager: UserManager[UP, ID],
         optional: bool = False,
         active: bool = False,
         verified: bool = False,
         superuser: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> Tuple[Optional[UP], Optional[str]]:
         user: Optional[UP] = None
         token: Optional[str] = None
@@ -185,7 +185,7 @@ class Authenticator:
         return user, token
 
     def _get_dependency_signature(
-        self, get_enabled_backends: Optional[EnabledBackendsDependency] = None
+        self, get_enabled_backends: Optional[Any] = None
     ) -> Signature:
         """
         Generate a dynamic signature for the current_user dependency.

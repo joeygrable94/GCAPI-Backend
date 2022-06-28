@@ -1,4 +1,5 @@
 import uuid
+from typing import Any
 
 from pydantic import UUID4
 from sqlalchemy import CHAR, TypeDecorator
@@ -19,13 +20,13 @@ class GUID(TypeDecorator):  # pragma: no cover
     impl = UUIDChar
     cache_ok = True
 
-    def load_dialect_impl(self, dialect):
+    def load_dialect_impl(self, dialect: Any) -> Any:
         if dialect.name == "postgresql":
             return dialect.type_descriptor(UUID())
         else:
             return dialect.type_descriptor(CHAR(36))
 
-    def process_bind_param(self, value, dialect):
+    def process_bind_param(self, value: Any, dialect: Any) -> Any:
         if value is None:
             return value
         elif dialect.name == "postgresql":
@@ -36,7 +37,7 @@ class GUID(TypeDecorator):  # pragma: no cover
             else:
                 return str(value)
 
-    def process_result_value(self, value, dialect):
+    def process_result_value(self, value: Any, dialect: Any) -> Any:
         if value is None:
             return value
         else:

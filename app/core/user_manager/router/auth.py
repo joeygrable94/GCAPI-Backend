@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Any, Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -54,7 +54,7 @@ def get_auth_router(
         credentials: OAuth2PasswordRequestForm = Depends(),
         user_manager: UserManager[UP, ID] = Depends(get_user_manager),
         strategy: Strategy[UP, ID] = Depends(backend.get_strategy),
-    ):
+    ) -> Any:
         user = await user_manager.authenticate(credentials)
 
         if user is None or not user.is_active:
@@ -85,7 +85,7 @@ def get_auth_router(
         response: Response,
         user_token: Tuple[UP, str] = Depends(get_current_user_token),
         strategy: Strategy[UP, ID] = Depends(backend.get_strategy),
-    ):
+    ) -> Any:
         user, token = user_token
         return await backend.logout(strategy, user, token, response)
 

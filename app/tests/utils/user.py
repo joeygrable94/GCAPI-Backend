@@ -1,7 +1,6 @@
 from typing import Any, Dict
 
 from httpx import AsyncClient, Response
-from pydantic import EmailStr
 
 from app.core.config import settings
 from app.core.user_manager.exceptions import UserAlreadyExists
@@ -13,7 +12,7 @@ from app.tests.utils.utils import random_email, random_lower_string
 async def create_random_user(
     user_repo: UsersRepository,
 ) -> UserRead:
-    email: EmailStr = random_email()
+    email: str = random_email()
     password: str = random_lower_string()
     user: Any = await user_repo.create(
         schema=UserCreate(

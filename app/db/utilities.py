@@ -5,14 +5,14 @@ from typing import Any, Dict, Generator, Optional
 
 from pydantic import UUID4
 
-UUID_ID: UUID4 = uuid.UUID
+UUID_ID: UUID4 = uuid.uuid4()
 
 
 def _get_date() -> datetime:
     return datetime.now()
 
 
-def _get_uuid() -> UUID_ID:
+def _get_uuid() -> UUID4:
     return uuid.uuid4()
 
 
