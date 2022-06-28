@@ -20,9 +20,9 @@ def generate_jwt(
     lifetime_seconds: Optional[int] = None,
     algorithm: str = JWT_ALGORITHM,
 ) -> str:
-    payload = data.copy()
+    payload: dict = data.copy()
     if lifetime_seconds:
-        expire = datetime.utcnow() + timedelta(seconds=lifetime_seconds)
+        expire: datetime = datetime.utcnow() + timedelta(seconds=lifetime_seconds)
         payload["exp"] = expire
     return jwt.encode(payload, _get_secret_value(secret), algorithm=algorithm)
 

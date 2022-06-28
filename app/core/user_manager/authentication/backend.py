@@ -2,16 +2,11 @@ from typing import Any, Generic
 
 from fastapi import Response
 
-from app.core.user_manager.types import UP, ID
 from app.core.user_manager.authentication.strategy import (
-    Strategy,
-    StrategyDestroyNotSupportedError,
-)
+    Strategy, StrategyDestroyNotSupportedError)
 from app.core.user_manager.authentication.transport import (
-    Transport,
-    TransportLogoutNotSupportedError,
-)
-from app.core.user_manager.types import DependencyCallable
+    Transport, TransportLogoutNotSupportedError)
+from app.core.user_manager.types import ID, UP, DependencyCallable
 
 
 class AuthenticationBackend(Generic[UP, ID]):

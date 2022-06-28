@@ -1,9 +1,9 @@
-from typing import AsyncGenerator, Callable, Coroutine, Generator, Protocol, TypeVar, Union
-
+from typing import (Any, AsyncGenerator, Callable, Coroutine, Generator,
+                    Protocol, TypeVar, Union)
 
 RETURN_TYPE = TypeVar("RETURN_TYPE")
 
-DependencyCallable = Callable[
+DependencyCallable: Any = Callable[
     ...,
     Union[
         RETURN_TYPE,

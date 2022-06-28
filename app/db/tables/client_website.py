@@ -10,12 +10,12 @@ if TYPE_CHECKING:
 
 
 class ClientWebsite(TableBase):
-    __tablename__ = "client_website"
-    client_id = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
-    website_id = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
+    __tablename__: str = "client_website"
+    client_id: Column[str] = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
+    website_id: Column[str] = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
 
     def __repr__(self) -> str:
-        repr_str = (
+        repr_str: str = (
             f"ClientWebsite({self.id}, [C({self.client_id}), W({self.website_id})])"
         )
         return repr_str

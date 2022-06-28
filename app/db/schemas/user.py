@@ -1,38 +1,9 @@
-from typing import Generic, Optional, TypeVar
-import uuid
+from typing import Optional, TypeVar
 
-from pydantic import BaseModel, EmailStr
-from app.core.user_manager.types import ID
-from app.core.user_manager.generics import UUID_ID
+from pydantic import UUID4, EmailStr
 
-
-class CreateUpdateDictModel(BaseModel):
-    def create_update_dict(self):
-        return self.dict(
-            exclude_unset=True,
-            exclude={
-                "id",
-                "is_superuser",
-                "is_active",
-                "is_verified",
-            },
-        )
-
-    def create_update_dict_superuser(self):
-        return self.dict(exclude_unset=True, exclude={"id"})
-
-
-class BaseUser(Generic[ID], CreateUpdateDictModel):
-    """Base User model."""
-
-    id: ID
-    email: EmailStr
-    is_active: bool = True
-    is_superuser: bool = False
-    is_verified: bool = False
-
-    class Config:
-        orm_mode = True
+from app.core.user_manager.schemas import BaseUser, CreateUpdateDictModel
+from app.db.utilities import UUID_ID
 
 
 class UserCreate(CreateUpdateDictModel):
@@ -51,8 +22,8 @@ class UserUpdate(CreateUpdateDictModel):
     is_verified: Optional[bool]
 
 
-class UserRead(BaseUser[uuid.UUID]):
-    id: UUID_ID
+class UserRead(BaseUser[UUID_ID]):
+    id: UUID4
 
 
 U = TypeVar("U", bound=BaseUser)

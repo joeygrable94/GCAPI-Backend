@@ -1,20 +1,15 @@
-from typing import Generic, Sequence, Type
+from typing import Any, Generic, Sequence, Type
 
 from fastapi import APIRouter
 
-from app.db.schemas.user import U, UC, UU, UR
-
-from app.core.user_manager.authentication import AuthenticationBackend, Authenticator
+from app.core.user_manager.authentication import (AuthenticationBackend,
+                                                  Authenticator)
 from app.core.user_manager.manager import UserManagerDependency
-from app.core.user_manager.router import (
-    get_auth_router,
-    get_register_router,
-    get_reset_password_router,
-    get_users_router,
-    get_verify_router,
-)
-
+from app.core.user_manager.router import (get_auth_router, get_register_router,
+                                          get_reset_password_router,
+                                          get_users_router, get_verify_router)
 from app.core.user_manager.types import ID, UP
+from app.db.schemas.user import UC, UU, U
 
 
 class FastAPIUsers(Generic[UP, ID]):
@@ -37,8 +32,8 @@ class FastAPIUsers(Generic[UP, ID]):
         auth_backends: Sequence[AuthenticationBackend],
     ):
         self.authenticator = Authenticator(auth_backends, get_user_manager)
-        self.get_user_manager = get_user_manager
-        self.current_user = self.authenticator.current_user
+        self.get_user_manager: Any = get_user_manager
+        self.current_user: Any = self.authenticator.current_user
 
     def get_register_router(
         self, user_schema: Type[U], user_create_schema: Type[UC]

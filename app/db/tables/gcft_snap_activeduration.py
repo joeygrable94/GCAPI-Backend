@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import CHAR, Column, DateTime, ForeignKey, Integer, String
@@ -10,15 +11,16 @@ if TYPE_CHECKING:
 
 
 class GCFTSnapActiveDuration(TableBase):
-    __tablename__ = "gcft_snap_activeduration"
-    session_id = Column(String(36), nullable=False)
-    active_seconds = Column(Integer(), nullable=False)
-    view_date = Column(DateTime(), nullable=False)
+    __tablename__: str = "gcft_snap_activeduration"
+    session_id: Column[str] = Column(String(36), nullable=False)
+    active_seconds: Column[int] = Column(Integer(), nullable=False)
+    view_date: Column[datetime] = Column(DateTime(), nullable=False)
 
     # relationships
-    gcft_id = Column(CHAR(36), ForeignKey("gcft.id"), nullable=False)
-    snap_id = Column(CHAR(36), ForeignKey("gcft_snap.id"), nullable=False)
+    gcft_id: Column[str] = Column(CHAR(36), ForeignKey("gcft.id"), nullable=False)
+    snap_id: Column[str] = Column(CHAR(36), ForeignKey("gcft_snap.id"), nullable=False)
 
     def __repr__(self) -> str:
-        repr_str = f"GCFTSnapActiveDuration({self.session_id} on {self.view_date}, seconds={self.active_seconds})"
+        repr_str: str = f"GCFTSnapActiveDuration({self.session_id} \
+            on {self.view_date}, seconds={self.active_seconds})"
         return repr_str

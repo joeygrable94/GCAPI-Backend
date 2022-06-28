@@ -1,7 +1,8 @@
-from typing import Generic, Optional, Protocol  # pragma: no cover
+from typing import Generic  # pragma: no cover
+from typing import Optional, Protocol
 
-from app.core.user_manager.types import UP, ID
 from app.core.user_manager.manager import UserManager
+from app.core.user_manager.types import ID, UP
 
 
 class StrategyDestroyNotSupportedError(Exception):

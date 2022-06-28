@@ -1,18 +1,16 @@
 from typing import Any, Type
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import (APIRouter, Depends, HTTPException, Request, Response,
+                     status)
 
-from app.core.user_manager.exceptions import (
-    UserNotExists,
-    InvalidID,
-    InvalidPasswordException,
-    UserAlreadyExists,
-)
-from app.core.user_manager.types import UP, ID
-from app.db.schemas.user import U, UU
 from app.core.user_manager.authentication import Authenticator
+from app.core.user_manager.exceptions import (InvalidID,
+                                              InvalidPasswordException,
+                                              UserAlreadyExists, UserNotExists)
 from app.core.user_manager.manager import UserManager, UserManagerDependency
 from app.core.user_manager.router.common import ErrorCode, ErrorModel
+from app.core.user_manager.types import ID, UP
+from app.db.schemas.user import UU, U
 
 
 def get_users_router(

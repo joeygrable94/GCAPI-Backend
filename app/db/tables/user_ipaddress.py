@@ -10,12 +10,12 @@ if TYPE_CHECKING:
 
 
 class UserIpAddress(TableBase):
-    __tablename__ = "user_ipaddress"
+    __tablename__: str = "user_ipaddress"
     user_id = Column(CHAR(36), ForeignKey("user.id"), nullable=False)
     ipaddress_id = Column(CHAR(36), ForeignKey("ipaddress.id"), nullable=False)
 
     def __repr__(self) -> str:
-        repr_str = (
+        repr_str: str = (
             f"UserIpAddress({self.id}, [U({self.user_id}), IP({self.ipaddress_id})])"
         )
         return repr_str

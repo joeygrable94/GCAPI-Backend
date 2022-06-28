@@ -1,12 +1,9 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 from sqlalchemy import Column, String, Text
 from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
-
-# from sqlalchemy.orm import backref, relationship
-
 
 if TYPE_CHECKING:
     from .client_website import ClientWebsite  # noqa: F401
@@ -20,28 +17,28 @@ if TYPE_CHECKING:
 
 
 class Client(TableBase):
-    __tablename__ = "client"
-    title = Column(String(96), nullable=False)
-    content = Column(Text, nullable=True)
+    __tablename__: str = "client"
+    title: Column[str] = Column(String(96), nullable=False)
+    content: Column[Optional[str]] = Column(Text, nullable=True)
 
     # relationships
-    users = relationship("User", secondary="user_client", back_populates="clients")
-    websites = relationship(
+    users: Any = relationship("User", secondary="user_client", back_populates="clients")
+    websites: Any = relationship(
         "Website", secondary="client_website", back_populates="clients"
     )
-    gcloud_accounts = relationship(
+    gcloud_accounts: Any = relationship(
         "GoogleCloudProperty", backref=backref("client", lazy="noload")
     )
-    ga4_accounts = relationship(
+    ga4_accounts: Any = relationship(
         "GoogleAnalytics4Property", backref=backref("client", lazy="noload")
     )
-    gua_accounts = relationship(
+    gua_accounts: Any = relationship(
         "GoogleUniversalAnalyticsProperty", backref=backref("client", lazy="noload")
     )
-    sharpspring_accounts = relationship(
+    sharpspring_accounts: Any = relationship(
         "SharpSpring", backref=backref("client", lazy="noload")
     )
 
     def __repr__(self) -> str:
-        repr_str = f"Client({self.title}, since {self.created_on})"
+        repr_str: str = f"Client({self.title}, since {self.created_on})"
         return repr_str

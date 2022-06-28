@@ -1,4 +1,5 @@
-from typing import Any, Protocol  # pragma: no cover
+from typing import Any  # pragma: no cover
+from typing import Protocol
 
 from fastapi import Response
 from fastapi.security.base import SecurityBase

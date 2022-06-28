@@ -1,10 +1,13 @@
+from typing import Any, Dict
+
 import pytest
-from httpx import AsyncClient
+from httpx import AsyncClient, Response
 
 pytestmark = pytest.mark.asyncio
 
 
 async def test_status(client: AsyncClient) -> None:
-    response = await client.get("status")
+    response: Response = await client.get("status")
+    status: Dict[str, Any] = response.json()
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert status == {"status": "ok"}

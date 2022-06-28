@@ -1,10 +1,4 @@
-"""
-
-Stack Overflow on IP Address Representation:
-- https://stackoverflow.com/questions/166132/maximum-length-of-the-textual-representation-of-an-ipv6-address#:~:text=IPv6%20addresses%20are%20normally%20written,So%20that's%2039%20characters%20max.
-
-"""
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import CHAR, Column, ForeignKey, String
 
@@ -15,14 +9,18 @@ if TYPE_CHECKING:
 
 
 class IpAddress(TableBase):
-    __tablename__ = "ipaddress"
-    address = Column(String(64), unique=True, nullable=False, default="::1")
-    isp = Column(String(255), nullable=True)
-    location = Column(String(500), nullable=True)
+    __tablename__: str = "ipaddress"
+    address: Column[str] = Column(
+        String(64), unique=True, nullable=False, default="::1"
+    )
+    isp: Column[Optional[str]] = Column(String(255), nullable=True)
+    location: Column[Optional[str]] = Column(String(500), nullable=True)
 
     # relationships
-    geocoord_id = Column(CHAR(36), ForeignKey("geocoord.id"), nullable=True)
+    geocoord_id: Column[Optional[str]] = Column(
+        CHAR(36), ForeignKey("geocoord.id"), nullable=True
+    )
 
-    def __repr__(self):
-        repr_str = f"IpAddress({self.address})"
+    def __repr__(self) -> str:
+        repr_str: str = f"IpAddress({self.address})"
         return repr_str

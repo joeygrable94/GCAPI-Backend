@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import CHAR, Column, ForeignKey, String
 from sqlalchemy.orm import backref, relationship
@@ -18,33 +18,34 @@ if TYPE_CHECKING:
 
 
 class GoogleSearchConsoleProperty(TableBase):
-    __tablename__ = "go_sc"
+    __tablename__: str = "go_sc"
     title = Column(String(255), nullable=False)
 
     # relationships
     client_id = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
     website_id = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
-    gsc_countries = relationship(
+    gsc_countries: Any = relationship(
         "GoogleSearchConsoleCountry",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_devices = relationship(
+    gsc_devices: Any = relationship(
         "GoogleSearchConsoleDevice",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_pages = relationship(
+    gsc_pages: Any = relationship(
         "GoogleSearchConsolePage",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_queries = relationship(
+    gsc_queries: Any = relationship(
         "GoogleSearchConsoleQuery",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_searchappearances = relationship(
+    gsc_searchappearances: Any = relationship(
         "GoogleSearchConsoleSearchAppearance",
         backref=backref("go_sc", lazy="noload"),
     )
 
     def __repr__(self) -> str:
-        repr_str = f"GoogleSearchConsoleProperty({self.title}, Client[{self.client_id}] Website[{self.website_id}])"
+        repr_str: str = f"GoogleSearchConsoleProperty({self.title}, \
+            Client[{self.client_id}] Website[{self.website_id}])"
         return repr_str

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import Column, String, Boolean
+from sqlalchemy import Boolean, Column, String
 from sqlalchemy.orm import backref, relationship, validates
 
 from app.core.config import settings
@@ -14,16 +14,20 @@ if TYPE_CHECKING:
 
 
 class User(TableBase):
-    __tablename__ = "user"
-    email: str = Column(String(length=320), unique=True, index=True, nullable=False)
-    hashed_password: str = Column(String(length=1024), nullable=False)
-    is_active: bool = Column(Boolean, default=True, nullable=False)
-    is_superuser: bool = Column(Boolean, default=False, nullable=False)
-    is_verified: bool = Column(Boolean, default=False, nullable=False)
+    __tablename__: str = "user"
+    email: Column[str] = Column(
+        String(length=320), unique=True, index=True, nullable=False
+    )
+    hashed_password: Column[str] = Column(String(length=1024), nullable=False)
+    is_active: Column[bool] = Column(Boolean, default=True, nullable=False)
+    is_superuser: Column[bool] = Column(Boolean, default=False, nullable=False)
+    is_verified: Column[bool] = Column(Boolean, default=False, nullable=False)
 
     # relationships
-    clients = relationship("Client", secondary="user_client", back_populates="users")
-    items = relationship("Item", backref=backref("user", lazy="noload"))
+    clients: Any = relationship(
+        "Client", secondary="user_client", back_populates="users"
+    )
+    items: Any = relationship("Item", backref=backref("user", lazy="noload"))
 
     @validates("email")
     def validate_email(self, k: Any, v: Any) -> Any:
@@ -38,5 +42,5 @@ class User(TableBase):
         return v
 
     def __repr__(self) -> str:
-        repr_str = f"User({self.email} created {self.created_on}, UUID[{self.id}])"
+        repr_str: str = f"User({self.email} created {self.created_on}, UUID[{self.id}])"
         return repr_str

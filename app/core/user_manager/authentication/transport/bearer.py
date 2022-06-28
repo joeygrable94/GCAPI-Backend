@@ -5,9 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 
 from app.core.user_manager.authentication.transport.base import (
-    Transport,
-    TransportLogoutNotSupportedError,
-)
+    Transport, TransportLogoutNotSupportedError)
 from app.core.user_manager.openapi import OpenAPIResponseType
 
 

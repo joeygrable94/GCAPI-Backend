@@ -52,7 +52,8 @@ class BaseRepository(
 
         Args:
             page (int, optional): the page to fetch rows for. Defaults to 1.
-            ppmax (int, optional): the Per Page Maximum or limit on how many items to return. Defaults to 100.
+            ppmax (int, optional): the Per Page Maximum or limit
+                on how many items to return. Defaults to 100.
 
         Returns:
             tuple[int, int]: tuple contains a skip and limit, both integers.
@@ -69,7 +70,7 @@ class BaseRepository(
               4     4       300     100     300-400
         """
         page = 1 if page < 1 else page
-        skip = 0 if page == 1 else (page - 1) * limit
+        skip: int = 0 if page == 1 else (page - 1) * limit
         return skip, limit
 
     def _preprocess_create(self, values: Dict) -> Dict:
@@ -80,9 +81,9 @@ class BaseRepository(
     async def _list(
         self, skip: int = 0, limit: int = PER_PAGE_MAX_COUNT
     ) -> List[SCHEMA_READ]:
-        query = sql_select(self._table).offset(skip).limit(limit)
-        result = await self._db.execute(query)
-        data = result.scalars().all()
+        query: Any = sql_select(self._table).offset(skip).limit(limit)
+        result: Any = await self._db.execute(query)
+        data: Any = result.scalars().all()
         return list(data)
 
     async def list(self, page: int = 1) -> List[SCHEMA_READ]:
@@ -90,34 +91,33 @@ class BaseRepository(
         return await self._list(skip=skip, limit=limit)
 
     async def create(self, schema: SCHEMA_CREATE) -> SCHEMA_READ:
-        entry = self._table(id=self.generate_uuid(), **schema.dict())
+        entry: Any = self._table(id=self.generate_uuid(), **schema.dict())
         self._db.add(entry)
         await self._db.commit()
         return self._schema_read.from_orm(entry)
 
     async def read(self, entry_id: UUID4) -> SCHEMA_READ:
-        query = sql_select(self._table).where(self._table.id == entry_id)
-        result = await self._db.execute(query)
-        entry = result.scalars().first()
+        query: Any = sql_select(self._table).where(self._table.id == entry_id)
+        result: Any = await self._db.execute(query)
+        entry: Any = result.scalars().first()
         if not entry:
             return None
         return self._schema_read.from_orm(entry)
 
     async def update(self, entry_id: UUID4, schema: SCHEMA_UPDATE) -> SCHEMA_READ:
-        query = sql_select(self._table).where(self._table.id == entry_id)
-        result = await self._db.execute(query)
-        entry = result.scalars().first()
+        query: Any = sql_select(self._table).where(self._table.id == entry_id)
+        result: Any = await self._db.execute(query)
+        entry: Any = result.scalars().first()
         if not entry:
             return None
         for k, v in schema.dict(exclude_unset=True).items():
             setattr(entry, k, v)
-        # await self._db.execute(query) ? double db exec (1st 6 lines above)
         await self._db.commit()
         await self._db.refresh(entry)
         return self._schema_read.from_orm(entry)
 
     async def delete(self, entry_id: UUID4) -> SCHEMA_READ:
-        entry = await self._db.get(self._table, entry_id)
+        entry: Any = await self._db.get(self._table, entry_id)
         if not entry:
             return None
         await self._db.delete(entry)

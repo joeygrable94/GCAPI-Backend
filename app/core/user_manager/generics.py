@@ -1,9 +1,8 @@
 import uuid
+
 from pydantic import UUID4
 from sqlalchemy import CHAR, TypeDecorator
 from sqlalchemy.dialects.postgresql import UUID
-
-UUID_ID = uuid.UUID
 
 
 class GUID(TypeDecorator):  # pragma: no cover

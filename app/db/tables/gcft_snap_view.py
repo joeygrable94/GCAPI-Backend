@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import CHAR, Column, DateTime, ForeignKey, String
@@ -10,14 +11,14 @@ if TYPE_CHECKING:
 
 
 class GCFTSnapView(TableBase):
-    __tablename__ = "gcft_snap_view"
-    session_id = Column(String(36), nullable=False)
-    view_date = Column(DateTime(), nullable=False)
+    __tablename__: str = "gcft_snap_view"
+    session_id: Column[str] = Column(String(36), nullable=False)
+    view_date: Column[datetime] = Column(DateTime(), nullable=False)
 
     # relationships
-    gcft_id = Column(CHAR(36), ForeignKey("gcft.id"), nullable=False)
-    snap_id = Column(CHAR(36), ForeignKey("gcft_snap.id"), nullable=False)
+    gcft_id: Column[str] = Column(CHAR(36), ForeignKey("gcft.id"), nullable=False)
+    snap_id: Column[str] = Column(CHAR(36), ForeignKey("gcft_snap.id"), nullable=False)
 
     def __repr__(self) -> str:
-        repr_str = f"GCFTSnapView({self.session_id} on {self.view_date})"
+        repr_str: str = f"GCFTSnapView({self.session_id} on {self.view_date})"
         return repr_str

@@ -3,11 +3,12 @@ from typing import Tuple
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.core.user_manager.types import UP, ID
-from app.core.user_manager.authentication import AuthenticationBackend, Authenticator, Strategy
+from app.core.user_manager.authentication import (AuthenticationBackend,
+                                                  Authenticator, Strategy)
 from app.core.user_manager.manager import UserManager, UserManagerDependency
 from app.core.user_manager.openapi import OpenAPIResponseType
 from app.core.user_manager.router.common import ErrorCode, ErrorModel
+from app.core.user_manager.types import ID, UP
 
 
 def get_auth_router(

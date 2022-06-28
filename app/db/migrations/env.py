@@ -1,10 +1,10 @@
 import os
-import sys
 import pathlib
-from dotenv import load_dotenv
+import sys
 from logging.config import fileConfig
 
 from alembic import context
+from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
 
 BASE_DIR = str(pathlib.Path(__file__).resolve().parents[3])
@@ -25,7 +25,8 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # add your model's MetaData object here for 'autogenerate' support
-from app.db import base
+from app.db import base  # noqa: E402
+
 target_metadata = base.Base.metadata
 
 

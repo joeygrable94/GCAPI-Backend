@@ -5,10 +5,10 @@ from typing import Callable, List, Optional, Sequence, Tuple, cast
 from fastapi import Depends, HTTPException, status
 from makefun import with_signature
 
-from app.core.user_manager.types import UP, ID, DependencyCallable
 from app.core.user_manager.authentication.backend import AuthenticationBackend
 from app.core.user_manager.authentication.strategy import Strategy
 from app.core.user_manager.manager import UserManager, UserManagerDependency
+from app.core.user_manager.types import ID, UP, DependencyCallable
 
 INVALID_CHARS_PATTERN = re.compile(r"[^0-9a-zA-Z_]")
 INVALID_LEADING_CHARS_PATTERN = re.compile(r"^[^a-zA-Z_]+")

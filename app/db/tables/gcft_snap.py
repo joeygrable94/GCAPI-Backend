@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 from sqlalchemy import CHAR, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
@@ -16,30 +16,33 @@ if TYPE_CHECKING:
 
 
 class GCFTSnap(TableBase):
-    __tablename__ = "gcft_snap"
-    snap_name = Column(String(255), nullable=False)
-    snap_slug = Column(String(12), nullable=False)
-    altitude = Column(Integer, nullable=False)
+    __tablename__: str = "gcft_snap"
+    snap_name: Column[str] = Column(String(255), nullable=False)
+    snap_slug: Column[str] = Column(String(12), nullable=False)
+    altitude: Column[int] = Column(Integer, nullable=False)
 
     # relationships
-    geocoord_id = Column(CHAR(36), ForeignKey("geocoord.id"), nullable=True)
-    gcft_id = Column(CHAR(36), ForeignKey("gcft.id"), nullable=False)
-    snap_views = relationship(
+    geocoord_id: Column[Optional[str]] = Column(
+        CHAR(36), ForeignKey("geocoord.id"), nullable=True
+    )
+    gcft_id: Column[str] = Column(CHAR(36), ForeignKey("gcft.id"), nullable=False)
+    snap_views: Any = relationship(
         "GCFTSnapView", backref=backref("gcft_snap", lazy="noload")
     )
-    active_durations = relationship(
+    active_durations: Any = relationship(
         "GCFTSnapActiveDuration", backref=backref("gcft_snap", lazy="noload")
     )
-    hotspot_clicks = relationship(
+    hotspot_clicks: Any = relationship(
         "GCFTSnapHotspotClick", backref=backref("gcft_snap", lazy="noload")
     )
-    traffic_sources = relationship(
+    traffic_sources: Any = relationship(
         "GCFTSnapTrafficSource", backref=backref("gcft_snap", lazy="noload")
     )
-    browser_reports = relationship(
+    browser_reports: Any = relationship(
         "GCFTSnapBrowserReport", backref=backref("gcft_snap", lazy="noload")
     )
 
     def __repr__(self) -> str:
-        repr_str = f"GCFTSnap({self.snap_name}[{self.snap_slug}], Tour[{self.gcft_id}], Coords[{self.geocoord_id}])"
+        repr_str: str = f"GCFTSnap({self.snap_name}[{self.snap_slug}], \
+            Tour[{self.gcft_id}], Coords[{self.geocoord_id}])"
         return repr_str

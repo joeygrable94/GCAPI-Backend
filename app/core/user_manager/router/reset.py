@@ -1,16 +1,13 @@
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
 from pydantic import EmailStr
 
-from app.core.user_manager.exceptions import (
-    UserNotExists,
-    UserInactive,
-    InvalidResetPasswordToken,
-    InvalidPasswordException,
-)
-from app.core.user_manager.types import UP, ID
+from app.core.user_manager.exceptions import (InvalidPasswordException,
+                                              InvalidResetPasswordToken,
+                                              UserInactive, UserNotExists)
 from app.core.user_manager.manager import UserManager, UserManagerDependency
 from app.core.user_manager.openapi import OpenAPIResponseType
 from app.core.user_manager.router.common import ErrorCode, ErrorModel
+from app.core.user_manager.types import ID, UP
 
 RESET_PASSWORD_RESPONSES: OpenAPIResponseType = {
     status.HTTP_400_BAD_REQUEST: {

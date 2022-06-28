@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Protocol
+from typing import Optional, Protocol, Tuple
 
 from passlib import pwd
 from passlib.context import CryptContext
@@ -20,9 +20,11 @@ class PasswordHelperProtocol(Protocol):
 class PasswordHelper(PasswordHelperProtocol):
     def __init__(self, context: Optional[CryptContext] = None) -> None:
         if context is None:
-            self.context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+            self.context: CryptContext = CryptContext(
+                schemes=["bcrypt"], deprecated="auto"
+            )
         else:
-            self.context = context  # pragma: no cover
+            self.context: CryptContext = context  # pragma: no cover
 
     def verify_and_update(
         self, plain_password: str, hashed_password: str

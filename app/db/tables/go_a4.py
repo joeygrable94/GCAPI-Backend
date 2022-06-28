@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import CHAR, Column, ForeignKey, String
 from sqlalchemy.orm import backref, relationship
@@ -12,19 +12,20 @@ if TYPE_CHECKING:
 
 
 class GoogleAnalytics4Property(TableBase):
-    __tablename__ = "go_a4"
-    title = Column(String(255), nullable=False)
-    measurement_id = Column(String(16), nullable=False)
-    property_id = Column(String(16), nullable=False)
+    __tablename__: str = "go_a4"
+    title: Column[str] = Column(String(255), nullable=False)
+    measurement_id: Column[str] = Column(String(16), nullable=False)
+    property_id: Column[str] = Column(String(16), nullable=False)
 
     # relationships
-    client_id = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
-    website_id = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
-    ga4_streams = relationship(
+    client_id: Column[str] = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
+    website_id: Column[str] = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
+    ga4_streams: Any = relationship(
         "GoogleAnalytics4Stream",
         backref=backref("go_a4", lazy="subquery"),
     )
 
     def __repr__(self) -> str:
-        repr_str = f"GoogleAnalytics4Property(MeasurementID[{self.measurement_id}] for Client[{self.client_id}] Website[{self.website_id}])"
+        repr_str: str = f"GoogleAnalytics4Property(MeasurementID[{self.measurement_id}] \
+            for Client[{self.client_id}] Website[{self.website_id}])"
         return repr_str

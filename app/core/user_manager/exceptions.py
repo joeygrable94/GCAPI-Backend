@@ -35,4 +35,4 @@ class InvalidResetPasswordToken(UsersException):
 
 class InvalidPasswordException(UsersException):
     def __init__(self, reason: Any) -> None:
-        self.reason = reason
+        self.reason: Any = reason

@@ -9,7 +9,7 @@ from app.core.user_manager import current_active_user
 from app.db.repositories.client import ClientsRepository
 from app.db.schemas import ClientCreate, ClientRead, ClientUpdate, UserRead
 
-clients_router = APIRouter()
+clients_router: APIRouter = APIRouter()
 
 
 @clients_router.get("/", response_model=List[ClientRead], name="clients:read_clients")
@@ -19,10 +19,9 @@ async def clients_list(
     user_id: UUID4 = None,
     current_user: UserRead = Depends(current_active_user),
 ) -> List[ClientRead]:
-    print(user_id)
     clients_repo: ClientsRepository = ClientsRepository(session=db)
     if user_id:
-        clients = await clients_repo.list_by_user_id(page=page, user_id=user_id)
+        clients: List[ClientRead] = await clients_repo.list(page=page, user_id=user_id)
     else:
         clients = await clients_repo.list(page=page)
     return clients
@@ -36,7 +35,7 @@ async def clients_create(
     current_user: UserRead = Depends(current_active_user),
 ) -> ClientRead:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
-    client = await clients_repo.create(client_in)
+    client: ClientRead = await clients_repo.create(client_in)
     return client
 
 
@@ -48,7 +47,7 @@ async def clients_read(
     current_user: UserRead = Depends(current_active_user),
 ) -> ClientRead:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
-    client = await clients_repo.read(entry_id=id)
+    client: ClientRead = await clients_repo.read(entry_id=id)
     if not client:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Client not found"
@@ -65,7 +64,7 @@ async def clients_update(
     current_user: UserRead = Depends(current_active_user),
 ) -> Any:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
-    client = await clients_repo.read(entry_id=id)
+    client: ClientRead = await clients_repo.read(entry_id=id)
     if not client:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Client not found"
@@ -82,7 +81,7 @@ async def clients_delete(
     current_user: UserRead = Depends(current_active_user),
 ) -> Any:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
-    client = await clients_repo.read(entry_id=id)
+    client: ClientRead = await clients_repo.read(entry_id=id)
     if not client:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Client not found"

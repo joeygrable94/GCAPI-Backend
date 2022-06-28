@@ -1,7 +1,7 @@
 import re
 import uuid
 from datetime import datetime
-from typing import Any, Dict, Generator
+from typing import Any, Dict, Generator, Optional
 
 from pydantic import UUID4
 
@@ -18,7 +18,9 @@ def _get_uuid() -> UUID_ID:
 
 # regex meaning
 # checks to confirm a valid email address
-email_pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b")
+email_pattern: re.Pattern = re.compile(
+    r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
+)
 
 
 # https://pydantic-docs.helpmanual.io/usage/types/#custom-data-types
@@ -26,19 +28,19 @@ email_pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b
 # first str before ':' should only be in a-z, 0-9, -, _
 # second or after str after first ':' should only be in a-z, 0-9, -, _, @, .
 # ':some_str' should appear at least 1, and can appear more than 1
-scope_regex = re.compile(r"^[a-z0-9-_]+(:[a-z0-9-_@.]+)+$")
+scope_regex: re.Pattern = re.compile(r"^[a-z0-9-_]+(:[a-z0-9-_@.]+)+$")
 
 
 class Scope(str):
     @classmethod
-    def __get_validators__(cls) -> Generator:
+    def __get_validators__(cls: Any) -> Generator:
         # one or more validators may be yielded which will be called in the
         # order to validate the input, each validator will receive as an input
         # the value returned from the previous validator
         yield cls.validate
 
     @classmethod
-    def __modify_schema__(cls, field_schema: Dict[str, Any]) -> None:
+    def __modify_schema__(cls: Any, field_schema: Dict[str, Any]) -> None:
         # __modify_schema__ should mutate the dict it receives in place,
         # the returned value will be ignored
         field_schema.update(
@@ -47,10 +49,10 @@ class Scope(str):
         )
 
     @classmethod
-    def validate(cls, v: str) -> str:
+    def validate(cls: Any, v: str) -> str:
         if not isinstance(v, str):
             raise TypeError("string required")
-        m = scope_regex.fullmatch(v.lower())
+        m: Optional[re.Match] = scope_regex.fullmatch(v.lower())
         if not m:
             raise ValueError("invalid scope format")
         # you could also return a string here which would mean model.scope

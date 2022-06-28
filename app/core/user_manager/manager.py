@@ -1,30 +1,23 @@
 import uuid
-from typing import Any, Dict, Generic, Optional, Type, Union
+from typing import Any, Dict, Generic, Optional, Union
 
 import jwt
 from fastapi import Request
 from fastapi.security import OAuth2PasswordRequestForm
 
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql import Select
-
-from app.core.user_manager.exceptions import (
-    InvalidID,
-    UserNotExists,
-    UserAlreadyExists,
-    UserInactive,
-    UserAlreadyVerified,
-    InvalidVerifyToken,
-    InvalidResetPasswordToken,
-)
 from app.core.config import settings
+from app.core.user_manager.exceptions import (InvalidID,
+                                              InvalidResetPasswordToken,
+                                              InvalidVerifyToken,
+                                              UserAlreadyExists,
+                                              UserAlreadyVerified,
+                                              UserInactive, UserNotExists)
 from app.core.user_manager.jwt import SecretType, decode_jwt, generate_jwt
-from app.core.user_manager.password import PasswordHelper, PasswordHelperProtocol
+from app.core.user_manager.password import (PasswordHelper,
+                                            PasswordHelperProtocol)
+from app.core.user_manager.sqlalchemy_adapter import SQLAlchemyUserDatabase
 from app.core.user_manager.types import ID, UP, DependencyCallable
 from app.db.schemas.user import UC, UU
-
-from app.core.user_manager.sqlalchemy_adapter import SQLAlchemyUserDatabase
 
 
 class UserManager(Generic[UP, ID]):
@@ -143,9 +136,7 @@ class UserManager(Generic[UP, ID]):
 
         return created_user
 
-    async def request_verify(
-        self, user: UP, request: Optional[Request] = None
-    ) -> None:
+    async def request_verify(self, user: UP, request: Optional[Request] = None) -> None:
         """
         Start a verification request.
 
@@ -329,9 +320,7 @@ class UserManager(Generic[UP, ID]):
         await self.user_db.delete(user)
 
     # *You should overload this method to add your own validation logic.*
-    async def validate_password(
-        self, password: str, user: Union[UC, UP]
-    ) -> None:
+    async def validate_password(self, password: str, user: Union[UC, UP]) -> None:
         """
         Validate a password.
 

@@ -3,16 +3,13 @@ from typing import Type
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
 from pydantic import EmailStr
 
-from app.core.user_manager.exceptions import (
-    UserNotExists,
-    UserInactive,
-    UserAlreadyVerified,
-    InvalidVerifyToken,
-)
-from app.core.user_manager.types import UP, ID
-from app.db.schemas.user import U
+from app.core.user_manager.exceptions import (InvalidVerifyToken,
+                                              UserAlreadyVerified,
+                                              UserInactive, UserNotExists)
 from app.core.user_manager.manager import UserManager, UserManagerDependency
 from app.core.user_manager.router.common import ErrorCode, ErrorModel
+from app.core.user_manager.types import ID, UP
+from app.db.schemas.user import U
 
 
 def get_verify_router(

@@ -23,28 +23,28 @@ class SQLAlchemyUserDatabase(Generic[UP, ID]):
         session: AsyncSession,
         user_table: Type[UP],
     ):
-        self.session = session
-        self.user_table = user_table
+        self.session: Any = session
+        self.user_table: Any = user_table
 
     async def _get_user(self, statement: Select) -> Optional[UP]:
-        results = await self.session.execute(statement)
-        user = results.first()
+        results: Any = await self.session.execute(statement)
+        user: Any = results.first()
         if user is None:
             return None
         return user[0]
 
     async def get(self, id: ID) -> Optional[UP]:
-        statement = select(self.user_table).where(self.user_table.id == id)
+        statement: Any = select(self.user_table).where(self.user_table.id == id)
         return await self._get_user(statement)
 
     async def get_by_email(self, email: str) -> Optional[UP]:
-        statement = select(self.user_table).where(
+        statement: Any = select(self.user_table).where(
             func.lower(self.user_table.email) == func.lower(email)
         )
         return await self._get_user(statement)
 
     async def create(self, create_dict: Dict[str, Any]) -> UP:
-        user = self.user_table(**create_dict)
+        user: Any = self.user_table(**create_dict)
         self.session.add(user)
         await self.session.commit()
         await self.session.refresh(user)

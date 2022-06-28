@@ -7,15 +7,15 @@ from sqlalchemy.orm import declarative_mixin  # type: ignore
 
 from app.db.utilities import _get_uuid
 
-metadata = MetaData()
-Base = declarative_base(metadata=metadata)
+metadata: MetaData = MetaData()
+Base: Any = declarative_base(metadata=metadata)
 
 
 @declarative_mixin
 class BaseMixin:
     __tablename__: str
-    __table_args__ = {"mysql_engine": "InnoDB"}
-    __mapper_args__ = {"always_refresh": True}
+    __table_args__: Any = {"mysql_engine": "InnoDB"}
+    __mapper_args__: Any = {"always_refresh": True}
     id: Column[Any] = Field(default_factory=_get_uuid)
     created_on: Column[Any]
     updated_on: Column[Any]

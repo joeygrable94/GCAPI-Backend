@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import CHAR, Column, ForeignKey, String, Text
 
@@ -9,13 +9,15 @@ if TYPE_CHECKING:
 
 
 class Item(TableBase):
-    __tablename__ = "item"
-    title = Column(String(255), nullable=False)
-    content = Column(Text, nullable=True)
+    __tablename__: str = "item"
+    title: Column[str] = Column(String(255), nullable=False)
+    content: Column[Optional[str]] = Column(Text, nullable=True)
 
     # relationships
-    user_id = Column(CHAR(36), ForeignKey("user.id"), nullable=True)
+    user_id: Column[Optional[str]] = Column(
+        CHAR(36), ForeignKey("user.id"), nullable=True
+    )
 
     def __repr__(self) -> str:
-        repr_str = f"Item({self.title} by {self.user_id} on {self.updated_on})"
+        repr_str: str = f"Item({self.title} by {self.user_id} on {self.updated_on})"
         return repr_str
