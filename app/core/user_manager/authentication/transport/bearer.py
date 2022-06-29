@@ -34,11 +34,11 @@ class BearerTransport(Transport):
                 "content": {
                     "application/json": {
                         "example": {
-                            "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1"
-                            "c2VyX2lkIjoiOTIyMWZmYzktNjQwZi00MzcyLTg2Z"
-                            "DMtY2U2NDJjYmE1NjAzIiwiYXVkIjoiZmFzdGFwaS"
-                            "11c2VyczphdXRoIiwiZXhwIjoxNTcxNTA0MTkzfQ."
-                            "M10bjOe45I5Ncu_uXvOmVV8QxnL-nZfcH96U90JaocI",
+                            "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1"  #allowinsecure
+                            "c2VyX2lkIjoiOTIyMWZmYzktNjQwZi00MzcyLTg2Z"  #allowinsecure
+                            "DMtY2U2NDJjYmE1NjAzIiwiYXVkIjoiZmFzdGFwaS"  #allowinsecure
+                            "11c2VyczphdXRoIiwiZXhwIjoxNTcxNTA0MTkzfQ."  #allowinsecure
+                            "M10bjOe45I5Ncu_uXvOmVV8QxnL-nZfcH96U90JaocI",  #allowinsecure
                             "token_type": "bearer",
                         }
                     }
