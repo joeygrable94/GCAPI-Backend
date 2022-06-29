@@ -9,15 +9,6 @@ if TYPE_CHECKING:
 
 
 class GoogleCloudProperty(TableBase):
-    """
-    SAMPLE DATA
-    project_name: "GC Google Cloud API"
-    project_id: "soy-antenna-123456"
-    project_number: "1ab234567c8d"
-    service_account: "service-account-name@soy-antenna-123456.iam.gserviceaccount.com"
-    api_key: "neja389dd_CWN_ddihotkupWndASqkoSq9dpPK8"
-    """
-
     __tablename__: str = "go_cloud"
     project_name: Column[str] = Column(String(255), nullable=False)
     hashed_api_key: Column[str] = Column(String(64), nullable=False)
