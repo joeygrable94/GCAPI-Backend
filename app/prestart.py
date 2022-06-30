@@ -3,7 +3,6 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from app.core.logger import logger
-from app.db.init_db import load_initial_data
 from app.db.session import session
 
 
@@ -11,16 +10,15 @@ def init() -> None:
     try:
         db: Session = session()
         db.execute("SELECT 1")
-        load_initial_data(db)
     except Exception as e:
         logger.warning(e)
         raise e
 
 
 def main() -> None:
-    logger.info("Prestart creating initial data.")
+    logger.info("Prestarting backend tests.")
     init()
-    logger.info("Initial data created.")
+    logger.info("Backend tests ready to commence.")
 
 
 if __name__ == "__main__":

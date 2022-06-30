@@ -30,10 +30,11 @@ _ref
 
 # managed by parent repo GCAPI
 prestart.sh
-start.sh
-start-reload.sh
 prestart-worker.sh
+start-tests.sh
+start.sh
 start-worker.sh
+start-reload.sh
 wait-for-it.sh
 
 # examples

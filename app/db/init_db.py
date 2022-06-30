@@ -7,7 +7,7 @@ from app.core.logger import logger
 from app.core.user_manager.crud import crud_user_create
 
 
-def init_db(db: Session) -> None:
+def load_initial_data(db: Session) -> None:
     logger.info("init db data")
     asyncio.run(
         crud_user_create(
