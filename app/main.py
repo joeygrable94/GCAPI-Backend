@@ -74,7 +74,7 @@ def configure_events(app: FastAPI) -> None:
     async def on_startup() -> None:
         await check_db_connected()
         # await create_db_and_tables()
-        # await create_initial_data()
+        await create_initial_data()
 
     # middlewares
     @app.middleware("http")
