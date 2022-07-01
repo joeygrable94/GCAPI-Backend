@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class Note(TableBase):
-    __tablename__ = "note"
+    __tablename__: str = "note"
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
 
@@ -17,5 +17,5 @@ class Note(TableBase):
     user_id = Column(CHAR(36), ForeignKey("user.id"), nullable=False)
 
     def __repr__(self) -> str:
-        repr_str = f"Item({self.title} by {self.user_id} on {self.updated_on})"
+        repr_str: str = f"Item({self.title} by {self.user_id} on {self.updated_on})"
         return repr_str

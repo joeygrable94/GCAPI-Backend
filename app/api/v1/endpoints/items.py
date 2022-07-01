@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Optional, Union
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import UUID4
@@ -9,7 +9,7 @@ from app.core.user_manager import current_active_user
 from app.db.repositories.item import ItemsRepository
 from app.db.schemas import ItemCreate, ItemRead, ItemUpdate, UserRead
 
-items_router = APIRouter()
+items_router: APIRouter = APIRouter()
 
 
 @items_router.get("/", response_model=List[ItemRead], name="items:read_items")
@@ -18,10 +18,14 @@ async def items_list(
     page: int = 1,
     user_id: UUID4 = None,
     current_user: UserRead = Depends(current_active_user),
-) -> List[ItemRead]:
+) -> Union[List[ItemRead], List]:
     items_repo: ItemsRepository = ItemsRepository(session=db)
-    items = await items_repo.list(page=page, user_id=user_id)
-    return items
+    items: Union[List[ItemRead], List[Any], None] = await items_repo.list(
+        page=page, user_id=user_id
+    )
+    if items:
+        return items
+    return list()
 
 
 @items_router.post("/", response_model=ItemRead, name="items:create_item")
@@ -34,7 +38,7 @@ async def items_create(
     items_repo: ItemsRepository = ItemsRepository(session=db)
     if not item_in.user_id:
         item_in.user_id = current_user.id
-    item = await items_repo.create(item_in)
+    item: ItemRead = await items_repo.create(item_in)
     return item
 
 
@@ -46,7 +50,7 @@ async def items_read(
     current_user: UserRead = Depends(current_active_user),
 ) -> ItemRead:
     items_repo: ItemsRepository = ItemsRepository(session=db)
-    item = await items_repo.read(entry_id=id)
+    item: Optional[ItemRead] = await items_repo.read(entry_id=id)
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
@@ -67,7 +71,7 @@ async def items_update(
     current_user: UserRead = Depends(current_active_user),
 ) -> Any:
     items_repo: ItemsRepository = ItemsRepository(session=db)
-    item = await items_repo.read(entry_id=id)
+    item: Optional[ItemRead] = await items_repo.read(entry_id=id)
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
@@ -88,7 +92,7 @@ async def items_delete(
     current_user: UserRead = Depends(current_active_user),
 ) -> Any:
     items_repo: ItemsRepository = ItemsRepository(session=db)
-    item = await items_repo.read(entry_id=id)
+    item: Optional[ItemRead] = await items_repo.read(entry_id=id)
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class WebsiteKeywordCorpus(TableBase):
-    __tablename__ = "website_keywordcorpus"
+    __tablename__: str = "website_keywordcorpus"
     corpus = Column(Text)
     rawtext = Column(Text)
 
@@ -18,8 +18,8 @@ class WebsiteKeywordCorpus(TableBase):
     website_id = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
     page_id = Column(CHAR(36), ForeignKey("website_page.id"), nullable=False)
 
-    def __repr__(self):
-        repr_str = (
+    def __repr__(self) -> str:
+        repr_str: str = (
             f"KeywordCorpus({self.id}, Site[{self.website_id}], Pg[{self.page_id}])"
         )
         return repr_str

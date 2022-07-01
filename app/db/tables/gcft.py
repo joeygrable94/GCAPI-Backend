@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import CHAR, Column, ForeignKey, String
 from sqlalchemy.orm import backref, relationship
@@ -11,16 +11,16 @@ if TYPE_CHECKING:
 
 
 class GCFT(TableBase):
-    __tablename__ = "gcft"
-    group_name = Column(String(255), nullable=False)
-    group_slug = Column(String(12), nullable=False)
+    __tablename__: str = "gcft"
+    group_name: Column[str] = Column(String(255), nullable=False)
+    group_slug: Column[str] = Column(String(12), nullable=False)
 
     # relationships
-    client_id = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
-    gcft_snaps = relationship("GCFTSnap", backref=backref("gcft", lazy="subquery"))
+    client_id: Column[str] = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
+    gcft_snaps: Any = relationship("GCFTSnap", backref=backref("gcft", lazy="subquery"))
 
     def __repr__(self) -> str:
-        repr_str = (
+        repr_str: str = (
             f"GCFT({self.group_name}[{self.group_slug}], Client[{self.client_id}])"
         )
         return repr_str

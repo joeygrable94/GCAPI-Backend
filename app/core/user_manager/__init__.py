@@ -1,37 +1,22 @@
 import uuid
-from typing import AsyncGenerator, Optional
+from typing import Any, AsyncGenerator
 
-from fastapi import Depends, Request
-from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
-from fastapi_users.authentication import (AuthenticationBackend,
-                                          BearerTransport, JWTStrategy)
-from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_user_db
+from app.api.deps import get_async_db
 from app.core.config import settings
+from app.core.user_manager.authentication import (AuthenticationBackend,
+                                                  BearerTransport, JWTStrategy)
+from app.core.user_manager.base import FastAPIUsers
+from app.core.user_manager.manager import UserManager
+from app.core.user_manager.sqlalchemy_adapter import SQLAlchemyUserDatabase
+from app.db.schemas.user import UserRead
 from app.db.tables import User
 
 
-class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
-    reset_password_token_secret = settings.SECRET_KEY
-    verification_token_secret = settings.SECRET_KEY
-
-    async def on_after_register(
-        self, user: User, request: Optional[Request] = None
-    ) -> None:
-        print(f"User {user.id} has registered.")
-
-    async def on_after_forgot_password(
-        self, user: User, token: str, request: Optional[Request] = None
-    ) -> None:
-        print(f"User {user.id} has forgot their password.")
-        print(f"Reset token: {token}")
-
-    async def on_after_request_verify(
-        self, user: User, token: str, request: Optional[Request] = None
-    ) -> None:
-        print(f"Verification requested for user {user.id}.")
-        print(f"Verification token: {token}")
+async def get_user_db(session: AsyncSession = Depends(get_async_db)) -> AsyncGenerator:
+    yield SQLAlchemyUserDatabase(session, User)
 
 
 async def get_user_manager(
@@ -40,7 +25,7 @@ async def get_user_manager(
     yield UserManager(user_db)
 
 
-bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
+bearer_transport: BearerTransport = BearerTransport(tokenUrl="auth/jwt/login")
 
 
 def get_jwt_strategy() -> JWTStrategy:
@@ -49,14 +34,16 @@ def get_jwt_strategy() -> JWTStrategy:
     )
 
 
-auth_backend = AuthenticationBackend(
+auth_backend: AuthenticationBackend = AuthenticationBackend(
     name="jwt",
     transport=bearer_transport,
     get_strategy=get_jwt_strategy,
 )
 
 
-api_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])
+api_users: FastAPIUsers = FastAPIUsers[User, uuid.UUID](
+    get_user_manager, [auth_backend]
+)
 
-current_active_user = api_users.current_user(active=True)
-current_active_super_user = api_users.current_user(active=True, superuser=True)
+current_active_user: Any = api_users.current_user(active=True)
+current_active_superuser: Any = api_users.current_user(active=True, superuser=True)

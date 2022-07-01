@@ -30,12 +30,16 @@ _ref
 
 # managed by parent repo GCAPI
 prestart.sh
-start.sh
-start-reload.sh
 prestart-worker.sh
-start-worker.sh
-wait-for-it.sh
 start-tests.sh
+start.sh
+start-worker.sh
+start-reload.sh
 
 # examples
 ex_*
+
+# DB migrations
+app/**/migrations/versions
+app/**/alembic/versions
+alembic/versions

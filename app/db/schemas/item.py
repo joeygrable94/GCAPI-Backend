@@ -15,8 +15,6 @@ class ItemCreate(ItemBase):
 
 
 class ItemUpdate(ItemBase):
-    title: Optional[str]
-    content: Optional[str]
     user_id: Optional[UUID4]
 
 

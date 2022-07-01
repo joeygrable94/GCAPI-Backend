@@ -10,12 +10,14 @@ if TYPE_CHECKING:
 
 
 class UserClient(TableBase):
-    __tablename__ = "user_client"
+    __tablename__: str = "user_client"
 
     # relationships
     user_id = Column(CHAR(36), ForeignKey("user.id"), nullable=False)
     client_id = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
 
     def __repr__(self) -> str:
-        repr_str = f"UserClient({self.id}, [U({self.user_id}), C({self.client_id})])"
+        repr_str: str = (
+            f"UserClient({self.id}, [U({self.user_id}), C({self.client_id})])"
+        )
         return repr_str

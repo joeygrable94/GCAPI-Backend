@@ -27,8 +27,8 @@ pytestmark = pytest.mark.asyncio
 @pytest_asyncio.fixture(scope="session")
 def event_loop(request: Request) -> Generator:
     """Create an instance of the default event loop for each test case."""
-    policy = asyncio.get_event_loop_policy()
-    res = policy.new_event_loop()
+    policy: asyncio.AbstractEventLoopPolicy = asyncio.get_event_loop_policy()
+    res: asyncio.AbstractEventLoop = policy.new_event_loop()
     asyncio.set_event_loop(res)
     yield res
     res.close()
@@ -59,7 +59,7 @@ def override_get_db(db_session: AsyncSession) -> Callable:
 def apply_migrations() -> Generator:
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     os.environ["TESTING"] = "1"
-    config = Config("alembic.ini")
+    config: Config = Config("alembic.ini")
     alembic.command.upgrade(config, "head")
     yield
     alembic.command.downgrade(config, "base")
@@ -67,7 +67,7 @@ def apply_migrations() -> Generator:
 
 @pytest_asyncio.fixture(scope="module")
 def app(override_get_db: Callable, apply_migrations: None) -> FastAPI:
-    app = create_app()
+    app: FastAPI = create_app()
     app.dependency_overrides[get_async_db] = override_get_db
     return app
 

@@ -10,7 +10,7 @@ from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, validator
 
 class Settings(BaseSettings):
 
-    DEBUG_MODE: Union[str, bool] = os.environ.get("APP_DEBUG", True)
+    DEBUG_MODE: bool = bool(os.environ.get("APP_DEBUG", True))
     # LOG: NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
     LOGGING_LEVEL: str = "DEBUG"
     LOGGER_NAME: str = os.environ.get("STACK_NAME", "debug")
@@ -27,7 +27,9 @@ class Settings(BaseSettings):
         "SECRET_KEY", "54295fb3ad6577bf6ec55fc8a4e2ce86b4a490b5f1666f1e871e94855f6dc0a7"
     )
     # seconds * minutes * hours * days = total seconds
-    ACCESS_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1
+    ACCESS_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1  # = 3600
+    RESET_PASSWORD_TOKEN_AUDIENCE: str = "users:reset"
+    VERIFY_USER_TOKEN_AUDIENCE: str = "users:verify"
 
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     BACKEND_CORS_ORIGINS: Union[str, List[AnyHttpUrl]] = os.environ.get(
@@ -35,7 +37,9 @@ class Settings(BaseSettings):
     )
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
+    def assemble_cors_origins(
+        cls: Any, v: Union[str, List[str]]
+    ) -> Union[List[str], str]:
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, (list, str)):
@@ -45,7 +49,7 @@ class Settings(BaseSettings):
     SENTRY_DSN: Optional[str] = os.environ.get("SENTRY_DSN", "")
 
     @validator("SENTRY_DSN", pre=True)
-    def sentry_dsn_can_be_blank(cls, v: str) -> Optional[str]:
+    def sentry_dsn_can_be_blank(cls: Any, v: str) -> Optional[str]:
         if len(v) == 0:
             return None
         return v
@@ -74,7 +78,7 @@ class Settings(BaseSettings):
     EMAILS_FROM_NAME: Optional[str] = os.environ.get("SMTP_EMAILS_FROM_NAME", None)
 
     @validator("EMAILS_FROM_NAME")
-    def get_project_name(cls, v: Optional[str], values: Dict[str, Any]) -> str:
+    def get_project_name(cls: Any, v: Optional[str], values: Dict[str, Any]) -> str:
         if not v:
             return values["PROJECT_NAME"]
         return v
@@ -84,7 +88,7 @@ class Settings(BaseSettings):
     EMAILS_ENABLED: bool = False
 
     @validator("EMAILS_ENABLED", pre=True)
-    def get_emails_enabled(cls, v: bool, values: Dict[str, Any]) -> bool:
+    def get_emails_enabled(cls: Any, v: bool, values: Dict[str, Any]) -> bool:
         return bool(
             values.get("SMTP_HOST")
             and values.get("SMTP_PORT")
@@ -114,8 +118,8 @@ class Settings(BaseSettings):
     )
 
     class Config:
-        case_sensitive = True
+        case_sensitive: bool = True
 
 
-mode = os.environ.get("APP_MODE")
-settings = Settings()
+mode: Optional[str] = os.environ.get("APP_MODE")
+settings: Settings = Settings()

@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class GoogleUniversalAnalyticsView(TableBase):
-    __tablename__ = "go_ua_view"
+    __tablename__: str = "go_ua_view"
     title = Column(String(255), nullable=False)
     view_id = Column(String(16), nullable=False)
 
@@ -17,5 +17,6 @@ class GoogleUniversalAnalyticsView(TableBase):
     gua_id = Column(CHAR(36), ForeignKey("go_ua.id"), nullable=False)
 
     def __repr__(self) -> str:
-        repr_str = f"GoogleUniversalAnalyticsView({self.title} View[{self.view_id}] for GUA Property[{self.gua_id}])"
+        repr_str: str = f"GoogleUniversalAnalyticsView({self.title} \
+            View[{self.view_id}] for GUA Property[{self.gua_id}])"
         return repr_str

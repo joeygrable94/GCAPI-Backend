@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class SharpSpring(TableBase):
-    __tablename__ = "sharpspring"
+    __tablename__: str = "sharpspring"
     hashed_api_key = Column(String(64), nullable=False)
     hashed_secret_key = Column(String(64), nullable=False)
 
@@ -17,5 +17,5 @@ class SharpSpring(TableBase):
     client_id = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
 
     def __repr__(self) -> str:
-        repr_str = f"SharpSpring(Client[{self.client_id}] since {self.created_on})"
+        repr_str: str = f"SharpSpring(Client[{self.client_id}] since {self.created_on})"
         return repr_str

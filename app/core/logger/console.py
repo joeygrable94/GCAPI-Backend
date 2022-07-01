@@ -26,19 +26,19 @@ class Color:
     Thanks to Philippe Biondi for his awesome tool and design.
     """
 
-    normal = "\033[0m"
-    black = "\033[30m"
-    red = "\033[31m"
-    green = "\033[32m"
-    yellow = "\033[33m"
-    blue = "\033[34m"
-    purple = "\033[35m"
-    cyan = "\033[36m"
-    grey = "\033[37m"
-    bold = "\033[1m"
-    uline = "\033[4m"
-    blink = "\033[5m"
-    invert = "\033[7m"
+    normal: str = "\033[0m"
+    black: str = "\033[30m"
+    red: str = "\033[31m"
+    green: str = "\033[32m"
+    yellow: str = "\033[33m"
+    blue: str = "\033[34m"
+    purple: str = "\033[35m"
+    cyan: str = "\033[36m"
+    grey: str = "\033[37m"
+    bold: str = "\033[1m"
+    uline: str = "\033[4m"
+    blink: str = "\033[5m"
+    invert: str = "\033[7m"
 
 
 class ColorTheme:
@@ -57,12 +57,13 @@ class AnsiColorTheme(ColorTheme):
     def __getattr__(self, attr: Any) -> Any:
         if attr.startswith("__"):
             raise AttributeError(attr)
-        s = "style_%s" % attr
+        s: Any = "style_%s" % attr
         if s in self.__class__.__dict__:
-            before = getattr(self, s)
-            after = self.style_normal
+            before: Any = getattr(self, s)
+            after: Any = self.style_normal
         else:
-            before = after = ""
+            before = ""
+            after = ""
 
         def do_style(
             val: Any, fmt: Any = None, before: Any = before, after: Any = after
@@ -76,28 +77,28 @@ class AnsiColorTheme(ColorTheme):
 
         return do_style
 
-    style_normal = ""
-    style_prompt = ""  # '>>>'
-    style_punct = ""
-    style_id = ""
-    style_not_printable = ""
-    style_class_name = ""
-    style_field_name = ""
-    style_field_value = ""
-    style_emph_field_name = ""
-    style_emph_field_value = ""
-    style_watchlist_name = ""
-    style_watchlist_type = ""
-    style_watchlist_value = ""
-    style_fail = ""
-    style_success = ""
-    style_odd = ""
-    style_even = ""
-    style_yellow = ""
-    style_active = ""
-    style_closed = ""
-    style_left = ""
-    style_right = ""
+    style_normal: str = ""
+    style_prompt: str = ""  # '>>>'
+    style_punct: str = ""
+    style_id: str = ""
+    style_not_printable: str = ""
+    style_class_name: str = ""
+    style_field_name: str = ""
+    style_field_value: str = ""
+    style_emph_field_name: str = ""
+    style_emph_field_value: str = ""
+    style_watchlist_name: str = ""
+    style_watchlist_type: str = ""
+    style_watchlist_value: str = ""
+    style_fail: str = ""
+    style_success: str = ""
+    style_odd: str = ""
+    style_even: str = ""
+    style_yellow: str = ""
+    style_active: str = ""
+    style_closed: str = ""
+    style_left: str = ""
+    style_right: str = ""
 
 
 class BlackAndWhite(AnsiColorTheme):
@@ -105,46 +106,46 @@ class BlackAndWhite(AnsiColorTheme):
 
 
 class DefaultTheme(AnsiColorTheme):
-    style_normal = Color.normal
-    style_prompt = Color.blue + Color.bold
-    style_punct = Color.normal
-    style_id = Color.blue + Color.bold
-    style_not_printable = Color.grey
-    style_class_name = Color.red + Color.bold
-    style_field_name = Color.blue
-    style_field_value = Color.purple
-    style_emph_field_name = Color.blue + Color.uline + Color.bold
-    style_emph_field_value = Color.purple + Color.uline + Color.bold
-    style_watchlist_type = Color.blue
-    style_watchlist_value = Color.purple
-    style_fail = Color.red + Color.bold
-    style_success = Color.blue + Color.bold
-    style_even = Color.black + Color.bold
-    style_odd = Color.black
-    style_yellow = Color.yellow
-    style_active = Color.black
-    style_closed = Color.grey
-    style_left = Color.blue + Color.invert
-    style_right = Color.red + Color.invert
+    style_normal: str = Color.normal
+    style_prompt: str = Color.blue + Color.bold
+    style_punct: str = Color.normal
+    style_id: str = Color.blue + Color.bold
+    style_not_printable: str = Color.grey
+    style_class_name: str = Color.red + Color.bold
+    style_field_name: str = Color.blue
+    style_field_value: str = Color.purple
+    style_emph_field_name: str = Color.blue + Color.uline + Color.bold
+    style_emph_field_value: str = Color.purple + Color.uline + Color.bold
+    style_watchlist_type: str = Color.blue
+    style_watchlist_value: str = Color.purple
+    style_fail: str = Color.red + Color.bold
+    style_success: str = Color.blue + Color.bold
+    style_even: str = Color.black + Color.bold
+    style_odd: str = Color.black
+    style_yellow: str = Color.yellow
+    style_active: str = Color.black
+    style_closed: str = Color.grey
+    style_left: str = Color.blue + Color.invert
+    style_right: str = Color.red + Color.invert
 
 
-default_theme = DefaultTheme()
+default_theme: DefaultTheme = DefaultTheme()
 
 
 class Logger:
     def __init__(self, name: str = "myapp", level: str = "INFO") -> None:
-        self.file_frmt = logging.Formatter(
+        self.file_frmt: logging.Formatter = logging.Formatter(
             "%(levelname)s:     %(message)s [%(asctime)s]"
         )
-        self.stream_frmt = logging.Formatter(
+        self.stream_frmt: logging.Formatter = logging.Formatter(
             "%(levelname)s:     %(message)s [%(asctime)s]"
         )
-        self.logger = logging.getLogger(name)
+        self.logger: Any = logging.getLogger(name)
         self.logger.setLevel(logging.getLevelName(level))
         # file handler
-        self.fh = logging.FileHandler(f"{name}.log")
+        self.fh: logging.FileHandler = logging.FileHandler(f"{name}.log")
         # stream handler
-        self.ch = logging.StreamHandler()
+        self.ch: logging.StreamHandler = logging.StreamHandler()
         self.ch.setFormatter(self.stream_frmt)
         self.fh.setFormatter(self.file_frmt)
         self.logger.addHandler(self.ch)

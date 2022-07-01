@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, Any
 
-from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTableUUID
+from sqlalchemy import Boolean, Column, String
 from sqlalchemy.orm import backref, relationship, validates
 
 from app.core.config import settings
-from app.db.tables.base import UserTableBase
+from app.db.tables.base import TableBase
 from app.db.utilities import email_pattern
 
 if TYPE_CHECKING:
@@ -13,11 +13,21 @@ if TYPE_CHECKING:
     from .user_client import UserClient  # noqa: F401
 
 
-class User(UserTableBase, SQLAlchemyBaseUserTableUUID):
+class User(TableBase):
+    __tablename__: str = "user"
+    email: Column[str] = Column(
+        String(length=320), unique=True, index=True, nullable=False
+    )
+    hashed_password: Column[str] = Column(String(length=1024), nullable=False)
+    is_active: Column[bool] = Column(Boolean, default=True, nullable=False)
+    is_superuser: Column[bool] = Column(Boolean, default=False, nullable=False)
+    is_verified: Column[bool] = Column(Boolean, default=False, nullable=False)
 
     # relationships
-    clients = relationship("Client", secondary="user_client", back_populates="users")
-    items = relationship("Item", backref=backref("user", lazy="noload"))
+    clients: Any = relationship(
+        "Client", secondary="user_client", back_populates="users"
+    )
+    items: Any = relationship("Item", backref=backref("user", lazy="noload"))
 
     @validates("email")
     def validate_email(self, k: Any, v: Any) -> Any:
@@ -32,5 +42,5 @@ class User(UserTableBase, SQLAlchemyBaseUserTableUUID):
         return v
 
     def __repr__(self) -> str:
-        repr_str = f"User({self.email} created {self.created_on}, UUID[{self.id}])"
+        repr_str: str = f"User({self.email} created {self.created_on}, UUID[{self.id}])"
         return repr_str

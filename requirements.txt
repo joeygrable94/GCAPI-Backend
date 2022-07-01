@@ -47,6 +47,7 @@ asgi-lifespan
 pytest
 pytest-cov
 pytest-asyncio
+pytest-mock
 
 # tooling
 python-dotenv

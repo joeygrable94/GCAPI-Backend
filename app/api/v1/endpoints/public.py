@@ -2,7 +2,7 @@ from typing import Dict
 
 from fastapi import APIRouter
 
-public_router = APIRouter()
+public_router: APIRouter = APIRouter()
 
 
 @public_router.get("/status")

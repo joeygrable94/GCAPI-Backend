@@ -67,21 +67,22 @@ def configure_static(app: FastAPI) -> None:
 
 def configure_events(app: FastAPI) -> None:
     from app.db.commands import (check_db_connected, check_db_disconnected,
-                                 create_db_and_tables, create_initial_data)
+                                 create_initial_data)
 
     # startup actions
     @app.on_event("startup")
     async def on_startup() -> None:
         await check_db_connected()
+        # await drop_db_and_tables()
         # await create_db_and_tables()
         await create_initial_data()
 
     # middlewares
     @app.middleware("http")
     async def add_process_time_header(request: Request, call_next: Any) -> None:
-        start_time = time.perf_counter()
-        response = await call_next(request)
-        process_time = time.perf_counter() - start_time
+        start_time: Any = time.perf_counter()
+        response: Any = await call_next(request)
+        process_time: Any = time.perf_counter() - start_time
         response.headers["X-Process-Time"] = str(process_time)
         return response
 
@@ -92,7 +93,7 @@ def configure_events(app: FastAPI) -> None:
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(
+    app: FastAPI = FastAPI(
         title=settings.PROJECT_NAME,
         version=settings.PROJECT_VERSION,
         openapi_url=f"{settings.API_PREFIX}/docs/openapi.json",
