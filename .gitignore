@@ -35,6 +35,7 @@ start-reload.sh
 prestart-worker.sh
 start-worker.sh
 wait-for-it.sh
+start-tests.sh
 
 # examples
 ex_*
