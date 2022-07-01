@@ -42,7 +42,7 @@ emails==0.6
 Jinja2==3.1.2
 
 # testing
-httpx==0.22.0
+httpx==0.23.0
 asgi-lifespan==1.0.1
 pytest==7.1.2
 pytest-asyncio==0.18.3
