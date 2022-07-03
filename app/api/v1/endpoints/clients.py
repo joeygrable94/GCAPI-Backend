@@ -16,16 +16,10 @@ clients_router: APIRouter = APIRouter()
 async def clients_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
-    user_id: UUID4 = None,
     current_user: UserRead = Depends(current_active_user),
 ) -> Union[List[ClientRead], List[Any], None]:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
-    if user_id:
-        clients: Union[List[ClientRead], List[Any], None] = await clients_repo.list(
-            page=page, user_id=user_id
-        )
-    else:
-        clients = await clients_repo.list(page=page)
+    clients = await clients_repo.list(page=page)
     if clients:
         return clients
     return list()

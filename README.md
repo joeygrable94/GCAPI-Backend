@@ -14,6 +14,7 @@
   - [SQLAlchemy ORM](#sqlalchemy-orm)
     - [Resources](#resources-1)
   - [PyTest](#pytest)
+    - [Commands](#commands-1)
     - [Resources](#resources-2)
 
 ---
@@ -97,6 +98,12 @@ Always add a message about what changed in the db models/tables.
 ---
 
 ## PyTest
+
+### Commands
+
+    pytest --asyncio-mode=strict
+    pytest app/tests/crud --asyncio-mode=strict
+    pytest app/tests/api/api_v1/test_websites.py --asyncio-mode=strict
 
 ### Resources
 

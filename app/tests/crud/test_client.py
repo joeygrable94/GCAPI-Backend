@@ -22,19 +22,6 @@ async def test_create_client(db_session: AsyncSession) -> None:
     assert client.content == content
 
 
-async def test_create_client_with_user(
-    db_session: AsyncSession,
-) -> None:
-    title: str = random_lower_string()
-    content: str = random_lower_string()
-    client_repo: ClientsRepository = ClientsRepository(session=db_session)
-    client: ClientRead = await client_repo.create(
-        ClientCreate(title=title, content=content)
-    )
-    assert client.title == title
-    assert client.content == content
-
-
 async def test_get_client(
     db_session: AsyncSession,
 ) -> None:

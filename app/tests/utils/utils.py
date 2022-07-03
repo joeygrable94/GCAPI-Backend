@@ -8,3 +8,7 @@ def random_lower_string() -> str:
 
 def random_email() -> str:
     return f"{random_lower_string()}@getcommunity.com"
+
+
+def random_domain_name() -> str:
+    return f"{random_lower_string()}.com"

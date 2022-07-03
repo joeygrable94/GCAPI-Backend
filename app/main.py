@@ -14,7 +14,8 @@ from app.db.schemas import UserCreate, UserRead, UserUpdate
 def configure_routers(app: FastAPI) -> None:
     # import routers
     from app.api.v1.endpoints import (clients_router, items_router,
-                                      public_router, users_router)
+                                      public_router, users_router,
+                                      websites_router)
 
     # public routes
     app.include_router(public_router, prefix=f"{settings.API_PREFIX}", tags=["public"])
@@ -58,6 +59,9 @@ def configure_routers(app: FastAPI) -> None:
     )
     app.include_router(
         clients_router, prefix=f"{settings.API_PREFIX}/clients", tags=["clients"]
+    )
+    app.include_router(
+        websites_router, prefix=f"{settings.API_PREFIX}/websites", tags=["websites"]
     )
 
 

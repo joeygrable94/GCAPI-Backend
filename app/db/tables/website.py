@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class Website(TableBase):
     __tablename__: str = "website"
     domain: Column[str] = Column(String(255), nullable=False)
-    secure: Column[bool] = Column(Boolean(), nullable=False, default=False)
+    is_secure: Column[bool] = Column(Boolean(), nullable=False, default=False)
 
     # relationships
     clients: Any = relationship(
@@ -27,7 +27,7 @@ class Website(TableBase):
     pages: Any = relationship("WebsitePage", backref=backref("website", lazy="noload"))
 
     def get_link(self) -> str:
-        return f"https://{self.domain}" if self.secure else f"http://{self.domain}"
+        return f"https://{self.domain}" if self.is_secure else f"http://{self.domain}"
 
     def __repr__(self) -> str:
         repr_str: str = f"Website({self.id}, URL[{self.domain}])"

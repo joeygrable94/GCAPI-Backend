@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
 
 from pydantic import UUID4
 from sqlalchemy import select as sql_select
@@ -29,7 +29,7 @@ class BaseRepository(
 
     @property
     @abc.abstractmethod
-    def _table(self) -> Type[TABLE]:
+    def _table(self) -> Any:
         pass
 
     @staticmethod
