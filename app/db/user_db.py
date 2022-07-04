@@ -1,9 +1,9 @@
-from typing import Any, Dict, Generic, Optional, Type
+from typing import Any, Dict, Generic, List, Optional, Type
 
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.user_manager.types import ID, UP
+from app.db.schemas.user import ID, UP
 from app.db.repositories.base import sql_select
 
 
@@ -32,6 +32,16 @@ class SQLAlchemyUserDatabase(Generic[UP, ID]):
         if user is None:
             return None
         return user[0]
+
+    async def get_list(self, limit: int = 10, skip: int = 1) -> List:
+        statement: Any = (
+            sql_select(self.user_table)
+            .limit(limit)
+            .offset(skip)
+        )
+        results: Any = await self.session.execute(statement)
+        users: List[Any] = results.scalars().all()
+        return list(users)
 
     async def get(self, id: ID) -> Optional[UP]:
         statement: Any = sql_select(self.user_table).where(  # type: ignore

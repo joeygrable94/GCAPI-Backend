@@ -1,9 +1,54 @@
-from typing import Optional, TypeVar
+from typing import Any, Dict, Generic, Optional, Protocol, TypeVar
 
-from pydantic import UUID4, EmailStr
+from pydantic import UUID4, EmailStr, BaseModel
 
-from app.core.user_manager.schemas import BaseUser, CreateUpdateDictModel
 from app.db.schemas.base import BaseSchema
+
+
+ID = TypeVar("ID")
+
+
+class UserProtocol(Protocol[ID]):
+    """User protocol the ORM model should follow."""
+
+    id: ID
+    email: str
+    hashed_password: str
+    is_active: bool
+    is_superuser: bool
+    is_verified: bool
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        ...  # pragma: no cover
+
+
+UP = TypeVar("UP", bound=UserProtocol)
+
+
+class CreateUpdateDictModel(BaseModel):
+    def create_update_dict(self) -> Dict:
+        return self.dict(
+            exclude_unset=True,
+            exclude={
+                "id",
+                "is_superuser",
+                "is_active",
+                "is_verified",
+            },
+        )
+
+    def create_update_dict_superuser(self) -> Dict:
+        return self.dict(exclude_unset=True, exclude={"id"})
+
+
+class BaseUser(Generic[ID], CreateUpdateDictModel):
+    """Base User model."""
+
+    id: ID
+    email: EmailStr
+    is_active: bool = True
+    is_superuser: bool = False
+    is_verified: bool = False
 
 
 class UserCreate(BaseSchema, CreateUpdateDictModel):

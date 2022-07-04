@@ -5,10 +5,10 @@ from typing import Any, Callable, List, Optional, Sequence, Tuple, cast
 from fastapi import Depends, HTTPException, status
 from makefun import with_signature
 
-from app.core.user_manager.authentication.backend import AuthenticationBackend
-from app.core.user_manager.authentication.strategy import Strategy
-from app.core.user_manager.manager import UserManager, UserManagerDependency
-from app.core.user_manager.types import ID, UP, DependencyCallable
+from app.core.security.authentication.backend import AuthenticationBackend
+from app.core.security.authentication.strategy import Strategy
+from app.core.security.manager import UserManager
+from app.db.schemas.user import ID, UP
 
 INVALID_CHARS_PATTERN = re.compile(r"[^0-9a-zA-Z_]")
 INVALID_LEADING_CHARS_PATTERN = re.compile(r"^[^a-zA-Z_]+")
@@ -30,9 +30,6 @@ class DuplicateBackendNamesError(Exception):
     pass
 
 
-EnabledBackendsDependency = DependencyCallable[Sequence[AuthenticationBackend]]
-
-
 class Authenticator:
     """
     Provides dependency callables to retrieve authenticated user.
@@ -50,7 +47,7 @@ class Authenticator:
     def __init__(
         self,
         backends: Sequence[AuthenticationBackend],
-        get_user_manager: UserManagerDependency[UP, ID],
+        get_user_manager: UserManager[UP, ID],
     ):
         self.backends = backends
         self.get_user_manager = get_user_manager

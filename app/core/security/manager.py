@@ -1,23 +1,23 @@
 import uuid
-from typing import Any, Dict, Generic, Optional, Union
+from typing import Any, Dict, Generic, List, Optional, Union
 
 import jwt
 from fastapi import Request
 from fastapi.security import OAuth2PasswordRequestForm
+from app.api.paginate import paginate
 
 from app.core.config import settings
-from app.core.user_manager.exceptions import (InvalidID,
-                                              InvalidResetPasswordToken,
-                                              InvalidVerifyToken,
-                                              UserAlreadyExists,
-                                              UserAlreadyVerified,
-                                              UserInactive, UserNotExists)
-from app.core.user_manager.jwt import SecretType, decode_jwt, generate_jwt
-from app.core.user_manager.password import (PasswordHelper,
-                                            PasswordHelperProtocol)
-from app.core.user_manager.sqlalchemy_adapter import SQLAlchemyUserDatabase
-from app.core.user_manager.types import ID, UP, DependencyCallable
-from app.db.schemas.user import UC, UU
+from app.api.exceptions import (InvalidID,
+                                InvalidResetPasswordToken,
+                                InvalidVerifyToken,
+                                UserAlreadyExists,
+                                UserAlreadyVerified,
+                                UserInactive, UserNotExists)
+from app.core.security.jwt import SecretType, decode_jwt, generate_jwt
+from app.core.security.password import (PasswordHelper,
+                                        PasswordHelperProtocol)
+from app.db.user_db import SQLAlchemyUserDatabase
+from app.db.schemas.user import ID, UP, UC, UU
 
 
 class UserManager(Generic[UP, ID]):
@@ -96,6 +96,17 @@ class UserManager(Generic[UP, ID]):
         if user is None:
             raise UserNotExists()
         return user
+
+    async def get_page(
+        self,
+        page: int = 1,
+        request: Optional[Request] = None
+    ) -> List[UP]:
+        skip, limit = paginate(page)
+        users = await self.user_db.get_list(limit=limit, skip=skip)
+        if users is None:
+            return []
+        return users
 
     async def create(
         self,
@@ -467,6 +478,3 @@ class UserManager(Generic[UP, ID]):
             else:
                 validated_update_dict[field] = value
         return await self.user_db.update(user, validated_update_dict)
-
-
-UserManagerDependency = DependencyCallable[UserManager[UP, ID]]

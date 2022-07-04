@@ -5,7 +5,7 @@ from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db
-from app.core.user_manager import current_active_user
+from app.core.security import get_current_active_user
 from app.db.repositories.client import ClientsRepository
 from app.db.schemas import ClientCreate, ClientRead, ClientUpdate, UserRead
 
@@ -16,7 +16,7 @@ clients_router: APIRouter = APIRouter()
 async def clients_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
-    current_user: UserRead = Depends(current_active_user),
+    current_user: UserRead = Depends(get_current_active_user),
 ) -> Union[List[ClientRead], List[Any], None]:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
     clients = await clients_repo.list(page=page)
@@ -30,7 +30,7 @@ async def clients_create(
     *,
     db: AsyncSession = Depends(get_async_db),
     client_in: ClientCreate,
-    current_user: UserRead = Depends(current_active_user),
+    current_user: UserRead = Depends(get_current_active_user),
 ) -> ClientRead:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
     client: ClientRead = await clients_repo.create(client_in)
@@ -42,7 +42,7 @@ async def clients_read(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID4,
-    current_user: UserRead = Depends(current_active_user),
+    current_user: UserRead = Depends(get_current_active_user),
 ) -> ClientRead:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
     client: Optional[ClientRead] = await clients_repo.read(entry_id=id)
@@ -59,7 +59,7 @@ async def clients_update(
     db: AsyncSession = Depends(get_async_db),
     id: UUID4,
     client_in: ClientUpdate,
-    current_user: UserRead = Depends(current_active_user),
+    current_user: UserRead = Depends(get_current_active_user),
 ) -> Any:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
     client: Optional[ClientRead] = await clients_repo.read(entry_id=id)
@@ -76,7 +76,7 @@ async def clients_delete(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID4,
-    current_user: UserRead = Depends(current_active_user),
+    current_user: UserRead = Depends(get_current_active_user),
 ) -> Any:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
     client: Optional[ClientRead] = await clients_repo.read(entry_id=id)

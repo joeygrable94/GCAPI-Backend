@@ -3,8 +3,8 @@ from typing import Any, List, Optional, Type, Union
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.user_manager import UserManager
-from app.core.user_manager.sqlalchemy_adapter import SQLAlchemyUserDatabase
+from app.core.security.manager import UserManager
+from app.db.user_db import SQLAlchemyUserDatabase
 from app.db.repositories.base import BaseRepository
 from app.db.schemas.user import UserCreate, UserRead, UserUpdate
 from app.db.tables import User

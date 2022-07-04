@@ -7,47 +7,42 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.templates import static_files
-from app.core.user_manager import api_users, auth_backend
-from app.db.schemas import UserCreate, UserRead, UserUpdate
 
 
 def configure_routers(app: FastAPI) -> None:
     # import routers
-    from app.api.v1.endpoints import (clients_router, items_router,
-                                      public_router, users_router,
-                                      websites_router)
+    from app.api.v1.endpoints import (auth_router, register_router,
+                                      reset_password_router,
+                                      verify_router, auth_users_router,
+                                      clients_router, items_router,
+                                      public_router, websites_router)
 
     # public routes
     app.include_router(public_router, prefix=f"{settings.API_PREFIX}", tags=["public"])
     # auth routes
     app.include_router(
-        api_users.get_auth_router(auth_backend),
+        auth_router,
         prefix=f"{settings.API_PREFIX}/auth/jwt",
         tags=["auth"],
     )
     app.include_router(
-        api_users.get_register_router(UserRead, UserCreate),
+        register_router,
         prefix=f"{settings.API_PREFIX}/auth",
         tags=["auth"],
     )
     app.include_router(
-        api_users.get_reset_password_router(),
+        reset_password_router,
         prefix=f"{settings.API_PREFIX}/auth",
         tags=["auth"],
     )
     app.include_router(
-        api_users.get_verify_router(UserRead),
+        verify_router,
         prefix=f"{settings.API_PREFIX}/auth",
         tags=["auth"],
     )
     # user routes
     app.include_router(
-        users_router,
-        prefix=f"{settings.API_PREFIX}/users",
-        tags=["users"],
-    )
-    app.include_router(
-        api_users.get_users_router(UserRead, UserUpdate),
+        auth_users_router,
         prefix=f"{settings.API_PREFIX}/users",
         tags=["users"],
     )
@@ -71,6 +66,7 @@ def configure_static(app: FastAPI) -> None:
 
 def configure_events(app: FastAPI) -> None:
     from app.db.commands import (check_db_connected, check_db_disconnected,
+                                #  drop_db_and_tables, create_db_and_tables,
                                  create_initial_data)
 
     # startup actions

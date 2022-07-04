@@ -5,8 +5,8 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.core.user_manager.exceptions import UserNotExists
-from app.core.user_manager.manager import UserManager
+from app.api.exceptions import UserNotExists
+from app.core.security.manager import UserManager
 from app.db.repositories.user import UsersRepository
 from app.db.schemas.user import UserCreate, UserRead, UserUpdate
 from app.tests.utils.utils import random_email, random_lower_string

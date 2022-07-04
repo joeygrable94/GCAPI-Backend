@@ -2,12 +2,12 @@ from typing import Generic, List, Optional
 
 import jwt
 
-from app.core.user_manager.authentication.strategy.base import (
+from app.core.security.authentication.strategy.base import (
     Strategy, StrategyDestroyNotSupportedError)
-from app.core.user_manager.exceptions import InvalidID, UserNotExists
-from app.core.user_manager.jwt import SecretType, decode_jwt, generate_jwt
-from app.core.user_manager.manager import UserManager
-from app.core.user_manager.types import ID, UP
+from app.api.exceptions import InvalidID, UserNotExists
+from app.core.security.jwt import SecretType, decode_jwt, generate_jwt
+from app.core.security.manager import UserManager
+from app.db.schemas.user import ID, UP
 
 
 class JWTStrategy(Strategy[UP, ID], Generic[UP, ID]):

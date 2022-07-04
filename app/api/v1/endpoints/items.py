@@ -5,7 +5,7 @@ from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db
-from app.core.user_manager import current_active_user
+from app.core.security import get_current_active_user
 from app.db.repositories.item import ItemsRepository
 from app.db.schemas import ItemCreate, ItemRead, ItemUpdate, UserRead
 
@@ -17,7 +17,7 @@ async def items_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
     user_id: UUID4 = None,
-    current_user: UserRead = Depends(current_active_user),
+    current_user: UserRead = Depends(get_current_active_user),
 ) -> Union[List[ItemRead], List]:
     items_repo: ItemsRepository = ItemsRepository(session=db)
     items: Union[List[ItemRead], List[Any], None] = await items_repo.list(
@@ -33,7 +33,7 @@ async def items_create(
     *,
     db: AsyncSession = Depends(get_async_db),
     item_in: ItemCreate,
-    current_user: UserRead = Depends(current_active_user),
+    current_user: UserRead = Depends(get_current_active_user),
 ) -> ItemRead:
     items_repo: ItemsRepository = ItemsRepository(session=db)
     if not item_in.user_id:
@@ -47,7 +47,7 @@ async def items_read(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID4,
-    current_user: UserRead = Depends(current_active_user),
+    current_user: UserRead = Depends(get_current_active_user),
 ) -> ItemRead:
     items_repo: ItemsRepository = ItemsRepository(session=db)
     item: Optional[ItemRead] = await items_repo.read(entry_id=id)
@@ -68,7 +68,7 @@ async def items_update(
     db: AsyncSession = Depends(get_async_db),
     id: UUID4,
     item_in: ItemUpdate,
-    current_user: UserRead = Depends(current_active_user),
+    current_user: UserRead = Depends(get_current_active_user),
 ) -> Any:
     items_repo: ItemsRepository = ItemsRepository(session=db)
     item: Optional[ItemRead] = await items_repo.read(entry_id=id)
@@ -89,7 +89,7 @@ async def items_delete(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID4,
-    current_user: UserRead = Depends(current_active_user),
+    current_user: UserRead = Depends(get_current_active_user),
 ) -> Any:
     items_repo: ItemsRepository = ItemsRepository(session=db)
     item: Optional[ItemRead] = await items_repo.read(entry_id=id)

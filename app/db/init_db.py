@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.logger import logger
-from app.core.user_manager.crud import crud_user_create
+from app.db.commands import crud_user_create
 
 
 def load_initial_data(db: Session) -> None:

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db
-from app.core.user_manager import current_active_superuser
+from app.core.security import get_current_active_superuser
 from app.db.repositories.user import UsersRepository
 from app.db.schemas import UserRead
 
@@ -15,7 +15,7 @@ users_router: APIRouter = APIRouter()
 async def users_list(
     page: int = 1,
     db: AsyncSession = Depends(get_async_db),
-    current_superuser: Any = Depends(current_active_superuser),
+    current_superuser: Any = Depends(get_current_active_superuser),
 ) -> Any:
     users_repo: UsersRepository = UsersRepository(session=db)
     users: Union[List[UserRead], List[Any], None] = await users_repo.list(page=page)

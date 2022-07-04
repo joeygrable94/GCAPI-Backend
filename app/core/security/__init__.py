@@ -3,16 +3,16 @@ from typing import Any, AsyncGenerator
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.api.deps import get_async_db
 from app.core.config import settings
-from app.core.user_manager.authentication import (AuthenticationBackend,
-                                                  BearerTransport, JWTStrategy)
-from app.core.user_manager.base import FastAPIUsers
-from app.core.user_manager.manager import UserManager
-from app.core.user_manager.sqlalchemy_adapter import SQLAlchemyUserDatabase
-from app.db.schemas.user import UserRead
+
+from app.core.security.authentication import (AuthenticationBackend,
+                                              BearerTransport,
+                                              JWTStrategy)
+from app.core.security.authentication.authenticator import Authenticator
+from app.core.security.manager import UserManager
 from app.db.tables import User
+from app.db.user_db import SQLAlchemyUserDatabase
+from app.api.deps import get_async_db
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_db)) -> AsyncGenerator:
@@ -24,15 +24,12 @@ async def get_user_manager(
 ) -> AsyncGenerator:
     yield UserManager(user_db)
 
-
 bearer_transport: BearerTransport = BearerTransport(tokenUrl="auth/jwt/login")
-
 
 def get_jwt_strategy() -> JWTStrategy:
     return JWTStrategy(
         secret=settings.SECRET_KEY, lifetime_seconds=settings.ACCESS_TOKEN_LIFETIME
     )
-
 
 auth_backend: AuthenticationBackend = AuthenticationBackend(
     name="jwt",
@@ -40,10 +37,14 @@ auth_backend: AuthenticationBackend = AuthenticationBackend(
     get_strategy=get_jwt_strategy,
 )
 
+authenticator = Authenticator([auth_backend], get_user_manager)
 
-api_users: FastAPIUsers = FastAPIUsers[User, uuid.UUID](
-    get_user_manager, [auth_backend]
-)
+def get_current_active_user() -> Any:
+    return authenticator.current_user(
+        active=True, verified=settings.USERS_REQUIRE_VERIFICATION
+    )
 
-current_active_user: Any = api_users.current_user(active=True)
-current_active_superuser: Any = api_users.current_user(active=True, superuser=True)
+def get_current_active_superuser() -> Any:
+    return authenticator.current_user(
+        active=True, verified=settings.USERS_REQUIRE_VERIFICATION, superuser=True
+    )

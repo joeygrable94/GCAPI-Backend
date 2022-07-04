@@ -3,7 +3,7 @@ from typing import Any, Dict
 from httpx import AsyncClient, Response
 
 from app.core.config import settings
-from app.core.user_manager.exceptions import UserAlreadyExists
+from app.api.exceptions import UserAlreadyExists
 from app.db.repositories.user import UsersRepository
 from app.db.schemas import UserCreate, UserRead, UserUpdate
 from app.tests.utils.utils import random_email, random_lower_string

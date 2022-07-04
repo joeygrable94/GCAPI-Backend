@@ -116,6 +116,13 @@ class Settings(BaseSettings):
     USERS_OPEN_REGISTRATION: Union[str, bool] = os.environ.get(
         "USERS_OPEN_REGISTRATION", False
     )
+    USERS_REQUIRE_VERIFICATION: Union[str, bool] = os.environ.get(
+        "USERS_OPEN_REGISTRATION", False
+    )
+
+    PER_PAGE_MAX_COUNT: Union[str, int] = os.environ.get(
+        "PER_PAGE_MAX_COUNT", 100
+    )
 
     class Config:
         case_sensitive: bool = True

@@ -2,11 +2,11 @@ from typing import Any, Generic
 
 from fastapi import Response
 
-from app.core.user_manager.authentication.strategy import (
+from app.core.security.authentication.strategy import (
     Strategy, StrategyDestroyNotSupportedError)
-from app.core.user_manager.authentication.transport import (
+from app.core.security.authentication.transport import (
     Transport, TransportLogoutNotSupportedError)
-from app.core.user_manager.types import ID, UP, DependencyCallable
+from app.db.schemas.user import ID, UP
 
 
 class AuthenticationBackend(Generic[UP, ID]):
@@ -28,7 +28,7 @@ class AuthenticationBackend(Generic[UP, ID]):
         self,
         name: str,
         transport: Transport,
-        get_strategy: DependencyCallable[Strategy[UP, ID]],
+        get_strategy: Strategy[UP, ID],
     ):
         self.name = name
         self.transport = transport
