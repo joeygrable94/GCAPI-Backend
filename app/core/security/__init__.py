@@ -39,12 +39,14 @@ auth_backend: AuthenticationBackend = AuthenticationBackend(
 
 authenticator = Authenticator([auth_backend], get_user_manager)
 
-def get_current_active_user() -> Any:
-    return authenticator.current_user(
-        active=True, verified=settings.USERS_REQUIRE_VERIFICATION
-    )
+get_current_user_token: Any = authenticator.current_user_token(
+    active=True, verified=settings.USERS_REQUIRE_VERIFICATION
+)
 
-def get_current_active_superuser() -> Any:
-    return authenticator.current_user(
-        active=True, verified=settings.USERS_REQUIRE_VERIFICATION, superuser=True
-    )
+get_current_active_user: Any = authenticator.current_user(
+    active=True, verified=settings.USERS_REQUIRE_VERIFICATION
+)
+
+get_current_active_superuser = authenticator.current_user(
+    active=True, verified=settings.USERS_REQUIRE_VERIFICATION, superuser=True
+)

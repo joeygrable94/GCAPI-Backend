@@ -69,8 +69,8 @@ class Settings(BaseSettings):
         "CELERY_RESULT_BACKEND", "redis://localhost:6379"
     )
 
-    SMTP_TLS: Union[str, bool] = os.environ.get("SMTP_TLS", True)
-    SMTP_PORT: Union[str, int, None] = os.environ.get("SMTP_PORT", None)
+    SMTP_TLS: Union[str, bool] = bool(os.environ.get("SMTP_TLS", True))
+    SMTP_PORT: Union[str, int, None] = int(os.environ.get("SMTP_PORT", None))
     SMTP_HOST: Optional[str] = os.environ.get("SMTP_HOST", None)
     SMTP_USER: Optional[str] = os.environ.get("SMTP_USER", None)
     SMTP_PASSWORD: Optional[str] = os.environ.get("SMTP_PASSWORD", None)
@@ -95,12 +95,12 @@ class Settings(BaseSettings):
             and values.get("EMAILS_FROM_EMAIL")
         )
 
-    EMAIL_PROVIDER_RESTRICTION: Union[str, bool] = os.environ.get(
+    EMAIL_PROVIDER_RESTRICTION: bool = bool(os.environ.get(
         "EMAIL_PROVIDER_RESTRICTION", True
-    )
-    ALLOWED_EMAIL_PROVIDER_LIST: Union[str, List[Any]] = os.environ.get(
+    ))
+    ALLOWED_EMAIL_PROVIDER_LIST: List[Any] = list(os.environ.get(
         "ALLOWED_EMAIL_PROVIDER_LIST", ["getcommunity.com"]
-    )
+    ))
 
     EMAIL_TEST_USER: str = os.environ.get(
         "SMTP_EMAIL_TEST_USER", "test@getcommunity.com"
@@ -113,16 +113,17 @@ class Settings(BaseSettings):
     TEST_NORMAL_USER_PASSWORD: str = os.environ.get(
         "TEST_NORMAL_USER_PASSWORD", "password"
     )
-    USERS_OPEN_REGISTRATION: Union[str, bool] = os.environ.get(
+    USERS_OPEN_REGISTRATION: bool = bool(os.environ.get(
         "USERS_OPEN_REGISTRATION", False
-    )
-    USERS_REQUIRE_VERIFICATION: Union[str, bool] = os.environ.get(
-        "USERS_OPEN_REGISTRATION", False
-    )
+    ))
+    USERS_REQUIRE_VERIFICATION: bool = bool(os.environ.get(
+        "USERS_REQUIRE_VERIFICATION", False
+    ))
 
-    PER_PAGE_MAX_COUNT: Union[str, int] = os.environ.get(
+    # Query parameters.
+    PER_PAGE_MAX_COUNT: int = int(os.environ.get(
         "PER_PAGE_MAX_COUNT", 100
-    )
+    ))
 
     class Config:
         case_sensitive: bool = True

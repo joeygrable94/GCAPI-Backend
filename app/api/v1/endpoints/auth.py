@@ -5,17 +5,13 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.api.errors import ErrorModel, ErrorCode
 from app.api.openapi import OpenAPIResponseType
 from app.core.config import settings
-from app.core.security import auth_backend, authenticator, get_user_manager
+from app.core.security import auth_backend, get_user_manager, get_current_user_token
 from app.core.security.authentication.strategy.base import Strategy
 from app.core.security.manager import UserManager
 from app.db.schemas.user import ID, UP
 
 
 auth_router: APIRouter = APIRouter()
-
-get_current_user_token: Any = authenticator.current_user_token(
-    active=True, verified=settings.USERS_REQUIRE_VERIFICATION
-)
 
 login_responses: OpenAPIResponseType = {
     status.HTTP_400_BAD_REQUEST: {
@@ -37,17 +33,6 @@ login_responses: OpenAPIResponseType = {
     },
     **auth_backend.transport.get_openapi_login_responses_success(),
 }
-
-logout_responses: OpenAPIResponseType = {
-    **{
-        status.HTTP_401_UNAUTHORIZED: {
-            "description": "Missing token or inactive user."
-        }
-    },
-    **auth_backend.transport.get_openapi_logout_responses_success(),
-}
-
-
 @auth_router.post(
     "/login",
     name=f"auth:{auth_backend.name}.login",
@@ -60,7 +45,6 @@ async def login(
     strategy: Strategy[UP, ID] = Depends(auth_backend.get_strategy),
 ) -> Any:
     user: Any = await user_manager.authenticate(credentials)
-
     if user is None or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -74,6 +58,14 @@ async def login(
     return await auth_backend.login(strategy, user, response)
 
 
+logout_responses: OpenAPIResponseType = {
+    **{
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing token or inactive user."
+        }
+    },
+    **auth_backend.transport.get_openapi_logout_responses_success(),
+}
 @auth_router.post(
     "/logout",
     name=f"auth:{auth_backend.name}.logout",

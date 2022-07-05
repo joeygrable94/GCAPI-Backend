@@ -37,7 +37,6 @@ verify_token_responses: OpenAPIResponseType = {
         },
     }
 }
-
 @verify_router.post(
     "/request-verify-token",
     status_code=status.HTTP_202_ACCEPTED,

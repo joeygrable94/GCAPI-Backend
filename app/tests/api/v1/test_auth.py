@@ -5,8 +5,9 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.core.security.manager import UserManager
 from app.db.repositories.user import UsersRepository
-from app.db.schemas.user import UserCreate, UserRead
+from app.db.schemas.user import ID, UP, UserCreate, UserRead
 from app.tests.utils.utils import random_email, random_lower_string
 
 pytestmark = pytest.mark.asyncio
@@ -62,7 +63,7 @@ async def test_auth_logout_testuser(
 async def test_auth_register_user_as_superuser(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
-    db_session: AsyncSession,
+    user_manager: UserManager[UP,ID]
 ) -> None:
     username: str = random_email()
     password: str = random_lower_string()
@@ -73,9 +74,7 @@ async def test_auth_register_user_as_superuser(
     assert 200 <= response.status_code < 300
     created_user: Dict[str, Any] = response.json()
     assert created_user["email"] == username
-
-    users_repo: UsersRepository = UsersRepository(session=db_session)
-    user: Optional[UserRead] = await users_repo.read_by_email(username)
+    user: Optional[UserRead] = await user_manager.get_by_email(user_email=username)
     assert user
     assert user.email == created_user["email"]
 
@@ -97,12 +96,11 @@ async def test_auth_register_user_as_testuser(
 async def test_auth_register_user_as_superuser_existing_username(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
-    db_session: AsyncSession,
+    user_manager: UserManager[UP,ID],
 ) -> None:
     username: str = random_email()
     password: str = random_lower_string()
-    users_repo: UsersRepository = UsersRepository(session=db_session)
-    user: Optional[UserRead] = await users_repo.create(  # noqa: F841
+    user: Optional[UserRead] = await user_manager.create(  # noqa: F841
         UserCreate(email=username, password=password)
     )
     data: Dict[str, str] = {"email": username, "password": password}

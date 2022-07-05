@@ -14,33 +14,8 @@ from app.core.security.manager import UserManager
 from app.api.openapi import OpenAPIResponseType
 from app.db.schemas.user import ID, UP
 
+
 reset_password_router = APIRouter()
-
-
-RESET_PASSWORD_RESPONSES: OpenAPIResponseType = {
-    status.HTTP_400_BAD_REQUEST: {
-        "model": ErrorModel,
-        "content": {
-            "application/json": {
-                "examples": {
-                    ErrorCode.RESET_PASSWORD_BAD_TOKEN: {
-                        "summary": "Bad or expired token.",
-                        "value": {"detail": ErrorCode.RESET_PASSWORD_BAD_TOKEN},
-                    },
-                    ErrorCode.RESET_PASSWORD_INVALID_PASSWORD: {
-                        "summary": "Password validation failed.",
-                        "value": {
-                            "detail": {
-                                "code": ErrorCode.RESET_PASSWORD_INVALID_PASSWORD,
-                                "reason": "Password should be at least 3 characters",
-                            }
-                        },
-                    },
-                }
-            }
-        },
-    },
-}
 
 @reset_password_router.post(
     "/forgot-password",
@@ -64,10 +39,34 @@ async def forgot_password(
 
     return None
 
+reset_password_responses: OpenAPIResponseType = {
+    status.HTTP_400_BAD_REQUEST: {
+        "model": ErrorModel,
+        "content": {
+            "application/json": {
+                "examples": {
+                    ErrorCode.RESET_PASSWORD_BAD_TOKEN: {
+                        "summary": "Bad or expired token.",
+                        "value": {"detail": ErrorCode.RESET_PASSWORD_BAD_TOKEN},
+                    },
+                    ErrorCode.RESET_PASSWORD_INVALID_PASSWORD: {
+                        "summary": "Password validation failed.",
+                        "value": {
+                            "detail": {
+                                "code": ErrorCode.RESET_PASSWORD_INVALID_PASSWORD,
+                                "reason": "Password should be at least 3 characters",
+                            }
+                        },
+                    },
+                }
+            }
+        },
+    },
+}
 @reset_password_router.post(
     "/reset-password",
     name="reset:reset_password",
-    responses=RESET_PASSWORD_RESPONSES,
+    responses=reset_password_responses,
 )
 async def reset_password(
     request: Request,

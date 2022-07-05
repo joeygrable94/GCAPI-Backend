@@ -41,7 +41,7 @@ class SQLAlchemyUserDatabase(Generic[UP, ID]):
         )
         results: Any = await self.session.execute(statement)
         users: List[Any] = results.scalars().all()
-        return list(users)
+        return users
 
     async def get(self, id: ID) -> Optional[UP]:
         statement: Any = sql_select(self.user_table).where(  # type: ignore

@@ -38,10 +38,9 @@ register_responses: OpenAPIResponseType = {
         },
     },
 }
-
 @register_router.post(
     "/register",
-    response_model=UserCreate,
+    response_model=UserRead,
     status_code=status.HTTP_201_CREATED,
     name="register:register",
     responses=register_responses,

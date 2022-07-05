@@ -17,7 +17,7 @@ from app.core.security.jwt import SecretType, decode_jwt, generate_jwt
 from app.core.security.password import (PasswordHelper,
                                         PasswordHelperProtocol)
 from app.db.user_db import SQLAlchemyUserDatabase
-from app.db.schemas.user import ID, UP, UC, UU
+from app.db.schemas.user import ID, UP, UC, UU, UserRead
 
 
 class UserManager(Generic[UP, ID]):
@@ -101,7 +101,7 @@ class UserManager(Generic[UP, ID]):
         self,
         page: int = 1,
         request: Optional[Request] = None
-    ) -> List[UP]:
+    ) -> List[UserRead]:
         skip, limit = paginate(page)
         users = await self.user_db.get_list(limit=limit, skip=skip)
         if users is None:

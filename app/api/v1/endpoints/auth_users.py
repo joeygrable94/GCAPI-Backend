@@ -1,8 +1,6 @@
-from cmath import e
 from typing import Any, List
 from fastapi import APIRouter, status, Request, HTTPException, Depends, Response
 
-from app.core.config import settings
 from app.api.errors import ErrorCode, ErrorModel
 from app.api.exceptions import (UserAlreadyExists,
                                 InvalidPasswordException,
@@ -13,7 +11,7 @@ from app.core.security import (get_current_active_superuser,
                                get_current_active_user,
                                get_user_manager)
 from app.core.security.manager import UserManager
-from app.db.schemas.user import ID, UP, UserRead, UserUpdate
+from app.db.schemas.user import ID, U, UP, UserRead, UserUpdate
 
 
 auth_users_router = APIRouter()
@@ -27,7 +25,6 @@ async def get_user_or_404(
         return await user_manager.get(parsed_id)
     except (UserNotExists, InvalidID) as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND) from e
-
 
 get_user_or_404_responses: OpenAPIResponseType = {
     status.HTTP_401_UNAUTHORIZED: {
@@ -127,7 +124,8 @@ async def get_users_list(
     page: int = 1,
     user_manager: UserManager[UP, ID] = Depends(get_user_manager),
 ) -> Any:
-    return user_manager.get_page(page=page, request=request)
+    users: List = await user_manager.get_page(page=page, request=request)
+    return users
 
 get_user_reponses: OpenAPIResponseType = {
     status.HTTP_401_UNAUTHORIZED: {

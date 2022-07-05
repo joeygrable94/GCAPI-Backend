@@ -45,9 +45,10 @@ jinja2
 httpx
 asgi-lifespan
 pytest
-pytest-cov
 pytest-asyncio
+pytest-cov
 pytest-mock
+pytest-random-order
 
 # tooling
 python-dotenv
