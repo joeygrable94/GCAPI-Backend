@@ -3,9 +3,8 @@ from typing import Any, Optional
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.repositories.client import ClientsRepository
-from app.db.schemas import ClientCreate
-from app.db.schemas.client import ClientRead, ClientUpdate
+from app.db.repositories import ClientsRepository
+from app.db.schemas import ClientCreate, ClientRead, ClientUpdate
 from app.tests.utils.utils import random_lower_string
 
 pytestmark = pytest.mark.asyncio

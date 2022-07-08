@@ -1,8 +1,8 @@
 from typing import Generic  # pragma: no cover
 from typing import Optional, Protocol
 
-from app.db.schemas.user import ID, UP
 from app.core.security.manager import UserManager
+from app.db.schemas.user import ID, UP
 
 
 class StrategyDestroyNotSupportedError(Exception):

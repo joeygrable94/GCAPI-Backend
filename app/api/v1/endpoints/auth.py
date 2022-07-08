@@ -1,15 +1,16 @@
 from typing import Any, Tuple
+
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.api.errors import ErrorModel, ErrorCode
+from app.api.errors import ErrorCode, ErrorModel
 from app.api.openapi import OpenAPIResponseType
 from app.core.config import settings
-from app.core.security import auth_backend, get_user_manager, get_current_user_token
-from app.core.security.authentication.strategy.base import Strategy
+from app.core.security import (auth_backend, get_current_user_token,
+                               get_user_manager)
+from app.core.security.authentication import Strategy
 from app.core.security.manager import UserManager
-from app.db.schemas.user import ID, UP
-
+from app.db.schemas import ID, UP
 
 auth_router: APIRouter = APIRouter()
 
@@ -33,6 +34,8 @@ login_responses: OpenAPIResponseType = {
     },
     **auth_backend.transport.get_openapi_login_responses_success(),
 }
+
+
 @auth_router.post(
     "/login",
     name=f"auth:{auth_backend.name}.login",
@@ -42,7 +45,7 @@ async def login(
     response: Response,
     credentials: OAuth2PasswordRequestForm = Depends(),
     user_manager: UserManager[UP, ID] = Depends(get_user_manager),
-    strategy: Strategy[UP, ID] = Depends(auth_backend.get_strategy),
+    strategy: Strategy[UP, ID] = Depends(auth_backend.get_strategy),  # type: ignore
 ) -> Any:
     user: Any = await user_manager.authenticate(credentials)
     if user is None or not user.is_active:
@@ -60,21 +63,19 @@ async def login(
 
 logout_responses: OpenAPIResponseType = {
     **{
-        status.HTTP_401_UNAUTHORIZED: {
-            "description": "Missing token or inactive user."
-        }
+        status.HTTP_401_UNAUTHORIZED: {"description": "Missing token or inactive user."}
     },
     **auth_backend.transport.get_openapi_logout_responses_success(),
 }
+
+
 @auth_router.post(
-    "/logout",
-    name=f"auth:{auth_backend.name}.logout",
-    responses=logout_responses
+    "/logout", name=f"auth:{auth_backend.name}.logout", responses=logout_responses
 )
 async def logout(
     response: Response,
     user_token: Tuple[UP, str] = Depends(get_current_user_token),
-    strategy: Strategy[UP, ID] = Depends(auth_backend.get_strategy),
+    strategy: Strategy[UP, ID] = Depends(auth_backend.get_strategy),  # type: ignore
 ) -> Any:
     user, token = user_token
     return await auth_backend.logout(strategy, user, token, response)

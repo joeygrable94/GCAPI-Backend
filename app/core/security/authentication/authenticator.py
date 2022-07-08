@@ -8,7 +8,7 @@ from makefun import with_signature
 from app.core.security.authentication.backend import AuthenticationBackend
 from app.core.security.authentication.strategy import Strategy
 from app.core.security.manager import UserManager
-from app.db.schemas.user import ID, UP
+from app.db.schemas import ID, UP
 
 INVALID_CHARS_PATTERN = re.compile(r"[^0-9a-zA-Z_]")
 INVALID_LEADING_CHARS_PATTERN = re.compile(r"^[^a-zA-Z_]+")
@@ -197,7 +197,7 @@ class Authenticator:
                 Parameter(
                     name="user_manager",
                     kind=Parameter.POSITIONAL_OR_KEYWORD,
-                    default=Depends(self.get_user_manager),
+                    default=Depends(self.get_user_manager),  # type: ignore
                 )
             ]
 
@@ -211,7 +211,7 @@ class Authenticator:
                     Parameter(
                         name=name_to_strategy_variable_name(backend.name),
                         kind=Parameter.POSITIONAL_OR_KEYWORD,
-                        default=Depends(backend.get_strategy),
+                        default=Depends(backend.get_strategy),  # type: ignore
                     ),
                 ]
 

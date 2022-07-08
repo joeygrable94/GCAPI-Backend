@@ -4,7 +4,7 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.schemas.website import WebsiteRead
+from app.db.schemas import WebsiteRead
 from app.tests.utils.utils import random_domain_name
 from app.tests.utils.website import create_random_website
 

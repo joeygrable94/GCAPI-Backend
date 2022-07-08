@@ -2,6 +2,7 @@ from typing import Any, List, Optional, Type, Union
 
 from pydantic import UUID4
 
+from app.api.paginate import paginate
 from app.db.repositories.base import BaseRepository
 from app.db.schemas import ItemCreate, ItemRead, ItemUpdate
 from app.db.tables import Item
@@ -30,13 +31,13 @@ class ItemsRepository(BaseRepository[ItemCreate, ItemRead, ItemUpdate, Item]):
             .limit(limit)
         )
         result: Any = await self._db.execute(query)
-        data: Any = result.scalars().all()
-        return list(data)
+        data: List[Any] = result.scalars().all()
+        return data
 
     async def list(
         self, page: int = 1, user_id: UUID4 = None
     ) -> Optional[Union[List[ItemRead], List]]:
-        skip, limit = self.paginate(page)
+        skip, limit = paginate(page)
         if user_id:
             return await self._list_by_user(skip=skip, limit=limit, user_id=user_id)
         else:

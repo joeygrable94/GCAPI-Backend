@@ -4,7 +4,7 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.schemas.client import ClientRead
+from app.db.schemas import ClientRead
 from app.tests.utils.client import create_random_client
 from app.tests.utils.utils import random_lower_string
 

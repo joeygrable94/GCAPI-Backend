@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db
 from app.core.security import get_current_active_user
-from app.db.repositories.item import ItemsRepository
+from app.db.repositories import ItemsRepository
 from app.db.schemas import ItemCreate, ItemRead, ItemUpdate, UserRead
 
 items_router: APIRouter = APIRouter()

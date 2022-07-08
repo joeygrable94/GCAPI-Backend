@@ -4,9 +4,9 @@ from fastapi import Response, status
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 
+from app.api.openapi import OpenAPIResponseType
 from app.core.security.authentication.transport.base import (
     Transport, TransportLogoutNotSupportedError)
-from app.api.openapi import OpenAPIResponseType
 
 
 class BearerResponse(BaseModel):

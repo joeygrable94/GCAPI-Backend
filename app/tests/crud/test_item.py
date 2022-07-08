@@ -3,11 +3,8 @@ from typing import Any, Optional
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.repositories.item import ItemsRepository
-from app.db.repositories.user import UsersRepository
-from app.db.schemas import ItemCreate
-from app.db.schemas.item import ItemRead, ItemUpdate
-from app.db.schemas.user import UserRead
+from app.db.repositories import ItemsRepository
+from app.db.schemas import ItemCreate, ItemRead, ItemUpdate, UserRead
 from app.tests.utils.user import create_random_user
 from app.tests.utils.utils import random_lower_string
 
@@ -29,26 +26,24 @@ async def test_create_item(db_session: AsyncSession) -> None:
 async def test_create_item_with_user(
     db_session: AsyncSession,
 ) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
     title: str = random_lower_string()
     content: str = random_lower_string()
-    user: UserRead = await create_random_user(user_repo)
+    user: UserRead = await create_random_user(db_session=db_session)
     item_repo: ItemsRepository = ItemsRepository(session=db_session)
     item: ItemRead = await item_repo.create(
         ItemCreate(title=title, content=content, user_id=user.id)
     )
     assert item.title == title
     assert item.content == content
-    assert item.user_id == user.id
+    assert str(item.user_id) == user.id
 
 
 async def test_get_item(
     db_session: AsyncSession,
 ) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
     title: str = random_lower_string()
     content: str = random_lower_string()
-    user: UserRead = await create_random_user(user_repo)
+    user: UserRead = await create_random_user(db_session=db_session)
     item_repo: ItemsRepository = ItemsRepository(session=db_session)
     item: ItemRead = await item_repo.create(
         ItemCreate(title=title, content=content, user_id=user.id)
@@ -64,10 +59,9 @@ async def test_get_item(
 async def test_update_item(
     db_session: AsyncSession,
 ) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
     title: str = random_lower_string()
     content: str = random_lower_string()
-    user: UserRead = await create_random_user(user_repo)
+    user: UserRead = await create_random_user(db_session=db_session)
     item_repo: ItemsRepository = ItemsRepository(session=db_session)
     item: ItemRead = await item_repo.create(
         ItemCreate(title=title, content=content, user_id=user.id)
@@ -87,10 +81,9 @@ async def test_update_item(
 async def test_delete_item(
     db_session: AsyncSession,
 ) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
     title: str = random_lower_string()
     content: str = random_lower_string()
-    user: UserRead = await create_random_user(user_repo)
+    user: UserRead = await create_random_user(db_session=db_session)
     item_repo: ItemsRepository = ItemsRepository(session=db_session)
     item: ItemRead = await item_repo.create(
         ItemCreate(title=title, content=content, user_id=user.id)
@@ -100,5 +93,5 @@ async def test_delete_item(
     assert item2.id == item.id
     assert item2.title == title
     assert item2.content == content
-    assert item2.user_id == user.id
+    assert str(item2.user_id) == user.id
     assert item3 is None

@@ -1,8 +1,8 @@
 from app.core.config import settings
 
+
 def paginate(
-    page: int = 1,
-    limit: int = settings.PER_PAGE_MAX_COUNT
+    page: int = 1, limit: int = settings.PER_PAGE_MAX_COUNT
 ) -> tuple[int, int]:
     """A simple pagination utility.
 

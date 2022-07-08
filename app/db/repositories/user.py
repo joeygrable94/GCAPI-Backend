@@ -1,69 +1,85 @@
-from typing import Any, List, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union
 
-from pydantic import UUID4
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security.manager import UserManager
-from app.db.user_db import SQLAlchemyUserDatabase
+from app.api.paginate import paginate
 from app.db.repositories.base import BaseRepository
-from app.db.schemas.user import UserCreate, UserRead, UserUpdate
+from app.db.schemas import UserCreate, UserRead, UserUpdate
+from app.db.schemas.user import ID
 from app.db.tables import User
 
-from .base import PER_PAGE_MAX_COUNT, sql_select
+from .base import PER_PAGE_MAX_COUNT  # type: ignore
+from .base import sql_select
 
 
 class UsersRepository(BaseRepository[UserCreate, UserUpdate, UserRead, User]):
     def __init__(self, session: AsyncSession, *args: Any, **kwargs: Any) -> None:
         self._db: AsyncSession = session
-        self._user_db: SQLAlchemyUserDatabase = SQLAlchemyUserDatabase(session, User)
-        self._user_manager: UserManager = UserManager(user_db=self._user_db)
-
-    @property
-    def _table(self) -> Type[User]:
-        return User
 
     @property
     def _schema_read(self) -> Type[UserRead]:
         return UserRead
 
+    @property
+    def _table(self) -> Type[User]:
+        return User
+
+    async def _get(self, query: Any) -> Optional[User]:
+        results: Any = await self._db.execute(query)
+        user: Any = results.first()
+        if user is None:
+            return None
+        return user[0]
+
     async def _list(
         self, skip: int = 0, limit: int = PER_PAGE_MAX_COUNT
-    ) -> Union[List[UserRead], List]:  # type: ignore
-        query: Any = (
-            sql_select(self._user_db.user_table)  # type: ignore
-            .limit(limit)
-            .offset(skip)
-        )
-        result: Any = await self._user_db.session.execute(query)
-        data: Any = result.scalars().all()
-        return list(data)
+    ) -> Union[List[User], List[UserRead], List[Any]]:
+        query: Any = sql_select(self._table).limit(limit).offset(skip)  # type: ignore
+        result: Any = await self._db.execute(query)
+        data: List[Any] = result.scalars().all()
+        return data
 
-    async def list(self, page: int = 1) -> Union[List[UserRead], List]:  # type: ignore
-        skip, limit = self.paginate(page)
+    async def list(self, page: int = 1) -> Union[List[User], List[UserRead], List[Any]]:
+        skip, limit = paginate(page)
         return await self._list(skip=skip, limit=limit)
 
-    async def create(self, schema: UserCreate) -> Optional[UserRead]:  # type: ignore
-        user: Any = await self._user_manager.create(user_create=schema)
-        return self._schema_read.from_orm(user)  # type: ignore
+    async def create(  # type: ignore
+        self, schema: Dict[str, Any]  # type: ignore
+    ) -> Optional[Union[User, UserRead]]:  # type: ignore
+        user: Any = self._table(id=self.generate_uuid(), **schema)
+        self._db.add(user)
+        await self._db.commit()
+        await self._db.refresh(user)
+        return user
 
-    async def read(self, user_id: UUID4) -> UserRead:  # type: ignore
-        user: Any = await self._user_manager.get(id=user_id)
-        return self._schema_read.from_orm(user)  # type: ignore
+    async def read(  # type: ignore
+        self, entry_id: ID
+    ) -> Optional[Union[User, UserRead]]:  # type: ignore
+        query: Any = sql_select(self._table).where(  # type: ignore
+            self._table.id == entry_id
+        )
+        return await self._get(query)
 
-    async def read_by_email(self, email: str) -> UserRead:  # type: ignore
-        user: Any = await self._user_manager.get_by_email(user_email=email)
-        return self._schema_read.from_orm(user)  # type: ignore
+    async def read_by_email(self, email: str) -> Optional[Union[User, UserRead]]:
+        query: Any = sql_select(self._table).where(  # type: ignore
+            func.lower(self._table.email) == func.lower(email)
+        )
+        return await self._get(query)
 
     async def update(  # type: ignore
-        self, user_id: UUID4, schema: UserUpdate
-    ) -> Optional[UserRead]:
-        user: Any = await self._user_manager.get(id=user_id)
-        user_updated: Any = await self._user_manager.update(
-            user_update=schema, user=user
-        )
-        return self._schema_read.from_orm(user_updated)  # type: ignore
+        self, entry: Any, schema: Dict[str, Any]  # type: ignore
+    ) -> Optional[Union[User, UserRead]]:  # type: ignore
+        for key, value in schema.items():
+            setattr(entry, key, value)
+        self._db.add(entry)
+        await self._db.commit()
+        await self._db.refresh(entry)
+        return entry
 
-    async def delete(self, user_id: UUID4) -> Optional[UserRead]:  # type: ignore
-        user: Any = await self._user_manager.get(id=user_id)
-        await self._user_manager.delete(user=user)
-        return self._schema_read.from_orm(user)  # type: ignore
+    async def delete(  # type: ignore
+        self, entry: Any
+    ) -> Optional[Union[User, UserRead]]:  # type: ignore
+        await self._db.delete(entry)
+        await self._db.commit()
+        return entry

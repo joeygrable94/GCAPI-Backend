@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.repositories.website import WebsitesRepository
+from app.db.repositories import WebsitesRepository
 from app.db.schemas import WebsiteCreate, WebsiteRead
 from app.tests.utils.utils import random_lower_string
 

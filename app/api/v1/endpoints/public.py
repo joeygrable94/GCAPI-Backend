@@ -1,9 +1,9 @@
-from typing import Dict
+from typing import Any, Dict
 
 from fastapi import APIRouter, Depends
 
 from app.core.security import get_current_active_user
-from app.db.schemas.user import UserRead
+from app.db.schemas import UserRead
 
 public_router: APIRouter = APIRouter()
 
@@ -17,9 +17,11 @@ async def status() -> Dict[str, str]:
 # async def index(request: Request):
 # 	return templates.TemplateResponse("pages/index.html", {"request":request})
 
+
 @public_router.get("/message")
-async def auth_message(user: UserRead = Depends(get_current_active_user)):
-	return {"message": f"Hello {user.email}!"}
+async def auth_message(user: UserRead = Depends(get_current_active_user)) -> Any:
+    return {"message": f"Hello {user.email}!"}
+
 
 # from starlette.responses import RedirectResponse
 # @app.get("/redirect")

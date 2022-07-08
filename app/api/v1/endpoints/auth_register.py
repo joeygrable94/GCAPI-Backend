@@ -1,13 +1,13 @@
 from typing import Any
-from fastapi import APIRouter, status, Request, HTTPException, Depends
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from app.api.errors import ErrorCode, ErrorModel
-from app.api.exceptions import UserAlreadyExists, InvalidPasswordException
+from app.api.exceptions import InvalidPasswordException, UserAlreadyExists
 from app.api.openapi import OpenAPIResponseType
 from app.core.security import get_user_manager
 from app.core.security.manager import UserManager
-from app.db.schemas.user import ID, UP, UserCreate, UserRead
-
+from app.db.schemas import ID, UP, UserCreate, UserRead
 
 register_router: APIRouter = APIRouter()
 
@@ -19,17 +19,14 @@ register_responses: OpenAPIResponseType = {
                 "examples": {
                     ErrorCode.REGISTER_USER_ALREADY_EXISTS: {
                         "summary": "A user with this email already exists.",
-                        "value": {
-                            "detail": ErrorCode.REGISTER_USER_ALREADY_EXISTS
-                        },
+                        "value": {"detail": ErrorCode.REGISTER_USER_ALREADY_EXISTS},
                     },
                     ErrorCode.REGISTER_INVALID_PASSWORD: {
                         "summary": "Password validation failed.",
                         "value": {
                             "detail": {
                                 "code": ErrorCode.REGISTER_INVALID_PASSWORD,
-                                "reason": "Password should be"
-                                "at least 3 characters",
+                                "reason": "Password should be" "at least 3 characters",
                             }
                         },
                     },
@@ -38,6 +35,8 @@ register_responses: OpenAPIResponseType = {
         },
     },
 }
+
+
 @register_router.post(
     "/register",
     response_model=UserRead,

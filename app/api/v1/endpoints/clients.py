@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db
 from app.core.security import get_current_active_user
-from app.db.repositories.client import ClientsRepository
+from app.db.repositories import ClientsRepository
 from app.db.schemas import ClientCreate, ClientRead, ClientUpdate, UserRead
 
 clients_router: APIRouter = APIRouter()

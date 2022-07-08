@@ -1,21 +1,23 @@
 from typing import Any, Dict
 
 from httpx import AsyncClient, Response
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
 from app.api.exceptions import UserAlreadyExists
-from app.db.repositories.user import UsersRepository
-from app.db.schemas import UserCreate, UserRead, UserUpdate
+from app.core.config import settings
+from app.core.security.manager import UserManager
+from app.db.schemas import ID, UP, UserCreate, UserRead, UserUpdate
 from app.tests.utils.utils import random_email, random_lower_string
 
 
 async def create_random_user(
-    user_repo: UsersRepository,
+    db_session: AsyncSession,
 ) -> UserRead:
+    user_manager: UserManager = UserManager(session=db_session)
     email: str = random_email()
     password: str = random_lower_string()
-    user: Any = await user_repo.create(
-        schema=UserCreate(
+    user: Any = await user_manager.create(
+        user_create=UserCreate(
             email=email,
             password=password,
             is_active=True,
@@ -74,24 +76,24 @@ async def authentication_token_from_email(
     *,
     client: AsyncClient,
     email: str,
-    user_repo: UsersRepository,
+    user_manager: UserManager[UP, ID],
 ) -> Dict[str, str]:
     """
     Return a valid token for the user with given email.
     If the user doesn't exist it is created first.
     """
     password: str = settings.TEST_NORMAL_USER_PASSWORD
-    user: Any = await user_repo.read_by_email(email=email)
+    user: Any = await user_manager.get_by_email(user_email=email)
     if not user:
         try:
-            user = await user_repo.create(
-                schema=UserCreate(email=email, password=password)
+            user = await user_manager.create(
+                user_create=UserCreate(email=email, password=password)
             )
         except UserAlreadyExists:
             pass
     else:
-        user = await user_repo.update(
-            user_id=user.id, schema=UserUpdate(password=password)
+        user = await user_manager.update(
+            user_update=UserUpdate(password=password), user=user
         )
     return await get_user_authentication_headers(
         client=client, email=email, password=password

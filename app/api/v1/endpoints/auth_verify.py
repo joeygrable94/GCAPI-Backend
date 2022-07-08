@@ -1,17 +1,15 @@
 from typing import Any
-from fastapi import APIRouter, status, Request, HTTPException, Depends, Body
+
+from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
 from pydantic import EmailStr
 
 from app.api.errors import ErrorCode, ErrorModel
-from app.api.exceptions import (UserNotExists,
-                                UserInactive,
-                                UserAlreadyVerified,
-                                InvalidVerifyToken)
+from app.api.exceptions import (InvalidVerifyToken, UserAlreadyVerified,
+                                UserInactive, UserNotExists)
 from app.api.openapi import OpenAPIResponseType
 from app.core.security import get_user_manager
 from app.core.security.manager import UserManager
-from app.db.schemas.user import ID, UP, UserRead
-
+from app.db.schemas import ID, UP, UserRead
 
 verify_router = APIRouter()
 
@@ -28,15 +26,15 @@ verify_token_responses: OpenAPIResponseType = {
                     },
                     ErrorCode.VERIFY_USER_ALREADY_VERIFIED: {
                         "summary": "The user is already verified.",
-                        "value": {
-                            "detail": ErrorCode.VERIFY_USER_ALREADY_VERIFIED
-                        },
+                        "value": {"detail": ErrorCode.VERIFY_USER_ALREADY_VERIFIED},
                     },
                 }
             }
         },
     }
 }
+
+
 @verify_router.post(
     "/request-verify-token",
     status_code=status.HTTP_202_ACCEPTED,
@@ -58,6 +56,7 @@ async def request_verify_token(
         pass
 
     return None
+
 
 @verify_router.post(
     "/verify",

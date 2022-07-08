@@ -1,20 +1,19 @@
 from typing import Any, List
-from fastapi import APIRouter, status, Request, HTTPException, Depends, Response
+
+from fastapi import (APIRouter, Depends, HTTPException, Request, Response,
+                     status)
 
 from app.api.errors import ErrorCode, ErrorModel
-from app.api.exceptions import (UserAlreadyExists,
-                                InvalidPasswordException,
-                                UserNotExists,
-                                InvalidID)
+from app.api.exceptions import (InvalidID, InvalidPasswordException,
+                                UserAlreadyExists, UserNotExists)
 from app.api.openapi import OpenAPIResponseType
 from app.core.security import (get_current_active_superuser,
-                               get_current_active_user,
-                               get_user_manager)
+                               get_current_active_user, get_user_manager)
 from app.core.security.manager import UserManager
-from app.db.schemas.user import ID, U, UP, UserRead, UserUpdate
-
+from app.db.schemas import ID, UP, UserRead, UserUpdate
 
 auth_users_router = APIRouter()
+
 
 async def get_user_or_404(
     id: Any,
@@ -26,11 +25,14 @@ async def get_user_or_404(
     except (UserNotExists, InvalidID) as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND) from e
 
+
 get_user_or_404_responses: OpenAPIResponseType = {
     status.HTTP_401_UNAUTHORIZED: {
         "description": "Missing token or inactive user.",
     },
 }
+
+
 @auth_users_router.get(
     "/me",
     response_model=UserRead,
@@ -41,6 +43,7 @@ async def me(
     user: UP = Depends(get_current_active_user),
 ) -> Any:
     return UserRead.from_orm(user)
+
 
 update_user_me_responses: OpenAPIResponseType = {
     status.HTTP_401_UNAUTHORIZED: {
@@ -53,17 +56,14 @@ update_user_me_responses: OpenAPIResponseType = {
                 "examples": {
                     ErrorCode.UPDATE_USER_EMAIL_ALREADY_EXISTS: {
                         "summary": "A user with this email already exists.",
-                        "value": {
-                            "detail": ErrorCode.UPDATE_USER_EMAIL_ALREADY_EXISTS
-                        },
+                        "value": {"detail": ErrorCode.UPDATE_USER_EMAIL_ALREADY_EXISTS},
                     },
                     ErrorCode.UPDATE_USER_INVALID_PASSWORD: {
                         "summary": "Password validation failed.",
                         "value": {
                             "detail": {
                                 "code": ErrorCode.UPDATE_USER_INVALID_PASSWORD,
-                                "reason": "Password should be"
-                                "at least 3 characters",
+                                "reason": "Password should be" "at least 3 characters",
                             }
                         },
                     },
@@ -72,6 +72,8 @@ update_user_me_responses: OpenAPIResponseType = {
         },
     },
 }
+
+
 @auth_users_router.patch(
     "/me",
     response_model=UserRead,
@@ -86,9 +88,7 @@ async def update_me(
     user_manager: UserManager[UP, ID] = Depends(get_user_manager),
 ) -> Any:
     try:
-        user = await user_manager.update(
-            user_update, user, safe=True, request=request
-        )
+        user = await user_manager.update(user_update, user, safe=True, request=request)
         return UserRead.from_orm(user)
     except InvalidPasswordException as e:
         raise HTTPException(
@@ -104,6 +104,7 @@ async def update_me(
             detail=ErrorCode.UPDATE_USER_EMAIL_ALREADY_EXISTS,
         )
 
+
 get_all_users_responses: OpenAPIResponseType = {
     status.HTTP_401_UNAUTHORIZED: {
         "description": "Missing token or inactive user.",
@@ -112,6 +113,8 @@ get_all_users_responses: OpenAPIResponseType = {
         "description": "Not a superuser.",
     },
 }
+
+
 @auth_users_router.get(
     "/",
     response_model=List[UserRead],
@@ -127,6 +130,7 @@ async def get_users_list(
     users: List = await user_manager.get_page(page=page, request=request)
     return users
 
+
 get_user_reponses: OpenAPIResponseType = {
     status.HTTP_401_UNAUTHORIZED: {
         "description": "Missing token or inactive user.",
@@ -138,6 +142,8 @@ get_user_reponses: OpenAPIResponseType = {
         "description": "The user does not exist.",
     },
 }
+
+
 @auth_users_router.get(
     "/{id}",
     response_model=UserRead,
@@ -147,6 +153,7 @@ get_user_reponses: OpenAPIResponseType = {
 )
 async def get_user(user: Any = Depends(get_user_or_404)) -> Any:
     return UserRead.from_orm(user)
+
 
 update_user_responses: OpenAPIResponseType = {
     status.HTTP_401_UNAUTHORIZED: {
@@ -165,17 +172,14 @@ update_user_responses: OpenAPIResponseType = {
                 "examples": {
                     ErrorCode.UPDATE_USER_EMAIL_ALREADY_EXISTS: {
                         "summary": "A user with this email already exists.",
-                        "value": {
-                            "detail": ErrorCode.UPDATE_USER_EMAIL_ALREADY_EXISTS
-                        },
+                        "value": {"detail": ErrorCode.UPDATE_USER_EMAIL_ALREADY_EXISTS},
                     },
                     ErrorCode.UPDATE_USER_INVALID_PASSWORD: {
                         "summary": "Password validation failed.",
                         "value": {
                             "detail": {
                                 "code": ErrorCode.UPDATE_USER_INVALID_PASSWORD,
-                                "reason": "Password should be"
-                                "at least 3 characters",
+                                "reason": "Password should be" "at least 3 characters",
                             }
                         },
                     },
@@ -184,6 +188,8 @@ update_user_responses: OpenAPIResponseType = {
         },
     },
 }
+
+
 @auth_users_router.patch(
     "/{id}",
     response_model=UserRead,
@@ -198,9 +204,7 @@ async def update_user(
     user_manager: UserManager[UP, ID] = Depends(get_user_manager),
 ) -> Any:
     try:
-        user = await user_manager.update(
-            user_update, user, safe=False, request=request
-        )
+        user = await user_manager.update(user_update, user, safe=False, request=request)
         return UserRead.from_orm(user)
     except InvalidPasswordException as e:
         raise HTTPException(
@@ -216,6 +220,7 @@ async def update_user(
             detail=ErrorCode.UPDATE_USER_EMAIL_ALREADY_EXISTS,
         )
 
+
 delete_user_responses: OpenAPIResponseType = {
     status.HTTP_401_UNAUTHORIZED: {
         "description": "Missing token or inactive user.",
@@ -227,6 +232,8 @@ delete_user_responses: OpenAPIResponseType = {
         "description": "The user does not exist.",
     },
 }
+
+
 @auth_users_router.delete(
     "/{id}",
     status_code=status.HTTP_204_NO_CONTENT,

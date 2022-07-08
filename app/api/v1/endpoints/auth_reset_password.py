@@ -1,21 +1,19 @@
 from typing import Any
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Body
+
+from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
 from pydantic import EmailStr
 
 from app.api.errors import ErrorCode, ErrorModel
-from app.api.exceptions import (
-    UserNotExists,
-    UserInactive,
-    InvalidPasswordException,
-    InvalidResetPasswordToken,
-)
+from app.api.exceptions import (InvalidPasswordException,
+                                InvalidResetPasswordToken, UserInactive,
+                                UserNotExists)
+from app.api.openapi import OpenAPIResponseType
 from app.core.security import get_user_manager
 from app.core.security.manager import UserManager
-from app.api.openapi import OpenAPIResponseType
-from app.db.schemas.user import ID, UP
-
+from app.db.schemas import ID, UP
 
 reset_password_router = APIRouter()
+
 
 @reset_password_router.post(
     "/forgot-password",
@@ -38,6 +36,7 @@ async def forgot_password(
         pass
 
     return None
+
 
 reset_password_responses: OpenAPIResponseType = {
     status.HTTP_400_BAD_REQUEST: {
@@ -63,6 +62,8 @@ reset_password_responses: OpenAPIResponseType = {
         },
     },
 }
+
+
 @reset_password_router.post(
     "/reset-password",
     name="reset:reset_password",

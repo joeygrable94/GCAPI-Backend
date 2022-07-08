@@ -11,11 +11,11 @@ from app.core.templates import static_files
 
 def configure_routers(app: FastAPI) -> None:
     # import routers
-    from app.api.v1.endpoints import (auth_router, register_router,
-                                      reset_password_router,
-                                      verify_router, auth_users_router,
+    from app.api.v1.endpoints import (auth_router, auth_users_router,
                                       clients_router, items_router,
-                                      public_router, websites_router)
+                                      public_router, register_router,
+                                      reset_password_router, verify_router,
+                                      websites_router)
 
     # public routes
     app.include_router(public_router, prefix=f"{settings.API_PREFIX}", tags=["public"])
@@ -65,9 +65,8 @@ def configure_static(app: FastAPI) -> None:
 
 
 def configure_events(app: FastAPI) -> None:
-    from app.db.commands import (check_db_connected, check_db_disconnected,
-                                #  drop_db_and_tables, create_db_and_tables,
-                                 create_initial_data)
+    from app.db.commands import (  # drop_db_and_tables, create_db_and_tables,
+        check_db_connected, check_db_disconnected, create_initial_data)
 
     # startup actions
     @app.on_event("startup")

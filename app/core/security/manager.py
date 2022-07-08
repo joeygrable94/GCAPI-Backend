@@ -4,20 +4,16 @@ from typing import Any, Dict, Generic, List, Optional, Union
 import jwt
 from fastapi import Request
 from fastapi.security import OAuth2PasswordRequestForm
-from app.api.paginate import paginate
 
+from app.api.exceptions import (InvalidID, InvalidResetPasswordToken,
+                                InvalidVerifyToken, UserAlreadyExists,
+                                UserAlreadyVerified, UserInactive,
+                                UserNotExists)
 from app.core.config import settings
-from app.api.exceptions import (InvalidID,
-                                InvalidResetPasswordToken,
-                                InvalidVerifyToken,
-                                UserAlreadyExists,
-                                UserAlreadyVerified,
-                                UserInactive, UserNotExists)
 from app.core.security.jwt import SecretType, decode_jwt, generate_jwt
-from app.core.security.password import (PasswordHelper,
-                                        PasswordHelperProtocol)
-from app.db.user_db import SQLAlchemyUserDatabase
-from app.db.schemas.user import ID, UP, UC, UU, UserRead
+from app.core.security.password import PasswordHelper, PasswordHelperProtocol
+from app.db.repositories import UsersRepository
+from app.db.schemas import ID, UC, UP, UU
 
 
 class UserManager(Generic[UP, ID]):
@@ -31,7 +27,7 @@ class UserManager(Generic[UP, ID]):
     :attribute verification_token_lifetime_seconds: Lifetime of verification token.
     :attribute verification_token_audience: JWT audience of verification token.
 
-    :param user_db: Database adapter instance.
+    :param user_repo: Database adapter instance.
     """
 
     reset_password_token_secret: SecretType = settings.SECRET_KEY
@@ -42,15 +38,15 @@ class UserManager(Generic[UP, ID]):
     verification_token_lifetime_seconds: int = settings.ACCESS_TOKEN_LIFETIME
     verification_token_audience: str = settings.VERIFY_USER_TOKEN_AUDIENCE
 
-    user_db: SQLAlchemyUserDatabase[UP, ID]
+    user_repo: UsersRepository
     password_helper: PasswordHelperProtocol
 
     def __init__(
         self,
-        user_db: SQLAlchemyUserDatabase[UP, ID],
+        session: UsersRepository,
         password_helper: Optional[PasswordHelperProtocol] = None,
     ):
-        self.user_db = user_db
+        self.user_repo = UsersRepository(session=session)  # type: ignore
         if password_helper is None:
             self.password_helper = PasswordHelper()
         else:
@@ -79,12 +75,12 @@ class UserManager(Generic[UP, ID]):
         :raises UserNotExists: The user does not exist.
         :return: A user.
         """
-        user = await self.user_db.get(id)
+        user: Any = await self.user_repo.read(entry_id=id)
         if user is None:
             raise UserNotExists()
         return user
 
-    async def get_by_email(self, user_email: str) -> UP:
+    async def get_by_email(self, user_email: str) -> Any:
         """
         Get a user by e-mail.
 
@@ -92,18 +88,15 @@ class UserManager(Generic[UP, ID]):
         :raises UserNotExists: The user does not exist.
         :return: A user.
         """
-        user = await self.user_db.get_by_email(user_email)
+        user = await self.user_repo.read_by_email(email=user_email)
         if user is None:
             raise UserNotExists()
         return user
 
     async def get_page(
-        self,
-        page: int = 1,
-        request: Optional[Request] = None
-    ) -> List[UserRead]:
-        skip, limit = paginate(page)
-        users = await self.user_db.get_list(limit=limit, skip=skip)
+        self, page: int = 1, request: Optional[Request] = None
+    ) -> List[Any]:
+        users = await self.user_repo.list(page=page)
         if users is None:
             return []
         return users
@@ -113,7 +106,7 @@ class UserManager(Generic[UP, ID]):
         user_create: UC,
         safe: bool = False,
         request: Optional[Request] = None,
-    ) -> UP:
+    ) -> Any:
         """
         Create a user in database.
 
@@ -129,7 +122,7 @@ class UserManager(Generic[UP, ID]):
         """
         await self.validate_password(user_create.password, user_create)
 
-        existing_user = await self.user_db.get_by_email(user_create.email)
+        existing_user = await self.user_repo.read_by_email(email=user_create.email)
         if existing_user is not None:
             raise UserAlreadyExists()
 
@@ -141,9 +134,9 @@ class UserManager(Generic[UP, ID]):
         password = user_dict.pop("password")
         user_dict["hashed_password"] = self.password_helper.hash(password)
 
-        created_user = await self.user_db.create(user_dict)
+        created_user = await self.user_repo.create(schema=user_dict)
 
-        await self.on_after_register(created_user, request)
+        await self.on_after_register(created_user, request)  # type: ignore
 
         return created_user
 
@@ -328,7 +321,7 @@ class UserManager(Generic[UP, ID]):
 
         :param user: The user to delete.
         """
-        await self.user_db.delete(user)
+        await self.user_repo.delete(entry=user)
 
     # *You should overload this method to add your own validation logic.*
     async def validate_password(self, password: str, user: Union[UC, UP]) -> None:
@@ -456,11 +449,13 @@ class UserManager(Generic[UP, ID]):
             return None
         # Update password hash to a more robust one if needed
         if updated_password_hash is not None:
-            await self.user_db.update(user, {"hashed_password": updated_password_hash})
+            await self.user_repo.update(
+                entry=user, schema={"hashed_password": updated_password_hash}
+            )
 
         return user
 
-    async def _update(self, user: UP, update_dict: Dict[str, Any]) -> UP:
+    async def _update(self, user: UP, update_dict: Dict[str, Any]) -> Any:
         validated_update_dict = {}
         for field, value in update_dict.items():
             if field == "email" and value != user.email:
@@ -477,4 +472,4 @@ class UserManager(Generic[UP, ID]):
                 )
             else:
                 validated_update_dict[field] = value
-        return await self.user_db.update(user, validated_update_dict)
+        return await self.user_repo.update(entry=user, schema=validated_update_dict)

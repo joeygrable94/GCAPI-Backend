@@ -3,10 +3,10 @@ from typing import Any, Dict, Optional
 import pytest
 from httpx import AsyncClient, Response
 
-from app.core.config import settings
 from app.api.exceptions import UserNotExists
+from app.core.config import settings
 from app.core.security.manager import UserManager
-from app.db.schemas.user import ID, UP, UserCreate, UserRead, UserUpdate
+from app.db.schemas import ID, UP, UserCreate, UserRead, UserUpdate
 from app.tests.utils.utils import random_email, random_lower_string
 
 pytestmark = pytest.mark.asyncio
@@ -15,7 +15,7 @@ pytestmark = pytest.mark.asyncio
 async def test_list_users_as_superuser(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
-    user_manager: UserManager[UP,ID],
+    user_manager: UserManager[UP, ID],
 ) -> None:
     username_1: str = random_email()
     password_1: str = random_lower_string()
@@ -42,7 +42,7 @@ async def test_list_users_as_superuser(
 async def test_list_users_as_testuser(
     client: AsyncClient,
     testuser_token_headers: Dict[str, str],
-    user_manager: UserManager[UP,ID],
+    user_manager: UserManager[UP, ID],
 ) -> None:
     username_1: str = random_email()
     password_1: str = random_lower_string()
@@ -87,7 +87,7 @@ async def test_get_current_testuser(
 async def test_update_current_superuser(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
-    user_manager: UserManager[UP,ID],
+    user_manager: UserManager[UP, ID],
 ) -> None:
     response: Response = await client.get("users/me", headers=superuser_token_headers)
     current_user: UserRead = UserRead(**response.json())
@@ -102,7 +102,7 @@ async def test_update_current_superuser(
 async def test_update_current_testuser(
     client: AsyncClient,
     testuser_token_headers: Dict[str, str],
-    user_manager: UserManager[UP,ID],
+    user_manager: UserManager[UP, ID],
 ) -> None:
     response: Response = await client.get("users/me", headers=testuser_token_headers)
     current_user: UserRead = UserRead(**response.json())
@@ -117,7 +117,7 @@ async def test_update_current_testuser(
 async def test_get_user_by_id_as_superuser(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
-    user_manager: UserManager[UP,ID],
+    user_manager: UserManager[UP, ID],
 ) -> None:
     username: str = random_email()
     password: str = random_lower_string()
@@ -137,7 +137,7 @@ async def test_get_user_by_id_as_superuser(
 async def test_get_user_by_id_as_testuser(
     client: AsyncClient,
     testuser_token_headers: Dict[str, str],
-    user_manager: UserManager[UP,ID],
+    user_manager: UserManager[UP, ID],
 ) -> None:
     username: str = random_email()
     password: str = random_lower_string()
@@ -154,7 +154,7 @@ async def test_get_user_by_id_as_testuser(
 async def test_delete_user_by_id_as_superuser(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
-    user_manager: UserManager[UP,ID],
+    user_manager: UserManager[UP, ID],
 ) -> None:
     username: str = random_email()
     password: str = random_lower_string()
@@ -172,7 +172,7 @@ async def test_delete_user_by_id_as_superuser(
 async def test_delete_user_by_id_as_testuser(
     client: AsyncClient,
     testuser_token_headers: Dict[str, str],
-    user_manager: UserManager[UP,ID],
+    user_manager: UserManager[UP, ID],
 ) -> None:
     username: str = random_email()
     password: str = random_lower_string()

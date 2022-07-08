@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db
 from app.core.security import get_current_active_user
-from app.db.repositories.website import WebsitesRepository
+from app.db.repositories import WebsitesRepository
 from app.db.schemas import UserRead, WebsiteCreate, WebsiteRead, WebsiteUpdate
 
 websites_router: APIRouter = APIRouter()

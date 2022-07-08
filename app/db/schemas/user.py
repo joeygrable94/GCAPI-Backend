@@ -1,9 +1,8 @@
 from typing import Any, Dict, Generic, Optional, Protocol, TypeVar
 
-from pydantic import UUID4, EmailStr, BaseModel
+from pydantic import UUID4, BaseModel, EmailStr
 
 from app.db.schemas.base import BaseSchema
-
 
 ID = TypeVar("ID")
 
