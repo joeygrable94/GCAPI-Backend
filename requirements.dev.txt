@@ -1,6 +1,6 @@
 
 # server
-uvicorn[standard]==0.17.6
+uvicorn[standard]==0.18.2
 greenlet==1.1.2
 
 # security
