@@ -17,7 +17,7 @@ python-multipart==0.0.5
 # tasks
 celery==5.2.2
 celery-stubs==0.1.2
-redis==4.3.1
+redis==4.3.4
 # raven==6.10.0
 
 # database
