@@ -4,7 +4,7 @@ uvicorn[standard]==0.17.6
 greenlet==1.1.2
 
 # security
-httpx-oauth==0.7.0
+httpx-oauth==0.8.0
 requests==2.27.1
 cryptography==37.0.2
 
