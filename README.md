@@ -16,6 +16,8 @@
   - [PyTest](#pytest)
     - [Commands](#commands-1)
     - [Resources](#resources-2)
+- [Backend Data Model](#backend-data-model)
+  - [Model Architecture](#model-architecture)
 
 ---
 
@@ -50,6 +52,8 @@ If you want to upgrade specific packages:
 6. submit a pull request
 7. upgraded pip package and api code changes will be reviewed
 8. code changes will be merged into the main branch or rejected with reason
+
+<br/><br/>
 
 # Backend Tool Chest
 
@@ -109,3 +113,48 @@ Always add a message about what changed in the db models/tables.
 
 - [FastAPI PyTest Coverage WalkThrough](https://www.azepug.az/posts/fastapi/ecommerce-fastapi-nuxtjs/ecommerce-pytest-user-auth-part1.html)
 - [PyTest Raising Exceptions](https://docs.pytest.org/en/6.2.x/assert.html)
+
+<br/><br/>
+
+# Backend Data Model
+
+## Model Architecture
+
+```mermaid
+classDiagram
+    User --|> Client
+    Website <|-- Client
+    Website <|-- WebsitePage
+    WebsiteMap --|> WebsitePage
+    WebsiteMap --|> Website
+    class User{
+        +UUID id
+        +str email
+        +str hashed_password
+        +list scopes
+        has_permission()
+    }
+    class Client{
+        +str name
+    }
+    class Website{
+        +str domain
+        +bool is_secure
+        getUrl()
+        fetchSiteMap()
+        fetchPages()
+    }
+    class WebsiteMap{
+        +str domain
+        +bool is_secure
+        getUrl()
+        fetchSiteMap()
+        fetchPages()
+    }
+    class WebsitePage{
+        +int status
+        fetch_core_web_vitals()
+        fetch_keyword_corpus()
+        fetch_keywords()
+    }
+```

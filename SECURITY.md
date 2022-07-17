@@ -9,13 +9,9 @@
 - [Security Policy](#security-policy)
   - [Getting Starting](#getting-starting)
   - [Identy Access Management (IAM): Authetication & Authorization (Permissions)](#identy-access-management-iam-authetication--authorization-permissions)
-    - [Authetication (Identity Verification)](#authetication-identity-verification)
-      - [Authentication Request Access Token Flow :white_check_mark:](#authentication-request-access-token-flow-white_check_mark)
-      - [Authentication Refresh Access Token Flow :white_check_mark:](#authentication-refresh-access-token-flow-white_check_mark)
-      - [Authentication Refresh Token Rejected :x:](#authentication-refresh-token-rejected-x)
-    - [Authorization (Resource Permissions)](#authorization-resource-permissions)
-      - [Resource Request — Permission GRANTED :white_check_mark:](#resource-request--permission-granted-white_check_mark)
-      - [Resource Request — Permission DENIED :x:](#resource-request--permission-denied-x)
+    - [IAM: Identity Access Management](#iam-identity-access-management)
+      - [Identity: Authentication Flow](#identity-authentication-flow)
+      - [Access: Permissions Flow](#access-permissions-flow)
   - [Testing Tools](#testing-tools)
     - [GitLeaks](#gitleaks)
       - [References](#references)
@@ -55,144 +51,45 @@ Users are able to ONLY able to access resources on the API by first authenticati
 
 <br/><br/>
 
-### Authetication (Identity Verification)
+### IAM: Identity Access Management
 
-#### Authentication Request Access Token Flow :white_check_mark:
+#### Identity: Authentication Flow
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Client
-    API-->>Client: Send X-CSRF-TOKEN
-    User->>Client: Click Login Request
-    Note over User,Client: enters credentials:<br/>username, password<br/>(optional OAuth2 Scope)
-    Client->>API: Authenticate Request
-    loop auth
-        API->>API: 1. verify CSRF token<br/>2. authenticate User<br/>3. generate JWT<br/>4. set auth Cookies
-        Note over API: JWT Claims = <br/>access_token<br/>refresh_token<br/>scopes
-    end
-    API-->>Client: Return Authenticated User (JWT+Cookies)
-    Note over Client: securely stores JWT
-    Client-->>User: Redirect to User
-    Note over User,Client: User now authenticated!
-```
-
-<br/><br/>
-
-#### Authentication Refresh Access Token Flow :white_check_mark:
+Before any protected resource on the API is accessed, Users must supply their auth credentials `username` and `password` with an optional `scope` parameter for the specific resource being requested. The API's `user_manager` handle's all user identity authentication.
+- If a user fails to correctly identify themself or they attempt to access a resource which they do not have permission to access, the API will deny the request and return an unauthorzed error message.
+- Alternatively, if the supplied credentials are valid and verified, the API will return a successfully authorzed response with the respective user's `access_token` and a `refresh_token`.
 
 ```mermaid
 sequenceDiagram
-    participant User
     participant Client
-    Note over User,Client: user authenticated
-    User->>Client: Clicks Resource
-    Client->>API: Request Resource
-    Note over Client,API: send access_token via JWT
-    loop JWT access
-        API->>API: 1. verify signature <br/> and decode claims<br/>2. load access_token<br/>3. verify access_token
+    participant Auth
+    participant Resource
+    Auth-->>Client: Send X-CSRF-TOKEN
+    Client->>Auth: Grant Auth: Client Credentials
+    loop verify user
+        Auth->>Auth: generate JWT
     end
-    Note over User,API: access_token INVALID, refresh_token VALID
-    API-->>Client: Invalidate access_token
-    Client->>API: Request New access_token
-    Note over Client,API: send refresh_token via JWT
-    loop JWT refresh
-        API->>API: 1. verify signature <br/>and decode claims<br/>2. load refresh_token<br/>3. verify refresh_token
-        Note over API: refresh_token VALID
-        API->>API: generate new access_token
+    Auth-->>Client: Access Token + Refresh Token
+    Client->>Resource: Request Resource + Access Token
+    loop Permissions
+        Auth-->>Resource: Verify Permissions
+        Resource-->>Auth: Permission Granted
     end
-    API-->>Client: Return New access_token
-    Client->>API: Continue Resource Request
-    loop JWT access
-        API->>API: 1. verify signature <br/> and decode claims<br/>2. load access_token<br/>3. verify access_token
+    Resource-->>Client: Protected Resource
+    Client->>Resource: Access Token
+    Resource-->>Client: Invalid Token Error
+    Note over Client,Resource: Access Token Expired Message: Request Grant Auth
+    Client->>Auth: Grant Auth:<br/>Refresh Token<br/>+ Client Credentials
+    loop verify user
+        Auth->>Auth: generate JWT
     end
-    Note over User,API: access_token VALID
-    API->>API: Continue<br/>Resource Request<br/>(see Authorization)
-    API-->>Client: Return Resource Data
-    Client->>User: Render Resource
+    Auth-->>Client: Access Token + Refresh Token
 ```
 
-<br/><br/>
+#### Access: Permissions Flow
 
-#### Authentication Refresh Token Rejected :x:
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant Client
-    Note over User,Client: user authenticated
-    User->>Client: Clicks Resource
-    Client->>API: Request Resource
-    Note over Client,API: send access_token via JWT
-    loop JWT access
-        API->>API: 1. verify signature<br/> and decode claims<br/>2. load access_token<br/>3. verify access_token
-    end
-    Note over User,API: access_token INVALID
-    API-->>Client: Invalidate access_token
-    Client->>API: Request New access_token
-    Note over Client,API: send refresh_token via JWT
-    loop JWT refresh
-        API->>API: 1. verify signature <br/>and decode claims<br/>2. load refresh_token<br/>3. verify refresh_token
-    end
-    Note over User,API: refresh_token INVALID
-    loop JWT deny
-        API->>API: add JWT-JTI to deny list
-    end
-    API-->>Client: Reject Authentication<br/>Logout User
-    Client-->>User: Redirect to Logout
-```
-
-<br/><br/>
-
-### Authorization (Resource Permissions)
-
-#### Resource Request — Permission GRANTED :white_check_mark:
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant Client
-    Note over User,Client: user authenticated
-    User->>Client: Clicks Resource
-    Client->>API: Request Resource
-    loop Check JWT
-        API->>API: 1. verify signature <br/>2. decode claims<br/>3. load scopes
-        API->>Resource: Verify Permissions
-        Note over API,Resource: checks user scopes<br/>against resource principals
-        Resource-->>API: Permission GRANTED
-    end
-    API->>Resource: Fetch Data
-    Resource->>API: Transform Data
-    API-->>Client: Return Resource Data
-    Client-->>User: Render Resource
-```
-
-<br/><br/>
-
-#### Resource Request — Permission DENIED :x:
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant Client
-    Note over User,Client: user authenticated
-    User->>Client: Clicks Resource
-    Client->>API: Request Resource
-    loop Check JWT
-        API->>API: 1. verify signature <br/>2. decode claims<br/>3. load scopes
-        API->>Resource: Verify Permissions
-        Note over API,Resource: checks user scopes<br/>against resource principals
-        Resource-->>API: Permission DENIED
-    end
-    API->>API: Deny Resource Request
-    loop
-        API->>API: invalidate access_token
-    end
-    API-->>Client: Invalidate Token
-    Note over Client: remove invalid token<br/>and logout user
-    Client-->>User: Redirect to Logout
-    Note over User,Client: Error: Permission DENIED
-```
+<!--
+Upon success authorization the `user_manager` generates a [JSON Web Token JWT](https://datatracker.ietf.org/doc/html/rfc7519)... more coming soon.
 
 <br/><br/>
 
