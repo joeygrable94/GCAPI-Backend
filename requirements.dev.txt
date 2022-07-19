@@ -9,7 +9,7 @@ requests==2.27.1
 cryptography==37.0.2
 
 # api
-fastapi==0.75.2
+fastapi==0.79.0
 fastapi-users[sqlalchemy]==10.1.1
 pydantic[email]==1.9.0
 python-multipart==0.0.5
