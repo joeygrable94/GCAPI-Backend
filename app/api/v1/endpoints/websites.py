@@ -9,10 +9,10 @@ from app.core.security import get_current_active_user
 from app.db.repositories import WebsitesRepository
 from app.db.schemas import UserRead, WebsiteCreate, WebsiteRead, WebsiteUpdate
 
-websites_router: APIRouter = APIRouter()
+router: APIRouter = APIRouter()
 
 
-@websites_router.get(
+@router.get(
     "/", response_model=List[WebsiteRead], name="websites:read_websites"
 )
 async def websites_list(
@@ -27,7 +27,7 @@ async def websites_list(
     return list()
 
 
-@websites_router.post("/", response_model=WebsiteRead, name="websites:create_website")
+@router.post("/", response_model=WebsiteRead, name="websites:create_website")
 async def websites_create(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -39,7 +39,7 @@ async def websites_create(
     return website
 
 
-@websites_router.get("/{id}", response_model=WebsiteRead, name="websites:read_website")
+@router.get("/{id}", response_model=WebsiteRead, name="websites:read_website")
 async def websites_read(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -55,7 +55,7 @@ async def websites_read(
     return website
 
 
-@websites_router.patch(
+@router.patch(
     "/{id}", response_model=WebsiteRead, name="websites:update_website"
 )
 async def websites_update(
@@ -75,7 +75,7 @@ async def websites_update(
     return website
 
 
-@websites_router.delete(
+@router.delete(
     "/{id}", response_model=WebsiteRead, name="websites:delete_website"
 )
 async def websites_delete(

@@ -9,10 +9,10 @@ from app.core.security import get_current_active_user
 from app.db.repositories import ClientsRepository
 from app.db.schemas import ClientCreate, ClientRead, ClientUpdate, UserRead
 
-clients_router: APIRouter = APIRouter()
+router: APIRouter = APIRouter()
 
 
-@clients_router.get("/", response_model=List[ClientRead], name="clients:read_clients")
+@router.get("/", response_model=List[ClientRead], name="clients:read_clients")
 async def clients_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
@@ -25,7 +25,7 @@ async def clients_list(
     return list()
 
 
-@clients_router.post("/", response_model=ClientRead, name="clients:create_client")
+@router.post("/", response_model=ClientRead, name="clients:create_client")
 async def clients_create(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -37,7 +37,7 @@ async def clients_create(
     return client
 
 
-@clients_router.get("/{id}", response_model=ClientRead, name="clients:read_client")
+@router.get("/{id}", response_model=ClientRead, name="clients:read_client")
 async def clients_read(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -53,7 +53,7 @@ async def clients_read(
     return client
 
 
-@clients_router.patch("/{id}", response_model=ClientRead, name="clients:update_client")
+@router.patch("/{id}", response_model=ClientRead, name="clients:update_client")
 async def clients_update(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -71,7 +71,7 @@ async def clients_update(
     return client
 
 
-@clients_router.delete("/{id}", response_model=ClientRead, name="clients:delete_client")
+@router.delete("/{id}", response_model=ClientRead, name="clients:delete_client")
 async def clients_delete(
     *,
     db: AsyncSession = Depends(get_async_db),

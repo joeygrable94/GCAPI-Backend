@@ -9,10 +9,10 @@ from app.core.security import get_current_active_user
 from app.db.repositories import ItemsRepository
 from app.db.schemas import ItemCreate, ItemRead, ItemUpdate, UserRead
 
-items_router: APIRouter = APIRouter()
+router: APIRouter = APIRouter()
 
 
-@items_router.get("/", response_model=List[ItemRead], name="items:read_items")
+@router.get("/", response_model=List[ItemRead], name="items:read_items")
 async def items_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
@@ -28,7 +28,7 @@ async def items_list(
     return list()
 
 
-@items_router.post("/", response_model=ItemRead, name="items:create_item")
+@router.post("/", response_model=ItemRead, name="items:create_item")
 async def items_create(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -42,7 +42,7 @@ async def items_create(
     return item
 
 
-@items_router.get("/{id}", response_model=ItemRead, name="items:read_item")
+@router.get("/{id}", response_model=ItemRead, name="items:read_item")
 async def items_read(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -62,7 +62,7 @@ async def items_read(
     )
 
 
-@items_router.patch("/{id}", response_model=ItemRead, name="items:update_item")
+@router.patch("/{id}", response_model=ItemRead, name="items:update_item")
 async def items_update(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -84,7 +84,7 @@ async def items_update(
     )
 
 
-@items_router.delete("/{id}", response_model=ItemRead, name="items:delete_item")
+@router.delete("/{id}", response_model=ItemRead, name="items:delete_item")
 async def items_delete(
     *,
     db: AsyncSession = Depends(get_async_db),

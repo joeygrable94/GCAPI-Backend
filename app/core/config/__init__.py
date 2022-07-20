@@ -18,8 +18,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = os.environ.get("PROJECT_NAME", "FastAPI")
     PROJECT_VERSION: str = os.environ.get("PROJECT_VERSION", "0.0.1")
 
-    API_VERSION: str = os.environ.get("API_VERSION", "v1")
-    API_PREFIX: str = f"/api/{API_VERSION}"
+    API_PREFIX_V1: str = "/api/v1"
 
     SERVER_NAME: str = os.environ.get("DOMAIN", "localhost")
     SERVER_HOST: str = os.environ.get("DOMAIN_HOST", "http://localhost")

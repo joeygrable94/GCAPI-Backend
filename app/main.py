@@ -10,54 +10,9 @@ from app.core.templates import static_files
 
 
 def configure_routers(app: FastAPI) -> None:
-    # import routers
-    from app.api.v1.endpoints import (auth_router, auth_users_router,
-                                      clients_router, items_router,
-                                      public_router, register_router,
-                                      reset_password_router, verify_router,
-                                      websites_router)
-
-    # public routes
-    app.include_router(public_router, prefix=f"{settings.API_PREFIX}", tags=["public"])
-    # auth routes
-    app.include_router(
-        auth_router,
-        prefix=f"{settings.API_PREFIX}/auth/jwt",
-        tags=["auth"],
-    )
-    app.include_router(
-        register_router,
-        prefix=f"{settings.API_PREFIX}/auth",
-        tags=["auth"],
-    )
-    app.include_router(
-        reset_password_router,
-        prefix=f"{settings.API_PREFIX}/auth",
-        tags=["auth"],
-    )
-    app.include_router(
-        verify_router,
-        prefix=f"{settings.API_PREFIX}/auth",
-        tags=["auth"],
-    )
-    # user routes
-    app.include_router(
-        auth_users_router,
-        prefix=f"{settings.API_PREFIX}/users",
-        tags=["users"],
-    )
-    # core api routes
-    app.include_router(
-        items_router,
-        prefix=f"{settings.API_PREFIX}/items",
-        tags=["items"],
-    )
-    app.include_router(
-        clients_router, prefix=f"{settings.API_PREFIX}/clients", tags=["clients"]
-    )
-    app.include_router(
-        websites_router, prefix=f"{settings.API_PREFIX}/websites", tags=["websites"]
-    )
+    from app.api.v1 import router_v1
+    
+    app.include_router(router_v1, prefix=f"{settings.API_PREFIX_V1}")
 
 
 def configure_static(app: FastAPI) -> None:
@@ -95,9 +50,9 @@ def create_app() -> FastAPI:
     app: FastAPI = FastAPI(
         title=settings.PROJECT_NAME,
         version=settings.PROJECT_VERSION,
-        openapi_url=f"{settings.API_PREFIX}/docs/openapi.json",
-        docs_url=f"{settings.API_PREFIX}/docs",
-        redoc_url=f"{settings.API_PREFIX}/redoc",
+        openapi_url="/docs/openapi.json",
+        docs_url="/docs",
+        redoc_url="/redoc",
     )
     if settings.BACKEND_CORS_ORIGINS:
         app.add_middleware(

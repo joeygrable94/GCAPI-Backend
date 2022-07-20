@@ -12,7 +12,7 @@ from app.core.security import (get_current_active_superuser,
 from app.core.security.manager import UserManager
 from app.db.schemas import ID, UP, UserRead, UserUpdate
 
-auth_users_router = APIRouter()
+router = APIRouter()
 
 
 async def get_user_or_404(
@@ -33,7 +33,7 @@ get_user_or_404_responses: OpenAPIResponseType = {
 }
 
 
-@auth_users_router.get(
+@router.get(
     "/me",
     response_model=UserRead,
     name="users:current_user",
@@ -74,7 +74,7 @@ update_user_me_responses: OpenAPIResponseType = {
 }
 
 
-@auth_users_router.patch(
+@router.patch(
     "/me",
     response_model=UserRead,
     dependencies=[Depends(get_current_active_user)],
@@ -115,7 +115,7 @@ get_all_users_responses: OpenAPIResponseType = {
 }
 
 
-@auth_users_router.get(
+@router.get(
     "/",
     response_model=List[UserRead],
     dependencies=[Depends(get_current_active_superuser)],
@@ -144,7 +144,7 @@ get_user_reponses: OpenAPIResponseType = {
 }
 
 
-@auth_users_router.get(
+@router.get(
     "/{id}",
     response_model=UserRead,
     dependencies=[Depends(get_current_active_superuser)],
@@ -190,7 +190,7 @@ update_user_responses: OpenAPIResponseType = {
 }
 
 
-@auth_users_router.patch(
+@router.patch(
     "/{id}",
     response_model=UserRead,
     dependencies=[Depends(get_current_active_superuser)],
@@ -234,7 +234,7 @@ delete_user_responses: OpenAPIResponseType = {
 }
 
 
-@auth_users_router.delete(
+@router.delete(
     "/{id}",
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=Response,
