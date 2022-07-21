@@ -1,6 +1,7 @@
 import os
 from typing import Any, Dict, List, Optional, Union
 
+from functools import lru_cache
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -126,5 +127,10 @@ class Settings(BaseSettings):
         case_sensitive: bool = True
 
 
+@lru_cache()
+def get_settings() -> Settings:
+    return Settings()
+
+
 mode: Optional[str] = os.environ.get("APP_MODE")
-settings: Settings = Settings()
+settings: Settings = get_settings()

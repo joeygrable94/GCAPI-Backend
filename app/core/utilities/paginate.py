@@ -18,7 +18,7 @@ def paginate(
 
     Example Input & Output:
         input   page    skip    limit
-            -1     0       0       100       0-100
+           -1     0       0       100       0-100
             0     1       0       100       0-100
             1     1       0       100       0-100
             2     2       100     100     100-200

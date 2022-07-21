@@ -6,7 +6,7 @@ from fastapi import (APIRouter, Depends, HTTPException, Request, Response,
 from app.api.errors import ErrorCode, ErrorModel
 from app.api.exceptions import (InvalidID, InvalidPasswordException,
                                 UserAlreadyExists, UserNotExists)
-from app.api.openapi import OpenAPIResponseType
+from app.api import OpenAPIResponseType
 from app.core.security import (get_current_active_superuser,
                                get_current_active_user, get_user_manager)
 from app.core.security.manager import UserManager

@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Type, Union
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.paginate import paginate
+from app.core.utilities import paginate
 from app.db.repositories.base import BaseRepository
 from app.db.schemas import UserCreate, UserRead, UserUpdate
 from app.db.schemas.user import ID

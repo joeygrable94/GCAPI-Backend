@@ -4,7 +4,7 @@ from typing import Protocol
 from fastapi import Response
 from fastapi.security.base import SecurityBase
 
-from app.api.openapi import OpenAPIResponseType
+from app.api import OpenAPIResponseType
 
 
 class TransportLogoutNotSupportedError(Exception):

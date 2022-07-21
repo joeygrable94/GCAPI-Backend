@@ -5,7 +5,7 @@ from pydantic import UUID4
 from sqlalchemy import select as sql_select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.paginate import paginate
+from app.core.utilities import paginate
 from app.db.schemas.base import BaseSchema
 from app.db.tables.base import TableBase
 from app.db.utilities import _get_uuid

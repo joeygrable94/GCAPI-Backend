@@ -17,7 +17,7 @@ from app.api.exceptions import (
     UserInactive,
     UserAlreadyVerified
 )
-from app.api.openapi import OpenAPIResponseType
+from app.api import OpenAPIResponseType
 from app.core.config import settings
 from app.core.security import (
     auth_backend,

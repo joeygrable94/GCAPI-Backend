@@ -2,7 +2,7 @@ from typing import Any, List, Optional, Type, Union
 
 from pydantic import UUID4
 
-from app.api.paginate import paginate
+from app.core.utilities import paginate
 from app.db.repositories.base import BaseRepository
 from app.db.schemas import ItemCreate, ItemRead, ItemUpdate
 from app.db.tables import Item
