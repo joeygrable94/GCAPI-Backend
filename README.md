@@ -13,6 +13,9 @@
    :alt: Codecov
 
 
+[![CodeQL](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql-analysis.yml)
+
+
 ## Table of Contents
 
 - [GCAPI Backend](#gcapi-backend)
