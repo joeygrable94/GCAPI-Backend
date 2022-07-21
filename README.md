@@ -1,5 +1,18 @@
 # GCAPI Backend
 
+.. image:: https://github.com/joeygrable94/GCAPI-Backend/workflows/CI/badge.svg
+   :target: https://github.com/joeygrable94/GCAPI-Backend/actions?query=CI
+   :alt: GitHub Actions - CI
+
+.. image:: https://github.com/joeygrable94/GCAPI-Backend/workflows/pre-commit/badge.svg
+   :target: https://github.com/joeygrable94/GCAPI-Backend/actions?query=workflow%3Apre-commit
+   :alt: GitHub Actions - pre-commit
+
+.. image:: https://img.shields.io/codecov/c/gh/joeygrable94/GCAPI-Backend
+   :target: https://app.codecov.io/gh/joeygrable94/GCAPI-Backend
+   :alt: Codecov
+
+
 ## Table of Contents
 
 - [GCAPI Backend](#gcapi-backend)
