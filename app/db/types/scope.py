@@ -1,5 +1,5 @@
 import re
-from typing impory Any, Dict, Optional
+from typing import Any, Dict, Optional
 
 
 # https://pydantic-docs.helpmanual.io/usage/types/#custom-data-types
