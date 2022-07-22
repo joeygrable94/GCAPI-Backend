@@ -34,8 +34,8 @@ class BaseRepository(
         pass
 
     @staticmethod
-    def generate_uuid() -> UUID4:
-        return _get_uuid()
+    def generate_uuid() -> Any:
+        return lambda: str(_get_uuid())
 
     def _preprocess_create(self, values: Dict) -> Dict:
         if "id" not in values:
