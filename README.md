@@ -4,8 +4,6 @@
 
 [![Codecov](https://img.shields.io/codecov/c/gh/joeygrable94/GCAPI-Backend)](https://app.codecov.io/gh/joeygrable94/GCAPI-Backend)
 
-[![pre-commit](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/pre-commit.yml)
-
 [![GitHub CI](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml)
 
 
