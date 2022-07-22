@@ -3,9 +3,9 @@ import os
 import warnings
 from typing import AsyncGenerator, Callable, Dict, Generator
 
-import alembic
+# import alembic
 import pytest
-from alembic.config import Config
+# from alembic.config import Config
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 from httpx import AsyncClient
@@ -69,6 +69,7 @@ async def override_get_user_manager(db_session: AsyncSession) -> Callable:
     return _override_get_user_manager
 
 
+"""
 @pytest.fixture(scope="session")
 def apply_migrations() -> Generator:
     warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -77,13 +78,14 @@ def apply_migrations() -> Generator:
     alembic.command.upgrade(config, "head")
     yield
     alembic.command.downgrade(config, "base")
+"""
 
 
 @pytest.fixture(scope="module")
 def app(
     override_get_db: Callable,
     override_get_user_manager: Callable,
-    apply_migrations: None,
+    # apply_migrations: None,
 ) -> FastAPI:
     app: FastAPI = create_app()
     app.dependency_overrides[get_async_db] = override_get_db
