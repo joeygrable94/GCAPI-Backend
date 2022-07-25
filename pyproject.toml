@@ -59,11 +59,13 @@ makefun = "^1.14.0"
 profile = "black"
 src_paths = ["app"]
 combine_as_imports = true
+line_length = 88
 
 [tool.black]
 profile = "black"
 src_paths = ["app"]
 combine_as_imports = true
+line_length = 88
 
 [tool.mypy]
 python_version = 3.10
@@ -76,7 +78,7 @@ addopts = '''
     --remove-all-unused-imports
     --recursive
     --remove-unused-variables
-    --in-place app
+    --in-place
     --exclude=__init__.py
 '''
 
