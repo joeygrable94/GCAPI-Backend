@@ -12,9 +12,7 @@ from app.db.schemas import UserRead, WebsiteCreate, WebsiteRead, WebsiteUpdate
 router: APIRouter = APIRouter()
 
 
-@router.get(
-    "/", response_model=List[WebsiteRead], name="websites:read_websites"
-)
+@router.get("/", response_model=List[WebsiteRead], name="websites:read_websites")
 async def websites_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
@@ -55,9 +53,7 @@ async def websites_read(
     return website
 
 
-@router.patch(
-    "/{id}", response_model=WebsiteRead, name="websites:update_website"
-)
+@router.patch("/{id}", response_model=WebsiteRead, name="websites:update_website")
 async def websites_update(
     *,
     db: AsyncSession = Depends(get_async_db),
@@ -75,9 +71,7 @@ async def websites_update(
     return website
 
 
-@router.delete(
-    "/{id}", response_model=WebsiteRead, name="websites:delete_website"
-)
+@router.delete("/{id}", response_model=WebsiteRead, name="websites:delete_website")
 async def websites_delete(
     *,
     db: AsyncSession = Depends(get_async_db),

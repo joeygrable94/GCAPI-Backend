@@ -1,6 +1,5 @@
 import re
-from typing import Any, Dict, Optional, Generator
-
+from typing import Any, Dict, Generator, Optional
 
 # https://pydantic-docs.helpmanual.io/usage/types/#custom-data-types
 # regex meaning

@@ -4,7 +4,9 @@ import jwt
 
 from app.api.exceptions import InvalidID, UserNotExists
 from app.core.security.authentication.strategy.base import (
-    Strategy, StrategyDestroyNotSupportedError)
+    Strategy,
+    StrategyDestroyNotSupportedError,
+)
 from app.core.security.jwt import SecretType, decode_jwt, generate_jwt
 from app.core.security.manager import UserManager
 from app.db.schemas.user import ID, UP

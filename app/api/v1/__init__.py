@@ -1,23 +1,12 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import (
-    auth,
-    clients,
-    items,
-    public,
-    users,
-    websites
-)
-
+from app.api.v1.endpoints import auth, clients, items, public, users, websites
 
 router_v1 = APIRouter()
 
 
 # public routes
-router_v1.include_router(
-    public.router,
-    tags=["public"]
-)
+router_v1.include_router(public.router, tags=["public"])
 
 # auth routes
 router_v1.include_router(
@@ -41,15 +30,7 @@ router_v1.include_router(
 )
 
 # client routes
-router_v1.include_router(
-    clients.router,
-    prefix="/clients",
-    tags=["clients"]
-)
+router_v1.include_router(clients.router, prefix="/clients", tags=["clients"])
 
 # website routes
-router_v1.include_router(
-    websites.router,
-    prefix="/websites",
-    tags=["websites"]
-)
+router_v1.include_router(websites.router, prefix="/websites", tags=["websites"])

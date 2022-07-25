@@ -1,14 +1,20 @@
 from typing import Any, List
 
-from fastapi import (APIRouter, Depends, HTTPException, Request, Response,
-                     status)
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 
-from app.api.errors import ErrorCode, ErrorModel
-from app.api.exceptions import (InvalidID, InvalidPasswordException,
-                                UserAlreadyExists, UserNotExists)
 from app.api import OpenAPIResponseType
-from app.core.security import (get_current_active_superuser,
-                               get_current_active_user, get_user_manager)
+from app.api.errors import ErrorCode, ErrorModel
+from app.api.exceptions import (
+    InvalidID,
+    InvalidPasswordException,
+    UserAlreadyExists,
+    UserNotExists,
+)
+from app.core.security import (
+    get_current_active_superuser,
+    get_current_active_user,
+    get_user_manager,
+)
 from app.core.security.manager import UserManager
 from app.db.schemas import ID, UP, UserRead, UserUpdate
 

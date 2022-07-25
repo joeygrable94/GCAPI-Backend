@@ -1,7 +1,7 @@
 import os
+from functools import lru_cache
 from typing import Any, Dict, List, Optional, Union
 
-from functools import lru_cache
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -55,10 +55,12 @@ class Settings(BaseSettings):
         return v
 
     DB_ECHO_LOG: bool = False if bool(os.environ.get("APP_DEBUG", True)) else False
-    DATABASE_SERVER: str = os.environ.get("DATABASE_SERVER", "")
-    DATABASE_USER: str = os.environ.get("DATABASE_USER", "")
-    DATABASE_PASSWORD: str = os.environ.get("DATABASE_PASSWORD", "")
-    DATABASE_NAME: str = os.environ.get("DATABASE_NAME", "")
+    DATABASE_SERVER: str = os.environ.get("DATABASE_SERVER", "localhost")
+    DATABASE_PORT: str = os.environ.get("DATABASE_PORT", "3306")
+    DATABASE_USER: str = os.environ.get("DATABASE_USER", "root")
+    DATABASE_PASSWORD: str = os.environ.get("DATABASE_PASSWORD", "root")
+    DATABASE_NAME: str = os.environ.get("DATABASE_NAME", "app.db")
+
     DATABASE_URI: str = os.environ.get("DATABASE_URI", "sqlite:///./app.db")
     ASYNC_DATABASE_URI: str = os.environ.get(
         "ASYNC_DATABASE_URI", "sqlite+aiosqlite:///./app.db"

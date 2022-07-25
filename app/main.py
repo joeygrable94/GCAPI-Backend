@@ -11,7 +11,7 @@ from app.core.templates import static_files
 
 def configure_routers(app: FastAPI) -> None:
     from app.api.v1 import router_v1
-    
+
     app.include_router(router_v1, prefix=f"{settings.API_PREFIX_V1}")
 
 
@@ -20,8 +20,10 @@ def configure_static(app: FastAPI) -> None:
 
 
 def configure_events(app: FastAPI) -> None:
-    from app.db.commands import (  # drop_db_and_tables, create_db_and_tables,
-        check_db_connected, check_db_disconnected, create_initial_data)
+    from app.db.commands import (
+        check_db_connected,  # drop_db_and_tables, create_db_and_tables,
+    )
+    from app.db.commands import check_db_disconnected, create_initial_data
 
     # startup actions
     @app.on_event("startup")
@@ -50,9 +52,9 @@ def create_app() -> FastAPI:
     app: FastAPI = FastAPI(
         title=settings.PROJECT_NAME,
         version=settings.PROJECT_VERSION,
-        openapi_url="/docs/openapi.json",
-        docs_url="/docs",
-        redoc_url="/redoc",
+        openapi_url="/api/docs/openapi.json",
+        docs_url="/api/docs",
+        redoc_url="/api/redoc",
     )
     if settings.BACKEND_CORS_ORIGINS:
         app.add_middleware(

@@ -5,10 +5,15 @@ import jwt
 from fastapi import Request
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.api.exceptions import (InvalidID, InvalidResetPasswordToken,
-                                InvalidVerifyToken, UserAlreadyExists,
-                                UserAlreadyVerified, UserInactive,
-                                UserNotExists)
+from app.api.exceptions import (
+    InvalidID,
+    InvalidResetPasswordToken,
+    InvalidVerifyToken,
+    UserAlreadyExists,
+    UserAlreadyVerified,
+    UserInactive,
+    UserNotExists,
+)
 from app.core.config import settings
 from app.core.security.jwt import SecretType, decode_jwt, generate_jwt
 from app.core.security.password import PasswordHelper, PasswordHelperProtocol

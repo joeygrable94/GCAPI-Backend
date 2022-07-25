@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import (CHAR, Column, DateTime, Float, ForeignKey, Integer,
-                        String)
+from sqlalchemy import CHAR, Column, DateTime, Float, ForeignKey, Integer, String
 
 from app.db.tables.base import TableBase
 

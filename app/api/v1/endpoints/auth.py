@@ -1,33 +1,25 @@
 from typing import Any, Tuple
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Response, Request, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
 
-from app.api.errors import (
-    ErrorCode,
-    ErrorModel
-) 
+from app.api import OpenAPIResponseType
+from app.api.errors import ErrorCode, ErrorModel
 from app.api.exceptions import (
     InvalidPasswordException,
     InvalidResetPasswordToken,
     InvalidVerifyToken,
-    UserNotExists,
-    UserAlreadyExists, 
+    UserAlreadyExists,
+    UserAlreadyVerified,
     UserInactive,
-    UserAlreadyVerified
+    UserNotExists,
 )
-from app.api import OpenAPIResponseType
 from app.core.config import settings
-from app.core.security import (
-    auth_backend,
-    get_current_user_token,
-    get_user_manager
-)
+from app.core.security import auth_backend, get_current_user_token, get_user_manager
 from app.core.security.authentication import Strategy
 from app.core.security.manager import UserManager
 from app.db.schemas import ID, UP, UserCreate, UserRead
-
 
 router = APIRouter()
 
@@ -52,6 +44,7 @@ login_responses: OpenAPIResponseType = {
     },
     **auth_backend.transport.get_openapi_login_responses_success(),
 }
+
 
 @router.post(
     "/jwt/login",
@@ -84,6 +77,7 @@ logout_responses: OpenAPIResponseType = {
     },
     **auth_backend.transport.get_openapi_logout_responses_success(),
 }
+
 
 @router.post(
     "/jwt/logout", name=f"auth:{auth_backend.name}.logout", responses=logout_responses
@@ -121,6 +115,7 @@ register_responses: OpenAPIResponseType = {
         },
     },
 }
+
 
 @router.post(
     "/register",
@@ -199,6 +194,7 @@ verify_token_responses: OpenAPIResponseType = {
     }
 }
 
+
 @router.post(
     "/verify",
     response_model=UserRead,
@@ -271,6 +267,7 @@ reset_password_responses: OpenAPIResponseType = {
         },
     },
 }
+
 
 @router.post(
     "/reset-password",

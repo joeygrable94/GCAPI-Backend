@@ -3,9 +3,13 @@ from typing import Any, Generic
 from fastapi import Response
 
 from app.core.security.authentication.strategy import (
-    Strategy, StrategyDestroyNotSupportedError)
+    Strategy,
+    StrategyDestroyNotSupportedError,
+)
 from app.core.security.authentication.transport import (
-    Transport, TransportLogoutNotSupportedError)
+    Transport,
+    TransportLogoutNotSupportedError,
+)
 from app.db.schemas.user import ID, UP
 
 

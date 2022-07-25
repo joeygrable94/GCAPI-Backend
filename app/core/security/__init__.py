@@ -1,4 +1,3 @@
-import uuid
 from typing import Any, AsyncGenerator
 
 from fastapi import Depends
@@ -6,8 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db
 from app.core.config import settings
-from app.core.security.authentication import (AuthenticationBackend,
-                                              BearerTransport, JWTStrategy)
+from app.core.security.authentication import (
+    AuthenticationBackend,
+    BearerTransport,
+    JWTStrategy,
+)
 from app.core.security.authentication.authenticator import Authenticator
 from app.core.security.manager import UserManager
 

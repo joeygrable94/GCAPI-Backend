@@ -11,8 +11,9 @@ if TYPE_CHECKING:
     from .go_sc_device import GoogleSearchConsoleDevice  # noqa: F401
     from .go_sc_page import GoogleSearchConsolePage  # noqa: F401
     from .go_sc_query import GoogleSearchConsoleQuery  # noqa: F401
-    from .go_sc_searchappearance import \
-        GoogleSearchConsoleSearchAppearance  # noqa: F401
+    from .go_sc_searchappearance import (  # noqa: F401
+        GoogleSearchConsoleSearchAppearance,
+    )
     from .website import Website  # noqa: F401
 
 

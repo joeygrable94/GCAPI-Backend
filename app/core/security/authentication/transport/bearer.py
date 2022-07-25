@@ -6,7 +6,9 @@ from pydantic import BaseModel
 
 from app.api import OpenAPIResponseType
 from app.core.security.authentication.transport.base import (
-    Transport, TransportLogoutNotSupportedError)
+    Transport,
+    TransportLogoutNotSupportedError,
+)
 
 
 class BearerResponse(BaseModel):

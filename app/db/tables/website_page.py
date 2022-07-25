@@ -7,8 +7,7 @@ from app.db.tables.base import TableBase
 
 if TYPE_CHECKING:
     from .website_keywordcorpus import WebsiteKeywordCorpus  # noqa: F401
-    from .website_pagespeedinsights import \
-        WebsitePageSpeedInsights  # noqa: F401
+    from .website_pagespeedinsights import WebsitePageSpeedInsights  # noqa: F401
 
 
 class WebsitePage(TableBase):
