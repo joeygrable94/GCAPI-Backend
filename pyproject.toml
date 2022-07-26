@@ -22,7 +22,7 @@ SQLAlchemy = {version = "1.4.39", extras = ["mypy"]}
 sqlalchemy-stubs = "0.4"
 SQLAlchemy-Utils = "0.38.2"
 databases = "0.5.5"
-alembic = "1.7.7"
+alembic = "1.8.1"
 anyio = {version = "3.5.0", extras = ["trio"]}
 asyncio = "3.4.3"
 aiohttp = "3.8.1"
