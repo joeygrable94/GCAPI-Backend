@@ -44,8 +44,8 @@ async def db_session() -> AsyncGenerator:
         await async_conn.run_sync(Base.metadata.create_all)
         async with async_session(bind=async_conn) as session:
             yield session
-            # await session.flush()
-            # await session.rollback()
+            await session.flush()
+            await session.rollback()
         await async_conn.close()
 
 

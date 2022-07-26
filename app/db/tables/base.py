@@ -11,7 +11,7 @@ class TableBase(BaseMixin, Base):
     __abstract__: bool = True
     __mapper_args__: Any = {"always_refresh": True}
     id: Column[Any] = Column(
-        CHAR(32), primary_key=True, unique=True, nullable=False, default=_get_uuid()
+        CHAR(36), primary_key=True, unique=True, nullable=False, default=_get_uuid()
     )
     created_on: Column[datetime] = Column(
         DateTime(timezone=True), default=func.current_timestamp()

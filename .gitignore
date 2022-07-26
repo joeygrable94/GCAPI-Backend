@@ -13,6 +13,7 @@ alembic
 
 # PyTest
 htmlcov
+coverage.xml
 .pytest_cache
 .mypy_cache
 .coverage

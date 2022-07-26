@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-set -e
 set -x
 
 mypy app
-black app
-isort app
+black app --check
+isort app --recursive --check-only app
 flake8 app

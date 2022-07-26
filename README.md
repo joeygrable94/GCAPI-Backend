@@ -12,7 +12,6 @@
 - [GCAPI Backend](#gcapi-backend)
   - [Table of Contents](#table-of-contents)
   - [Getting Started](#getting-started)
-  - [A Note on Upgrading Python Packages](#a-note-on-upgrading-python-packages)
 - [Backend Tool Chest](#backend-tool-chest)
   - [Alembic](#alembic)
     - [Configuration](#configuration)
@@ -33,32 +32,19 @@
 First check to ensure Python 3.10 is installed and is the current version in use.
 
     python3 --version
-    > python3.10
+    > python3.10.5
 
 Create a virtual environment, activate it, then install the backend python pip `requirements.dev.txt` file.
 
     python3.10 -m venv venv
     source venv/bin/activate
-    python -m pip install -r requirements.dev.txt
+    python -m pip install --upgrade pip
+    python -m pip install poetry
+    poetry install
     bash ./start.sh
     > ... App Running at 0.0.0.0:8888
     > :q
     source venv/bin/deactivate
-
-## A Note on Upgrading Python Packages
-
-WARNING: Be sure you install the `requirements.dev.txt` file in your development environment for everything to install and all tests to run correctly. ONLY use the alternate `requirements.txt` file to test the entire stack using the latest version of all python packages. THIS IS NOT RECOMMENDED.
-
-If you want to upgrade specific packages:
-
-1. make a new git branch
-2. update the packages in the `requirements.dev.txt` file
-3. install the updated package in the virtual environment
-4. make api code changes so that the upgraded pip package passes all tests
-5. commit changes to the branch
-6. submit a pull request
-7. upgraded pip package and api code changes will be reviewed
-8. code changes will be merged into the main branch or rejected with reason
 
 <br/><br/>
 
@@ -112,9 +98,9 @@ Always add a message about what changed in the db models/tables.
 
 ### Commands
 
-    pytest --asyncio-mode=strict
-    pytest app/tests/crud --asyncio-mode=strict
-    pytest app/tests/api/api_v1/test_websites.py --asyncio-mode=strict
+    pytest
+    pytest app/tests/crud
+    pytest app/tests/api/api_v1/test_websites.py
 
 ### Resources
 
