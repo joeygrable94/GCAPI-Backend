@@ -1,25 +1,27 @@
-import asyncio
-
-from sqlalchemy.orm import Session
-
 from app.core.config import settings
 from app.core.logger import logger
-from app.db.commands import crud_user_create
+from app.db.session import engine
 
 
-def load_initial_data(db: Session) -> None:
-    logger.info("init db data")
-    asyncio.run(
-        crud_user_create(
-            email=settings.FIRST_SUPERUSER,
-            password=settings.FIRST_SUPERUSER_PASSWORD,
-            is_superuser=True,
-        )
-    )
-    asyncio.run(
-        crud_user_create(
-            email=settings.TEST_NORMAL_USER,
-            password=settings.TEST_NORMAL_USER_PASSWORD,
-            is_superuser=False,
-        )
-    )
+def create_db_tables() -> None:
+    from app.db.base import Base
+
+    logger.info("Creating Database Tables")
+    Base.metadata.create_all(engine)
+    logger.info("Database Tables Created")
+
+
+def drop_db_tables() -> None:
+    from app.db.base import Base
+
+    logger.info("Dropping Database Tables")
+    Base.metadata.drop_all(engine)
+    logger.info("Database Tables Dropped")
+
+
+def build_database() -> None:
+    logger.info("Building Database")
+    if settings.DEBUG_MODE:
+        drop_db_tables()
+        create_db_tables()
+    logger.info("Database Ready")

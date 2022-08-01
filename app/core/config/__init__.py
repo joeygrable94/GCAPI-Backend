@@ -12,6 +12,7 @@ from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, validator
 class Settings(BaseSettings):
 
     DEBUG_MODE: bool = bool(os.environ.get("APP_DEBUG", True))
+
     # LOG: NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
     LOGGING_LEVEL: str = "DEBUG"
     LOGGER_NAME: str = os.environ.get("STACK_NAME", "debug")
@@ -56,14 +57,29 @@ class Settings(BaseSettings):
 
     DB_ECHO_LOG: bool = False if bool(os.environ.get("APP_DEBUG", True)) else False
     DATABASE_SERVER: str = os.environ.get("DATABASE_SERVER", "localhost")
-    DATABASE_PORT: str = os.environ.get("DATABASE_PORT", "3306")
+    DATABASE_PORT: int = int(os.environ.get("DATABASE_PORT", 3306))
     DATABASE_USER: str = os.environ.get("DATABASE_USER", "root")
     DATABASE_PASSWORD: str = os.environ.get("DATABASE_PASSWORD", "root")
     DATABASE_NAME: str = os.environ.get("DATABASE_NAME", "app.db")
-
-    DATABASE_URI: str = os.environ.get("DATABASE_URI", "sqlite:///./app.db")
-    ASYNC_DATABASE_URI: str = os.environ.get(
-        "ASYNC_DATABASE_URI", "sqlite+aiosqlite:///./app.db"
+    DATABASE_URI: Optional[str] = os.environ.get(
+        "DATABASE_URI",
+        "mysql+pymysql://{}:{}@{}:{}/{}?charset=UTF8MB4".format(
+            DATABASE_USER,
+            DATABASE_PASSWORD,
+            DATABASE_SERVER,
+            DATABASE_PORT,
+            DATABASE_NAME,
+        ),
+    )
+    ASYNC_DATABASE_URI: Optional[str] = os.environ.get(
+        "DATABASE_URI",
+        "mysql+aiomysql://{}:{}@{}:{}/{}?charset=UTF8MB4".format(
+            DATABASE_USER,
+            DATABASE_PASSWORD,
+            DATABASE_SERVER,
+            DATABASE_PORT,
+            DATABASE_NAME,
+        ),
     )
 
     C_BROKER_URI: str = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379")

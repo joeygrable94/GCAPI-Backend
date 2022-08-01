@@ -8,7 +8,6 @@ from app.core.config import settings
 from app.core.logger import logger
 from app.core.security import get_user_manager
 from app.db.schemas import UserCreate, UserRead
-from app.db.session import async_engine
 
 
 async def check_db_connected() -> None:
@@ -36,22 +35,6 @@ async def check_db_disconnected() -> None:
     except Exception as e:
         logger.info("+ ASYNC F(X) --> Failed to Disconnect Database! (@_@)")
         raise e
-
-
-async def create_db_and_tables() -> None:
-    from app.db.base import Base
-
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-        logger.info("+ ASYCN F(X) --> Database tables created.")
-
-
-async def drop_db_and_tables() -> None:
-    from app.db.base import Base
-
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        logger.info("+ ASYCN F(X) --> Database tables dropped.")
 
 
 get_async_db_context = contextlib.asynccontextmanager(get_async_db)

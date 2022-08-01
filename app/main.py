@@ -21,16 +21,16 @@ def configure_static(app: FastAPI) -> None:
 
 def configure_events(app: FastAPI) -> None:
     from app.db.commands import (
-        check_db_connected,  # drop_db_and_tables, create_db_and_tables,
+        check_db_connected,
+        check_db_disconnected,
+        create_initial_data,
     )
-    from app.db.commands import check_db_disconnected, create_initial_data
 
     # startup actions
     @app.on_event("startup")
     async def on_startup() -> None:
         await check_db_connected()
-        # await drop_db_and_tables()
-        # await create_db_and_tables()
+        # build_database()
         await create_initial_data()
 
     # middlewares
@@ -52,9 +52,9 @@ def create_app() -> FastAPI:
     app: FastAPI = FastAPI(
         title=settings.PROJECT_NAME,
         version=settings.PROJECT_VERSION,
-        openapi_url="/api/docs/openapi.json",
-        docs_url="/api/docs",
-        redoc_url="/api/redoc",
+        openapi_url="/api/v1/docs/openapi.json",
+        docs_url="/api/v1/docs",
+        redoc_url="/api/v1/redoc",
     )
     if settings.BACKEND_CORS_ORIGINS:
         app.add_middleware(

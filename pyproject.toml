@@ -36,6 +36,7 @@ python-dotenv = "0.20.0"
 bcrypt = "^3.2.2"
 passlib = "^1.7.4"
 PyJWT = "^2.4.0"
+gunicorn = "^20.1.0"
 
 [tool.poetry.dev-dependencies]
 asgi-lifespan = "1.0.1"
