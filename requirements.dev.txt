@@ -29,7 +29,7 @@ databases==0.5.5
 alembic==1.7.7
 
 # async
-anyio[trio]==3.5.0
+anyio[trio]==3.6.1
 asyncio==3.4.3
 aiohttp==3.8.1
 aiosqlite==0.17.0
