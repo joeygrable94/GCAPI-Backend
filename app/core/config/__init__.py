@@ -72,7 +72,7 @@ class Settings(BaseSettings):
         ),
     )
     ASYNC_DATABASE_URI: Optional[str] = os.environ.get(
-        "DATABASE_URI",
+        "ASYNC_DATABASE_URI",
         "mysql+aiomysql://{}:{}@{}:{}/{}?charset=UTF8MB4".format(
             DATABASE_USER,
             DATABASE_PASSWORD,
