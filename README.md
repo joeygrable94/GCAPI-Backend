@@ -1,10 +1,6 @@
 # GCAPI Backend
 
-[![CodeQL](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql-analysis.yml)
-
-[![Codecov](https://img.shields.io/codecov/c/gh/joeygrable94/GCAPI-Backend)](https://app.codecov.io/gh/joeygrable94/GCAPI-Backend)
-
-[![GitHub CI](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql-analysis.yml) [![GitHub CI](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/joeygrable94/GCAPI-Backend/branch/main/graph/badge.svg?token=8FCB50574D)](https://codecov.io/gh/joeygrable94/GCAPI-Backend)
 
 
 ## Table of Contents
