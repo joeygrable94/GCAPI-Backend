@@ -75,7 +75,9 @@ sequenceDiagram
         Auth-->>Resource: Verify Permissions
         Resource-->>Auth: Permission Granted
     end
+    Auth->>Resource: Fetch Requested Resource
     Resource-->>Client: Protected Resource
+    Note over Client,Resource: After Time: Access Token Expires
     Client->>Resource: Access Token
     Resource-->>Client: Invalid Token Error
     Note over Client,Resource: Access Token Expired Message: Request Grant Auth
