@@ -25,12 +25,13 @@ def configure_events(app: FastAPI) -> None:
         check_db_disconnected,
         create_initial_data,
     )
+    from app.db.init_db import build_database
 
     # startup actions
     @app.on_event("startup")
     async def on_startup() -> None:
         await check_db_connected()
-        # build_database()
+        build_database()
         await create_initial_data()
 
     # middlewares

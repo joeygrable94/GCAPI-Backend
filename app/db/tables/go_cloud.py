@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CHAR, Column, ForeignKey, String
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey, String
 
 from app.db.tables.base import TableBase
 
@@ -17,7 +18,7 @@ class GoogleCloudProperty(TableBase):
     hashed_service_account: Column[str] = Column(String(64), nullable=False)
 
     # relationships
-    client_id: Column[str] = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
+    client_id: Column[str] = Column(GUID, ForeignKey("client.id"), nullable=False)
 
     def __repr__(self) -> str:
         repr_str: str = f"GoogleCloudProperty(Project[{self.project_name}] \

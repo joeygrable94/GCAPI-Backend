@@ -56,31 +56,41 @@ class Settings(BaseSettings):
         return v
 
     DB_ECHO_LOG: bool = False if bool(os.environ.get("APP_DEBUG", True)) else False
-    DATABASE_SERVER: str = os.environ.get("DATABASE_SERVER", "localhost")
-    DATABASE_PORT: int = int(os.environ.get("DATABASE_PORT", 3306))
-    DATABASE_USER: str = os.environ.get("DATABASE_USER", "root")
-    DATABASE_PASSWORD: str = os.environ.get("DATABASE_PASSWORD", "root")
-    DATABASE_NAME: str = os.environ.get("DATABASE_NAME", "app.db")
-    DATABASE_URI: Optional[str] = os.environ.get(
-        "DATABASE_URI",
-        "mysql+pymysql://{}:{}@{}:{}/{}?charset=UTF8MB4".format(
-            DATABASE_USER,
-            DATABASE_PASSWORD,
-            DATABASE_SERVER,
-            DATABASE_PORT,
-            DATABASE_NAME,
-        ),
-    )
-    ASYNC_DATABASE_URI: Optional[str] = os.environ.get(
-        "ASYNC_DATABASE_URI",
-        "mysql+aiomysql://{}:{}@{}:{}/{}?charset=UTF8MB4".format(
-            DATABASE_USER,
-            DATABASE_PASSWORD,
-            DATABASE_SERVER,
-            DATABASE_PORT,
-            DATABASE_NAME,
-        ),
-    )
+
+    DATABASE_SERVER: str = os.environ.get("DATABASE_SERVER", "")
+    DATABASE_USER: str = os.environ.get("DATABASE_USER", "")
+    DATABASE_PASSWORD: str = os.environ.get("DATABASE_PASSWORD", "")
+    DATABASE_NAME: str = os.environ.get("DATABASE_NAME", "gcapidb")
+
+    DATABASE_URI: Optional[str] = os.environ.get("DATABASE_URI", None)
+
+    @validator("DATABASE_URI", pre=True)
+    def assemble_db_uri(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+        if values.get("DEBUG_MODE"):
+            return "sqlite:///./{}.db".format(values.get("DATABASE_NAME"))
+        if isinstance(v, str):
+            return v
+        return "mysql+pymysql://{}:{}@{}/{}?charset=UTF8MB4".format(
+            values.get("DATABASE_USER"),
+            values.get("DATABASE_PASSWORD"),
+            values.get("DATABASE_SERVER"),
+            values.get("DATABASE_NAME"),
+        )
+
+    ASYNC_DATABASE_URI: Optional[str] = os.environ.get("ASYNC_DATABASE_URI", None)
+
+    @validator("ASYNC_DATABASE_URI", pre=True)
+    def assemble_async_db_uri(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+        if values.get("DEBUG_MODE"):
+            return "sqlite+aiosqlite:///./{}.db".format(values.get("DATABASE_NAME"))
+        if isinstance(v, str):
+            return v
+        return "mysql+aiomysql://{}:{}@{}/{}?charset=UTF8MB4".format(
+            values.get("DATABASE_USER"),
+            values.get("DATABASE_PASSWORD"),
+            values.get("DATABASE_SERVER"),
+            values.get("DATABASE_NAME"),
+        )
 
     C_BROKER_URI: str = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379")
     C_BACKEND_URI: str = os.environ.get(

@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CHAR, Column, DateTime, ForeignKey, String
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, DateTime, ForeignKey, String
 
 from app.db.tables.base import TableBase
 
@@ -16,8 +17,8 @@ class GCFTSnapView(TableBase):
     view_date: Column[datetime] = Column(DateTime(), nullable=False)
 
     # relationships
-    gcft_id: Column[str] = Column(CHAR(36), ForeignKey("gcft.id"), nullable=False)
-    snap_id: Column[str] = Column(CHAR(36), ForeignKey("gcft_snap.id"), nullable=False)
+    gcft_id: Column[str] = Column(GUID, ForeignKey("gcft.id"), nullable=False)
+    snap_id: Column[str] = Column(GUID, ForeignKey("gcft_snap.id"), nullable=False)
 
     def __repr__(self) -> str:
         repr_str: str = f"GCFTSnapView({self.session_id} on {self.view_date})"

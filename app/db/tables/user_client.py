@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CHAR, Column, ForeignKey
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey
 
 from app.db.tables.base import TableBase
 
@@ -13,8 +14,8 @@ class UserClient(TableBase):
     __tablename__: str = "user_client"
 
     # relationships
-    user_id = Column(CHAR(36), ForeignKey("user.id"), nullable=False)
-    client_id = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
+    user_id = Column(GUID, ForeignKey("user.id"), nullable=False)
+    client_id = Column(GUID, ForeignKey("client.id"), nullable=False)
 
     def __repr__(self) -> str:
         repr_str: str = (

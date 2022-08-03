@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import CHAR, Column, ForeignKey, String
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
@@ -16,7 +17,7 @@ class GCFT(TableBase):
     group_slug: Column[str] = Column(String(12), nullable=False)
 
     # relationships
-    client_id: Column[str] = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
+    client_id: Column[str] = Column(GUID, ForeignKey("client.id"), nullable=False)
     gcft_snaps: Any = relationship("GCFTSnap", backref=backref("gcft", lazy="subquery"))
 
     def __repr__(self) -> str:

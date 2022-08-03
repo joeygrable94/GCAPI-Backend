@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CHAR, Column, ForeignKey, String
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey, String
 
 from app.db.tables.base import TableBase
 
@@ -14,7 +15,7 @@ class GoogleUniversalAnalyticsView(TableBase):
     view_id = Column(String(16), nullable=False)
 
     # relationships
-    gua_id = Column(CHAR(36), ForeignKey("go_ua.id"), nullable=False)
+    gua_id = Column(GUID, ForeignKey("go_ua.id"), nullable=False)
 
     def __repr__(self) -> str:
         repr_str: str = f"GoogleUniversalAnalyticsView({self.title} \

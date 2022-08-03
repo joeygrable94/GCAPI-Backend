@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CHAR, Column, ForeignKey, String
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey, String
 
 from app.db.tables.base import TableBase
 
@@ -14,7 +15,7 @@ class SharpSpring(TableBase):
     hashed_secret_key = Column(String(64), nullable=False)
 
     # relationships
-    client_id = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
+    client_id = Column(GUID, ForeignKey("client.id"), nullable=False)
 
     def __repr__(self) -> str:
         repr_str: str = f"SharpSpring(Client[{self.client_id}] since {self.created_on})"

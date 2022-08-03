@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Optional
 
-from sqlalchemy import CHAR, Column, ForeignKey, String, Text
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey, String, Text
 from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
@@ -16,9 +17,9 @@ class WebsitePage(TableBase):
     status: Column[str] = Column(String(24), nullable=False, default=200)
 
     # relationships
-    website_id: Column[str] = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
+    website_id: Column[str] = Column(GUID, ForeignKey("website.id"), nullable=False)
     sitemap_id: Column[Optional[str]] = Column(
-        CHAR(36), ForeignKey("website_map.id"), nullable=True
+        GUID, ForeignKey("website_map.id"), nullable=True
     )
     keywordcorpus: Any = relationship(
         "WebsiteKeywordCorpus", backref=backref("website_page", lazy="noload")

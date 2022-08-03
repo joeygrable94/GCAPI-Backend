@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CHAR, Column, ForeignKey
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey
 
 from app.db.tables.base import TableBase
 
@@ -11,8 +12,8 @@ if TYPE_CHECKING:
 
 class ClientWebsite(TableBase):
     __tablename__: str = "client_website"
-    client_id: Column[str] = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
-    website_id: Column[str] = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
+    client_id: Column[str] = Column(GUID, ForeignKey("client.id"), nullable=False)
+    website_id: Column[str] = Column(GUID, ForeignKey("website.id"), nullable=False)
 
     def __repr__(self) -> str:
         repr_str: str = (

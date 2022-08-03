@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Optional
 
-from sqlalchemy import CHAR, Boolean, Column, ForeignKey, String
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Boolean, Column, ForeignKey, String
 from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
@@ -20,9 +21,9 @@ class ImageUpload(TableBase):
     )
 
     # relationships
-    user_id: Column[str] = Column(CHAR(36), ForeignKey("user.id"), nullable=False)
+    user_id: Column[str] = Column(GUID, ForeignKey("user.id"), nullable=False)
     geocoord_id: Column[Optional[str]] = Column(
-        CHAR(36), ForeignKey("geocoord.id"), nullable=True
+        GUID, ForeignKey("geocoord.id"), nullable=True
     )
     geotag: Any = relationship(
         "GeoCoord", backref=backref("imageupload", lazy="noload")

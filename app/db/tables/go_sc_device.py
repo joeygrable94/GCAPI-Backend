@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import CHAR, Column, DateTime, Float, ForeignKey, Integer, String
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 
 from app.db.tables.base import TableBase
 
@@ -20,7 +21,7 @@ class GoogleSearchConsoleDevice(TableBase):
     date_start: Column[datetime] = Column(DateTime(timezone=True), nullable=False)
 
     # relationships
-    gsc_id: Column[str] = Column(CHAR(36), ForeignKey("go_sc.id"), nullable=False)
+    gsc_id: Column[str] = Column(GUID, ForeignKey("go_sc.id"), nullable=False)
 
     def __repr__(self) -> str:
         repr_str: str = f"GoogleSearchConsoleDevice(GSCID[{self.gsc_id}], \

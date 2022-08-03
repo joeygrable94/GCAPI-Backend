@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CHAR, Column, ForeignKey, String, Text
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey, String, Text
 
 from app.db.tables.base import TableBase
 
@@ -14,7 +15,7 @@ class Note(TableBase):
     content = Column(Text, nullable=False)
 
     # relationships
-    user_id = Column(CHAR(36), ForeignKey("user.id"), nullable=False)
+    user_id = Column(GUID, ForeignKey("user.id"), nullable=False)
 
     def __repr__(self) -> str:
         repr_str: str = f"Item({self.title} by {self.user_id} on {self.updated_on})"

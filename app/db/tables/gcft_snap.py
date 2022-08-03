@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Optional
 
-from sqlalchemy import CHAR, Column, ForeignKey, Integer, String
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
@@ -23,9 +24,9 @@ class GCFTSnap(TableBase):
 
     # relationships
     geocoord_id: Column[Optional[str]] = Column(
-        CHAR(36), ForeignKey("geocoord.id"), nullable=True
+        GUID, ForeignKey("geocoord.id"), nullable=True
     )
-    gcft_id: Column[str] = Column(CHAR(36), ForeignKey("gcft.id"), nullable=False)
+    gcft_id: Column[str] = Column(GUID, ForeignKey("gcft.id"), nullable=False)
     snap_views: Any = relationship(
         "GCFTSnapView", backref=backref("gcft_snap", lazy="noload")
     )

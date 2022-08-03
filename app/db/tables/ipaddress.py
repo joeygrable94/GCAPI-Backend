@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import CHAR, Column, ForeignKey, String
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey, String
 
 from app.db.tables.base import TableBase
 
@@ -18,7 +19,7 @@ class IpAddress(TableBase):
 
     # relationships
     geocoord_id: Column[Optional[str]] = Column(
-        CHAR(36), ForeignKey("geocoord.id"), nullable=True
+        GUID, ForeignKey("geocoord.id"), nullable=True
     )
 
     def __repr__(self) -> str:

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import CHAR, Column, ForeignKey, String
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
@@ -22,8 +23,8 @@ class GoogleSearchConsoleProperty(TableBase):
     title: Column[str] = Column(String(255), nullable=False)
 
     # relationships
-    client_id: Column[str] = Column(CHAR(36), ForeignKey("client.id"), nullable=False)
-    website_id: Column[str] = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
+    client_id: Column[str] = Column(GUID, ForeignKey("client.id"), nullable=False)
+    website_id: Column[str] = Column(GUID, ForeignKey("website.id"), nullable=False)
     gsc_countries: Any = relationship(
         "GoogleSearchConsoleCountry",
         backref=backref("go_sc", lazy="noload"),

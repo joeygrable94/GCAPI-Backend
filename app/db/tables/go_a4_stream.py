@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CHAR, Column, ForeignKey, String
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey, String
 
 from app.db.tables.base import TableBase
 
@@ -14,7 +15,7 @@ class GoogleAnalytics4Stream(TableBase):
     stream_id: Column[str] = Column(String(16), nullable=False)
 
     # relationships
-    ga4_id: Column[str] = Column(CHAR(36), ForeignKey("go_a4.id"), nullable=False)
+    ga4_id: Column[str] = Column(GUID, ForeignKey("go_a4.id"), nullable=False)
 
     def __repr__(self) -> str:
         repr_str: str = f"GoogleAnalytics4Stream({self.title} \

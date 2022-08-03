@@ -18,6 +18,7 @@ coverage.xml
 .mypy_cache
 .coverage
 .cache
+codecov
 
 # unused
 unused

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CHAR, Column, ForeignKey, Text
+from fastapi_utils.guid_type import GUID
+from sqlalchemy import Column, ForeignKey, Text
 
 from app.db.tables.base import TableBase
 
@@ -15,8 +16,8 @@ class WebsiteKeywordCorpus(TableBase):
     rawtext = Column(Text)
 
     # relationships
-    website_id = Column(CHAR(36), ForeignKey("website.id"), nullable=False)
-    page_id = Column(CHAR(36), ForeignKey("website_page.id"), nullable=False)
+    website_id = Column(GUID, ForeignKey("website.id"), nullable=False)
+    page_id = Column(GUID, ForeignKey("website_page.id"), nullable=False)
 
     def __repr__(self) -> str:
         repr_str: str = (
