@@ -35,7 +35,7 @@ async def test_create_item_with_user(
     )
     assert item.title == title
     assert item.content == content
-    assert str(item.user_id) == user.id
+    assert item.user_id == user.id
 
 
 async def test_get_item(
@@ -93,5 +93,5 @@ async def test_delete_item(
     assert item2.id == item.id
     assert item2.title == title
     assert item2.content == content
-    assert str(item2.user_id) == user.id
+    assert item2.user_id == user.id
     assert item3 is None

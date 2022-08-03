@@ -4,12 +4,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import SingletonThreadPool
 
 from app.core.config import settings
 
 # Session
 engine: Engine = create_engine(
-    settings.DATABASE_URI, pool_pre_ping=True, echo=settings.DB_ECHO_LOG
+    settings.DATABASE_URI,
+    pool_pre_ping=True,
+    poolclass=SingletonThreadPool,
+    echo=settings.DB_ECHO_LOG,
 )
 
 session: Any = sessionmaker(autocommit=False, autoflush=False, bind=engine)

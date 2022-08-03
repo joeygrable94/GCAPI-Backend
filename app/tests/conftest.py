@@ -14,7 +14,8 @@ from app.api.deps import get_async_db
 from app.core.config import settings
 from app.core.security import get_user_manager
 from app.core.security.manager import UserManager
-from app.db.session import async_engine, async_session
+from app.db.base import Base
+from app.db.session import async_engine, async_session, engine
 from app.main import create_app
 from app.tests.utils.user import (
     authentication_token_from_email,
@@ -23,6 +24,13 @@ from app.tests.utils.user import (
 )
 
 pytestmark = pytest.mark.asyncio
+
+
+settings.DATABASE_URI = "sqlite:///./test.db"
+settings.DATABASE_URI = "sqlite+aiosqlite:///./test.db"
+
+Base.metadata.drop_all(engine)
+Base.metadata.create_all(engine)
 
 
 @pytest.fixture(scope="session")
@@ -37,11 +45,7 @@ def event_loop() -> Generator:
 
 @pytest.fixture(scope="session")
 async def db_session() -> AsyncGenerator:
-    from app.db.base import Base
-
     async with async_engine.begin() as async_conn:
-        await async_conn.run_sync(Base.metadata.drop_all)
-        await async_conn.run_sync(Base.metadata.create_all)
         async with async_session(bind=async_conn) as session:
             yield session
             await session.flush()

@@ -27,6 +27,8 @@ class GoogleAnalytics4Property(TableBase):
     )
 
     def __repr__(self) -> str:
-        repr_str: str = f"GoogleAnalytics4Property(MeasurementID[{self.measurement_id}] \
-            for Client[{self.client_id}] Website[{self.website_id}])"
+        repr_str: str = f"GoogleAnalytics4Property(\
+            MeasurementID[{self.measurement_id}] for \
+            Client[{self.client_id}] \
+            Website[{self.website_id}])"
         return repr_str
