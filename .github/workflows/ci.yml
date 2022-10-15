@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ["3.10"]
+    env:
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip \
+          && python -m pip install poetry \
+          && poetry config virtualenvs.create false \
+          && poetry install --no-root
+      - name: Run Python Tests
+        run: |
+          bash ./scripts/test-cov.sh
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          env_vars: OS,PYTHON
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          verbose: false

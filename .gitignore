@@ -1,0 +1,50 @@
+
+# undesirables
+.git
+.DS_Store
+__pycache__
+**/__pycache__
+venv
+.env
+.credentials
+
+# database
+*.db
+alembic
+
+# PyTest
+htmlcov
+coverage.xml
+.pytest_cache
+.mypy_cache
+.coverage
+.cache
+codecov
+
+# unused
+unused
+_notes
+_ref
+
+# logs
+*.log
+
+# vscode
+.vscode
+*.code-workspace
+
+# managed by parent repo GCAPI
+prestart.sh
+prestart-worker.sh
+start-tests.sh
+start.sh
+start-worker.sh
+start-reload.sh
+
+# examples
+ex_*
+
+# DB migrations
+alembic/versions
+app/**/migrations/versions
+app/**/alembic/versions
