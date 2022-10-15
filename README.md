@@ -52,12 +52,12 @@ Create a virtual environment, activate it, then install the backend python pip `
 
 First, run the alembic init command and specify where the migrations are to be stored.
 
-    alembic init app/db/migrations
+    alembic init alembic
 
 Next edit the `alembic.ini` file to the location of the initialized alembic directory
 
     [alembic]
-    script_location = app/db/migrations
+    script_location = alembic
 
 Last, edit the `env.py` file in the migrations directory to include your config and db base to migrate.
 
