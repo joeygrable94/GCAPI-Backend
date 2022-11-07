@@ -8,5 +8,6 @@ from .email import (
     send_test_email,
 )
 from .paginate import paginate
+from .password import password_helper
 from .regex import email_regex, pw_req_regex, scope_regex
 from .uuids import get_uuid, get_uuid_str, parse_id

@@ -2,6 +2,7 @@ import pytest
 
 from app.core.config import settings
 from app.core.utilities import (
+    get_uuid_str,
     send_account_registered,
     send_account_updated,
     send_email_confirmation,
@@ -33,8 +34,12 @@ async def test_send_email_verification() -> None:
     with fast_mail.record_messages() as outbox:
         username: str = random_email()
         test_token: str = "TOKEN" + random_lower_string()
+        test_token_csrf: str = get_uuid_str()
         await send_email_verification(
-            email_to=username, username=username, token=test_token
+            email_to=username,
+            username=username,
+            token=test_token,
+            csrf=test_token_csrf,
         )
         assert len(outbox) == 1
         assert outbox[0]["to"] == username

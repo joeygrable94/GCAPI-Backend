@@ -1,19 +1,6 @@
 from typing import Any
 
 
-# DB Entities
-class EntityException(Exception):
-    pass
-
-
-class EntityAlreadyExists(Exception):
-    pass
-
-
-class EntityNotExists(Exception):
-    pass
-
-
 # Users
 class UsersException(Exception):
     pass
@@ -28,26 +15,6 @@ class UserAlreadyExists(UsersException):
 
 
 class UserNotExists(UsersException):
-    pass
-
-
-class UserInactive(UsersException):
-    pass
-
-
-class UserEmailUnverified(UsersException):
-    pass
-
-
-class UserAlreadyVerified(UsersException):
-    pass
-
-
-class InvalidVerifyToken(UsersException):
-    pass
-
-
-class InvalidResetPasswordToken(UsersException):
     pass
 
 

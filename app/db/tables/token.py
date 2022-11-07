@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -6,7 +6,9 @@ from app.db.types import GUID
 
 class AccessToken(TableBase):
     __tablename__: str = "accesstoken"
-    token: Column = Column(String(length=43), primary_key=True)
+    token_jti: Column = Column(String(length=43), primary_key=True)
+    csrf: Column = Column(String(43), default="", nullable=True)
+    expires_at: Column = Column(DateTime(timezone=True), nullable=True)
     is_revoked: Column = Column(Boolean, default=False, nullable=False)
 
     # relationships

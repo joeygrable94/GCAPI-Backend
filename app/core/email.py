@@ -4,9 +4,6 @@ from fastapi_mail import ConnectionConfig  # type: ignore
 
 from app.core.config import settings
 
-print(settings.SMTP_TLS)
-print(settings.SMTP_SSL)
-
 email_conf: ConnectionConfig = ConnectionConfig(
     MAIL_USERNAME=settings.SMTP_USER,
     MAIL_PASSWORD=settings.SMTP_PASSWORD,

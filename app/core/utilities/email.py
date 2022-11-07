@@ -17,7 +17,7 @@ async def _send_email(
             await fast_mail.send_message(message, template_name=template_name)
             logger.info("sending email")
         except Exception as e:  # pragma: no cover
-            print(e)
+            logger.warning(e)
 
 
 async def send_test_email(email_to: str) -> None:
@@ -32,11 +32,13 @@ async def send_test_email(email_to: str) -> None:
     await _send_email(message, template_name="test_email.html")
 
 
-async def send_email_verification(email_to: str, username: str, token: str) -> None:
+async def send_email_verification(
+    email_to: str, username: str, token: str, csrf: str
+) -> None:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Email verification required"
     server_host = f"{settings.SERVER_HOST}{settings.API_PREFIX_V1}"
-    link = f"{server_host}/auth/confirmation?token={token}"
+    link = f"{server_host}/auth/confirmation?token={token}&csrf={csrf}"
     message: MessageSchema = MessageSchema(
         subtype="html",
         subject=subject,

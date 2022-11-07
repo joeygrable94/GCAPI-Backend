@@ -83,7 +83,9 @@ class BaseRepository(
         return entry
 
     async def update(
-        self, entry: Any, schema: Union[SCHEMA_CREATE, SCHEMA_UPDATE, Any]
+        self,
+        entry: TABLE,
+        schema: Union[SCHEMA_UPDATE, Any],
     ) -> Optional[TABLE]:
         for k, v in schema.dict(exclude_unset=True).items():
             setattr(entry, k, v)
@@ -91,7 +93,7 @@ class BaseRepository(
         await self._db.refresh(entry)
         return entry
 
-    async def delete(self, entry: Any) -> None:
+    async def delete(self, entry: TABLE) -> None:
         await self._db.delete(entry)
         await self._db.commit()
         return None

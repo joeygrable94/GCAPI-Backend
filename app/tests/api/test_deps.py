@@ -1,13 +1,19 @@
 import pytest
 from fastapi.exceptions import HTTPException
 
-from app.api.deps import verify_content_length, verify_content_type
+from app.api.deps import get_async_db, verify_content_length, verify_content_type
 from app.core.config import settings
+
+
+async def test_get_async_db() -> None:
+    session = get_async_db()
+    assert session
 
 
 async def test_dep_verify_content_length_okay() -> None:
     overload_limit: int = settings.PAYLOAD_LIMIT - 10
     await verify_content_length(content_length=overload_limit)
+    assert True
 
 
 async def test_dep_verify_content_length_too_large() -> None:
@@ -20,6 +26,7 @@ async def test_dep_verify_content_type_accepted() -> None:
     await verify_content_type(content_type="pdf")
     await verify_content_type(content_type="csv")
     await verify_content_type(content_type="json")
+    assert True
 
 
 async def test_dep_verify_content_type_not_accepted() -> None:

@@ -25,12 +25,11 @@ class AccessTokensRepository(
         return AccessToken
 
     async def read_by_token(
-        self, token: str, max_age: Optional[datetime] = None
+        self, token_jti: str, max_age: Optional[datetime] = None
     ) -> Optional[AccessToken]:
         query: Any = select(self._table).where(  # type: ignore
-            func.lower(self._table.token) == func.lower(token)
+            func.lower(self._table.token_jti) == func.lower(token_jti)
         )
         if max_age is not None:
-            query = query.where(self._table.created_on >= max_age)
-            print(query)
+            query = query.where(self._table.expires_at >= max_age)
         return await self._get(query)

@@ -85,3 +85,6 @@ class PasswordHelper(PasswordHelperProtocol):
                 reason=f"Password must contain {pw_max} or less characters"
             )
         return  # pragma: no cover
+
+
+password_helper: PasswordHelper = PasswordHelper()

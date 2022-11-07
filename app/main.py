@@ -39,13 +39,12 @@ def configure_static(app: FastAPI) -> None:
 
 def configure_events(app: FastAPI) -> None:
     from app.db.commands import check_db_connected, check_db_disconnected
-    from app.db.init_db import build_database
 
     # startup actions
     @app.on_event("startup")
     async def on_startup() -> None:
         await check_db_connected()
-        build_database()
+        # await build_database()
 
     # middlewares
     @app.middleware("http")

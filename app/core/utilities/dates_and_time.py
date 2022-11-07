@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 
 def get_date() -> datetime:
@@ -10,7 +11,7 @@ def get_date() -> datetime:
     return datetime.now()
 
 
-def get_int_from_datetime(value: datetime) -> int:
+def get_int_from_datetime(value: Optional[datetime]) -> int:
     """generates a datetime value with or without timezone,
     if don't contains timezone it will managed as it is UTC
 

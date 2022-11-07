@@ -3,5 +3,7 @@ from .token import (
     AccessTokenInDB,
     AccessTokenRead,
     AccessTokenUpdate,
+    BearerResponse,
+    JWToken,
 )
 from .user import UserCreate, UserInDB, UserRead, UserUpdate
