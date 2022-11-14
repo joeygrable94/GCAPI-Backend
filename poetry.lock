@@ -1071,7 +1071,7 @@ sortedcontainers = "*"
 
 [[package]]
 name = "types-passlib"
-version = "1.7.7"
+version = "1.7.7.1"
 description = "Typing stubs for passlib"
 category = "main"
 optional = false
@@ -2151,8 +2151,8 @@ trio = [
     {file = "trio-0.22.0.tar.gz", hash = "sha256:ce68f1c5400a47b137c5a4de72c7c901bd4e7a24fbdebfe9b41de8c6c04eaacf"},
 ]
 types-passlib = [
-    {file = "types-passlib-1.7.7.tar.gz", hash = "sha256:3a5f7e8cbe563ce71717a0fd92e25223c263418ffcaae61643b9bc1f701835cd"},
-    {file = "types_passlib-1.7.7-py3-none-any.whl", hash = "sha256:49fae3bb06f444fd452df1b1cdb584d592cf4086f4ece38166aa47efc95cff5a"},
+    {file = "types-passlib-1.7.7.1.tar.gz", hash = "sha256:4fad7d8de53745e113be58cca00e59062fddeb95c7774a21ba56802bc28851b5"},
+    {file = "types_passlib-1.7.7.1-py3-none-any.whl", hash = "sha256:587e6d2f0333dced81d1d4241a2eb2d45e8f672ae24e4ac916b16fe04192f5c5"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
