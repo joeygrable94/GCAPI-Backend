@@ -25,14 +25,14 @@
 
 ## Getting Started
 
-First check to ensure Python 3.10 is installed and is the current version in use.
+First check to ensure Python 3.11 is installed and is the current version in use.
 
     python3 --version
-    > python3.10.5
+    > python3.11
 
 Create a virtual environment, activate it, then install the backend python pip `requirements.dev.txt` file.
 
-    python3.10 -m venv venv
+    python3.11 -m venv venv
     source venv/bin/activate
     python -m pip install --upgrade pip
     python -m pip install poetry
