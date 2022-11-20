@@ -11,7 +11,7 @@ from app.core.utilities import get_uuid, get_uuid_str
 from app.db.repositories import AccessTokensRepository
 from app.db.schemas import AccessTokenCreate, AccessTokenRead, AccessTokenUpdate
 from app.db.tables import AccessToken
-from app.tests.utils.utils import random_lower_string
+from tests.utils.utils import random_lower_string
 
 pytestmark = pytest.mark.anyio
 

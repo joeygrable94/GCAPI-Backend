@@ -23,7 +23,7 @@ from app.security import (
     bearer_transport,
     get_user_auth,
 )
-from app.tests.utils.users import get_current_user_tokens
+from tests.utils.users import get_current_user_tokens
 
 pytestmark = pytest.mark.anyio
 

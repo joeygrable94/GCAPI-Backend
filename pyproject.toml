@@ -105,7 +105,7 @@ plugins = '''
     --cov-report=xml
     --no-cov-on-fail
     --asyncio-mode=auto
-    app/tests
+    tests
 '''
 
 [build-system]

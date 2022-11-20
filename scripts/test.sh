@@ -3,4 +3,4 @@
 set -e
 set -x
 
-pytest --cov-config=.coveragerc --cov=app --cov-report=term-missing --asyncio-mode=auto app/tests "${@}"
+pytest --cov-config=.coveragerc --cov=app --cov-report=term-missing --asyncio-mode=auto tests "${@}"

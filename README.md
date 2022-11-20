@@ -95,8 +95,8 @@ Always add a message about what changed in the db models/tables.
 ### Commands
 
     pytest
-    pytest app/tests/crud
-    pytest app/tests/api/api_v1/test_websites.py
+    pytest tests/crud
+    pytest tests/api/api_v1/test_websites.py
 
 ### Resources
 

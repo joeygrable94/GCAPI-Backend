@@ -10,7 +10,7 @@ from app.core.utilities import password_helper
 from app.db.repositories import UsersRepository
 from app.db.schemas import UserCreate, UserRead, UserUpdate
 from app.db.tables import User
-from app.tests.utils.utils import random_email, random_lower_string
+from tests.utils.utils import random_email, random_lower_string
 
 pytestmark = pytest.mark.anyio
 

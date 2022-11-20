@@ -7,7 +7,7 @@ from app.api.errors import ErrorCode
 from app.core.config import settings
 from app.db.schemas import UserCreate, UserRead
 from app.security import AuthManager
-from app.tests.utils.utils import random_email, random_lower_string
+from tests.utils.utils import random_email, random_lower_string
 
 pytestmark = pytest.mark.anyio
 

@@ -10,8 +10,8 @@ from app.core.utilities import (
     send_email_verification,
     send_test_email,
 )
-from app.tests.utils.email import fast_mail
-from app.tests.utils.utils import random_email, random_lower_string
+from tests.utils.email import fast_mail
+from tests.utils.utils import random_email, random_lower_string
 
 pytestmark = pytest.mark.anyio
 
