@@ -506,7 +506,7 @@ socks = ["socksio (>=1.0.0,<2.0.0)"]
 
 [[package]]
 name = "httpx-oauth"
-version = "0.10.1"
+version = "0.10.2"
 description = "Async OAuth client using HTTPX"
 category = "dev"
 optional = false
@@ -514,9 +514,6 @@ python-versions = ">=3.7"
 
 [package.dependencies]
 httpx = ">=0.18,<0.24"
-
-[package.extras]
-dev = ["black", "bumpversion", "codecov", "fastapi", "flake8", "flake8-docstrings", "flit", "isort", "markdown-include", "mkdocs", "mkdocs-material", "mypy", "pygments", "pymdown-extensions", "pytest", "pytest-asyncio", "pytest-cov", "pytest-mock", "respx"]
 
 [[package]]
 name = "idna"
@@ -1167,7 +1164,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.11"
-content-hash = "815956d5e683b485c947e22948af1f10b0dc31a590c6472dfdb59fb8f0640401"
+content-hash = "88601e5d972c437c9a0c2e3d181fce58df6fb61c065f98a7526b8b434e2eb847"
 
 [metadata.files]
 aiofiles = [
@@ -1740,8 +1737,8 @@ httpx = [
     {file = "httpx-0.23.0.tar.gz", hash = "sha256:f28eac771ec9eb4866d3fb4ab65abd42d38c424739e80c08d8d20570de60b0ef"},
 ]
 httpx-oauth = [
-    {file = "httpx-oauth-0.10.1.tar.gz", hash = "sha256:5ebd4abb8b1cc9b5b4673c1ef574fda19a52d1edead3325d38e6a65ae3c73ed6"},
-    {file = "httpx_oauth-0.10.1-py3-none-any.whl", hash = "sha256:dd3b40972016d99bd1140607f2933769808e6783763e32257e77430e02a892e6"},
+    {file = "httpx_oauth-0.10.2-py3-none-any.whl", hash = "sha256:1739531e0c1f767688b08eb6a9192f38b4d48361ec8307cc52738d61c7d77666"},
+    {file = "httpx_oauth-0.10.2.tar.gz", hash = "sha256:be92ce28fce16d443288e811fe11b71f4aab4273ee9b5e1404692addca4bca98"},
 ]
 idna = [
     {file = "idna-3.4-py3-none-any.whl", hash = "sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2"},

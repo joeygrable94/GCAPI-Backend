@@ -39,7 +39,7 @@ types-passlib = "^1.7.7"
 
 [tool.poetry.dev-dependencies]
 httpx = "0.23.0"
-httpx-oauth = "0.10.1"
+httpx-oauth = "0.10.2"
 pytest = "7.2.0"
 pytest-asyncio = "0.19.0"
 pytest-cov = "4.0.0"
