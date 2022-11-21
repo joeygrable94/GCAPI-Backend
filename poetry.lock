@@ -110,14 +110,14 @@ trio = ["trio (>=0.16)"]
 
 [[package]]
 name = "asgi-correlation-id"
-version = "3.2.0"
+version = "3.2.1"
 description = "Middleware correlating project logs to individual requests"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
-starlette = ">=0.18,<0.21"
+starlette = ">=0.18"
 
 [[package]]
 name = "asgi-lifespan"
@@ -1167,7 +1167,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.11"
-content-hash = "815956d5e683b485c947e22948af1f10b0dc31a590c6472dfdb59fb8f0640401"
+content-hash = "fe02aee4a66698549faacc4b8663c4012c23ca78bc59400d3685c497ad114ec6"
 
 [metadata.files]
 aiofiles = [
@@ -1288,8 +1288,8 @@ anyio = [
     {file = "anyio-3.6.1.tar.gz", hash = "sha256:413adf95f93886e442aea925f3ee43baa5a765a64a0f52c6081894f9992fdd0b"},
 ]
 asgi-correlation-id = [
-    {file = "asgi_correlation_id-3.2.0-py3-none-any.whl", hash = "sha256:e900a6004213d3a4e1edb8fd099bad6239aaaad835fcea7671ef15741df6dd63"},
-    {file = "asgi_correlation_id-3.2.0.tar.gz", hash = "sha256:cbdabda44e0dd4b4bfdd0f2a92b1906cc88dba038cb92ea3e9ece156df2b96f4"},
+    {file = "asgi_correlation_id-3.2.1-py3-none-any.whl", hash = "sha256:ba8b7dc67403183ce77721f8c48fcb6aee92f3b246026f7dde0230323f343663"},
+    {file = "asgi_correlation_id-3.2.1.tar.gz", hash = "sha256:c2370cbf3a71dd33dd4f067495ba87d0afdbb45b5256f1d05362e3a20d4efe60"},
 ]
 asgi-lifespan = [
     {file = "asgi-lifespan-2.0.0.tar.gz", hash = "sha256:d46a31ff681e9edf1f776c9f61cf8fa6274cc66fca8cb4f11e940b1183e18842"},
