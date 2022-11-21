@@ -27,7 +27,7 @@ PyJWT = "^2.4.0"
 alembic = "1.8.1"
 asgi-correlation-id = "^3.2.0"
 asgi-lifespan = "^2.0.0"
-anyio = {version = "3.6.1", extras = ["trio"]}
+anyio = {version = "3.6.2", extras = ["trio"]}
 asyncio = "3.4.3"
 aiohttp = "3.8.3"
 aiosqlite = "0.17.0"
