@@ -1,12 +1,15 @@
-from typing import AsyncGenerator, Optional, Tuple
+from typing import Any, AsyncGenerator, Optional, Tuple
 from uuid import UUID
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Body, Depends, HTTPException, status
+from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db
 from app.api.errors import ErrorCode
+from app.api.exceptions import InvalidID, UserNotExists
 from app.core.config import Settings, get_settings
+from app.core.utilities import parse_id
 from app.db.repositories import AccessTokensRepository, UsersRepository
 from app.db.schemas import JWToken, UserRead
 from app.db.tables import User
@@ -24,27 +27,27 @@ bearer_transport: BearerTransport = BearerTransport(tokenUrl="auth/access")
 
 async def get_jwt_strategy(
     settings: Settings = Depends(get_settings),
-) -> AsyncGenerator:
+) -> AsyncGenerator:  # pragma: no cover
     yield JWTStrategy(secret=settings.SECRET_KEY)
 
 
 async def get_token_db(
     session: AsyncSession = Depends(get_async_db),
-) -> AsyncGenerator[AccessTokensRepository, None]:
+) -> AsyncGenerator[AccessTokensRepository, None]:  # pragma: no cover
     token_repo: AccessTokensRepository = AccessTokensRepository(session)
     yield token_repo
 
 
 async def get_user_db(
     session: AsyncSession = Depends(get_async_db),
-) -> AsyncGenerator[UsersRepository, None]:
+) -> AsyncGenerator[UsersRepository, None]:  # pragma: no cover
     user_repo: UsersRepository = UsersRepository(session)
     yield user_repo
 
 
 async def get_db_strategy(
     token_db: AccessTokensRepository = Depends(get_token_db),
-) -> AsyncGenerator:
+) -> AsyncGenerator:  # pragma: no cover
     yield DatabaseStrategy(token_db=token_db)
 
 
@@ -52,7 +55,7 @@ async def get_user_auth(
     jwt_strategy: JWTStrategy = Depends(get_jwt_strategy),
     db_strategy: DatabaseStrategy = Depends(get_db_strategy),
     user_database: UsersRepository = Depends(get_user_db),
-) -> AsyncGenerator:
+) -> AsyncGenerator:  # pragma: no cover
     yield AuthManager(
         bearer=bearer_transport,
         jwt=jwt_strategy,
@@ -61,26 +64,117 @@ async def get_user_auth(
     )
 
 
+async def get_user_or_404(
+    id: Any,
+    oauth: AuthManager = Depends(get_user_auth),
+) -> User:  # pragma: no cover
+    try:
+        parsed_id: UUID = parse_id(id)
+        user: Optional[User] = await oauth.users.read(entry_id=parsed_id)
+        if not user:
+            raise UserNotExists()
+        return user
+    except (UserNotExists, InvalidID):  # pragma: no cover
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorCode.USER_NOT_FOUND,
+        )
+
+
+async def get_user_by_email(
+    email: EmailStr = Body(..., embed=True),
+    oauth: AuthManager = Depends(get_user_auth),
+    settings: Settings = Depends(get_settings),
+) -> UserRead:  # pragma: no cover
+    user: Optional[UserRead] = await oauth.fetch_user(email)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorCode.USER_NOT_FOUND,
+        )
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=ErrorCode.USER_NOT_ACTIVE,
+        )
+    if settings.USERS_REQUIRE_VERIFICATION and not user.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=ErrorCode.USER_NOT_VERIFIED,
+        )
+    return UserRead.from_orm(user)
+
+
+# REFRESH
+async def get_current_user_refresh_token(
+    settings: Settings = Depends(get_settings),
+    token: str = Depends(bearer_transport.scheme),
+    oauth: AuthManager = Depends(get_user_auth),
+) -> Tuple[UserRead, JWToken, str]:  # pragma: no cover
+    try:
+        return await oauth.verify_token(
+            token=token,
+            audience=[settings.REFRESH_TOKEN_AUDIENCE],
+            is_type="refresh",
+        )
+    except AuthException as e:  # pragma: no cover
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "code": status.HTTP_401_UNAUTHORIZED,
+                "reason": e.reason,
+            },
+        )
+
+
+async def get_current_verified_refresh_user(
+    current_user_access_token: Tuple[UserRead, JWToken, str] = Depends(
+        get_current_user_refresh_token
+    ),
+) -> Tuple[UserRead, JWToken, str]:  # pragma: no cover
+    current_user: UserRead
+    token_data: JWToken
+    token_str: str
+    current_user, token_data, token_str = current_user_access_token
+    if not current_user.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=ErrorCode.USER_NOT_VERIFIED,
+        )
+    return current_user, token_data, token_str
+
+
+async def get_current_active_refresh_user(
+    current_user_access_token: Tuple[UserRead, JWToken, str] = Depends(
+        get_current_verified_refresh_user
+    ),
+) -> Tuple[UserRead, JWToken, str]:  # pragma: no cover
+    current_user: UserRead
+    token_data: JWToken
+    token_str: str
+    current_user, token_data, token_str = current_user_access_token
+    if not current_user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=ErrorCode.USER_NOT_ACTIVE,
+        )
+    return current_user, token_data, token_str
+
+
+# ACCESS
 async def get_current_user_access_token(
     settings: Settings = Depends(get_settings),
     token: str = Depends(bearer_transport.scheme),
     oauth: AuthManager = Depends(get_user_auth),
-) -> Tuple[Optional[UserRead], Optional[str], Optional[JWToken]]:
+) -> Tuple[UserRead, JWToken, str]:
     try:
-        user_id: Optional[UUID]
-        access_token: Optional[str]
-        token_data: Optional[JWToken]
-        user_id, access_token, token_data = await oauth.verify_token(
+        return await oauth.verify_token(
             token=token,
             audience=[settings.ACCESS_TOKEN_AUDIENCE],
             is_type="access",
             require_fresh=True,
         )
-        if not user_id or not access_token or not token_data:
-            return None, None, None
-        current_user: Optional[User] = await oauth.users.read(entry_id=user_id)
-        return UserRead.from_orm(current_user), access_token, token_data
-    except AuthException as e:
+    except AuthException as e:  # pragma: no cover
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail={
@@ -91,18 +185,14 @@ async def get_current_user_access_token(
 
 
 async def get_current_verified_user(
-    current_user_access_token: Tuple[
-        Optional[UserRead], Optional[str], Optional[JWToken]
-    ] = Depends(get_current_user_access_token),
-) -> UserRead:
-    current_user: Optional[UserRead]
-    access_token: Optional[str]
-    token_data: Optional[JWToken]
-    current_user, access_token, token_data = current_user_access_token
-    if current_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=ErrorCode.USER_NOT_FOUND
-        )
+    current_user_access_token: Tuple[UserRead, JWToken, str] = Depends(
+        get_current_user_access_token
+    ),
+) -> UserRead:  # pragma: no cover
+    current_user: UserRead
+    token_data: JWToken
+    token_str: str
+    current_user, token_data, token_str = current_user_access_token
     if not current_user.is_verified:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -113,17 +203,59 @@ async def get_current_verified_user(
 
 async def get_current_active_user(
     current_user: UserRead = Depends(get_current_verified_user),
-) -> UserRead:
-    if current_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=ErrorCode.USER_NOT_FOUND
-        )
+) -> UserRead:  # pragma: no cover
     if not current_user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ErrorCode.USER_NOT_ACTIVE,
         )
     return current_user
+
+
+async def get_current_active_superuser(
+    current_user: UserRead = Depends(get_current_active_user),
+) -> UserRead:  # pragma: no cover
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=ErrorCode.USER_FORBIDDEN,
+        )
+    return current_user
+
+
+# PASSWORD RESET
+async def get_current_active_password_reset_user(
+    token: str = Body(...),
+    oauth: AuthManager = Depends(get_user_auth),
+    settings: Settings = Depends(get_settings),
+) -> Tuple[UserRead, JWToken, str]:  # pragma: no cover
+    try:
+        user: UserRead
+        token_data: JWToken
+        token_str: str
+        user, token_data, token_str = await oauth.verify_token(
+            token=token,
+            audience=[settings.RESET_PASSWORD_TOKEN_AUDIENCE],
+        )
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=ErrorCode.USER_NOT_ACTIVE,
+            )
+        if settings.USERS_REQUIRE_VERIFICATION and not user.is_verified:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=ErrorCode.USER_NOT_VERIFIED,
+            )
+        return user, token_data, token_str
+    except AuthException as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "code": status.HTTP_401_UNAUTHORIZED,
+                "reason": e.reason,
+            },
+        )
 
 
 __all__ = [
@@ -133,10 +265,19 @@ __all__ = [
     "DatabaseStrategy",
     "JWTStrategy",
     "get_current_active_user",
+    "get_current_active_superuser",
+    "get_current_active_refresh_user",
+    "get_current_active_password_reset_user",
     "get_current_user_access_token",
+    "get_current_user_refresh_token",
     "get_current_verified_user",
+    "get_current_verified_refresh_user",
     "get_jwt_strategy",
     "get_token_db",
     "get_database_strategy",
+    "get_db_strategy",
     "get_user_auth",
+    "get_user_db",
+    "get_user_by_email",
+    "get_user_or_404",
 ]

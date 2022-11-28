@@ -111,11 +111,13 @@ async def send_account_updated(email_to: str, username: str, password: str) -> N
     await _send_email(message, template_name="account_updated.html")
 
 
-async def send_email_reset_password(email_to: str, username: str, token: str) -> None:
+async def send_email_reset_password(
+    email_to: str, username: str, token: str, csrf: str
+) -> None:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Password recovery for user {username}"
     server_host = f"{settings.SERVER_HOST}{settings.API_PREFIX_V1}"
-    link = f"{server_host}/auth/reset-password?token={token}"
+    link = f"{server_host}/auth/reset-password?token={token}&csrf={csrf}"
     message: MessageSchema = MessageSchema(
         subtype="html",
         subject=subject,

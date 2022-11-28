@@ -20,4 +20,4 @@ class UserNotExists(UsersException):
 
 class InvalidPasswordException(UsersException):
     def __init__(self, reason: Any) -> None:
-        self.reason: Any = reason  # pragma: no cover
+        self.reason: Any = reason

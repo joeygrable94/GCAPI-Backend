@@ -25,6 +25,6 @@ async def verify_content_type(content_type: str = Header(...)) -> None:
     return None
 
 
-async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_async_db() -> AsyncGenerator[AsyncSession, None]:  # pragma: no cover
     async with async_session() as session:
         yield session

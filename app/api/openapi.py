@@ -140,7 +140,7 @@ auth_verification_confirmation_responses: OpenAPIResponseType = {
     },
 }
 
-auth_forgot_password_responses: OpenAPIResponseType = {
+auth_password_forgot_responses: OpenAPIResponseType = {
     status.HTTP_401_UNAUTHORIZED: {
         "model": ErrorModel,
         "content": {
@@ -173,7 +173,7 @@ auth_forgot_password_responses: OpenAPIResponseType = {
     },
 }
 
-auth_reset_password_responses: OpenAPIResponseType = {
+auth_password_reset_responses: OpenAPIResponseType = {
     status.HTTP_400_BAD_REQUEST: {
         "model": ErrorModel,
         "content": {

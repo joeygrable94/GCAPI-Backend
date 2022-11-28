@@ -10,7 +10,7 @@ class AuthException(Exception):
         self,
         reason: Any,
     ) -> None:
-        self.reason: Any = reason  # pragma: no cover
+        self.reason: Any = reason
 
 
 class CSRFError(AuthException):
@@ -56,4 +56,17 @@ class FreshTokenRequired(AuthException):
     """
     Error raised when a valid, non-fresh JWT attempt to access an endpoint
     protected by fresh_jwt_required
+    """
+
+
+class InvalidTokenUserId(AuthException):
+    """
+    Error raised when a user attempts to access an endpoint
+    with a token that is assigned to a different user_id
+    """
+
+
+class InvalidTokenUserNotFound(AuthException):
+    """
+    Error raised when a user that does not exist attempts to access an endpoint
     """

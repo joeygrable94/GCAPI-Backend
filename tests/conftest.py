@@ -1,5 +1,5 @@
 import asyncio
-from typing import AsyncGenerator, Callable, Dict, Generator
+from typing import AsyncGenerator, Callable, Dict, Generator, Tuple
 
 # import alembic
 import pytest
@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db
 from app.core.config import settings
+from app.db.schemas import UserRead
 from app.db.init_db import build_database
 from app.db.repositories import AccessTokensRepository, UsersRepository
 from app.db.session import async_engine, async_session
@@ -23,7 +24,7 @@ from app.security import (
     bearer_transport,
     get_user_auth,
 )
-from tests.utils.users import get_current_user_tokens
+from tests.utils.users import get_current_user_tokens, get_current_user
 
 pytestmark = pytest.mark.anyio
 
@@ -54,8 +55,7 @@ async def db_session() -> AsyncGenerator:
 @pytest.fixture(scope="session")
 def override_get_db(db_session: AsyncSession) -> Callable:
     async def _override_get_db() -> AsyncGenerator:
-        yield db_session  # pragma: no cover
-
+        yield db_session
     return _override_get_db
 
 
@@ -158,3 +158,31 @@ async def testuser_token_headers(client: AsyncClient) -> Dict[str, str]:
     auth_token: str = auth_data["access_token"]
     auth_header: Dict[str, str] = {"Authorization": f"Bearer {auth_token}"}
     return auth_header
+
+
+@pytest.fixture(scope="module")
+async def current_superuser(
+    client: AsyncClient,
+    superuser_token_headers: Dict[str, str],
+) -> Tuple[UserRead, Dict[str, str]]:
+    current_user: UserRead
+    token_header: Dict[str, str]
+    current_user, token_header = await get_current_user(
+        client=client,
+        auth_header=superuser_token_headers,
+    )
+    return current_user, token_header
+
+
+@pytest.fixture(scope="module")
+async def current_testuser(
+    client: AsyncClient,
+    testuser_token_headers: Dict[str, str],
+) -> Tuple[UserRead, Dict[str, str]]:
+    current_user: UserRead
+    token_header: Dict[str, str]
+    current_user, token_header = await get_current_user(
+        client=client,
+        auth_header=testuser_token_headers,
+    )
+    return current_user, token_header

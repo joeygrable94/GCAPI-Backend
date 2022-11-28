@@ -99,8 +99,9 @@ async def test_send_email_reset_password() -> None:
     with fast_mail.record_messages() as outbox:
         username: str = random_email()
         test_token: str = "TOKEN" + random_lower_string()
+        test_csrf: str = get_uuid_str()
         await send_email_reset_password(
-            email_to=username, username=username, token=test_token
+            email_to=username, username=username, token=test_token, csrf=test_csrf
         )
         assert len(outbox) == 1
         assert outbox[0]["to"] == username

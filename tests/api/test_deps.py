@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 from fastapi.exceptions import HTTPException
 
@@ -6,13 +8,13 @@ from app.core.config import settings
 
 
 async def test_get_async_db() -> None:
-    session = get_async_db()
-    assert session
+    session: Any = get_async_db()
+    assert session is not None
 
 
 async def test_dep_verify_content_length_okay() -> None:
-    overload_limit: int = settings.PAYLOAD_LIMIT - 10
-    await verify_content_length(content_length=overload_limit)
+    underload_limit: int = settings.PAYLOAD_LIMIT - 10
+    await verify_content_length(content_length=underload_limit)
     assert True
 
 

@@ -45,7 +45,7 @@ async def test_create_user_password_too_short(db_session: AsyncSession) -> None:
     username: str = random_email()
     password: str = "abc123"
     user_in: UserCreate = UserCreate(email=username, password=password, is_active=True)
-    with pytest.raises(InvalidPasswordException):  # pragma: no cover
+    with pytest.raises(InvalidPasswordException):
         user: User = await user_repo.create(schema=user_in)  # noqa: F841
 
 
@@ -54,7 +54,7 @@ async def test_create_user_password_too_long(db_session: AsyncSession) -> None:
     username: str = random_email()
     password: str = random_lower_string() * 4
     user_in: UserCreate = UserCreate(email=username, password=password, is_active=True)
-    with pytest.raises(InvalidPasswordException):  # pragma: no cover
+    with pytest.raises(InvalidPasswordException):
         user: User = await user_repo.create(schema=user_in)  # noqa: F841
 
 

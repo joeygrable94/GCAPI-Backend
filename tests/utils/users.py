@@ -1,10 +1,14 @@
-from typing import Dict
+from typing import Any, Dict, Tuple
 
 from httpx import AsyncClient, Response
 
 from app.core.config import settings
+from app.db.schemas import UserRead, UserCreate
+from app.db.tables import User
+from app.security import AuthManager
+from tests.utils.utils import random_lower_string, random_email
 
-"""
+
 async def create_random_user(
     user_auth: AuthManager,
 ) -> UserRead:
@@ -16,11 +20,27 @@ async def create_random_user(
             password=password,
             is_active=True,
             is_superuser=False,
-            is_verified=False,
+            is_verified=True,
         )
     )
     return UserRead.from_orm(user)
-"""
+
+
+async def create_new_user(
+    user_auth: AuthManager,
+) -> Tuple[UserRead, str]:
+    email: str = random_email()
+    password: str = random_lower_string()
+    user: User = await user_auth.users.create(
+        schema=UserCreate(
+            email=email,
+            password=password,
+            is_active=True,
+            is_superuser=False,
+            is_verified=True,
+        )
+    )
+    return UserRead.from_orm(user), password
 
 
 async def get_current_user_tokens(
@@ -40,7 +60,6 @@ async def get_current_user_tokens(
     return auth_data
 
 
-"""
 async def get_current_user(
     client: AsyncClient,
     auth_header: Dict[str, str],
@@ -52,4 +71,3 @@ async def get_current_user(
     user_data: Dict[str, Any] = response.json()
     current_user: UserRead = UserRead(**user_data)
     return current_user, auth_header
-"""

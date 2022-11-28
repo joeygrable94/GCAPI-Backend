@@ -88,34 +88,7 @@ async def test_read_by_token(db_session: AsyncSession) -> None:
     assert token.user_id == fake_user
     assert not token.is_revoked
     found_token: Optional[AccessToken] = await token_repo.read_by_token(
-        token_jti=fake_token, max_age=None
-    )
-    assert found_token
-    assert token.token_jti == found_token.token_jti
-
-
-async def test_read_by_token_max_age(db_session: AsyncSession) -> None:
-    token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
-    fake_user: UUID = get_uuid()
-    fake_token: str = random_lower_string()
-    fake_csrf: str = get_uuid_str()
-    fake_expire: datetime = datetime.now(timezone.utc) + timedelta(
-        seconds=settings.ACCESS_TOKEN_LIFETIME
-    )
-    created_at = datetime.utcnow()
-    sleep(1)
-    token_in: AccessTokenCreate = AccessTokenCreate(
-        token_jti=fake_token,
-        csrf=fake_csrf,
-        expires_at=fake_expire,
-        user_id=fake_user,
-    )
-    token: AccessToken = await token_repo.create(schema=token_in)
-    assert token.token_jti == fake_token
-    assert token.user_id == fake_user
-    assert not token.is_revoked
-    found_token: Optional[AccessToken] = await token_repo.read_by_token(
-        token_jti=fake_token, max_age=created_at
+        token_jti=fake_token
     )
     assert found_token
     assert token.token_jti == found_token.token_jti

@@ -53,5 +53,5 @@ def test_parse_id_uuid_str() -> None:
 
 def test_parse_id_uuid_invalid() -> None:
     not_uuid: str = "1829319274-53128309123"
-    with pytest.raises(InvalidID):  # pragma: no cover
+    with pytest.raises(InvalidID):
         parsed_id: UUID = parse_id(not_uuid)  # noqa: F841

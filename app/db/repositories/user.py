@@ -63,7 +63,7 @@ class UsersRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
 
     async def update(self, entry: User, schema: UserUpdate) -> User:  # type: ignore
         valid_dict = {}
-        for f, v in schema.dict(exclude_unset=True).items():
+        for f, v in schema.dict(exclude_unset=True, exclude_none=True).items():
             if f == "email" and v != entry.email:  # pragma: no cover
                 try:
                     found: Optional[User] = await self.read_by_email(v)
