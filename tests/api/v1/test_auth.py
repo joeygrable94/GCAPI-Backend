@@ -184,7 +184,10 @@ async def test_auth_logout_superuser_access(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    r: Response = await client.delete("auth/logout", headers=superuser_token_headers)
+    super_user_tokens: Dict[str, str] = await get_current_user_tokens(client)
+    a_tok: str = super_user_tokens["access_token"]
+    access_headers: Dict[str, str] = {"Authorization": f"Bearer {a_tok}"}
+    r: Response = await client.delete("auth/logout", headers=access_headers)
     data: Dict[str, str] = r.json()
     assert r.status_code == 200
     assert data["token_type"] == "bearer"
@@ -195,9 +198,16 @@ async def test_auth_logout_superuser_access(
 
 
 async def test_auth_logout_testuser_access(
-    client: AsyncClient, testuser_token_headers: Dict[str, str]
+    client: AsyncClient
 ) -> None:
-    r: Response = await client.delete("auth/logout", headers=testuser_token_headers)
+    super_user_tokens: Dict[str, str] = await get_current_user_tokens(
+        client,
+        settings.TEST_NORMAL_USER,
+        settings.TEST_NORMAL_USER_PASSWORD
+    )
+    a_tok: str = super_user_tokens["access_token"]
+    access_headers: Dict[str, str] = {"Authorization": f"Bearer {a_tok}"}
+    r: Response = await client.delete("auth/logout", headers=access_headers)
     data: Dict[str, str] = r.json()
     assert r.status_code == 200
     assert data["token_type"] == "bearer"
