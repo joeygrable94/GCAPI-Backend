@@ -30,6 +30,7 @@ from app.core.logger import logger
 from app.core.utilities import (
     send_email_confirmation,
     send_email_reset_password,
+    send_account_updated,
     send_email_verification,
 )
 from app.db.schemas import BearerResponse, JWToken, UserCreate, UserRead, UserUpdate
@@ -41,7 +42,8 @@ from app.security import (
     get_current_active_refresh_user,
     get_current_user_access_token,
     get_user_auth,
-    get_user_by_email,
+    get_current_user_by_email,
+    get_current_user_for_verification,
 )
 
 router: APIRouter = APIRouter()
@@ -68,30 +70,31 @@ async def auth_register(
     try:
         # register user
         created_user: User = await oauth.users.create(schema=user_create)
+        new_user: UserRead = UserRead.from_orm(created_user)  # pragma: no cover
         # create verification token
         verify_token: str
         verify_token_csrf: str
         verify_token, verify_token_csrf = await oauth.store_token(
-            user=UserRead.from_orm(created_user),
+            user=new_user,
             audience=[settings.VERIFY_USER_TOKEN_AUDIENCE],
             expires=settings.VERIFY_USER_TOKEN_LIFETIME,
         )
         # email verification link
-        background_tasks.add_task(
+        background_tasks.add_task(  # pragma: no cover
             send_email_verification,
-            email_to=created_user.email,
-            username=created_user.email,
+            email_to=new_user.email,
+            username=new_user.email,
             token=verify_token,
             csrf=verify_token_csrf,
         )
         # debug
         if settings.DEBUG_MODE:  # pragma: no cover
-            logger.info(f"User {created_user.id} was registered.")
-            logger.info(f"Email verification code to {created_user.id}.")
+            logger.info(f"User {new_user.id} was registered.")
+            logger.info(f"Email verification code to {new_user.id}.")
         # return user
-        return UserRead.from_orm(created_user)
+        return new_user  # pragma: no cover
     except UserAlreadyExists:
-        raise HTTPException(
+        raise HTTPException(  # pragma: no cover
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ErrorCode.USER_ALREADY_EXISTS,
         )
@@ -115,7 +118,7 @@ async def auth_register(
 )
 async def auth_verification(
     background_tasks: BackgroundTasks,
-    user: UserRead = Depends(get_user_by_email),
+    user: UserRead = Depends(get_current_user_by_email),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
 ) -> None:
@@ -131,7 +134,7 @@ async def auth_verification(
         expires=settings.VERIFY_USER_TOKEN_LIFETIME,
     )
     # email verification link
-    background_tasks.add_task(
+    background_tasks.add_task(  # pragma: no cover
         send_email_verification,
         email_to=user.email,
         username=user.email,
@@ -141,7 +144,6 @@ async def auth_verification(
     # debug
     if settings.DEBUG_MODE:  # pragma: no cover
         logger.info(f"Verification requested for user {user.id}.")
-    return None
 
 
 @router.get(
@@ -153,7 +155,7 @@ async def auth_verification(
 )
 async def auth_confirmation(
     background_tasks: BackgroundTasks,
-    token: str,
+    confirm_user: User = Depends(get_current_user_for_verification),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
 ) -> Any:
@@ -161,42 +163,25 @@ async def auth_confirmation(
     Confirms if the supplied verification token for the user is valid,
     then updates the is_verified status for the user.
     """
-    try:
-        # check the token in the request
-        return_code: int
-        user: UserRead
-        token_data: JWToken
-        token_str: str
-        user, token_data, token_str = await oauth.verify_token(
-            token=token,
-            audience=[settings.VERIFY_USER_TOKEN_AUDIENCE],
-        )
-        # verify the token's associated user
-        db_user: Optional[User] = await oauth.users.read_by_email(email=user.email)
-        if db_user:
-            verified_user: User = await oauth.users.update(
-                entry=db_user, schema=UserUpdate(is_verified=True)
-            )
-            return_code = 307 if verified_user.is_verified else 304
-            # send email confirmation user now verified
-            background_tasks.add_task(
-                send_email_confirmation,
-                email_to=verified_user.email,
-                username=verified_user.email,
-                password="••••••••••••",
-            )
-            # debug
-            if settings.DEBUG_MODE:  # pragma: no cover
-                logger.info(f"User {verified_user.id} was verified.")
-    except AuthException as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={
-                "code": status.HTTP_401_UNAUTHORIZED,
-                "reason": e.reason,
-            },
-        )
-    return RedirectResponse(url=settings.SERVER_HOST, status_code=return_code)
+    # check the token in the request
+    verified_user: User = await oauth.users.update(
+        entry=confirm_user, schema=UserUpdate(is_verified=True)
+    )
+    # send email confirmation user now verified
+    background_tasks.add_task(  # pragma: no cover
+        send_email_confirmation,
+        email_to=verified_user.email,
+        username=verified_user.email,
+        password="••••••••••••",
+    )
+    # debug
+    if settings.DEBUG_MODE:  # pragma: no cover
+        logger.info(f"User {verified_user.id} was verified.")
+    # redirect
+    return RedirectResponse(  # pragma: no cover
+        url=settings.SERVER_HOST,
+        status_code=status.HTTP_307_TEMPORARY_REDIRECT
+    )
 
 
 @router.post(
@@ -204,37 +189,37 @@ async def auth_confirmation(
     name="auth:forgot_password",
     dependencies=[Depends(get_user_auth)],
     responses=auth_password_forgot_responses,
+    response_model=None,
     status_code=status.HTTP_200_OK,
 )
 async def auth_forgot_password(
     background_tasks: BackgroundTasks,
-    user: UserRead = Depends(get_user_by_email),
+    user: UserRead = Depends(get_current_user_by_email),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
-) -> Any:
+) -> None:
     """
     Emails a forgot password reset token to the user by email.
     """
     # create reset password token
-    reset_password_token: str
-    reset_password_token_csrf: str
-    reset_password_token, reset_password_token_csrf = await oauth.store_token(
+    r_p_tok: str
+    r_p_tok_csrf: str
+    r_p_tok, r_p_tok_csrf = await oauth.store_token(
         user=user,
         audience=[settings.RESET_PASSWORD_TOKEN_AUDIENCE],
         expires=settings.RESET_PASSWORD_TOKEN_LIFETIME,
     )
     # email password reset token
-    background_tasks.add_task(
+    background_tasks.add_task(  # pragma: no cover
         send_email_reset_password,
         email_to=user.email,
         username=user.email,
-        token=reset_password_token,
-        csrf=reset_password_token_csrf,
+        token=r_p_tok,
+        csrf=r_p_tok_csrf,
     )
     # debug
     if settings.DEBUG_MODE:  # pragma: no cover
         logger.info(f"User {user.id} forgot their password.")
-    return None
 
 
 @router.post(
@@ -246,8 +231,9 @@ async def auth_forgot_password(
     status_code=status.HTTP_200_OK,
 )
 async def auth_reset_password(
+    background_tasks: BackgroundTasks,
     password: str = Body(...),
-    user_token: Tuple[UserRead, JWToken, str] = Depends(
+    user_reset: User = Depends(
         get_current_active_password_reset_user
     ),
     oauth: AuthManager = Depends(get_user_auth),
@@ -257,21 +243,20 @@ async def auth_reset_password(
     Updates the user password for the subject in the request token.
     """
     try:
-        # verify reset password token
-        user: UserRead
-        token_data: JWToken
-        token_str: str
-        user, token_data, token_str = user_token
-        # update the users password
-        db_user: Optional[User] = await oauth.users.read_by_email(email=user.email)
-        if db_user:
-            updated_user: User = await oauth.users.update(
-                entry=db_user, schema=UserUpdate(password=password)
-            )
-            return UserRead.from_orm(updated_user)
+        updated_user: User = await oauth.users.update(
+            entry=user_reset, schema=UserUpdate(password=password)
+        )
+        user_updated: UserRead = UserRead.from_orm(updated_user)  # pragma: no cover
+        # email confirmation user password updated
+        background_tasks.add_task(  # pragma: no cover
+            send_account_updated,
+            email_to=user_updated.email,
+            username=user_updated.email,
+            password="••••••••",
+        )
         if settings.DEBUG_MODE:  # pragma: no cover
-            logger.info(f"User {user.id} reset their password.")
-        return UserRead.from_orm(user)
+            logger.info(f"User {user_updated.id} reset their password.")
+        return user_updated  # pragma: no cover
     except InvalidPasswordException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -434,7 +419,7 @@ async def auth_revoke(
     # invalidate the used access token
     await oauth.destroy_token(token_jti=token_data.jti, delete=False)
     # return an empty bearer response
-    return await oauth.bearer.get_logout_response(response=response)
+    return await oauth.bearer.get_logout_response(response=response)  # pragma: no cover
 
 
 @router.delete(
@@ -463,4 +448,4 @@ async def auth_logout(
     # invalidate the used access token
     await oauth.destroy_token(token_jti=token_data.jti, delete=True)
     # return an empty bearer response
-    return await oauth.bearer.get_logout_response(response=response)
+    return await oauth.bearer.get_logout_response(response=response)  # pragma: no cover

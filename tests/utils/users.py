@@ -20,7 +20,7 @@ async def create_random_user(
             password=password,
             is_active=True,
             is_superuser=False,
-            is_verified=True,
+            is_verified=False,
         )
     )
     return UserRead.from_orm(user)

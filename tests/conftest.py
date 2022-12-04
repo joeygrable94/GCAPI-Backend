@@ -28,8 +28,15 @@ from tests.utils.users import get_current_user_tokens, get_current_user
 
 pytestmark = pytest.mark.anyio
 
-settings.DEBUG_MODE = True
-asyncio.run(build_database())
+
+@pytest.fixture(scope="session", autouse=True)
+async def prestart_database():
+    """
+    Called after the Session object has been created and
+    before performing collection and entering the run test loop.
+    """
+    settings.DEBUG_MODE = True
+    await build_database()
 
 
 @pytest.fixture(scope="session")
