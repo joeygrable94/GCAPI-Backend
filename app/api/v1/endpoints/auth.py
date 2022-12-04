@@ -28,9 +28,9 @@ from app.api.openapi import (
 from app.core.config import Settings, get_settings
 from app.core.logger import logger
 from app.core.utilities import (
+    send_account_updated,
     send_email_confirmation,
     send_email_reset_password,
-    send_account_updated,
     send_email_verification,
 )
 from app.db.schemas import BearerResponse, JWToken, UserCreate, UserRead, UserUpdate
@@ -41,9 +41,9 @@ from app.security import (
     get_current_active_password_reset_user,
     get_current_active_refresh_user,
     get_current_user_access_token,
-    get_user_auth,
     get_current_user_by_email,
     get_current_user_for_verification,
+    get_user_auth,
 )
 
 router: APIRouter = APIRouter()
@@ -179,8 +179,7 @@ async def auth_confirmation(
         logger.info(f"User {verified_user.id} was verified.")
     # redirect
     return RedirectResponse(  # pragma: no cover
-        url=settings.SERVER_HOST,
-        status_code=status.HTTP_307_TEMPORARY_REDIRECT
+        url=settings.SERVER_HOST, status_code=status.HTTP_307_TEMPORARY_REDIRECT
     )
 
 
@@ -233,9 +232,7 @@ async def auth_forgot_password(
 async def auth_reset_password(
     background_tasks: BackgroundTasks,
     password: str = Body(...),
-    user_reset: User = Depends(
-        get_current_active_password_reset_user
-    ),
+    user_reset: User = Depends(get_current_active_password_reset_user),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
 ) -> UserRead:

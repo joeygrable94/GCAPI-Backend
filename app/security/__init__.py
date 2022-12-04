@@ -118,9 +118,11 @@ async def get_current_user_for_verification(
             token=token,
             audience=[settings.VERIFY_USER_TOKEN_AUDIENCE],
             check_csrf=True,
-            token_csrf=csrf
+            token_csrf=csrf,
         )
-        db_user: Optional[User] = await oauth.users.read_by_email(email=user.email)  # pragma: no cover
+        db_user: Optional[User] = await oauth.users.read_by_email(
+            email=user.email
+        )  # pragma: no cover
         if not db_user:  # pragma: no cover
             raise UserNotExists()
         return db_user  # pragma: no cover
@@ -284,7 +286,9 @@ async def get_current_active_password_reset_user(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=ErrorCode.USER_NOT_VERIFIED,
             )
-        db_user: Optional[User] = await oauth.users.read_by_email(email=user.email)  # pragma: no cover
+        db_user: Optional[User] = await oauth.users.read_by_email(
+            email=user.email
+        )  # pragma: no cover
         if not db_user:  # pragma: no cover
             raise UserNotExists()
         return db_user  # pragma: no cover
