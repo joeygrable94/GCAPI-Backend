@@ -64,10 +64,12 @@ async def get_user_auth(
     )
 
 
+# FETCH USERS
 async def get_user_or_404(
     id: Any,
     oauth: AuthManager = Depends(get_user_auth),
 ) -> User:  # pragma: no cover
+    """Parses uuid/int and fetches user by id."""
     try:
         parsed_id: UUID = parse_id(id)
         user: Optional[User] = await oauth.users.read(entry_id=parsed_id)
@@ -81,11 +83,11 @@ async def get_user_or_404(
         )
 
 
-async def get_user_by_email(
+async def get_current_user_by_email(
     email: EmailStr = Body(..., embed=True),
     oauth: AuthManager = Depends(get_user_auth),
-    settings: Settings = Depends(get_settings),
 ) -> UserRead:  # pragma: no cover
+    """Fetches user by email string."""
     user: Optional[UserRead] = await oauth.fetch_user(email)
     if user is None:
         raise HTTPException(
@@ -97,19 +99,51 @@ async def get_user_by_email(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ErrorCode.USER_NOT_ACTIVE,
         )
-    if settings.USERS_REQUIRE_VERIFICATION and not user.is_verified:
+    return UserRead.from_orm(user)
+
+
+# VERIFY/CONFIRM
+async def get_current_user_for_verification(
+    token: str,
+    csrf: str,
+    oauth: AuthManager = Depends(get_user_auth),
+    settings: Settings = Depends(get_settings),
+) -> User:
+    try:
+        user: UserRead
+        token_data: JWToken
+        token_str: str
+        # verify the token's associated user
+        user, token_data, token_str = await oauth.verify_token(
+            token=token,
+            audience=[settings.VERIFY_USER_TOKEN_AUDIENCE],
+            check_csrf=True,
+            token_csrf=csrf
+        )
+        db_user: Optional[User] = await oauth.users.read_by_email(email=user.email)  # pragma: no cover
+        if not db_user:  # pragma: no cover
+            raise UserNotExists()
+        return db_user  # pragma: no cover
+    except UserNotExists:  # pragma: no cover
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorCode.USER_NOT_FOUND,
+        )
+    except AuthException as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=ErrorCode.USER_NOT_VERIFIED,
+            detail={
+                "code": status.HTTP_401_UNAUTHORIZED,
+                "reason": e.reason,
+            },
         )
-    return UserRead.from_orm(user)
 
 
 # REFRESH
 async def get_current_user_refresh_token(
-    settings: Settings = Depends(get_settings),
     token: str = Depends(bearer_transport.scheme),
     oauth: AuthManager = Depends(get_user_auth),
+    settings: Settings = Depends(get_settings),
 ) -> Tuple[UserRead, JWToken, str]:  # pragma: no cover
     try:
         return await oauth.verify_token(
@@ -226,9 +260,10 @@ async def get_current_active_superuser(
 # PASSWORD RESET
 async def get_current_active_password_reset_user(
     token: str = Body(...),
+    csrf: str = Body(...),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
-) -> Tuple[UserRead, JWToken, str]:  # pragma: no cover
+) -> User:  # pragma: no cover
     try:
         user: UserRead
         token_data: JWToken
@@ -236,6 +271,8 @@ async def get_current_active_password_reset_user(
         user, token_data, token_str = await oauth.verify_token(
             token=token,
             audience=[settings.RESET_PASSWORD_TOKEN_AUDIENCE],
+            check_csrf=True,
+            token_csrf=csrf,
         )
         if not user.is_active:
             raise HTTPException(
@@ -247,7 +284,15 @@ async def get_current_active_password_reset_user(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=ErrorCode.USER_NOT_VERIFIED,
             )
-        return user, token_data, token_str
+        db_user: Optional[User] = await oauth.users.read_by_email(email=user.email)  # pragma: no cover
+        if not db_user:  # pragma: no cover
+            raise UserNotExists()
+        return db_user  # pragma: no cover
+    except UserNotExists:  # pragma: no cover
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorCode.USER_NOT_FOUND,
+        )
     except AuthException as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -269,15 +314,16 @@ __all__ = [
     "get_current_active_refresh_user",
     "get_current_active_password_reset_user",
     "get_current_user_access_token",
+    "get_current_user_by_email",
+    "get_current_user_for_verification",
     "get_current_user_refresh_token",
-    "get_current_verified_user",
     "get_current_verified_refresh_user",
+    "get_current_verified_user",
     "get_jwt_strategy",
     "get_token_db",
     "get_database_strategy",
     "get_db_strategy",
     "get_user_auth",
     "get_user_db",
-    "get_user_by_email",
     "get_user_or_404",
 ]
