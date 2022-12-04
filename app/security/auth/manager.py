@@ -80,8 +80,9 @@ class AuthManager:
         if require_fresh and not token_data.fresh:
             raise FreshTokenRequired(reason=ErrorCode.FRESH_TOKEN_REQUIRED)
         # check token state
-        token_state: Optional[AccessTokenRead] = \
-            await self.tokens.read_token(token_data.jti)
+        token_state: Optional[AccessTokenRead] = await self.tokens.read_token(
+            token_data.jti
+        )
         if token_state is None:
             raise RevokedTokenError(reason=ErrorCode.TOKEN_INVALID)
         # check token csrf is valid
