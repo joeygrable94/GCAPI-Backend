@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_async_db
 from app.core.config import settings
 from app.db.schemas import UserRead
-from app.db.init_db import build_database
+from app.db.init_db import build_database, create_init_data
 from app.db.repositories import AccessTokensRepository, UsersRepository
 from app.db.session import async_engine, async_session
 from app.main import create_app
@@ -37,6 +37,7 @@ async def prestart_database():
     """
     settings.DEBUG_MODE = True
     await build_database()
+    await create_init_data()
 
 
 @pytest.fixture(scope="session")
