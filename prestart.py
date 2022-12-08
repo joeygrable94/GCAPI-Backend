@@ -1,18 +1,14 @@
-from typing import Any  # pragma: no cover
-
 import asyncio
-from sqlalchemy.orm import Session  # pragma: no cover
-from sqlalchemy.sql import text  # pragma: no cover
-from sqlalchemy.ext.asyncio import AsyncSession  # pragma: no cover
 
-from app.db.init_db import build_database
+from app.db.init_db import create_init_data
+from app.db.commands import check_db_connected
 from app.core.logger import logger  # pragma: no cover
-from app.db.session import async_session, session  # pragma: no cover
 
 
 async def init() -> None:  # pragma: no cover
     try:
-        await build_database()
+        await check_db_connected()
+        await create_init_data()
     except Exception as e:
         logger.warning(e)
         raise e
@@ -20,9 +16,21 @@ async def init() -> None:  # pragma: no cover
 
 async def main() -> None:  # pragma: no cover
     logger.info("Prestarting backend.")
-    await init()
+    try:
+        t1 = loop.create_task(init())
+        await asyncio.wait([t1])
+    except Exception as e:
+        logger.info(f"Error: {e}")
     logger.info("Backend ready.")
 
 
 if __name__ == "__main__":  # pragma: no cover
-    asyncio.run(main())
+    loop = asyncio.new_event_loop()
+    try:
+        loop.run_until_complete(main())
+    except RuntimeError as r:
+        logger.info(f"Runtime Error: {r}")
+    except Exception as e:
+        logger.info(f"Error: {e}")
+    finally:
+        loop.close()
