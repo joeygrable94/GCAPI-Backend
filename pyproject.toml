@@ -19,7 +19,7 @@ pydantic = {version = "1.10.2", extras = ["email"]}
 python-multipart = "0.0.5"
 python-dotenv = "0.21.0"
 PyMySQL = "1.0.2"
-SQLAlchemy = {version = "1.4.43", extras = ["mypy"]}
+SQLAlchemy = {version = "1.4.44", extras = ["mypy"]}
 sqlalchemy-stubs = "0.4"
 SQLAlchemy-Utils = "0.38.3"
 databases = "0.6.1"
