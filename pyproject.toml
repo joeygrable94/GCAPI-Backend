@@ -38,7 +38,7 @@ Jinja2 = "3.1.2"
 types-passlib = "^1.7.7"
 
 [tool.poetry.dev-dependencies]
-httpx = "0.23.0"
+httpx = "0.23.1"
 httpx-oauth = "0.10.2"
 pytest = "7.2.0"
 pytest-asyncio = "0.20.2"
