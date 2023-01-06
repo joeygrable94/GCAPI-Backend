@@ -83,14 +83,14 @@ class AuthManager:
         token_state: Optional[AccessTokenRead] = await self.tokens.read_token(
             token_data.jti
         )
-        if token_state is None:
-            raise RevokedTokenError(reason=ErrorCode.TOKEN_INVALID)
+        if token_state is None or token_state.is_revoked:
+            raise RevokedTokenError(reason=ErrorCode.TOKEN_REVOKED)
         # check token csrf is valid
         if check_csrf and token_csrf is not None and token_csrf != token_state.csrf:
             raise CSRFError(reason=ErrorCode.TOKEN_CSRF_INVALID)
         # check token belongs to user in request
         if str(token_data.sub) != str(token_state.user_id):
-            raise InvalidTokenUserId(reason=ErrorCode.BAD_TOKEN)
+            raise InvalidTokenUserId(reason=ErrorCode.BAD_TOKEN_USER)
         # check token not expired
         token_exp: int = get_int_from_datetime(token_data.exp)
         time_now: int = get_int_from_datetime(datetime.now(timezone.utc))

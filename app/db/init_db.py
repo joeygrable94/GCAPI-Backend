@@ -35,7 +35,7 @@ async def create_init_data() -> None:
                 )
             )
             logger.info(f"{settings.FIRST_SUPERUSER} user created")
-        except UserAlreadyExists:
+        except UserAlreadyExists:  # pragma: no cover
             logger.info(f"{settings.FIRST_SUPERUSER} already exists")
         # make test user
         try:
@@ -49,7 +49,7 @@ async def create_init_data() -> None:
                 )
             )
             logger.info(f"{settings.TEST_NORMAL_USER} user created")
-        except UserAlreadyExists:
+        except UserAlreadyExists:  # pragma: no cover
             logger.info(f"{settings.TEST_NORMAL_USER} already exists")
     logger.info("Data Inserted")
 

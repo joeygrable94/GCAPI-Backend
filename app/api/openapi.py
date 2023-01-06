@@ -65,10 +65,9 @@ auth_verification_responses: OpenAPIResponseType = {
         "content": {
             "application/json": {
                 "examples": {
-                    ErrorCode.BAD_TOKEN: {
-                        "summary": "Bad token, not existing user or"
-                        "not the e-mail currently set for the user.",
-                        "value": {"detail": ErrorCode.BAD_TOKEN},
+                    ErrorCode.BAD_TOKEN_USER: {
+                        "summary": "Bad token, token.user_id does not belong current user.id.",
+                        "value": {"detail": ErrorCode.BAD_TOKEN_USER},
                     },
                     ErrorCode.USER_NOT_ACTIVE: {
                         "summary": "User not active.",
@@ -112,10 +111,9 @@ auth_verification_confirmation_responses: OpenAPIResponseType = {
         "content": {
             "application/json": {
                 "examples": {
-                    ErrorCode.BAD_TOKEN: {
-                        "summary": "Bad token, not existing user or"
-                        "not the e-mail currently set for the user.",
-                        "value": {"detail": ErrorCode.BAD_TOKEN},
+                    ErrorCode.BAD_TOKEN_USER: {
+                        "summary": "Bad token, token.user_id does not belong current user.id.",
+                        "value": {"detail": ErrorCode.BAD_TOKEN_USER},
                     },
                     ErrorCode.USER_NOT_ACTIVE: {
                         "summary": "User not active.",
@@ -208,9 +206,9 @@ auth_password_reset_responses: OpenAPIResponseType = {
         "content": {
             "application/json": {
                 "examples": {
-                    ErrorCode.BAD_TOKEN: {
-                        "summary": "Bad or expired token.",
-                        "value": {"detail": ErrorCode.BAD_TOKEN},
+                    ErrorCode.BAD_TOKEN_USER: {
+                        "summary": "Bad token, token.user_id does not belong current user.id.",
+                        "value": {"detail": ErrorCode.BAD_TOKEN_USER},
                     },
                     ErrorCode.USER_NOT_VERIFIED: {
                         "summary": "User not verified.",
