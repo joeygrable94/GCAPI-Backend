@@ -41,6 +41,23 @@ class Settings(BaseSettings):
     RESET_PASSWORD_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1  # 3600
     VERIFY_USER_TOKEN_AUDIENCE: str = "auth:verify"
     VERIFY_USER_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1  # 3600
+    BASE_SCOPES_TUPLES: list[tuple[int, str, str]] = [
+        (0, "access:superuser", "Allow superuser access to administrative actions."),
+        (
+            1,
+            "access:user",
+            "Allow basic user access to things like logging in and out, \
+                reseting passwords, etc.",
+        ),
+        (1, "users:me", "Read information about the current user."),
+        (0, "users:list", "List users by a given page number."),
+        (0, "users:view", "Read information about a specific user by a given id."),
+        (0, "users:edit", "Edit information about a specific user by a given id."),
+        (0, "users:delete", "Delete a specific user by a given id."),
+    ]
+    BASE_SCOPES: Dict[str, str] = dict()
+    for i_s in BASE_SCOPES_TUPLES:
+        BASE_SCOPES[i_s[1]] = i_s[2]
 
     # Database
     DB_ECHO_LOG: bool = False if bool(environ.get("APP_DEBUG", True)) else False

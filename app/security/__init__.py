@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_async_db
 from app.api.errors import ErrorCode
 from app.api.exceptions import InvalidID, UserNotExists
-from app.core.config import Settings, get_settings
+from app.core.config import Settings, get_settings, settings
 from app.core.utilities import parse_id
 from app.db.repositories import AccessTokensRepository, UsersRepository
 from app.db.schemas import JWToken, UserRead
@@ -22,7 +22,9 @@ from .auth import (
     JWTStrategy,
 )
 
-bearer_transport: BearerTransport = BearerTransport(tokenUrl="auth/access")
+bearer_transport: BearerTransport = BearerTransport(
+    tokenUrl="auth/access", tokenScopes=settings.BASE_SCOPES
+)
 
 
 async def get_jwt_strategy(
@@ -119,6 +121,7 @@ async def get_current_user_for_verification(
             audience=[settings.VERIFY_USER_TOKEN_AUDIENCE],
             check_csrf=True,
             token_csrf=csrf,
+            security_scopes=["access:user"],
         )
         db_user: Optional[User] = await oauth.users.read_by_email(
             email=user.email
@@ -152,6 +155,7 @@ async def get_current_user_refresh_token(
             token=token,
             audience=[settings.REFRESH_TOKEN_AUDIENCE],
             is_type="refresh",
+            security_scopes=["access:superuser"],
         )
     except AuthException as e:  # pragma: no cover
         raise HTTPException(
@@ -199,9 +203,9 @@ async def get_current_active_refresh_user(
 
 # ACCESS
 async def get_current_user_access_token(
-    settings: Settings = Depends(get_settings),
     token: str = Depends(bearer_transport.scheme),
     oauth: AuthManager = Depends(get_user_auth),
+    settings: Settings = Depends(get_settings),
 ) -> Tuple[UserRead, JWToken, str]:
     try:
         return await oauth.verify_token(
@@ -209,6 +213,7 @@ async def get_current_user_access_token(
             audience=[settings.ACCESS_TOKEN_AUDIENCE],
             is_type="access",
             require_fresh=True,
+            security_scopes=["access:user"],
         )
     except AuthException as e:  # pragma: no cover
         raise HTTPException(
@@ -275,6 +280,7 @@ async def get_current_active_password_reset_user(
             audience=[settings.RESET_PASSWORD_TOKEN_AUDIENCE],
             check_csrf=True,
             token_csrf=csrf,
+            security_scopes=["users:me"],
         )
         if not user.is_active:
             raise HTTPException(

@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from fastapi import Response, status
 from fastapi.security import OAuth2PasswordBearer
@@ -10,8 +10,12 @@ from app.db.schemas import BearerResponse
 class BearerTransport:
     scheme: OAuth2PasswordBearer
 
-    def __init__(self, tokenUrl: str):
-        self.scheme = OAuth2PasswordBearer(tokenUrl, auto_error=False)
+    def __init__(self, tokenUrl: str, tokenScopes: Optional[Dict[str, str]]):
+        self.scheme = OAuth2PasswordBearer(
+            tokenUrl,
+            scopes=tokenScopes,
+            auto_error=False,
+        )
 
     async def get_login_response(
         self,

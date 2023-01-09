@@ -5,9 +5,11 @@ import pytest
 from httpx import AsyncClient, Response
 
 from app.api.errors import ErrorCode
-from app.db.schemas import UserCreate, UserRead
+from app.db.schemas import UserCreate
 from app.core.config import settings
 from app.core.utilities import get_uuid_str
+from app.db.schemas.user import UserRead, UserReadSafe
+from app.db.tables.user import User
 from app.security import AuthManager
 from tests.utils.email import fast_mail
 from tests.utils.users import get_current_user_tokens, create_random_user, create_new_user
@@ -139,7 +141,7 @@ async def test_auth_login_random_user(
     user_auth: AuthManager,
 ) -> None:
     a_user: UserRead
-    a_user_pass: str 
+    a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     response: Response = await client.post(
         "auth/access",
@@ -181,7 +183,7 @@ async def test_auth_login_user_not_verified(
     settings.USERS_REQUIRE_VERIFICATION = True
     email: str = random_email()
     password: str = random_lower_string()
-    a_user: UserRead = await user_auth.users.create(
+    a_user: User = await user_auth.users.create(
         schema=UserCreate(
             email=email,
             password=password,
@@ -241,7 +243,7 @@ async def test_auth_logout_random_user(
     user_auth: AuthManager,
 ) -> None:
     a_user: UserRead
-    a_user_pass: str 
+    a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     random_user_tokens: Dict[str, str] = await get_current_user_tokens(
         client, username=a_user.email, password=a_user_pass
@@ -333,7 +335,6 @@ async def test_auth_verify_confirm_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    
     a_user: UserRead = await create_random_user(user_auth)
     a_tok: str
     a_tok_csrf: str
@@ -447,7 +448,7 @@ async def test_auth_random_user_reset_password(
         )
         data: Dict[str, str] = response.json()
         assert data is not None
-        user_data: UserRead = UserRead(**data)
+        user_data: UserReadSafe = UserReadSafe(**data)
         assert user_data.id == a_user.id
         # check email account updated
         assert len(outbox) == 1

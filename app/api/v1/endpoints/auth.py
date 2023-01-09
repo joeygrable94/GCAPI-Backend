@@ -33,7 +33,14 @@ from app.core.utilities import (
     send_email_reset_password,
     send_email_verification,
 )
-from app.db.schemas import BearerResponse, JWToken, UserCreate, UserRead, UserUpdate
+from app.db.schemas import (
+    BearerResponse,
+    JWToken,
+    UserCreate,
+    UserRead,
+    UserReadSafe,
+    UserUpdate,
+)
 from app.db.tables import User
 from app.security import (
     AuthException,
@@ -54,7 +61,7 @@ router: APIRouter = APIRouter()
     name="auth:register",
     dependencies=[Depends(get_user_auth)],
     responses=auth_register_responses,
-    response_model=UserRead,
+    response_model=UserReadSafe,
     status_code=status.HTTP_201_CREATED,
 )
 async def auth_register(
@@ -62,7 +69,7 @@ async def auth_register(
     user_create: UserCreate,
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
-) -> UserRead:
+) -> UserReadSafe:
     """
     Registers a new user, then creates an email verification token
     and sends the new user an email verification link to click.
@@ -92,7 +99,7 @@ async def auth_register(
             logger.info(f"User {new_user.id} was registered.")
             logger.info(f"Email verification code to {new_user.id}.")
         # return user
-        return new_user  # pragma: no cover
+        return UserReadSafe.from_orm(new_user)  # pragma: no cover
     except UserAlreadyExists:
         raise HTTPException(  # pragma: no cover
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -226,7 +233,7 @@ async def auth_forgot_password(
     name="auth:reset_password",
     dependencies=[Depends(get_user_auth)],
     responses=auth_password_reset_responses,
-    response_model=UserRead,
+    response_model=UserReadSafe,
     status_code=status.HTTP_200_OK,
 )
 async def auth_reset_password(
@@ -235,7 +242,7 @@ async def auth_reset_password(
     user_reset: User = Depends(get_current_active_password_reset_user),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
-) -> UserRead:
+) -> UserReadSafe:
     """
     Updates the user password for the subject in the request token.
     """
@@ -243,7 +250,9 @@ async def auth_reset_password(
         updated_user: User = await oauth.users.update(
             entry=user_reset, schema=UserUpdate(password=password)
         )
-        user_updated: UserRead = UserRead.from_orm(updated_user)  # pragma: no cover
+        user_updated: UserReadSafe = UserReadSafe.from_orm(
+            updated_user
+        )  # pragma: no cover
         # email confirmation user password updated
         background_tasks.add_task(  # pragma: no cover
             send_account_updated,

@@ -1,6 +1,9 @@
+from datetime import datetime
 from typing import Any
+from uuid import UUID
 
 from sqlalchemy import Column, DateTime, func
+from sqlalchemy.orm import Mapped
 
 from app.core.utilities import get_uuid
 from app.db.base_class import Base
@@ -12,16 +15,16 @@ class TableBase(Base):
     __tablename__: str
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
-    id: Column = Column(
+    id: Mapped[UUID] = Column(
         GUID, primary_key=True, unique=True, nullable=False, default=get_uuid()
     )
-    created_on: Column = Column(
+    created_on: Mapped[datetime] = Column(
         DateTime(timezone=True),
         default=func.current_timestamp(),
         index=True,
         nullable=False,
     )
-    updated_on: Column = Column(
+    updated_on: Mapped[datetime] = Column(
         DateTime(timezone=True),
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),

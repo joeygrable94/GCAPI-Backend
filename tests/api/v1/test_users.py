@@ -6,6 +6,7 @@ from httpx import AsyncClient, Response
 from app.api.errors import ErrorCode
 from app.db.schemas import UserRead, UserUpdate
 from app.core.config import settings
+from app.db.schemas.user import UserReadSafe
 from app.security import AuthManager
 from tests.utils.utils import random_lower_string
 from tests.utils.users import (
@@ -135,14 +136,14 @@ async def test_update_current_testuser(
     client: AsyncClient,
     current_testuser: Tuple[UserRead, Dict[str, str]],
 ) -> None:
-    current_user: UserRead
+    current_user: UserReadSafe
     current_token_headers: Dict[str, str]
     current_user, current_token_headers = current_testuser
     update_dict = UserUpdate(password="NEWvalidPassw0rd")
     response: Response = await client.patch(
         "users/me", headers=current_token_headers, json=update_dict.dict()
     )
-    updated_user: UserRead = UserRead(**response.json())
+    updated_user: UserReadSafe = UserReadSafe(**response.json())
     assert 200 <= response.status_code < 300
     assert not current_user.updated_on == updated_user.updated_on
 
@@ -150,10 +151,10 @@ async def test_update_current_testuser(
 async def test_update_current_testuser_email_taken(
     client: AsyncClient,
     user_auth: AuthManager,
-    current_testuser: Tuple[UserRead, Dict[str, str]],
+    current_testuser: Tuple[UserReadSafe, Dict[str, str]],
 ) -> None:
     a_user: UserRead = await create_random_user(user_auth)
-    current_user: UserRead
+    current_user: UserReadSafe
     current_token_headers: Dict[str, str]
     current_user, current_token_headers = current_testuser
     update_dict = UserUpdate(

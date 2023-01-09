@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Sequence, Union
+from typing import List, Optional, Sequence, Union
 
 from pydantic import UUID4, BaseModel
 
@@ -52,6 +52,7 @@ class JWToken(BaseToken):
     exp: Optional[datetime]
     fresh: Optional[bool]
     csrf: Optional[str]
+    scopes: Optional[List[str]]
 
 
 # DB JWT

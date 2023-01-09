@@ -61,7 +61,7 @@ class BaseRepository(
         return await self._list(skip=skip, limit=limit)
 
     async def create(self, schema: Union[SCHEMA_CREATE, Any]) -> TABLE:
-        entry: Any = self._table(id=self.gen_uuid(), **schema.dict())
+        entry: Any = self._table(id=self.gen_uuid(), **schema.dict())  # type: ignore
         self._db.add(entry)
         await self._db.commit()
         await self._db.refresh(entry)

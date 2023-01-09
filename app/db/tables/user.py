@@ -1,10 +1,11 @@
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import Boolean, Column, String
-from sqlalchemy.orm import backref, relationship, validates
+from sqlalchemy import Boolean, Column, PickleType, String
+from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.orm import Mapped, backref, relationship, validates
 
 from app.core.config import settings
-from app.core.utilities import email_regex
+from app.core.utilities import email_regex, scope_regex
 from app.db.tables.base import TableBase
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -13,11 +14,16 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class User(TableBase):
     __tablename__: str = "user"
-    email: Column = Column(String(length=320), unique=True, index=True, nullable=False)
-    hashed_password: Column = Column(String(length=1024), nullable=False)
-    is_active: Column = Column(Boolean, default=True, nullable=False)
-    is_superuser: Column = Column(Boolean, default=False, nullable=False)
-    is_verified: Column = Column(Boolean, default=False, nullable=False)
+    email: Mapped[str] = Column(
+        String(length=320), unique=True, index=True, nullable=False
+    )
+    hashed_password: Mapped[str] = Column(String(length=1024), nullable=False)
+    is_active: Mapped[bool] = Column(Boolean, default=True, nullable=False)
+    is_superuser: Mapped[bool] = Column(Boolean, default=False, nullable=False)
+    is_verified: Mapped[bool] = Column(Boolean, default=False, nullable=False)
+    scopes: Mapped[Any] = Column(
+        MutableList.as_mutable(PickleType), default=[], nullable=False
+    )
 
     # relationships
     tokens: Any = relationship("AccessToken", backref=backref("user", lazy="subquery"))
@@ -32,6 +38,14 @@ class User(TableBase):
                 provider in v for provider in settings.ALLOWED_EMAIL_PROVIDER_LIST
             ):
                 raise ValueError("Invalid email provider")
+        return v
+
+    @validates("scopes")
+    def validate_scopes(self, k: Any, v: Any) -> Any:
+        assert isinstance(v, list)
+        for s in v:
+            if not scope_regex.fullmatch(s.lower()):
+                raise ValueError("Invalid scope format")  # pragma: no cover
         return v
 
     def __repr__(self) -> str:  # pragma: no cover
