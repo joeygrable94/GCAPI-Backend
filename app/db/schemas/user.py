@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import EmailStr
 
@@ -11,6 +11,7 @@ class UserInDB(BaseSchema):
     is_active: bool
     is_superuser: bool
     is_verified: bool
+    scopes: List[str]
 
 
 class UserCreate(BaseSchema):
@@ -29,7 +30,21 @@ class UserUpdate(BaseSchema):
     is_verified: Optional[bool]
 
 
+class UserUpdateAuthScopes(BaseSchema):
+    email: Optional[EmailStr]
+    password: Optional[str]
+    scopes: List[str]
+
+
 class UserRead(BaseSchemaRead):
+    email: EmailStr
+    is_active: bool
+    is_superuser: bool
+    is_verified: bool
+    scopes: List[str]
+
+
+class UserReadSafe(BaseSchemaRead):
     email: EmailStr
     is_active: bool
     is_superuser: bool

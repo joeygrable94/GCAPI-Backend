@@ -16,7 +16,7 @@ from app.api.openapi import (
     update_user_me_responses,
     update_user_responses,
 )
-from app.db.schemas import UserRead, UserUpdate
+from app.db.schemas import UserRead, UserReadSafe, UserUpdate
 from app.db.tables import User
 from app.security import (
     AuthManager,
@@ -34,16 +34,16 @@ router = APIRouter()
     name="users:current_user",
     dependencies=[Depends(get_current_active_user)],
     responses=get_user_or_404_responses,
-    response_model=UserRead,
+    response_model=UserReadSafe,
     status_code=status.HTTP_200_OK,
 )
 async def me(
     current_user: UserRead = Depends(get_current_active_user),
-) -> UserRead:
+) -> UserReadSafe:
     """
     Allows current-active-verified-users to fetch the details on their account.
     """
-    return current_user
+    return UserReadSafe.from_orm(current_user)
 
 
 @router.patch(
@@ -54,14 +54,14 @@ async def me(
         Depends(get_user_auth),
     ],
     responses=update_user_me_responses,
-    response_model=UserRead,
+    response_model=UserReadSafe,
     status_code=status.HTTP_200_OK,
 )
 async def update_me(
     user_update: UserUpdate,
     current_user: UserRead = Depends(get_current_active_user),
     oauth: AuthManager = Depends(get_user_auth),
-) -> UserRead:
+) -> UserReadSafe:
     """
     Allows current-active-verified-users to update their account.
     """
@@ -70,7 +70,7 @@ async def update_me(
         if not user:
             raise UserNotExists()
         updated_user: User = await oauth.users.update(entry=user, schema=user_update)
-        return UserRead.from_orm(updated_user)
+        return UserReadSafe.from_orm(updated_user)
     except UserNotExists:  # pragma: no cover
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -206,6 +206,5 @@ async def delete_user(
     Allows current-active-verified-superusers to delete a user
     by their ID/UUID attribute.
     """
-    print(fetch_user)
     await oauth.users.delete(fetch_user)
     return None

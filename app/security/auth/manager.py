@@ -22,6 +22,7 @@ from .exceptions import (
     InvalidTokenUserId,
     InvalidTokenUserNotFound,
     MissingTokenError,
+    PermissionError,
     RefreshTokenRequired,
     RevokedTokenError,
 )
@@ -66,6 +67,7 @@ class AuthManager:
         require_fresh: bool = False,
         check_csrf: bool = False,
         token_csrf: Optional[str] = None,
+        security_scopes: Optional[List[str]] = None,
     ) -> Tuple[UserRead, JWToken, str]:  # pragma: no cover
         token_data: Optional[JWToken] = await self.jwt.read_token(token, audience)
         # check token data
@@ -79,6 +81,13 @@ class AuthManager:
         # check token freshness
         if require_fresh and not token_data.fresh:
             raise FreshTokenRequired(reason=ErrorCode.FRESH_TOKEN_REQUIRED)
+        # check token has correct security scope
+        if security_scopes and token_data.scopes:
+            for scope in security_scopes:
+                if scope not in token_data.scopes:
+                    raise PermissionError(
+                        reason=ErrorCode.USER_INSUFFICIENT_PERMISSIONS
+                    )
         # check token state
         token_state: Optional[AccessTokenRead] = await self.tokens.read_token(
             token_data.jti

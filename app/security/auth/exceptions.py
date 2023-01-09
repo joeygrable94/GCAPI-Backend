@@ -13,6 +13,12 @@ class AuthException(Exception):
         self.reason: Any = reason
 
 
+class PermissionError(AuthException):
+    """
+    An error with the user's requested authorization scope
+    """
+
+
 class CSRFError(AuthException):
     """
     An error with CSRF protection

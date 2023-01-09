@@ -1,12 +1,16 @@
 import asyncio
 
-from app.db.init_db import create_init_data
+from app.core.config import settings
+from app.db.init_db import create_init_data, create_db_tables, drop_db_tables
 from app.db.commands import check_db_connected
 from app.core.logger import logger  # pragma: no cover
 
 
 async def init() -> None:  # pragma: no cover
     try:
+        if settings.DEBUG_MODE:
+            drop_db_tables()
+            create_db_tables()
         await check_db_connected()
         await create_init_data()
     except Exception as e:

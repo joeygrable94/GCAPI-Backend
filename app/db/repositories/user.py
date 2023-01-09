@@ -4,6 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import func, select
 
 from app.api.exceptions import UserAlreadyExists, UserNotExists
+from app.core.config import settings
 from app.core.utilities import password_helper
 from app.db.repositories.base import BaseRepository
 from app.db.schemas import UserCreate, UserRead, UserUpdate
@@ -49,6 +50,12 @@ class UsersRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
         user_dict = schema.dict()
         password = user_dict.pop("password")
         user_dict["hashed_password"] = password_helper.hash(password)
+        user_dict["scopes"] = []
+        for base_scope in settings.BASE_SCOPES_TUPLES:
+            if user_dict["is_superuser"]:
+                user_dict["scopes"].append(base_scope[1])
+            if not user_dict["is_superuser"] and base_scope[0] > 0:
+                user_dict["scopes"].append(base_scope[1])
         entry: Any = self._table(id=self.gen_uuid(), **user_dict)
         self._db.add(entry)
         await self._db.commit()

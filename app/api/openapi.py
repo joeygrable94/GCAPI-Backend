@@ -66,7 +66,8 @@ auth_verification_responses: OpenAPIResponseType = {
             "application/json": {
                 "examples": {
                     ErrorCode.BAD_TOKEN_USER: {
-                        "summary": "Bad token, token.user_id does not belong current user.id.",
+                        "summary": "Bad token, token.user_id does not belong to "
+                        "current user.id.",
                         "value": {"detail": ErrorCode.BAD_TOKEN_USER},
                     },
                     ErrorCode.USER_NOT_ACTIVE: {
@@ -112,7 +113,8 @@ auth_verification_confirmation_responses: OpenAPIResponseType = {
             "application/json": {
                 "examples": {
                     ErrorCode.BAD_TOKEN_USER: {
-                        "summary": "Bad token, token.user_id does not belong current user.id.",
+                        "summary": "Bad token, token.user_id does not belong to "
+                        "current user.id.",
                         "value": {"detail": ErrorCode.BAD_TOKEN_USER},
                     },
                     ErrorCode.USER_NOT_ACTIVE: {
@@ -207,7 +209,8 @@ auth_password_reset_responses: OpenAPIResponseType = {
             "application/json": {
                 "examples": {
                     ErrorCode.BAD_TOKEN_USER: {
-                        "summary": "Bad token, token.user_id does not belong current user.id.",
+                        "summary": "Bad token, token.user_id does not belong to "
+                        "current user.id.",
                         "value": {"detail": ErrorCode.BAD_TOKEN_USER},
                     },
                     ErrorCode.USER_NOT_VERIFIED: {
