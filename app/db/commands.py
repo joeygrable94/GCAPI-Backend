@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any  # pragma: no cover
 
-import databases
-from sqlalchemy.sql import text
+import databases  # pragma: no cover
+from sqlalchemy.sql import text  # pragma: no cover
 
-from app.core.config import settings
-from app.core.logger import logger
+from app.core.config import settings  # pragma: no cover
+from app.core.logger import logger  # pragma: no cover
 
 
 async def check_db_connected() -> None:  # pragma: no cover

@@ -37,8 +37,8 @@ async def send_email_verification(
 ) -> None:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Email verification required"
-    server_host = f"{settings.SERVER_HOST}{settings.API_PREFIX_V1}"
-    link = f"{server_host}/auth/confirmation?token={token}&csrf={csrf}"
+    server_api = f"http://{settings.SERVER_NAME}{settings.API_PREFIX_V1}"
+    link = f"{server_api}/auth/confirmation?token={token}&csrf={csrf}"
     message: MessageSchema = MessageSchema(
         subtype="html",
         subject=subject,
@@ -57,7 +57,7 @@ async def send_email_verification(
 async def send_email_confirmation(email_to: str, username: str, password: str) -> None:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - User email verified"
-    link = settings.SERVER_HOST
+    link = f"http://{settings.SERVER_NAME}"
     message: MessageSchema = MessageSchema(
         subtype="html",
         subject=subject,
@@ -76,7 +76,7 @@ async def send_email_confirmation(email_to: str, username: str, password: str) -
 async def send_account_registered(email_to: str, username: str, password: str) -> None:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - New account for user {username}"
-    link = settings.SERVER_HOST
+    link = f"http://{settings.SERVER_NAME}"
     message: MessageSchema = MessageSchema(
         subtype="html",
         subject=subject,
@@ -95,7 +95,7 @@ async def send_account_registered(email_to: str, username: str, password: str) -
 async def send_account_updated(email_to: str, username: str, password: str) -> None:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - User account updated"
-    link = settings.SERVER_HOST
+    link = f"http://{settings.SERVER_NAME}"
     message: MessageSchema = MessageSchema(
         subtype="html",
         subject=subject,
@@ -116,8 +116,8 @@ async def send_email_reset_password(
 ) -> None:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Password recovery for user {username}"
-    server_host = f"{settings.SERVER_HOST}{settings.API_PREFIX_V1}"
-    link = f"{server_host}/auth/reset-password?token={token}&csrf={csrf}"
+    server_api = f"http://{settings.SERVER_NAME}{settings.API_PREFIX_V1}"
+    link = f"{server_api}/auth/reset-password?token={token}&csrf={csrf}"
     message: MessageSchema = MessageSchema(
         subtype="html",
         subject=subject,

@@ -19,8 +19,7 @@ class Settings(BaseSettings):
 
     # API
     API_PREFIX_V1: str = "/api/v1"
-    SERVER_NAME: str = environ.get("DOMAIN", "localhost")
-    SERVER_HOST: str = environ.get("DOMAIN_HOST", "http://localhost")
+    SERVER_NAME: str = environ.get("DOMAIN", "localhost:8888")
 
     # Security
     SECURITY_ALGORITHM: str = "HS256"

@@ -348,7 +348,7 @@ async def test_auth_verify_confirm_random_user(
         response: Response = await client.get(f"auth/confirmation?token={a_tok}&csrf={a_tok_csrf}")
         assert response.read() == b''
         assert response.status_code == 307
-        assert response.next_request.url == settings.SERVER_HOST
+        assert response.next_request.url == f"http://{settings.SERVER_NAME}"
         # check email verification
         assert len(outbox) == 1
         assert (

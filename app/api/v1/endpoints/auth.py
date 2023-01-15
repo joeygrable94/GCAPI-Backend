@@ -186,7 +186,7 @@ async def auth_confirmation(
         logger.info(f"User {verified_user.id} was verified.")
     # redirect
     return RedirectResponse(  # pragma: no cover
-        url=settings.SERVER_HOST, status_code=status.HTTP_307_TEMPORARY_REDIRECT
+        url=f"http://{settings.SERVER_NAME}", status_code=status.HTTP_307_TEMPORARY_REDIRECT
     )
 
 
