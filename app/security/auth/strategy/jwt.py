@@ -77,7 +77,6 @@ class JWTStrategy:
                 sub=str(user.id),
                 aud=audience,
                 csrf=csrf,
-                scopes=user.scopes,
             )
             expire_at: datetime = datetime.now(timezone.utc) + timedelta(
                 seconds=expires

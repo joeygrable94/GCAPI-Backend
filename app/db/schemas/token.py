@@ -1,6 +1,7 @@
 from datetime import datetime
-from typing import List, Optional, Sequence, Union
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
+from fastapi_permissions import Allow
 from pydantic import UUID4, BaseModel
 
 from app.db.schemas.base import BaseSchema, BaseSchemaRead
@@ -52,7 +53,6 @@ class JWToken(BaseToken):
     exp: Optional[datetime]
     fresh: Optional[bool]
     csrf: Optional[str]
-    scopes: Optional[List[str]]
 
 
 # DB JWT
@@ -82,3 +82,8 @@ class AccessTokenRead(BaseSchemaRead):
     expires_at: datetime
     is_revoked: bool
     user_id: UUID4
+
+    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
+        return [
+            (Allow, "role:admin", "use"),
+        ]

@@ -1,5 +1,6 @@
-from typing import List, Optional
+from typing import Any, List, Optional, Tuple
 
+from fastapi_permissions import Allow, Authenticated
 from pydantic import EmailStr
 
 from app.db.schemas.base import BaseSchema, BaseSchemaRead
@@ -11,7 +12,7 @@ class UserInDB(BaseSchema):
     is_active: bool
     is_superuser: bool
     is_verified: bool
-    scopes: List[str]
+    principals: List[str]
 
 
 class UserCreate(BaseSchema):
@@ -30,10 +31,10 @@ class UserUpdate(BaseSchema):
     is_verified: Optional[bool]
 
 
-class UserUpdateAuthScopes(BaseSchema):
+class UserUpdateAuthPermissions(BaseSchema):
     email: Optional[EmailStr]
     password: Optional[str]
-    scopes: List[str]
+    principals: List[str]
 
 
 class UserRead(BaseSchemaRead):
@@ -41,11 +42,30 @@ class UserRead(BaseSchemaRead):
     is_active: bool
     is_superuser: bool
     is_verified: bool
-    scopes: List[str]
+
+    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
+        """Defines who can do what.
+
+        Returns a list of tuples (1, 2, 3):
+            1. "Allow" or "Deny"
+            2. principal identifier: "scope:spec"
+            3. permission name:
+                "use", "list", "create", "read", "update", "delete", "self"
+
+        If a role is not listed (like "role:user") the access will be
+        automatically denied, as if (Deny, Everyone, All) is appended.
+        """
+        return [
+            (Allow, Authenticated, "self"),
+            (Allow, "role:admin", "use"),
+            (Allow, "role:admin", "list"),
+            (Allow, "role:admin", "create"),
+            (Allow, "role:admin", "read"),
+            (Allow, "role:admin", "update"),
+            (Allow, "role:admin", "delete"),
+            (Allow, f"user:{self.email}", "self"),
+        ]
 
 
-class UserReadSafe(BaseSchemaRead):
-    email: EmailStr
-    is_active: bool
-    is_superuser: bool
-    is_verified: bool
+class UserReadAdmin(UserRead):
+    principals: List[str]

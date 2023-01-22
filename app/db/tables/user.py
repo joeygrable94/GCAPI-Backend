@@ -21,7 +21,7 @@ class User(TableBase):
     is_active: Mapped[bool] = Column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = Column(Boolean, default=False, nullable=False)
     is_verified: Mapped[bool] = Column(Boolean, default=False, nullable=False)
-    scopes: Mapped[Any] = Column(
+    principals: Mapped[Any] = Column(
         MutableList.as_mutable(PickleType), default=[], nullable=False
     )
 
@@ -40,12 +40,12 @@ class User(TableBase):
                 raise ValueError("Invalid email provider")
         return v
 
-    @validates("scopes")
-    def validate_scopes(self, k: Any, v: Any) -> Any:
+    @validates("principals")
+    def validate_principals(self, k: Any, v: Any) -> Any:
         assert isinstance(v, list)
         for s in v:
             if not scope_regex.fullmatch(s.lower()):
-                raise ValueError("Invalid scope format")  # pragma: no cover
+                raise ValueError("Principal: Invalid scope format")  # pragma: no cover
         return v
 
     def __repr__(self) -> str:  # pragma: no cover

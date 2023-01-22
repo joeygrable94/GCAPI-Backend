@@ -8,7 +8,7 @@ from app.api.errors import ErrorCode
 from app.db.schemas import UserCreate
 from app.core.config import settings
 from app.core.utilities import get_uuid_str
-from app.db.schemas.user import UserRead, UserReadSafe
+from app.db.schemas.user import UserRead, UserReadAdmin
 from app.db.tables.user import User
 from app.security import AuthManager
 from tests.utils.email import fast_mail
@@ -448,7 +448,7 @@ async def test_auth_random_user_reset_password(
         )
         data: Dict[str, str] = response.json()
         assert data is not None
-        user_data: UserReadSafe = UserReadSafe(**data)
+        user_data: UserRead = UserRead(**data)
         assert user_data.id == a_user.id
         # check email account updated
         assert len(outbox) == 1
