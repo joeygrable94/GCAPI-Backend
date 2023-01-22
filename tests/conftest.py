@@ -15,7 +15,7 @@ from app.core.config import settings
 from app.db.schemas import UserRead
 from app.db.init_db import build_database, create_init_data
 from app.db.repositories import AccessTokensRepository, UsersRepository
-from app.db.schemas.user import UserReadSafe
+from app.db.schemas.user import UserReadAdmin
 from app.db.session import async_engine, async_session
 from app.main import create_app
 from app.security import (
@@ -173,8 +173,8 @@ async def testuser_token_headers(client: AsyncClient) -> Dict[str, str]:
 async def current_superuser(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
-) -> Tuple[UserRead, Dict[str, str]]:
-    current_user: UserReadSafe
+) -> Tuple[UserReadAdmin, Dict[str, str]]:
+    current_user: UserReadAdmin
     token_header: Dict[str, str]
     current_user, token_header = await get_current_user(
         client=client,
@@ -188,7 +188,7 @@ async def current_testuser(
     client: AsyncClient,
     testuser_token_headers: Dict[str, str],
 ) -> Tuple[UserRead, Dict[str, str]]:
-    current_user: UserReadSafe
+    current_user: UserRead
     token_header: Dict[str, str]
     current_user, token_header = await get_current_user(
         client=client,

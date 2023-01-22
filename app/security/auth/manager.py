@@ -11,7 +11,8 @@ from app.api.exceptions import InvalidID, UserNotExists
 from app.core.config import settings
 from app.core.utilities import get_int_from_datetime, get_uuid_str, parse_id
 from app.db.repositories import UsersRepository
-from app.db.schemas import AccessTokenRead, JWToken, UserRead
+from app.db.schemas import AccessTokenRead, JWToken
+from app.db.schemas.user import UserReadAdmin
 from app.db.tables import User
 
 from .exceptions import (
@@ -22,7 +23,6 @@ from .exceptions import (
     InvalidTokenUserId,
     InvalidTokenUserNotFound,
     MissingTokenError,
-    PermissionError,
     RefreshTokenRequired,
     RevokedTokenError,
 )
@@ -45,19 +45,19 @@ class AuthManager:
 
     async def certify(
         self, credentials: OAuth2PasswordRequestForm
-    ) -> Optional[UserRead]:  # pragma: no cover
+    ) -> Optional[UserReadAdmin]:  # pragma: no cover
         user: Optional[User] = await self.users.authenticate(credentials)
         if not user:
             return None
-        return UserRead.from_orm(user)
+        return UserReadAdmin.from_orm(user)
 
     async def fetch_user(
         self, email: EmailStr
-    ) -> Optional[UserRead]:  # pragma: no cover
+    ) -> Optional[UserReadAdmin]:  # pragma: no cover
         user: Optional[User] = await self.users.read_by_email(email)
         if not user:
             return None
-        return UserRead.from_orm(user)
+        return UserReadAdmin.from_orm(user)
 
     async def verify_token(
         self,
@@ -67,8 +67,7 @@ class AuthManager:
         require_fresh: bool = False,
         check_csrf: bool = False,
         token_csrf: Optional[str] = None,
-        security_scopes: Optional[List[str]] = None,
-    ) -> Tuple[UserRead, JWToken, str]:  # pragma: no cover
+    ) -> Tuple[UserReadAdmin, JWToken, str]:  # pragma: no cover
         token_data: Optional[JWToken] = await self.jwt.read_token(token, audience)
         # check token data
         if token_data is None or token_data.sub is None:
@@ -81,13 +80,6 @@ class AuthManager:
         # check token freshness
         if require_fresh and not token_data.fresh:
             raise FreshTokenRequired(reason=ErrorCode.FRESH_TOKEN_REQUIRED)
-        # check token has correct security scope
-        if security_scopes and token_data.scopes:
-            for scope in security_scopes:
-                if scope not in token_data.scopes:
-                    raise PermissionError(
-                        reason=ErrorCode.USER_INSUFFICIENT_PERMISSIONS
-                    )
         # check token state
         token_state: Optional[AccessTokenRead] = await self.tokens.read_token(
             token_data.jti
@@ -114,11 +106,11 @@ class AuthManager:
         except (InvalidID, UserNotExists):
             raise InvalidTokenUserNotFound(reason=ErrorCode.USER_NOT_FOUND)
         # return current_user and their token_data
-        return UserRead.from_orm(current_user), token_data, token
+        return UserReadAdmin.from_orm(current_user), token_data, token
 
     async def store_token(
         self,
-        user: UserRead,
+        user: UserReadAdmin,
         audience: List[str] = [settings.ACCESS_TOKEN_AUDIENCE],
         expires: int = settings.ACCESS_TOKEN_LIFETIME,
         is_refresh: bool = False,
