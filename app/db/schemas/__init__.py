@@ -6,4 +6,4 @@ from .token import (
     BearerResponse,
     JWToken,
 )
-from .user import UserCreate, UserInDB, UserRead, UserReadSafe, UserUpdate
+from .user import UserCreate, UserInDB, UserRead, UserReadAdmin, UserUpdate

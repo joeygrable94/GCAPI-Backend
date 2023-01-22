@@ -38,7 +38,7 @@ from app.db.schemas import (
     JWToken,
     UserCreate,
     UserRead,
-    UserReadSafe,
+    UserReadAdmin,
     UserUpdate,
 )
 from app.db.tables import User
@@ -61,7 +61,7 @@ router: APIRouter = APIRouter()
     name="auth:register",
     dependencies=[Depends(get_user_auth)],
     responses=auth_register_responses,
-    response_model=UserReadSafe,
+    response_model=UserRead,
     status_code=status.HTTP_201_CREATED,
 )
 async def auth_register(
@@ -69,7 +69,7 @@ async def auth_register(
     user_create: UserCreate,
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
-) -> UserReadSafe:
+) -> UserRead:
     """
     Registers a new user, then creates an email verification token
     and sends the new user an email verification link to click.
@@ -77,7 +77,9 @@ async def auth_register(
     try:
         # register user
         created_user: User = await oauth.users.create(schema=user_create)
-        new_user: UserRead = UserRead.from_orm(created_user)  # pragma: no cover
+        new_user: UserReadAdmin = UserReadAdmin.from_orm(
+            created_user
+        )  # pragma: no cover
         # create verification token
         verify_token: str
         verify_token_csrf: str
@@ -99,7 +101,7 @@ async def auth_register(
             logger.info(f"User {new_user.id} was registered.")
             logger.info(f"Email verification code to {new_user.id}.")
         # return user
-        return UserReadSafe.from_orm(new_user)  # pragma: no cover
+        return UserRead.from_orm(new_user)  # pragma: no cover
     except UserAlreadyExists:
         raise HTTPException(  # pragma: no cover
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -125,7 +127,7 @@ async def auth_register(
 )
 async def auth_verification(
     background_tasks: BackgroundTasks,
-    user: UserRead = Depends(get_current_user_by_email),
+    user: UserReadAdmin = Depends(get_current_user_by_email),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
 ) -> None:
@@ -186,7 +188,8 @@ async def auth_confirmation(
         logger.info(f"User {verified_user.id} was verified.")
     # redirect
     return RedirectResponse(  # pragma: no cover
-        url=f"http://{settings.SERVER_NAME}", status_code=status.HTTP_307_TEMPORARY_REDIRECT
+        url=f"http://{settings.SERVER_NAME}",
+        status_code=status.HTTP_307_TEMPORARY_REDIRECT,
     )
 
 
@@ -200,7 +203,7 @@ async def auth_confirmation(
 )
 async def auth_forgot_password(
     background_tasks: BackgroundTasks,
-    user: UserRead = Depends(get_current_user_by_email),
+    user: UserReadAdmin = Depends(get_current_user_by_email),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
 ) -> None:
@@ -233,7 +236,7 @@ async def auth_forgot_password(
     name="auth:reset_password",
     dependencies=[Depends(get_user_auth)],
     responses=auth_password_reset_responses,
-    response_model=UserReadSafe,
+    response_model=UserRead,
     status_code=status.HTTP_200_OK,
 )
 async def auth_reset_password(
@@ -242,7 +245,7 @@ async def auth_reset_password(
     user_reset: User = Depends(get_current_active_password_reset_user),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
-) -> UserReadSafe:
+) -> UserRead:
     """
     Updates the user password for the subject in the request token.
     """
@@ -250,9 +253,7 @@ async def auth_reset_password(
         updated_user: User = await oauth.users.update(
             entry=user_reset, schema=UserUpdate(password=password)
         )
-        user_updated: UserReadSafe = UserReadSafe.from_orm(
-            updated_user
-        )  # pragma: no cover
+        user_updated: UserRead = UserRead.from_orm(updated_user)  # pragma: no cover
         # email confirmation user password updated
         background_tasks.add_task(  # pragma: no cover
             send_account_updated,
@@ -301,7 +302,7 @@ async def auth_access(
     """
     Authenticates the user and grants them an access and a refresh token.
     """
-    user: Optional[UserRead] = await oauth.certify(credentials)
+    user: Optional[UserReadAdmin] = await oauth.certify(credentials)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -357,7 +358,7 @@ async def auth_access(
 )
 async def auth_refresh(
     response: Response,
-    user_token: Tuple[UserRead, JWToken, str] = Depends(
+    user_token: Tuple[UserReadAdmin, JWToken, str] = Depends(
         get_current_active_refresh_user
     ),
     oauth: AuthManager = Depends(get_user_auth),
@@ -366,7 +367,7 @@ async def auth_refresh(
     """
     Refreshes current user access token and refresh tokens.
     """
-    user: UserRead
+    user: UserReadAdmin
     token_data: JWToken
     token_str: str
     user, token_data, token_str = user_token
@@ -412,13 +413,15 @@ async def auth_refresh(
 )
 async def auth_revoke(
     response: Response,
-    user_token: Tuple[UserRead, JWToken, str] = Depends(get_current_user_access_token),
+    user_token: Tuple[UserReadAdmin, JWToken, str] = Depends(
+        get_current_user_access_token
+    ),
     oauth: AuthManager = Depends(get_user_auth),
 ) -> BearerResponse:
     """
     Revokes current user access token by adding it to the denylist.
     """
-    user: UserRead
+    user: UserReadAdmin
     token_data: JWToken
     token_str: str
     user, token_data, token_str = user_token
@@ -441,13 +444,15 @@ async def auth_revoke(
 )
 async def auth_logout(
     response: Response,
-    user_token: Tuple[UserRead, JWToken, str] = Depends(get_current_user_access_token),
+    user_token: Tuple[UserReadAdmin, JWToken, str] = Depends(
+        get_current_user_access_token
+    ),
     oauth: AuthManager = Depends(get_user_auth),
 ) -> BearerResponse:
     """
     Logout the current active user by access token and invalidates token id.
     """
-    user: UserRead
+    user: UserReadAdmin
     token_data: JWToken
     token_str: str
     user, token_data, token_str = user_token

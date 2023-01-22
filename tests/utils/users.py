@@ -3,8 +3,8 @@ from typing import Any, Dict, Tuple
 from httpx import AsyncClient, Response
 
 from app.core.config import settings
-from app.db.schemas import UserCreate
-from app.db.schemas.user import UserRead, UserReadSafe
+from app.db.schemas import UserCreate, UserRead
+from app.db.schemas.user import UserReadAdmin
 from app.db.tables import User
 from app.security import AuthManager
 from tests.utils.utils import random_lower_string, random_email
@@ -64,11 +64,14 @@ async def get_current_user_tokens(
 async def get_current_user(
     client: AsyncClient,
     auth_header: Dict[str, str],
-) -> Tuple[UserReadSafe, Dict[str, str]]:
+) -> Tuple[UserReadAdmin | UserRead, Dict[str, str]]:
     response: Response = await client.get(
         "users/me",
         headers=auth_header,
     )
     user_data: Dict[str, Any] = response.json()
-    current_user: UserReadSafe = UserReadSafe(**user_data)
+    if user_data.get('principals'):
+        current_user: UserReadAdmin = UserReadAdmin(**user_data)
+    else:
+        current_user: UserRead = UserRead(**user_data)
     return current_user, auth_header

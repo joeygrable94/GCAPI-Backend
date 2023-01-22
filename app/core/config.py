@@ -40,23 +40,12 @@ class Settings(BaseSettings):
     RESET_PASSWORD_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1  # 3600
     VERIFY_USER_TOKEN_AUDIENCE: str = "auth:verify"
     VERIFY_USER_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1  # 3600
-    BASE_SCOPES_TUPLES: list[tuple[int, str, str]] = [
-        (0, "access:superuser", "Allow superuser access to administrative actions."),
-        (
-            1,
-            "access:user",
-            "Allow basic user access to things like logging in and out, \
-                reseting passwords, etc.",
-        ),
-        (1, "users:me", "Read information about the current user."),
-        (0, "users:list", "List users by a given page number."),
-        (0, "users:view", "Read information about a specific user by a given id."),
-        (0, "users:edit", "Edit information about a specific user by a given id."),
-        (0, "users:delete", "Delete a specific user by a given id."),
-    ]
-    BASE_SCOPES: Dict[str, str] = dict()
-    for i_s in BASE_SCOPES_TUPLES:
-        BASE_SCOPES[i_s[1]] = i_s[2]
+    BASE_PRINCIPALS: Dict[str, str] = {
+        "role:admin": "Administrators control administrative actions.",
+        "role:user": "User controls things like logging in and out, \
+            reset their password, etc.",
+        "user:example@email.com": "Read information about the current user.",
+    }
 
     # Database
     DB_ECHO_LOG: bool = False if bool(environ.get("APP_DEBUG", True)) else False
@@ -132,16 +121,19 @@ class Settings(BaseSettings):
         # .env provided connection string
         if isinstance(v, str):
             return v
-        # no connection string provided AND debug mode active -> test conn str
-        if values.get("DEBUG_MODE"):
-            return "sqlite:///./{}.db".format(values.get("DATABASE_NAME"))
-        # default connection driver: mysql+pymysql
-        return "mysql+pymysql://{}:{}@{}/{}?charset=UTF8MB4".format(
-            values.get("DATABASE_USER"),
-            values.get("DATABASE_PASSWORD"),
-            values.get("DATABASE_SERVER"),
-            values.get("DATABASE_NAME"),
-        )
+        else:
+            # no connection string provided
+            # debug mode active
+            if values.get("DEBUG_MODE"):
+                return "sqlite:///./{}.db".format(values.get("DATABASE_NAME"))
+            else:
+                # default connection driver: mysql+pymysql
+                return "mysql+pymysql://{}:{}@{}/{}?charset=UTF8MB4".format(
+                    values.get("DATABASE_USER"),
+                    values.get("DATABASE_PASSWORD"),
+                    values.get("DATABASE_SERVER"),
+                    values.get("DATABASE_NAME"),
+                )
 
     @validator("ASYNC_DATABASE_URI", pre=True)
     def assemble_async_db_uri(
@@ -150,16 +142,19 @@ class Settings(BaseSettings):
         # .env provided connection string
         if isinstance(v, str):
             return v
-        # no connection string provided AND debug mode active -> test conn str
-        if values.get("DEBUG_MODE"):
-            return "sqlite+aiosqlite:///./{}.db".format(values.get("DATABASE_NAME"))
-        # default asynchronous connection driver: mysql+aiomysql
-        return "mysql+aiomysql://{}:{}@{}/{}?charset=UTF8MB4".format(
-            values.get("DATABASE_USER"),
-            values.get("DATABASE_PASSWORD"),
-            values.get("DATABASE_SERVER"),
-            values.get("DATABASE_NAME"),
-        )
+        else:
+            # no connection string provided
+            # debug mode active
+            if values.get("DEBUG_MODE"):
+                return "sqlite+aiosqlite:///./{}.db".format(values.get("DATABASE_NAME"))
+            else:
+                # default asynchronous connection driver: mysql+aiomysql
+                return "mysql+aiomysql://{}:{}@{}/{}?charset=UTF8MB4".format(
+                    values.get("DATABASE_USER"),
+                    values.get("DATABASE_PASSWORD"),
+                    values.get("DATABASE_SERVER"),
+                    values.get("DATABASE_NAME"),
+                )
 
     @validator("EMAILS_FROM_NAME")
     def assemble_emails_sent_from(
