@@ -16,9 +16,9 @@ from app.api.openapi import (
     update_user_me_responses,
     update_user_responses,
 )
-from app.core.logger import logger
 from app.core.config import Settings, get_settings
-from app.db.schemas import UserRead, UserReadAdmin, UserUpdate, UserCreate
+from app.core.logger import logger
+from app.db.schemas import UserCreate, UserRead, UserReadAdmin, UserUpdate
 from app.db.tables import User
 from app.security import (
     AuthManager,
@@ -146,7 +146,7 @@ async def create_user(
     current_user: UserReadAdmin = Permission("create", get_current_active_user),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
-):
+) -> UserRead:
     """
     Creates a new user, un-verified by default.
     """
