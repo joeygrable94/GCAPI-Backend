@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_async_db
 from app.api.exceptions import ClientAlreadyExists, ClientNotExists
 from app.db.repositories import ClientsRepository
-from app.db.schemas import ClientCreate, ClientRead, ClientUpdate, UserReadAdmin
+from app.db.schemas import ClientCreate, ClientRead, ClientUpdate, UserAdmin
 from app.db.tables import Client
 from app.security import Permission, get_current_active_user
 
@@ -22,7 +22,7 @@ router: APIRouter = APIRouter()
 async def clients_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
-    current_user: UserReadAdmin = Permission("list", get_current_active_user),
+    current_user: UserAdmin = Permission("list", get_current_active_user),
 ) -> List[ClientRead] | List:
     clients_repo: ClientsRepository = ClientsRepository(session=db)
     clients: List[Client] | List[None] | None = await clients_repo.list(page=page)
@@ -40,7 +40,7 @@ async def clients_create(
     *,
     db: AsyncSession = Depends(get_async_db),
     client_in: ClientCreate,
-    current_user: UserReadAdmin = Permission("create", get_current_active_user),
+    current_user: UserAdmin = Permission("create", get_current_active_user),
 ) -> ClientRead:
     try:
         clients_repo: ClientsRepository = ClientsRepository(session=db)
@@ -70,7 +70,7 @@ async def clients_read(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
-    current_user: UserReadAdmin = Permission("read", get_current_active_user),
+    current_user: UserAdmin = Permission("read", get_current_active_user),
 ) -> ClientRead:
     try:
         clients_repo: ClientsRepository = ClientsRepository(session=db)
@@ -94,7 +94,7 @@ async def clients_update(
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
     client_in: ClientUpdate,
-    current_user: UserReadAdmin = Permission("update", get_current_active_user),
+    current_user: UserAdmin = Permission("update", get_current_active_user),
 ) -> ClientRead:
     try:
         clients_repo: ClientsRepository = ClientsRepository(session=db)
@@ -134,7 +134,7 @@ async def clients_delete(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
-    current_user: UserReadAdmin = Permission("delete", get_current_active_user),
+    current_user: UserAdmin = Permission("delete", get_current_active_user),
 ) -> None:
     try:
         clients_repo: ClientsRepository = ClientsRepository(session=db)

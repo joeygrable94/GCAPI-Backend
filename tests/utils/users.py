@@ -4,14 +4,14 @@ from httpx import AsyncClient, Response
 from tests.utils.utils import random_email, random_lower_string
 
 from app.core.config import settings
-from app.db.schemas import UserCreate, UserRead, UserReadAdmin
+from app.db.schemas import UserCreate, UserRead, UserAdmin
 from app.db.tables import User
 from app.security import AuthManager
 
 
 async def create_random_user(
     user_auth: AuthManager,
-) -> UserReadAdmin:
+) -> UserAdmin:
     email: str = random_email()
     password: str = random_lower_string()
     user: User = await user_auth.users.create(
@@ -23,12 +23,12 @@ async def create_random_user(
             is_verified=False,
         )
     )
-    return UserReadAdmin.from_orm(user)
+    return UserAdmin.from_orm(user)
 
 
 async def create_new_user(
     user_auth: AuthManager,
-) -> Tuple[UserReadAdmin, str]:
+) -> Tuple[UserAdmin, str]:
     email: str = random_email()
     password: str = random_lower_string()
     user: User = await user_auth.users.create(
@@ -40,7 +40,7 @@ async def create_new_user(
             is_verified=True,
         )
     )
-    return UserReadAdmin.from_orm(user), password
+    return UserAdmin.from_orm(user), password
 
 
 async def get_current_user_tokens(
@@ -63,15 +63,15 @@ async def get_current_user_tokens(
 async def get_current_user(
     client: AsyncClient,
     auth_header: Dict[str, str],
-) -> Tuple[UserReadAdmin | UserRead, Dict[str, str]]:
+) -> Tuple[UserAdmin | UserRead, Dict[str, str]]:
     response: Response = await client.get(
         "users/me",
         headers=auth_header,
     )
     user_data: Dict[str, Any] = response.json()
-    current_user: UserReadAdmin | UserRead
+    current_user: UserAdmin | UserRead
     if user_data.get("principals"):
-        current_user = UserReadAdmin(**user_data)
+        current_user = UserAdmin(**user_data)
     else:
         current_user = UserRead(**user_data)
     return current_user, auth_header

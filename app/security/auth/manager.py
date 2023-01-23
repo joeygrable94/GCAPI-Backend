@@ -12,7 +12,7 @@ from app.core.config import settings
 from app.core.utilities import get_int_from_datetime, get_uuid_str, parse_id
 from app.db.repositories import UsersRepository
 from app.db.schemas import AccessTokenRead, JWToken
-from app.db.schemas.user import UserReadAdmin
+from app.db.schemas.user import UserAdmin
 from app.db.tables import User
 
 from .exceptions import (
@@ -45,19 +45,19 @@ class AuthManager:
 
     async def certify(
         self, credentials: OAuth2PasswordRequestForm
-    ) -> Optional[UserReadAdmin]:  # pragma: no cover
+    ) -> Optional[UserAdmin]:  # pragma: no cover
         user: Optional[User] = await self.users.authenticate(credentials)
         if not user:
             return None
-        return UserReadAdmin.from_orm(user)
+        return UserAdmin.from_orm(user)
 
     async def fetch_user(
         self, email: EmailStr
-    ) -> Optional[UserReadAdmin]:  # pragma: no cover
+    ) -> Optional[UserAdmin]:  # pragma: no cover
         user: Optional[User] = await self.users.read_by_email(email)
         if not user:
             return None
-        return UserReadAdmin.from_orm(user)
+        return UserAdmin.from_orm(user)
 
     async def verify_token(
         self,
@@ -67,7 +67,7 @@ class AuthManager:
         require_fresh: bool = False,
         check_csrf: bool = False,
         token_csrf: Optional[str] = None,
-    ) -> Tuple[UserReadAdmin, JWToken, str]:  # pragma: no cover
+    ) -> Tuple[UserAdmin, JWToken, str]:  # pragma: no cover
         token_data: Optional[JWToken] = await self.jwt.read_token(token, audience)
         # check token data
         if token_data is None or token_data.sub is None:
@@ -106,11 +106,11 @@ class AuthManager:
         except (InvalidID, UserNotExists):
             raise InvalidTokenUserNotFound(reason=ErrorCode.USER_NOT_FOUND)
         # return current_user and their token_data
-        return UserReadAdmin.from_orm(current_user), token_data, token
+        return UserAdmin.from_orm(current_user), token_data, token
 
     async def store_token(
         self,
-        user: UserReadAdmin,
+        user: UserAdmin,
         audience: List[str] = [settings.ACCESS_TOKEN_AUDIENCE],
         expires: int = settings.ACCESS_TOKEN_LIFETIME,
         is_refresh: bool = False,

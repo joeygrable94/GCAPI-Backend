@@ -12,7 +12,7 @@ from tests.utils.utils import random_email, random_lower_string
 from app.api.errors import ErrorCode
 from app.core.config import settings
 from app.db.schemas import UserRead, UserUpdate
-from app.db.schemas.user import UserReadAdmin
+from app.db.schemas.user import UserAdmin
 from app.security import AuthManager
 
 pytestmark = pytest.mark.asyncio
@@ -56,9 +56,9 @@ async def test_get_current_testuser(
 
 async def test_update_current_superuser(
     client: AsyncClient,
-    current_superuser: Tuple[UserReadAdmin | UserRead, Dict[str, str]],
+    current_superuser: Tuple[UserAdmin | UserRead, Dict[str, str]],
 ) -> None:
-    current_user: UserReadAdmin | UserRead
+    current_user: UserAdmin | UserRead
     current_token_headers: Dict[str, str]
     current_user, current_token_headers = current_superuser
     update_dict = UserUpdate(is_verified=True)
@@ -74,9 +74,9 @@ async def test_update_current_superuser(
 
 async def test_update_current_superuser_email_taken(
     client: AsyncClient,
-    current_superuser: Tuple[UserReadAdmin | UserRead, Dict[str, str]],
+    current_superuser: Tuple[UserAdmin | UserRead, Dict[str, str]],
 ) -> None:
-    current_user: UserReadAdmin | UserRead
+    current_user: UserAdmin | UserRead
     current_token: Dict[str, str]
     current_user, current_token = current_superuser
     update_dict = UserUpdate(
@@ -93,9 +93,9 @@ async def test_update_current_superuser_email_taken(
 
 async def test_update_current_superuser_password_too_short(
     client: AsyncClient,
-    current_superuser: Tuple[UserReadAdmin | UserRead, Dict[str, str]],
+    current_superuser: Tuple[UserAdmin | UserRead, Dict[str, str]],
 ) -> None:
-    current_user: UserReadAdmin | UserRead
+    current_user: UserAdmin | UserRead
     current_token: Dict[str, str]
     current_user, current_token = current_superuser
     update_dict = UserUpdate(password="short")
@@ -113,9 +113,9 @@ async def test_update_current_superuser_password_too_short(
 
 async def test_update_current_superuser_password_too_long(
     client: AsyncClient,
-    current_superuser: Tuple[UserReadAdmin | UserRead, Dict[str, str]],
+    current_superuser: Tuple[UserAdmin | UserRead, Dict[str, str]],
 ) -> None:
-    current_user: UserReadAdmin | UserRead
+    current_user: UserAdmin | UserRead
     current_token: Dict[str, str]
     current_user, current_token = current_superuser
     new_pass: str = random_lower_string() * 10
@@ -153,7 +153,7 @@ async def test_update_current_testuser_email_taken(
     user_auth: AuthManager,
     current_testuser: Tuple[UserRead, Dict[str, str]],
 ) -> None:
-    a_user: UserReadAdmin = await create_random_user(user_auth)
+    a_user: UserAdmin = await create_random_user(user_auth)
     current_user: UserRead
     current_token_headers: Dict[str, str]
     current_user, current_token_headers = current_testuser
@@ -174,8 +174,8 @@ async def test_list_users_as_superuser(
     user_auth: AuthManager,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    user_1: UserReadAdmin = await create_random_user(user_auth)
-    user_2: UserReadAdmin = await create_random_user(user_auth)
+    user_1: UserAdmin = await create_random_user(user_auth)
+    user_2: UserAdmin = await create_random_user(user_auth)
     response: Response = await client.get("users/", headers=superuser_token_headers)
     assert 200 <= response.status_code < 300
     all_users: Any = response.json()
@@ -194,8 +194,8 @@ async def test_list_users_as_testuser(
     user_auth: AuthManager,
     testuser_token_headers: Dict[str, str],
 ) -> None:
-    user_1: UserReadAdmin = await create_random_user(user_auth)  # noqa: F841
-    user_2: UserReadAdmin = await create_random_user(user_auth)  # noqa: F841
+    user_1: UserAdmin = await create_random_user(user_auth)  # noqa: F841
+    user_2: UserAdmin = await create_random_user(user_auth)  # noqa: F841
     response: Response = await client.get("users/", headers=testuser_token_headers)
     error: Dict[str, Any] = response.json()
     assert response.status_code == 403
@@ -288,7 +288,7 @@ async def test_get_user_by_id_as_superuser(
     user_auth: AuthManager,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    user: UserReadAdmin = await create_random_user(user_auth)
+    user: UserAdmin = await create_random_user(user_auth)
     response: Response = await client.get(
         f"users/{user.id}",
         headers=superuser_token_headers,
@@ -306,7 +306,7 @@ async def test_get_user_by_id_as_testuser(
     user_auth: AuthManager,
     testuser_token_headers: Dict[str, str],
 ) -> None:
-    user: UserReadAdmin = await create_random_user(user_auth)
+    user: UserAdmin = await create_random_user(user_auth)
     response: Response = await client.get(
         f"users/{user.id}",
         headers=testuser_token_headers,
@@ -320,10 +320,10 @@ async def test_update_user_as_random_user_forbidden(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin
+    a_user: UserAdmin
     a_user_password: str
     a_user, a_user_password = await create_new_user(user_auth)
-    b_user: UserReadAdmin = await create_random_user(user_auth)
+    b_user: UserAdmin = await create_random_user(user_auth)
     update_dict = UserUpdate(
         password="NEWvalidPassw0rd",
         email=b_user.email,
@@ -345,8 +345,8 @@ async def test_update_user_email_already_exists(
     user_auth: AuthManager,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    a_user: UserReadAdmin = await create_random_user(user_auth)
-    b_user: UserReadAdmin = await create_random_user(user_auth)
+    a_user: UserAdmin = await create_random_user(user_auth)
+    b_user: UserAdmin = await create_random_user(user_auth)
     update_dict = UserUpdate(
         password="NEWvalidPassw0rd",
         email=b_user.email,
@@ -364,7 +364,7 @@ async def test_update_user_password_too_short(
     user_auth: AuthManager,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    a_user: UserReadAdmin = await create_random_user(user_auth)
+    a_user: UserAdmin = await create_random_user(user_auth)
     update_dict = UserUpdate(password="short")
     response: Response = await client.patch(
         f"users/{a_user.id}", headers=superuser_token_headers, json=update_dict.dict()
@@ -383,7 +383,7 @@ async def test_update_user_password_too_long(
     user_auth: AuthManager,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    a_user: UserReadAdmin = await create_random_user(user_auth)
+    a_user: UserAdmin = await create_random_user(user_auth)
     new_pass: str = random_lower_string() * 10
     update_dict = UserUpdate(password=new_pass)
     response: Response = await client.patch(
@@ -403,7 +403,7 @@ async def test_delete_user_by_id_as_superuser(
     user_auth: AuthManager,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    user: UserReadAdmin = await create_random_user(user_auth)
+    user: UserAdmin = await create_random_user(user_auth)
     response: Response = await client.delete(
         f"users/{user.id}",
         headers=superuser_token_headers,
@@ -420,7 +420,7 @@ async def test_delete_user_by_id_as_testuser(
     user_auth: AuthManager,
     testuser_token_headers: Dict[str, str],
 ) -> None:
-    user: UserReadAdmin = await create_random_user(user_auth)
+    user: UserAdmin = await create_random_user(user_auth)
     response: Response = await client.delete(
         f"users/{user.id}",
         headers=testuser_token_headers,

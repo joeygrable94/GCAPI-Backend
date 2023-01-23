@@ -71,5 +71,5 @@ class UserRead(BaseSchemaRead):
         ]
 
 
-class UserReadAdmin(UserRead):
+class UserAdmin(UserRead):
     principals: List[str]

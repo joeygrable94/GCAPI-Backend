@@ -13,7 +13,7 @@ from .user import (
     UserCreate,
     UserInDB,
     UserRead,
-    UserReadAdmin,
+    UserAdmin,
     UserUpdate,
 )
 from .user_client import UserClientCreate, UserClientRead, UserClientUpdate

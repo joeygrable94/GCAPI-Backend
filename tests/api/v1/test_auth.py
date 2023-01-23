@@ -14,7 +14,7 @@ from app.api.errors import ErrorCode
 from app.core.config import settings
 from app.core.utilities import get_uuid_str
 from app.db.schemas import UserCreate, UserRead
-from app.db.schemas.user import UserReadAdmin
+from app.db.schemas.user import UserAdmin
 from app.db.tables.user import User
 from app.security import AuthManager
 
@@ -152,7 +152,7 @@ async def test_auth_login_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin
+    a_user: UserAdmin
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     response: Response = await client.post(
@@ -281,7 +281,7 @@ async def test_auth_logout_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin
+    a_user: UserAdmin
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     random_user_tokens: Dict[str, str] = await get_current_user_tokens(
@@ -354,7 +354,7 @@ async def test_auth_verify_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin = await create_random_user(user_auth)
+    a_user: UserAdmin = await create_random_user(user_auth)
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
         response: Response = await client.post(
@@ -379,7 +379,7 @@ async def test_auth_verify_confirm_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin = await create_random_user(user_auth)
+    a_user: UserAdmin = await create_random_user(user_auth)
     a_tok: str
     a_tok_csrf: str
     a_tok, a_tok_csrf = await user_auth.store_token(
@@ -410,7 +410,7 @@ async def test_auth_verify_confirm_random_user_bad_token(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin = await create_random_user(user_auth)  # noqa: F841
+    a_user: UserAdmin = await create_random_user(user_auth)  # noqa: F841
     a_tok: str = get_uuid_str()
     a_tok_csrf: str = get_uuid_str()
     fast_mail.config.SUPPRESS_SEND = 1
@@ -430,7 +430,7 @@ async def test_auth_verify_confirm_random_user_bad_csrf(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin = await create_random_user(user_auth)
+    a_user: UserAdmin = await create_random_user(user_auth)
     a_tok: str
     a_tok_csrf: str
     a_tok, a_tok_csrf = await user_auth.store_token(
@@ -456,7 +456,7 @@ async def test_auth_random_user_forgot_password(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin = await create_random_user(user_auth)
+    a_user: UserAdmin = await create_random_user(user_auth)
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
         response: Response = await client.post(
@@ -481,7 +481,7 @@ async def test_auth_random_user_reset_password(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin
+    a_user: UserAdmin
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     a_user_new_pass: str = random_lower_string()
@@ -516,7 +516,7 @@ async def test_auth_unauthorized_user_reset_password(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin
+    a_user: UserAdmin
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     a_user_new_pass: str = random_lower_string()
@@ -544,7 +544,7 @@ async def test_auth_random_user_reset_password_too_long(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin
+    a_user: UserAdmin
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     a_user_new_pass: str = random_lower_string() * 10
@@ -576,7 +576,7 @@ async def test_auth_random_user_reset_password_too_short(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin
+    a_user: UserAdmin
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     a_user_new_pass: str = "1234567"

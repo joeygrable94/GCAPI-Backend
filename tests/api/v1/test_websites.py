@@ -11,7 +11,7 @@ from app.api.errors import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
 from app.db.repositories import WebsitesRepository
 from app.db.schemas import WebsiteRead, WebsiteUpdate
-from app.db.schemas.user import UserReadAdmin
+from app.db.schemas.user import UserAdmin
 from app.security.auth.manager import AuthManager
 
 pytestmark = pytest.mark.asyncio
@@ -44,7 +44,7 @@ async def test_list_websites_as_testuser(
     db_session: AsyncSession,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin
+    a_user: UserAdmin
     a_user_password: str
     a_user, a_user_password = await create_new_user(user_auth)
     a_user_access_header = await get_current_user_tokens(
@@ -111,7 +111,7 @@ async def test_create_website_as_testuser(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin
+    a_user: UserAdmin
     a_user_password: str
     a_user, a_user_password = await create_new_user(user_auth)
     a_user_access_header = await get_current_user_tokens(
@@ -169,7 +169,7 @@ async def test_read_website_by_id_as_testuser(
     db_session: AsyncSession,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin
+    a_user: UserAdmin
     a_user_password: str
     a_user, a_user_password = await create_new_user(user_auth)
     a_user_access_header = await get_current_user_tokens(
@@ -225,7 +225,7 @@ async def test_delete_website_by_id_as_testuser(
     db_session: AsyncSession,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserReadAdmin
+    a_user: UserAdmin
     a_user_password: str
     a_user, a_user_password = await create_new_user(user_auth)
     a_user_access_header = await get_current_user_tokens(

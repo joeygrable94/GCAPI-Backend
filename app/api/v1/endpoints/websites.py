@@ -8,7 +8,7 @@ from app.api.deps import get_async_db
 from app.api.exceptions import WebsiteAlreadyExists, WebsiteNotExists
 from app.db.repositories import WebsitesRepository
 from app.db.schemas import WebsiteCreate, WebsiteRead, WebsiteUpdate
-from app.db.schemas.user import UserReadAdmin
+from app.db.schemas.user import UserAdmin
 from app.db.tables.website import Website
 from app.security import Permission, get_current_active_user
 
@@ -23,7 +23,7 @@ router: APIRouter = APIRouter()
 async def websites_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
-    current_user: UserReadAdmin = Permission("list", get_current_active_user),
+    current_user: UserAdmin = Permission("list", get_current_active_user),
 ) -> List[WebsiteRead] | List:
     websites_repo: WebsitesRepository = WebsitesRepository(session=db)
     websites: List[Website] | List[None] | None = await websites_repo.list(page=page)
@@ -41,7 +41,7 @@ async def websites_create(
     *,
     db: AsyncSession = Depends(get_async_db),
     website_in: WebsiteCreate,
-    current_user: UserReadAdmin = Permission("create", get_current_active_user),
+    current_user: UserAdmin = Permission("create", get_current_active_user),
 ) -> WebsiteRead:
     try:
         websites_repo: WebsitesRepository = WebsitesRepository(session=db)
@@ -71,7 +71,7 @@ async def websites_read(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
-    current_user: UserReadAdmin = Permission("read", get_current_active_user),
+    current_user: UserAdmin = Permission("read", get_current_active_user),
 ) -> WebsiteRead:
     try:
         websites_repo: WebsitesRepository = WebsitesRepository(session=db)
@@ -95,7 +95,7 @@ async def websites_update(
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
     website_in: WebsiteUpdate,
-    current_user: UserReadAdmin = Permission("update", get_current_active_user),
+    current_user: UserAdmin = Permission("update", get_current_active_user),
 ) -> WebsiteRead:
     try:
         websites_repo: WebsitesRepository = WebsitesRepository(session=db)
@@ -136,7 +136,7 @@ async def websites_delete(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
-    current_user: UserReadAdmin = Permission("delete", get_current_active_user),
+    current_user: UserAdmin = Permission("delete", get_current_active_user),
 ) -> None:
     try:
         websites_repo: WebsitesRepository = WebsitesRepository(session=db)
