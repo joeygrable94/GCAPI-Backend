@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey, String
@@ -19,7 +19,7 @@ class GCFT(TableBase):
 
     # relationships
     client_id: Mapped[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
-    gcft_snaps: Mapped[Optional[List[Any]]] = relationship(
+    gcft_snaps: Mapped[Optional[List["GCFTSnap"]]] = relationship(
         "GCFTSnap", backref=backref("gcft", lazy="subquery")
     )
 

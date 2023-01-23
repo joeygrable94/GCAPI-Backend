@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey, String
@@ -21,7 +21,7 @@ class GoogleUniversalAnalyticsProperty(TableBase):
     # relationships
     client_id: Mapped[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
     website_id: Mapped[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
-    gua_views: Mapped[Optional[List[Any]]] = relationship(
+    gua_views: Mapped[Optional[List["GoogleUniversalAnalyticsView"]]] = relationship(
         "GoogleUniversalAnalyticsView",
         backref=backref("go_ua", lazy="subquery"),
     )

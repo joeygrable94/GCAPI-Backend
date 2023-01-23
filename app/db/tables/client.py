@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-from sqlalchemy import Column, String, Text
+from sqlalchemy import Column, String
 from sqlalchemy.orm import Mapped, backref, relationship
 
 from app.db.tables.base import TableBase
@@ -19,25 +19,27 @@ if TYPE_CHECKING:  # pragma: no cover
 class Client(TableBase):
     __tablename__: str = "client"
     title: Mapped[str] = Column(String(96), nullable=False)
-    content: Mapped[str] = Column(Text, nullable=True)
+    content: Mapped[str] = Column(String(255), nullable=True)
 
     # relationships
-    users: Mapped[Optional[List[Any]]] = relationship(
+    users: Mapped[Optional[List["User"]]] = relationship(
         "User", secondary="user_client", back_populates="clients"
     )
-    websites: Mapped[Optional[List[Any]]] = relationship(
+    websites: Mapped[Optional[List["Website"]]] = relationship(
         "Website", secondary="client_website", back_populates="clients"
     )
-    gcloud_accounts: Mapped[Optional[List[Any]]] = relationship(
+    gcloud_accounts: Mapped[Optional[List["GoogleCloudProperty"]]] = relationship(
         "GoogleCloudProperty", backref=backref("client", lazy="noload")
     )
-    ga4_accounts: Mapped[Optional[List[Any]]] = relationship(
+    ga4_accounts: Mapped[Optional[List["GoogleAnalytics4Property"]]] = relationship(
         "GoogleAnalytics4Property", backref=backref("client", lazy="noload")
     )
-    gua_accounts: Mapped[Optional[List[Any]]] = relationship(
+    gua_accounts: Mapped[
+        Optional[List["GoogleUniversalAnalyticsProperty"]]
+    ] = relationship(
         "GoogleUniversalAnalyticsProperty", backref=backref("client", lazy="noload")
     )
-    sharpspring_accounts: Mapped[Optional[List[Any]]] = relationship(
+    sharpspring_accounts: Mapped[Optional[List["SharpSpring"]]] = relationship(
         "SharpSpring", backref=backref("client", lazy="noload")
     )
 

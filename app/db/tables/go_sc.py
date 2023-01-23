@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey, String
@@ -26,23 +26,25 @@ class GoogleSearchConsoleProperty(TableBase):
     # relationships
     client_id: Mapped[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
     website_id: Mapped[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
-    gsc_countries: Mapped[Optional[List[Any]]] = relationship(
+    gsc_countries: Mapped[Optional[List["GoogleSearchConsoleCountry"]]] = relationship(
         "GoogleSearchConsoleCountry",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_devices: Mapped[Optional[List[Any]]] = relationship(
+    gsc_devices: Mapped[Optional[List["GoogleSearchConsoleDevice"]]] = relationship(
         "GoogleSearchConsoleDevice",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_pages: Mapped[Optional[List[Any]]] = relationship(
+    gsc_pages: Mapped[Optional[List["GoogleSearchConsolePage"]]] = relationship(
         "GoogleSearchConsolePage",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_queries: Mapped[Optional[List[Any]]] = relationship(
+    gsc_queries: Mapped[Optional[List["GoogleSearchConsoleQuery"]]] = relationship(
         "GoogleSearchConsoleQuery",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_searchappearances: Mapped[Optional[List[Any]]] = relationship(
+    gsc_searchappearances: Mapped[
+        Optional[List["GoogleSearchConsoleSearchAppearance"]]
+    ] = relationship(
         "GoogleSearchConsoleSearchAppearance",
         backref=backref("go_sc", lazy="noload"),
     )

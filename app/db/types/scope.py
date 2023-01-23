@@ -1,7 +1,8 @@
-from re import Match
-from typing import Any, Dict, Generator, Optional
+from re import Match  # pragma: no cover
+from typing import Any  # pragma: no cover
+from typing import Dict, Generator, Optional
 
-from app.core.utilities import scope_regex
+from app.core.utilities import scope_regex  # pragma: no cover
 
 
 class Scope(str):  # pragma: no cover

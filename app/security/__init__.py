@@ -1,4 +1,4 @@
-from typing import Any, AsyncGenerator, List, Optional, Tuple
+from typing import Any, AsyncGenerator, List, Literal, Optional, Tuple, Union
 from uuid import UUID
 
 from fastapi import Body, Depends, HTTPException, status
@@ -303,7 +303,7 @@ async def get_current_active_password_reset_user(
 # USER PERMISSIONS
 def get_active_user_principals(
     user: User = Depends(get_current_active_user),
-) -> List[Any]:
+) -> List[str]:
     if user:
         principals = [Everyone, Authenticated]
         principals.extend(getattr(user, "principals", []))

@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+from decimal import Decimal
+from typing import TYPE_CHECKING, Union
 from uuid import UUID
 
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, Text
@@ -17,8 +18,8 @@ class GoogleSearchConsolePage(TableBase):
     keys: Mapped[str] = Column(Text, nullable=False)
     clicks: Mapped[int] = Column(Integer, nullable=False)
     impressions: Mapped[int] = Column(Integer, nullable=False)
-    ctr: Mapped[float] = Column(Float(20), nullable=False)
-    position: Mapped[float] = Column(Float(20), nullable=False)
+    ctr: Mapped[Union[float, Decimal]] = Column(Float(20), nullable=False)
+    position: Mapped[Union[float, Decimal]] = Column(Float(20), nullable=False)
     date_end: Mapped[datetime] = Column(DateTime(timezone=True), nullable=False)
     date_start: Mapped[datetime] = Column(DateTime(timezone=True), nullable=False)
 

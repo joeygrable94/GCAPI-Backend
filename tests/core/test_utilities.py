@@ -3,6 +3,7 @@ from typing import Any
 from uuid import UUID
 
 import pytest
+from pydantic import UUID4
 
 from app.api.exceptions import InvalidID
 from app.core.utilities import (
@@ -14,7 +15,7 @@ from app.core.utilities import (
     parse_id,
 )
 
-pytestmark = pytest.mark.anyio
+# pytestmark = pytest.mark.asyncio
 
 
 def test_get_date() -> None:
@@ -40,7 +41,7 @@ def test_get_uuid_str() -> None:
 
 
 def test_parse_id_uuid() -> None:
-    uid: UUID = get_uuid()
+    uid: UUID4 = get_uuid()
     parsed_id: UUID = parse_id(uid)
     assert type(parsed_id) is UUID
 

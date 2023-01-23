@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey, Integer, String
@@ -26,19 +26,19 @@ class GCFTSnap(TableBase):
     # relationships
     geocoord_id: Mapped[UUID] = Column(GUID, ForeignKey("geocoord.id"), nullable=True)
     gcft_id: Mapped[UUID] = Column(GUID, ForeignKey("gcft.id"), nullable=False)
-    snap_views: Mapped[Optional[List[Any]]] = relationship(
+    snap_views: Mapped[Optional[List["GCFTSnapView"]]] = relationship(
         "GCFTSnapView", backref=backref("gcft_snap", lazy="noload")
     )
-    active_durations: Mapped[Optional[List[Any]]] = relationship(
+    active_durations: Mapped[Optional[List["GCFTSnapActiveDuration"]]] = relationship(
         "GCFTSnapActiveDuration", backref=backref("gcft_snap", lazy="noload")
     )
-    hotspot_clicks: Mapped[Optional[List[Any]]] = relationship(
+    hotspot_clicks: Mapped[Optional[List["GCFTSnapHotspotClick"]]] = relationship(
         "GCFTSnapHotspotClick", backref=backref("gcft_snap", lazy="noload")
     )
-    traffic_sources: Mapped[Optional[List[Any]]] = relationship(
+    traffic_sources: Mapped[Optional[List["GCFTSnapTrafficSource"]]] = relationship(
         "GCFTSnapTrafficSource", backref=backref("gcft_snap", lazy="noload")
     )
-    browser_reports: Mapped[Optional[List[Any]]] = relationship(
+    browser_reports: Mapped[Optional[List["GCFTSnapBrowserReport"]]] = relationship(
         "GCFTSnapBrowserReport", backref=backref("gcft_snap", lazy="noload")
     )
 

@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+from decimal import Decimal
+from typing import TYPE_CHECKING, Union
 
 from sqlalchemy import Column, Float, String
 from sqlalchemy.orm import Mapped
@@ -17,10 +18,10 @@ class GeoCoord(TableBase):
         default="135-145, South Olive Street, Orange, \
             Orange County, California, 92866, United States",
     )
-    latitude: Mapped[float] = Column(
+    latitude: Mapped[Union[float, Decimal]] = Column(
         Float(20), nullable=False, default=33.7870144761984600
     )
-    longitude: Mapped[float] = Column(
+    longitude: Mapped[Union[float, Decimal]] = Column(
         Float(20), nullable=False, default=-117.853817613489810
     )
 

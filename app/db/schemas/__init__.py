@@ -8,6 +8,13 @@ from .token import (
     BearerResponse,
     JWToken,
 )
-from .user import UserCreate, UserInDB, UserRead, UserReadAdmin, UserUpdate
+from .user import (
+    RequestUserCreate,
+    UserCreate,
+    UserInDB,
+    UserRead,
+    UserReadAdmin,
+    UserUpdate,
+)
 from .user_client import UserClientCreate, UserClientRead, UserClientUpdate
 from .website import WebsiteCreate, WebsiteRead, WebsiteUpdate

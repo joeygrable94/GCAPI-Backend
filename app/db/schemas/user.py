@@ -15,6 +15,11 @@ class UserInDB(BaseSchema):
     principals: List[str]
 
 
+class RequestUserCreate(BaseSchema):
+    email: EmailStr
+    password: str
+
+
 class UserCreate(BaseSchema):
     email: EmailStr
     password: str
@@ -33,7 +38,6 @@ class UserUpdate(BaseSchema):
 
 class UserUpdateAuthPermissions(BaseSchema):
     email: Optional[EmailStr]
-    password: Optional[str]
     principals: List[str]
 
 

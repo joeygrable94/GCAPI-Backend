@@ -1,7 +1,7 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, List, Optional
 
 from sqlalchemy import Boolean, Column, String
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import Mapped, backref, relationship
 
 from app.db.tables.base import TableBase
 
@@ -14,17 +14,19 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class Website(TableBase):
     __tablename__: str = "website"
-    domain: Column = Column(String(255), nullable=False)
-    is_secure: Column = Column(Boolean(), nullable=False, default=False)
+    domain: Mapped[str] = Column(String(255), nullable=False)
+    is_secure: Mapped[bool] = Column(Boolean(), nullable=False, default=False)
 
     # relationships
-    clients: Any = relationship(
+    clients: Mapped[Optional[List["Client"]]] = relationship(
         "Client", secondary="client_website", back_populates="websites"
     )
-    sitemaps: Any = relationship(
+    sitemaps: Mapped[Optional[List["WebsiteMap"]]] = relationship(
         "WebsiteMap", backref=backref("website", lazy="noload")
     )
-    pages: Any = relationship("WebsitePage", backref=backref("website", lazy="noload"))
+    pages: Mapped[Optional[List["WebsitePage"]]] = relationship(
+        "WebsitePage", backref=backref("website", lazy="noload")
+    )
 
     def get_link(self) -> str:  # pragma: no cover
         return f"https://{self.domain}" if self.is_secure else f"http://{self.domain}"

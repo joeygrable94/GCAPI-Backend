@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Boolean, Column, ForeignKey, String
@@ -22,7 +22,7 @@ class ImageUpload(TableBase):
     # relationships
     user_id: Mapped[UUID] = Column(GUID, ForeignKey("user.id"), nullable=True)
     geocoord_id: Mapped[UUID] = Column(GUID, ForeignKey("geocoord.id"), nullable=True)
-    geotag: Mapped[Optional[List[Any]]] = relationship(
+    geotag: Mapped[Optional[List["GeoCoord"]]] = relationship(
         "GeoCoord", backref=backref("imageupload", lazy="noload")
     )
 

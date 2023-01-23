@@ -1,4 +1,6 @@
 import pytest
+from tests.utils.email import fast_mail
+from tests.utils.utils import random_email, random_lower_string
 
 from app.core.config import settings
 from app.core.utilities import (
@@ -10,10 +12,8 @@ from app.core.utilities import (
     send_email_verification,
     send_test_email,
 )
-from tests.utils.email import fast_mail
-from tests.utils.utils import random_email, random_lower_string
 
-pytestmark = pytest.mark.anyio
+pytestmark = pytest.mark.asyncio
 
 
 async def test_send_test_email() -> None:

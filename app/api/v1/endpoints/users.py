@@ -45,11 +45,10 @@ async def me(
     """
     Allows current-active-verified-users to fetch the details on their account.
     """
-    print("fetch me")
-    print("current user", current_user)
-    if not current_user.is_superuser:
+    if current_user.is_superuser:
+        return current_user
+    else:
         return UserRead.from_orm(current_user)
-    return current_user
 
 
 @router.patch(
@@ -107,7 +106,7 @@ async def update_me(
         Depends(get_user_auth),
     ],
     responses=get_all_users_responses,
-    response_model=Union[List[UserReadAdmin], List[UserRead], List[None]],
+    response_model=Union[List[UserReadAdmin], List[UserRead], List],
     status_code=status.HTTP_200_OK,
 )
 async def get_users_list(
@@ -124,10 +123,12 @@ async def get_users_list(
     page = 1 if page < 1 else page
     users: Optional[Union[List[User], List[None]]] = await oauth.users.list(page=page)
     if users and len(users):  # pragma: no cover
-        if not current_user.is_superuser:
+        if current_user.is_superuser:
+            return [UserReadAdmin.from_orm(u) for u in users]
+        else:
             return [UserRead.from_orm(u) for u in users]
-        return [UserReadAdmin.from_orm(u) for u in users]
-    return list()  # pragma: no cover
+    else:
+        return list()  # pragma: no cover
 
 
 @router.post(
@@ -146,23 +147,23 @@ async def create_user(
     current_user: UserReadAdmin = Permission("create", get_current_active_user),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
-) -> UserRead:
+) -> Union[UserReadAdmin, UserRead]:
     """
     Creates a new user, un-verified by default.
     """
     try:
-        # create new user
         created_user: User = await oauth.users.create(schema=user_create)
         new_user: UserReadAdmin = UserReadAdmin.from_orm(
             created_user
         )  # pragma: no cover
-        # debug
         if settings.DEBUG_MODE:  # pragma: no cover
             logger.info(f"User {new_user.id} was created.")
-        # return user
-        return UserRead.from_orm(new_user)  # pragma: no cover
-    except UserAlreadyExists:
-        raise HTTPException(  # pragma: no cover
+        if current_user.is_superuser:  # pragma: no cover
+            return UserReadAdmin.from_orm(new_user)
+        else:
+            return UserRead.from_orm(new_user)  # pragma: no cover
+    except UserAlreadyExists:  # pragma: no cover
+        raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ErrorCode.USER_ALREADY_EXISTS,
         )
@@ -198,9 +199,10 @@ async def get_user(
     We do not want to be sending sending requests with user emails,
     leaving them potential at risk of being exposed to the public.
     """
-    if not current_user.is_superuser:
-        return UserRead.from_orm(fetch_user)
-    return UserReadAdmin.from_orm(fetch_user)
+    if current_user.is_superuser:
+        return UserReadAdmin.from_orm(fetch_user)  # pragma: no cover
+    else:
+        return UserRead.from_orm(fetch_user)  # pragma: no cover
 
 
 @router.patch(
@@ -227,9 +229,10 @@ async def update_user(
     """
     try:
         user: User = await oauth.users.update(fetch_user, user_update)
-        if not current_user.is_superuser:
-            return UserRead.from_orm(user)
-        return UserReadAdmin.from_orm(user)
+        if current_user.is_superuser:  # pragma: no cover
+            return UserReadAdmin.from_orm(user)
+        else:
+            return UserRead.from_orm(user)  # pragma: no cover
     except UserAlreadyExists:
         raise HTTPException(  # pragma: no cover
             status_code=status.HTTP_400_BAD_REQUEST,

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey, String
@@ -22,7 +22,7 @@ class GoogleAnalytics4Property(TableBase):
     # relationships
     client_id: Mapped[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
     website_id: Mapped[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
-    ga4_streams: Mapped[Optional[List[Any]]] = relationship(
+    ga4_streams: Mapped[Optional[List["GoogleAnalytics4Stream"]]] = relationship(
         "GoogleAnalytics4Stream",
         backref=backref("go_a4", lazy="subquery"),
     )

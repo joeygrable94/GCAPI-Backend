@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey, String, Text
@@ -20,10 +20,12 @@ class WebsitePage(TableBase):
     # relationships
     website_id: Mapped[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
     sitemap_id: Mapped[UUID] = Column(GUID, ForeignKey("website_map.id"), nullable=True)
-    keywordcorpus: Mapped[Optional[List[Any]]] = relationship(
+    keywordcorpus: Mapped[Optional[List["WebsiteKeywordCorpus"]]] = relationship(
         "WebsiteKeywordCorpus", backref=backref("website_page", lazy="noload")
     )
-    pagespeedinsights: Mapped[Optional[List[Any]]] = relationship(
+    pagespeedinsights: Mapped[
+        Optional[List["WebsitePageSpeedInsights"]]
+    ] = relationship(
         "WebsitePageSpeedInsights", backref=backref("website_page", lazy="noload")
     )
 

@@ -9,12 +9,13 @@ from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
+from tests.utils.users import get_current_user, get_current_user_tokens
 
 from app.api.deps import get_async_db
 from app.core.config import settings
-from app.db.schemas import UserRead
 from app.db.init_db import build_database, create_init_data
 from app.db.repositories import AccessTokensRepository, UsersRepository
+from app.db.schemas import UserRead
 from app.db.schemas.user import UserReadAdmin
 from app.db.session import async_engine, async_session
 from app.main import create_app
@@ -25,20 +26,16 @@ from app.security import (
     bearer_transport,
     get_user_auth,
 )
-from tests.utils.users import get_current_user_tokens, get_current_user
 
-pytestmark = pytest.mark.anyio
+pytestmark = pytest.mark.asyncio
 
 
 @pytest.fixture(scope="session", autouse=True)
-async def prestart_database():
+async def prestart_database() -> None:
     """
     Called after the Session object has been created and
     before performing collection and entering the run test loop.
     """
-    settings.DEBUG_MODE = True
-    print(settings.DATABASE_URI)
-    exit()
     await build_database()
     await create_init_data()
 
@@ -67,6 +64,7 @@ async def db_session() -> AsyncGenerator:
 def override_get_db(db_session: AsyncSession) -> Callable:
     async def _override_get_db() -> AsyncGenerator:
         yield db_session
+
     return _override_get_db
 
 
@@ -175,8 +173,8 @@ async def testuser_token_headers(client: AsyncClient) -> Dict[str, str]:
 async def current_superuser(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
-) -> Tuple[UserReadAdmin, Dict[str, str]]:
-    current_user: UserReadAdmin
+) -> Tuple[UserReadAdmin | UserRead, Dict[str, str]]:
+    current_user: UserReadAdmin | UserRead
     token_header: Dict[str, str]
     current_user, token_header = await get_current_user(
         client=client,

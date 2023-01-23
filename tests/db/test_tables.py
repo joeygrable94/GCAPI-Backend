@@ -1,11 +1,11 @@
 from typing import Any
 
 import pytest
-
-from app.db.tables import User
 from tests.utils.utils import random_email, random_lower_string
 
-pytestmark = pytest.mark.anyio
+from app.db.tables import User
+
+pytestmark = pytest.mark.asyncio
 
 
 async def test_user_table_valid_email() -> Any:

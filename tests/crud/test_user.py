@@ -3,6 +3,7 @@ from typing import Any, Optional
 import pytest
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
+from tests.utils.utils import random_email, random_lower_string
 
 from app.api.exceptions import InvalidPasswordException, UserAlreadyExists
 from app.core.config import settings
@@ -10,9 +11,8 @@ from app.core.utilities import password_helper
 from app.db.repositories import UsersRepository
 from app.db.schemas import UserCreate, UserRead, UserUpdate
 from app.db.tables import User
-from tests.utils.utils import random_email, random_lower_string
 
-pytestmark = pytest.mark.anyio
+pytestmark = pytest.mark.asyncio
 
 
 async def test_user_repo_schema_read(db_session: AsyncSession) -> None:
@@ -88,7 +88,9 @@ async def test_update_user(db_session: AsyncSession) -> None:
     user_repo: UsersRepository = UsersRepository(session=db_session)
     username: str = random_email()
     password: str = random_lower_string()
-    user_in = UserCreate(email=username, password=password, is_superuser=True)
+    user_in: UserCreate = UserCreate(
+        email=username, password=password, is_superuser=True
+    )
     user: User = await user_repo.create(schema=user_in)
     new_password: str = random_lower_string()
     user_in_update: UserUpdate = UserUpdate(password=new_password, is_superuser=True)

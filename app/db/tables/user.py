@@ -27,10 +27,10 @@ class User(TableBase):
     )
 
     # relationships
-    tokens: Mapped[Optional[List[Any]]] = relationship(
+    tokens: Mapped[Optional[List["AccessToken"]]] = relationship(
         "AccessToken", backref=backref("user", lazy="subquery")
     )
-    clients: Mapped[Optional[List[Any]]] = relationship(
+    clients: Mapped[Optional[List["Client"]]] = relationship(
         "Client", secondary="user_client", back_populates="users"
     )
 

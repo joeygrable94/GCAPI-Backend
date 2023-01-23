@@ -1,19 +1,18 @@
 from datetime import datetime, timedelta, timezone
-from time import sleep
 from typing import Any, Optional
-from uuid import UUID
 
 import pytest
+from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
+from tests.utils.utils import random_lower_string
 
 from app.core.config import settings
 from app.core.utilities import get_uuid, get_uuid_str
 from app.db.repositories import AccessTokensRepository
 from app.db.schemas import AccessTokenCreate, AccessTokenRead, AccessTokenUpdate
 from app.db.tables import AccessToken
-from tests.utils.utils import random_lower_string
 
-pytestmark = pytest.mark.anyio
+pytestmark = pytest.mark.asyncio
 
 
 async def test_token_repo_schema_read(db_session: AsyncSession) -> None:
@@ -33,7 +32,7 @@ async def test_create_token(db_session: AsyncSession) -> None:
     fake_expire: datetime = datetime.now(timezone.utc) + timedelta(
         seconds=settings.ACCESS_TOKEN_LIFETIME
     )
-    fake_user: UUID = get_uuid()
+    fake_user: UUID4 = get_uuid()
     token_in: AccessTokenCreate = AccessTokenCreate(
         token_jti=fake_token,
         csrf=fake_csrf,
@@ -53,7 +52,7 @@ async def test_read_token_not_found(db_session: AsyncSession) -> None:
     fake_expire: datetime = datetime.now(timezone.utc) + timedelta(
         seconds=settings.ACCESS_TOKEN_LIFETIME
     )
-    fake_user: UUID = get_uuid()
+    fake_user: UUID4 = get_uuid()
     token_in: AccessTokenCreate = AccessTokenCreate(
         token_jti=fake_token,
         csrf=fake_csrf,
@@ -64,14 +63,14 @@ async def test_read_token_not_found(db_session: AsyncSession) -> None:
     assert token.token_jti == fake_token
     assert token.user_id == fake_user
     assert not token.is_revoked
-    fake_id: UUID = get_uuid()
+    fake_id: UUID4 = get_uuid()
     found_token: Optional[AccessToken] = await token_repo.read(entry_id=fake_id)
     assert not found_token
 
 
 async def test_read_by_token(db_session: AsyncSession) -> None:
     token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
-    fake_user: UUID = get_uuid()
+    fake_user: UUID4 = get_uuid()
     fake_token: str = random_lower_string()
     fake_csrf: str = get_uuid_str()
     fake_expire: datetime = datetime.now(timezone.utc) + timedelta(
@@ -96,7 +95,7 @@ async def test_read_by_token(db_session: AsyncSession) -> None:
 
 async def test_read_by_token_user(db_session: AsyncSession) -> None:
     token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
-    fake_user: UUID = get_uuid()
+    fake_user: UUID4 = get_uuid()
     fake_token: str = random_lower_string()
     fake_csrf: str = get_uuid_str()
     fake_expire: datetime = datetime.now(timezone.utc) + timedelta(
@@ -119,8 +118,8 @@ async def test_read_by_token_user(db_session: AsyncSession) -> None:
 
 async def test_read_by_token_user_not_found(db_session: AsyncSession) -> None:
     token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
-    fake_user_2: UUID = get_uuid()
-    fake_user: UUID = get_uuid()
+    fake_user_2: UUID4 = get_uuid()
+    fake_user: UUID4 = get_uuid()
     fake_token: str = random_lower_string()
     fake_csrf: str = get_uuid_str()
     fake_expire: datetime = datetime.now(timezone.utc) + timedelta(
@@ -141,7 +140,7 @@ async def test_read_by_token_user_not_found(db_session: AsyncSession) -> None:
 
 async def test_update_token(db_session: AsyncSession) -> None:
     token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
-    fake_user: UUID = get_uuid()
+    fake_user: UUID4 = get_uuid()
     fake_token: str = random_lower_string()
     fake_csrf: str = get_uuid_str()
     fake_expire: datetime = datetime.now(timezone.utc) + timedelta(
@@ -166,7 +165,7 @@ async def test_update_token(db_session: AsyncSession) -> None:
 
 async def test_list_tokens(db_session: AsyncSession) -> None:
     token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
-    fake_user: UUID = get_uuid()
+    fake_user: UUID4 = get_uuid()
     t1: str = random_lower_string()
     fake_csrf: str = get_uuid_str()
     fake_expire: datetime = datetime.now(timezone.utc) + timedelta(

@@ -1,12 +1,25 @@
 from typing import Any
 
 
-# Users
-class UsersException(Exception):
+# Generics
+class EntityException(Exception):
     pass
 
 
-class InvalidID(UsersException):
+class EntityAlreadyExists(EntityException):
+    pass
+
+
+class EntityNotExists(EntityException):
+    pass
+
+
+class InvalidID(EntityException):
+    pass
+
+
+# Users
+class UsersException(EntityException):
     pass
 
 
@@ -21,3 +34,29 @@ class UserNotExists(UsersException):
 class InvalidPasswordException(UsersException):
     def __init__(self, reason: Any) -> None:
         self.reason: Any = reason
+
+
+# Clients
+class ClientsException(EntityException):
+    pass
+
+
+class ClientAlreadyExists(ClientsException):
+    pass
+
+
+class ClientNotExists(ClientsException):
+    pass
+
+
+# Websites
+class WebsitesException(EntityException):
+    pass
+
+
+class WebsiteAlreadyExists(WebsitesException):
+    pass
+
+
+class WebsiteNotExists(WebsitesException):
+    pass

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Boolean, Column, ForeignKey, String
@@ -21,7 +21,7 @@ class WebsiteMap(TableBase):
 
     # relationships
     website_id: Mapped[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
-    pages: Mapped[Optional[List[Any]]] = relationship(
+    pages: Mapped[Optional[List["WebsitePage"]]] = relationship(
         "WebsitePage", backref=backref("website_map", lazy="noload")
     )
 

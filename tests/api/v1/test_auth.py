@@ -1,24 +1,24 @@
 from typing import Any, Dict
-import base64
 
 import pytest
 from httpx import AsyncClient, Response
-
-from app.api.errors import ErrorCode
-from app.db.schemas import UserCreate
-from app.core.config import settings
-from app.core.utilities import get_uuid_str
-from app.db.schemas.user import UserRead, UserReadAdmin
-from app.db.tables.user import User
-from app.security import AuthManager
 from tests.utils.email import fast_mail
-from tests.utils.users import get_current_user_tokens, create_random_user, create_new_user
+from tests.utils.users import (
+    create_new_user,
+    create_random_user,
+    get_current_user_tokens,
+)
 from tests.utils.utils import random_email, random_lower_string
 
-from typing import Dict
+from app.api.errors import ErrorCode
+from app.core.config import settings
+from app.core.utilities import get_uuid_str
+from app.db.schemas import UserCreate, UserRead
+from app.db.schemas.user import UserReadAdmin
+from app.db.tables.user import User
+from app.security import AuthManager
 
-
-pytestmark = pytest.mark.anyio
+pytestmark = pytest.mark.asyncio
 
 
 async def test_auth_register_random_user(client: AsyncClient) -> None:
@@ -47,14 +47,20 @@ async def test_auth_register_random_user(client: AsyncClient) -> None:
             == f"{settings.EMAILS_FROM_NAME} <{settings.EMAILS_FROM_EMAIL}>"
         )
         assert outbox[0]["To"] == username
-        assert outbox[0]["Subject"] == f"{settings.PROJECT_NAME} - Email verification required"
+        assert (
+            outbox[0]["Subject"]
+            == f"{settings.PROJECT_NAME} - Email verification required"
+        )
 
 
 async def test_auth_register_user_already_exists(client: AsyncClient) -> None:
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
         password: str = random_lower_string()
-        data: Dict[str, str] = {"email": settings.TEST_NORMAL_USER, "password": password}
+        data: Dict[str, str] = {
+            "email": settings.TEST_NORMAL_USER,
+            "password": password,
+        }
         response: Response = await client.post(
             "auth/register",
             json=data,
@@ -70,7 +76,7 @@ async def test_auth_register_user_password_too_long(client: AsyncClient) -> None
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
         username: str = random_email()
-        password: str = random_lower_string()*10
+        password: str = random_lower_string() * 10
         data: Dict[str, str] = {"email": username, "password": password}
         response: Response = await client.post(
             "auth/register",
@@ -79,7 +85,10 @@ async def test_auth_register_user_password_too_long(client: AsyncClient) -> None
         assert response.status_code == 400
         a_user: Dict[str, Any] = response.json()
         assert a_user["detail"]["code"] == ErrorCode.USER_PASSWORD_INVALID
-        assert a_user["detail"]["reason"] == f"Password must contain {settings.PASSWORD_LENGTH_MAX} or less characters"
+        assert (
+            a_user["detail"]["reason"]
+            == f"Password must contain {settings.PASSWORD_LENGTH_MAX} or less characters"  # noqa: E501
+        )
         # check email verification
         assert len(outbox) == 0
 
@@ -97,7 +106,10 @@ async def test_auth_register_user_password_too_short(client: AsyncClient) -> Non
         assert response.status_code == 400
         a_user: Dict[str, Any] = response.json()
         assert a_user["detail"]["code"] == ErrorCode.USER_PASSWORD_INVALID
-        assert a_user["detail"]["reason"] == f"Password must contain {settings.PASSWORD_LENGTH_MIN} or more characters"
+        assert (
+            a_user["detail"]["reason"]
+            == f"Password must contain {settings.PASSWORD_LENGTH_MIN} or more characters"  # noqa: E501
+        )
         # check email verification
         assert len(outbox) == 0
 
@@ -140,7 +152,7 @@ async def test_auth_login_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserRead
+    a_user: UserReadAdmin
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     response: Response = await client.post(
@@ -174,6 +186,35 @@ async def test_auth_login_user_not_found(client: AsyncClient) -> None:
     assert response.status_code >= 400
     assert "detail" in data
     assert data.get("detail") == ErrorCode.BAD_CREDENTIALS
+
+
+async def test_auth_login_user_not_active(
+    client: AsyncClient,
+    user_auth: AuthManager,
+) -> None:
+    email: str = random_email()
+    password: str = random_lower_string()
+    a_user: User = await user_auth.users.create(
+        schema=UserCreate(
+            email=email,
+            password=password,
+            is_active=False,
+            is_superuser=False,
+            is_verified=False,
+        )
+    )
+    response: Response = await client.post(
+        "auth/access",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data={
+            "username": a_user.email,
+            "password": password,
+        },
+    )
+    assert response.status_code >= 400
+    data: Dict[str, Any] = response.json()
+    assert "detail" in data
+    assert data["detail"] == ErrorCode.USER_NOT_ACTIVE
 
 
 async def test_auth_login_user_not_verified(
@@ -222,9 +263,7 @@ async def test_auth_logout_superuser_access(client: AsyncClient) -> None:
 
 async def test_auth_logout_testuser_access(client: AsyncClient) -> None:
     super_user_tokens: Dict[str, str] = await get_current_user_tokens(
-        client,
-        settings.TEST_NORMAL_USER,
-        settings.TEST_NORMAL_USER_PASSWORD
+        client, settings.TEST_NORMAL_USER, settings.TEST_NORMAL_USER_PASSWORD
     )
     a_tok: str = super_user_tokens["access_token"]
     access_headers: Dict[str, str] = {"Authorization": f"Bearer {a_tok}"}
@@ -242,7 +281,7 @@ async def test_auth_logout_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserRead
+    a_user: UserReadAdmin
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     random_user_tokens: Dict[str, str] = await get_current_user_tokens(
@@ -297,7 +336,7 @@ async def test_auth_revoke_testuser_access(client: AsyncClient) -> None:
     test_user_tokens: Dict[str, str] = await get_current_user_tokens(
         client,
         username=settings.TEST_NORMAL_USER,
-        password=settings.TEST_NORMAL_USER_PASSWORD
+        password=settings.TEST_NORMAL_USER_PASSWORD,
     )
     a_tok: str = test_user_tokens["access_token"]
     access_headers: Dict[str, str] = {"Authorization": f"Bearer {a_tok}"}
@@ -315,10 +354,12 @@ async def test_auth_verify_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserRead = await create_random_user(user_auth)
+    a_user: UserReadAdmin = await create_random_user(user_auth)
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
-        response: Response = await client.post(f"auth/verification", json={"email": a_user.email})
+        response: Response = await client.post(
+            "auth/verification", json={"email": a_user.email}
+        )
         data: Dict[str, str] = response.json()
         assert data is None
         # check email verification
@@ -328,14 +369,17 @@ async def test_auth_verify_random_user(
             == f"{settings.EMAILS_FROM_NAME} <{settings.EMAILS_FROM_EMAIL}>"
         )
         assert outbox[0]["To"] == a_user.email
-        assert outbox[0]["Subject"] == f"{settings.PROJECT_NAME} - Email verification required"
+        assert (
+            outbox[0]["Subject"]
+            == f"{settings.PROJECT_NAME} - Email verification required"
+        )
 
 
 async def test_auth_verify_confirm_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserRead = await create_random_user(user_auth)
+    a_user: UserReadAdmin = await create_random_user(user_auth)
     a_tok: str
     a_tok_csrf: str
     a_tok, a_tok_csrf = await user_auth.store_token(
@@ -345,10 +389,13 @@ async def test_auth_verify_confirm_random_user(
     )
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
-        response: Response = await client.get(f"auth/confirmation?token={a_tok}&csrf={a_tok_csrf}")
-        assert response.read() == b''
+        response: Response = await client.get(
+            f"auth/confirmation?token={a_tok}&csrf={a_tok_csrf}"
+        )
+        assert response.read() == b""
         assert response.status_code == 307
-        assert response.next_request.url == f"http://{settings.SERVER_NAME}"
+        test_next_url = response.next_request.url  # type: ignore
+        assert test_next_url == f"http://{settings.SERVER_NAME}"
         # check email verification
         assert len(outbox) == 1
         assert (
@@ -363,16 +410,18 @@ async def test_auth_verify_confirm_random_user_bad_token(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserRead = await create_random_user(user_auth)
+    a_user: UserReadAdmin = await create_random_user(user_auth)  # noqa: F841
     a_tok: str = get_uuid_str()
     a_tok_csrf: str = get_uuid_str()
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
-        response: Response = await client.get(f"auth/confirmation?token={a_tok}&csrf={a_tok_csrf}")
+        response: Response = await client.get(
+            f"auth/confirmation?token={a_tok}&csrf={a_tok_csrf}"
+        )
         data: Dict[str, Any] = response.json()
         assert response.status_code == 401
-        assert data['detail']['code'] == 401
-        assert data['detail']['reason'] == ErrorCode.TOKEN_INVALID
+        assert data["detail"]["code"] == 401
+        assert data["detail"]["reason"] == ErrorCode.TOKEN_INVALID
         # check email verification
         assert len(outbox) == 0
 
@@ -381,7 +430,7 @@ async def test_auth_verify_confirm_random_user_bad_csrf(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserRead = await create_random_user(user_auth)
+    a_user: UserReadAdmin = await create_random_user(user_auth)
     a_tok: str
     a_tok_csrf: str
     a_tok, a_tok_csrf = await user_auth.store_token(
@@ -392,11 +441,13 @@ async def test_auth_verify_confirm_random_user_bad_csrf(
     b_tok_csrf: str = get_uuid_str()
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
-        response: Response = await client.get(f"auth/confirmation?token={a_tok}&csrf={b_tok_csrf}")
+        response: Response = await client.get(
+            f"auth/confirmation?token={a_tok}&csrf={b_tok_csrf}"
+        )
         data: Dict[str, Any] = response.json()
         assert response.status_code == 401
-        assert data['detail']['code'] == 401
-        assert data['detail']['reason'] == ErrorCode.TOKEN_CSRF_INVALID
+        assert data["detail"]["code"] == 401
+        assert data["detail"]["reason"] == ErrorCode.TOKEN_CSRF_INVALID
         # check email verification
         assert len(outbox) == 0
 
@@ -405,10 +456,12 @@ async def test_auth_random_user_forgot_password(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserRead = await create_random_user(user_auth)
+    a_user: UserReadAdmin = await create_random_user(user_auth)
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
-        response: Response = await client.post(f"auth/forgot-password", json={"email": a_user.email})
+        response: Response = await client.post(
+            "auth/forgot-password", json={"email": a_user.email}
+        )
         data: Dict[str, str] = response.json()
         assert data is None
         # check email verification
@@ -418,14 +471,17 @@ async def test_auth_random_user_forgot_password(
             == f"{settings.EMAILS_FROM_NAME} <{settings.EMAILS_FROM_EMAIL}>"
         )
         assert outbox[0]["To"] == a_user.email
-        assert outbox[0]["Subject"] == f"{settings.PROJECT_NAME} - Password recovery for user {a_user.email}"
+        assert (
+            outbox[0]["Subject"]
+            == f"{settings.PROJECT_NAME} - Password recovery for user {a_user.email}"
+        )
 
 
 async def test_auth_random_user_reset_password(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserRead
+    a_user: UserReadAdmin
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     a_user_new_pass: str = random_lower_string()
@@ -439,12 +495,8 @@ async def test_auth_random_user_reset_password(
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
         response: Response = await client.post(
-            f"auth/reset-password",
-            json={
-                "token": r_p_tok,
-                "csrf": r_p_tok_csrf,
-                "password": a_user_new_pass
-            }
+            "auth/reset-password",
+            json={"token": r_p_tok, "csrf": r_p_tok_csrf, "password": a_user_new_pass},
         )
         data: Dict[str, str] = response.json()
         assert data is not None
@@ -460,14 +512,42 @@ async def test_auth_random_user_reset_password(
         assert outbox[0]["Subject"] == f"{settings.PROJECT_NAME} - User account updated"
 
 
+async def test_auth_unauthorized_user_reset_password(
+    client: AsyncClient,
+    user_auth: AuthManager,
+) -> None:
+    a_user: UserReadAdmin
+    a_user_pass: str
+    a_user, a_user_pass = await create_new_user(user_auth)
+    a_user_new_pass: str = random_lower_string()
+    r_p_tok: str
+    r_p_tok_csrf: str
+    r_p_tok, r_p_tok_csrf = await user_auth.store_token(
+        user=a_user,
+        audience=[settings.VERIFY_USER_TOKEN_AUDIENCE],
+        expires=settings.RESET_PASSWORD_TOKEN_LIFETIME,
+    )
+    fast_mail.config.SUPPRESS_SEND = 1
+    with fast_mail.record_messages() as outbox:
+        response: Response = await client.post(
+            "auth/reset-password",
+            json={"token": r_p_tok, "csrf": r_p_tok_csrf, "password": a_user_new_pass},
+        )
+        data: Dict[str, Any] = response.json()
+        assert data["detail"]["code"] == 401
+        assert data["detail"]["reason"] == ErrorCode.TOKEN_INVALID
+        # check no email sent
+        assert len(outbox) == 0
+
+
 async def test_auth_random_user_reset_password_too_long(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserRead
+    a_user: UserReadAdmin
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
-    a_user_new_pass: str = random_lower_string()*10
+    a_user_new_pass: str = random_lower_string() * 10
     r_p_tok: str
     r_p_tok_csrf: str
     r_p_tok, r_p_tok_csrf = await user_auth.store_token(
@@ -478,17 +558,16 @@ async def test_auth_random_user_reset_password_too_long(
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
         response: Response = await client.post(
-            f"auth/reset-password",
-            json={
-                "token": r_p_tok,
-                "csrf": r_p_tok_csrf,
-                "password": a_user_new_pass
-            }
+            "auth/reset-password",
+            json={"token": r_p_tok, "csrf": r_p_tok_csrf, "password": a_user_new_pass},
         )
         assert response.status_code == 400
-        a_user: Dict[str, Any] = response.json()
-        assert a_user["detail"]["code"] == ErrorCode.USER_PASSWORD_INVALID
-        assert a_user["detail"]["reason"] == f"Password must contain {settings.PASSWORD_LENGTH_MAX} or less characters"
+        data: Dict[str, Any] = response.json()
+        assert data["detail"]["code"] == ErrorCode.USER_PASSWORD_INVALID
+        assert (
+            data["detail"]["reason"]
+            == f"Password must contain {settings.PASSWORD_LENGTH_MAX} or less characters"  # noqa: E501
+        )
         # check email account updated
         assert len(outbox) == 0
 
@@ -497,7 +576,7 @@ async def test_auth_random_user_reset_password_too_short(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserRead
+    a_user: UserReadAdmin
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     a_user_new_pass: str = "1234567"
@@ -511,16 +590,15 @@ async def test_auth_random_user_reset_password_too_short(
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
         response: Response = await client.post(
-            f"auth/reset-password",
-            json={
-                "token": r_p_tok,
-                "csrf": r_p_tok_csrf,
-                "password": a_user_new_pass
-            }
+            "auth/reset-password",
+            json={"token": r_p_tok, "csrf": r_p_tok_csrf, "password": a_user_new_pass},
         )
         assert response.status_code == 400
-        a_user: Dict[str, Any] = response.json()
-        assert a_user["detail"]["code"] == ErrorCode.USER_PASSWORD_INVALID
-        assert a_user["detail"]["reason"] == f"Password must contain {settings.PASSWORD_LENGTH_MIN} or more characters"
+        data: Dict[str, Any] = response.json()
+        assert data["detail"]["code"] == ErrorCode.USER_PASSWORD_INVALID
+        assert (
+            data["detail"]["reason"]
+            == f"Password must contain {settings.PASSWORD_LENGTH_MIN} or more characters"  # noqa: E501
+        )
         # check email verification
         assert len(outbox) == 0

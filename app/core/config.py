@@ -75,7 +75,7 @@ class Settings(BaseSettings):
     EMAIL_PROVIDER_RESTRICTION: bool = bool(
         environ.get("EMAIL_PROVIDER_RESTRICTION", True)
     )
-    ALLOWED_EMAIL_PROVIDER_LIST: List[Any] = list(
+    ALLOWED_EMAIL_PROVIDER_LIST: List[str] = list(
         environ.get("ALLOWED_EMAIL_PROVIDER_LIST", ["getcommunity.com"])
     )
     EMAIL_TEST_USER: str = environ.get("SMTP_EMAIL_TEST_USER", "test@getcommunity.com")

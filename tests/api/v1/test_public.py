@@ -3,7 +3,7 @@ from typing import Any, Dict
 import pytest
 from httpx import AsyncClient, Response
 
-pytestmark = pytest.mark.anyio
+pytestmark = pytest.mark.asyncio
 
 
 async def test_status(client: AsyncClient) -> None:

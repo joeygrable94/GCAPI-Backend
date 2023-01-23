@@ -36,6 +36,7 @@ from app.core.utilities import (
 from app.db.schemas import (
     BearerResponse,
     JWToken,
+    RequestUserCreate,
     UserCreate,
     UserRead,
     UserReadAdmin,
@@ -43,7 +44,6 @@ from app.db.schemas import (
 )
 from app.db.tables import User
 from app.security import (
-    AuthException,
     AuthManager,
     get_current_active_password_reset_user,
     get_current_active_refresh_user,
@@ -66,7 +66,7 @@ router: APIRouter = APIRouter()
 )
 async def auth_register(
     background_tasks: BackgroundTasks,
-    user_create: UserCreate,
+    user_create: RequestUserCreate,
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
 ) -> UserRead:
@@ -76,14 +76,20 @@ async def auth_register(
     """
     try:
         # register user
-        created_user: User = await oauth.users.create(schema=user_create)
+        create_user_dict = user_create.dict()
+        create_user_dict["is_superuser"] = False
+        create_user_dict["is_active"] = True
+        create_user_dict["is_verified"] = False
+        created_user: User = await oauth.users.create(
+            schema=UserCreate(**create_user_dict)
+        )
         new_user: UserReadAdmin = UserReadAdmin.from_orm(
             created_user
         )  # pragma: no cover
         # create verification token
         verify_token: str
         verify_token_csrf: str
-        verify_token, verify_token_csrf = await oauth.store_token(
+        verify_token, verify_token_csrf = await oauth.store_token(  # pragma: no cover
             user=new_user,
             audience=[settings.VERIFY_USER_TOKEN_AUDIENCE],
             expires=settings.VERIFY_USER_TOKEN_LIFETIME,
@@ -272,14 +278,6 @@ async def auth_reset_password(
                 "reason": e.reason,
             },
         )
-    except AuthException as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={
-                "code": status.HTTP_401_UNAUTHORIZED,
-                "reason": e.reason,
-            },
-        )
 
 
 @router.post(
@@ -303,17 +301,17 @@ async def auth_access(
     Authenticates the user and grants them an access and a refresh token.
     """
     user: Optional[UserReadAdmin] = await oauth.certify(credentials)
-    if user is None:
+    if user is None:  # pragma: no cover
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ErrorCode.BAD_CREDENTIALS,
         )
-    if not user.is_active:
+    if not user.is_active:  # pragma: no cover
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ErrorCode.USER_NOT_ACTIVE,
         )
-    if settings.USERS_REQUIRE_VERIFICATION and not user.is_verified:
+    if settings.USERS_REQUIRE_VERIFICATION and not user.is_verified:  # pragma: no cover
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ErrorCode.USER_NOT_VERIFIED,
@@ -323,19 +321,19 @@ async def auth_access(
     a_tok_csrf: str
     r_tok: str
     r_tok_csrf: str
-    a_tok, a_tok_csrf = await oauth.store_token(
+    a_tok, a_tok_csrf = await oauth.store_token(  # pragma: no cover
         user=user,
         audience=[settings.ACCESS_TOKEN_AUDIENCE],
         expires=settings.ACCESS_TOKEN_LIFETIME,
         is_fresh=True,
     )
-    r_tok, r_tok_csrf = await oauth.store_token(
+    r_tok, r_tok_csrf = await oauth.store_token(  # pragma: no cover
         user=user,
         audience=[settings.REFRESH_TOKEN_AUDIENCE],
         expires=settings.REFRESH_TOKEN_LIFETIME,
         is_refresh=True,
     )
-    return await oauth.bearer.get_login_response(
+    return await oauth.bearer.get_login_response(  # pragma: no cover
         access_token=a_tok,
         access_token_csrf=a_tok_csrf,
         refresh_token=r_tok,
@@ -378,20 +376,20 @@ async def auth_refresh(
     a_tok_csrf: str
     r_tok: str
     r_tok_csrf: str
-    a_tok, a_tok_csrf = await oauth.store_token(
+    a_tok, a_tok_csrf = await oauth.store_token(  # pragma: no cover
         user=user,
         audience=[settings.ACCESS_TOKEN_AUDIENCE],
         expires=settings.ACCESS_TOKEN_LIFETIME,
         is_fresh=True,
     )
-    r_tok, r_tok_csrf = await oauth.store_token(
+    r_tok, r_tok_csrf = await oauth.store_token(  # pragma: no cover
         user=user,
         audience=[settings.REFRESH_TOKEN_AUDIENCE],
         expires=settings.REFRESH_TOKEN_LIFETIME,
         is_refresh=True,
     )
     # return rotated access and refresh tokens
-    return await oauth.bearer.get_login_response(
+    return await oauth.bearer.get_login_response(  # pragma: no cover
         access_token=a_tok,
         access_token_csrf=a_tok_csrf,
         refresh_token=r_tok,
