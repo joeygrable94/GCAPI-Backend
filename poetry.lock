@@ -173,18 +173,15 @@ uvloop = ["uvloop (>=0.13,<0.15)"]
 
 [[package]]
 name = "aiosqlite"
-version = "0.17.0"
+version = "0.18.0"
 description = "asyncio bridge to the standard sqlite3 module"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "aiosqlite-0.17.0-py3-none-any.whl", hash = "sha256:6c49dc6d3405929b1d08eeccc72306d3677503cc5e5e43771efc1e00232e8231"},
-    {file = "aiosqlite-0.17.0.tar.gz", hash = "sha256:f0e6acc24bc4864149267ac82fb46dfb3be4455f99fe21df82609cc6e6baee51"},
+    {file = "aiosqlite-0.18.0-py3-none-any.whl", hash = "sha256:c3511b841e3a2c5614900ba1d179f366826857586f78abd75e7cbeb88e75a557"},
+    {file = "aiosqlite-0.18.0.tar.gz", hash = "sha256:faa843ef5fb08bafe9a9b3859012d3d9d6f77ce3637899de20606b7fc39aa213"},
 ]
-
-[package.dependencies]
-typing_extensions = ">=3.7.2"
 
 [[package]]
 name = "alembic"
@@ -2405,4 +2402,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "df9a5d38ab616fb3b9880589d50292ca599d4c29ec741a8b373c40722e4f0666"
+content-hash = "a3d85c88521d2d45ef8ce4930e0bf9215541451b1fe3112b6b84dd7a01666d7c"
