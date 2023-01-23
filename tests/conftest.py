@@ -37,6 +37,8 @@ async def prestart_database():
     before performing collection and entering the run test loop.
     """
     settings.DEBUG_MODE = True
+    print(settings.DATABASE_URI)
+    exit()
     await build_database()
     await create_init_data()
 

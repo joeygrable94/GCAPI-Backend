@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, List, Optional
 
 from sqlalchemy import Boolean, Column, PickleType, String
 from sqlalchemy.ext.mutable import MutableList
@@ -9,6 +9,7 @@ from app.core.utilities import email_regex, scope_regex
 from app.db.tables.base import TableBase
 
 if TYPE_CHECKING:  # pragma: no cover
+    from .client import Client  # noqa: F401
     from .token import AccessToken  # noqa: F401
 
 
@@ -21,12 +22,17 @@ class User(TableBase):
     is_active: Mapped[bool] = Column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = Column(Boolean, default=False, nullable=False)
     is_verified: Mapped[bool] = Column(Boolean, default=False, nullable=False)
-    principals: Mapped[Any] = Column(
+    principals: Mapped[List[str]] = Column(
         MutableList.as_mutable(PickleType), default=[], nullable=False
     )
 
     # relationships
-    tokens: Any = relationship("AccessToken", backref=backref("user", lazy="subquery"))
+    tokens: Mapped[Optional[List[Any]]] = relationship(
+        "AccessToken", backref=backref("user", lazy="subquery")
+    )
+    clients: Mapped[Optional[List[Any]]] = relationship(
+        "Client", secondary="user_client", back_populates="users"
+    )
 
     @validates("email")
     def validate_email(self, k: Any, v: Any) -> Any:
