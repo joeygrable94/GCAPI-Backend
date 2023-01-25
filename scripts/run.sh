@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # TODO: make run.sh more robust to allow pre-starting of dev, testing, and production environments.
-alembic upgrade
+alembic upgrade head
 
 # prestart the server
 python prestart.py
