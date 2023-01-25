@@ -45,6 +45,6 @@ start-reload.sh
 ex_*
 
 # DB migrations
-alembic/versions
-app/**/migrations/versions
-app/**/alembic/versions
+alembic
+**/migrations
+**/alembic
