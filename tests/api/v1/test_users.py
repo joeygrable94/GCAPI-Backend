@@ -1,3 +1,4 @@
+from time import sleep
 from typing import Any, Dict, Optional, Tuple
 
 import pytest
@@ -140,6 +141,7 @@ async def test_update_current_testuser(
     current_token_headers: Dict[str, str]
     current_user, current_token_headers = current_testuser
     update_dict = UserUpdate(password="NEWvalidPassw0rd")
+    sleep(1)
     response: Response = await client.patch(
         "users/me", headers=current_token_headers, json=update_dict.dict()
     )
@@ -396,6 +398,118 @@ async def test_update_user_password_too_long(
         updated_user["detail"]["reason"]
         == f"Password must contain {settings.PASSWORD_LENGTH_MAX} or less characters"
     )
+
+
+async def test_update_add_user_permissions_as_superuser(
+    client: AsyncClient,
+    user_auth: AuthManager,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    a_user: UserAdmin = await create_random_user(user_auth)
+    new_role = "role:manager"
+    update_data = {"email": a_user.email, "principals": [new_role]}
+    response: Response = await client.patch(
+        f"users/{a_user.id}/permissions/add",
+        headers=superuser_token_headers,
+        json=update_data,
+    )
+    updated_user: Dict[str, Any] = response.json()
+    assert response.status_code == 200
+    assert "role:user" in updated_user["principals"]
+    assert f"user:{a_user.email}" in updated_user["principals"]
+    assert new_role in updated_user["principals"]
+
+
+async def test_update_add_user_permissions_as_testuser(
+    client: AsyncClient,
+    user_auth: AuthManager,
+    testuser_token_headers: Dict[str, str],
+) -> None:
+    a_user: UserAdmin = await create_random_user(user_auth)
+    new_role: str = "role:manager"
+    update_data: Dict[str, Any] = {"email": a_user.email, "principals": [new_role]}
+    response: Response = await client.patch(
+        f"users/{a_user.id}/permissions/add",
+        headers=testuser_token_headers,
+        json=update_data,
+    )
+    updated_user: Dict[str, Any] = response.json()
+    assert response.status_code == 403
+    assert updated_user["detail"] == ErrorCode.USER_INSUFFICIENT_PERMISSIONS
+
+
+async def test_update_add_user_permissions_as_superuser_email_invalid(
+    client: AsyncClient,
+    user_auth: AuthManager,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    a_user: UserAdmin = await create_random_user(user_auth)
+    fake_email: str = random_email()
+    update_data: Dict[str, Any] = {"email": fake_email, "principals": ["role:manager"]}
+    response: Response = await client.patch(
+        f"users/{a_user.id}/permissions/add",
+        headers=superuser_token_headers,
+        json=update_data,
+    )
+    updated_user: Dict[str, Any] = response.json()
+    assert response.status_code == 401
+    assert updated_user["detail"] == "email must match the user to update"
+
+
+async def test_update_remove_user_permissions_as_superuser(
+    client: AsyncClient,
+    user_auth: AuthManager,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    a_user: UserAdmin = await create_random_user(user_auth)
+    remove_role: str = "role:user"
+    update_data: Dict[str, Any] = {"email": a_user.email, "principals": [remove_role]}
+    response: Response = await client.patch(
+        f"users/{a_user.id}/permissions/remove",
+        headers=superuser_token_headers,
+        json=update_data,
+    )
+    updated_user: Dict[str, Any] = response.json()
+    assert response.status_code == 200
+    assert f"user:{a_user.email}" in updated_user["principals"]
+    assert remove_role not in updated_user["principals"]
+
+
+async def test_update_remove_user_permissions_as_testuser(
+    client: AsyncClient,
+    user_auth: AuthManager,
+    testuser_token_headers: Dict[str, str],
+) -> None:
+    a_user: UserAdmin = await create_random_user(user_auth)
+    remove_role: str = "role:user"
+    update_data: Dict[str, Any] = {"email": a_user.email, "principals": [remove_role]}
+    response: Response = await client.patch(
+        f"users/{a_user.id}/permissions/remove",
+        headers=testuser_token_headers,
+        json=update_data,
+    )
+    updated_user: Dict[str, Any] = response.json()
+    assert response.status_code == 403
+    assert updated_user["detail"] == ErrorCode.USER_INSUFFICIENT_PERMISSIONS
+
+
+async def test_update_remove_user_permissions_as_superuser_email_invalid(
+    client: AsyncClient,
+    user_auth: AuthManager,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    a_user: UserAdmin = await create_random_user(user_auth)
+    remove_role: str = "role:user"
+    fake_email: str = random_email()
+    update_data: Dict[str, Any] = {"email": fake_email, "principals": [remove_role]}
+    response: Response = await client.patch(
+        f"users/{a_user.id}/permissions/remove",
+        headers=superuser_token_headers,
+        json=update_data,
+    )
+    updated_user: Dict[str, Any] = response.json()
+    assert response.status_code == 401
+    assert updated_user["detail"] == "email must match the user to update"
 
 
 async def test_delete_user_by_id_as_superuser(

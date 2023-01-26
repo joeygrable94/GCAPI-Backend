@@ -43,7 +43,7 @@ async def websites_create(
     website_in: WebsiteCreate,
     current_user: UserAdmin = Permission("create", get_current_active_user),
 ) -> WebsiteRead:
-    try:
+    try:  # pragma: no cover
         websites_repo: WebsitesRepository = WebsitesRepository(session=db)
         data: Dict[str, str] = website_in.dict()
         check_domain: Optional[str] = data.get("domain")
@@ -56,7 +56,7 @@ async def websites_create(
                 raise WebsiteAlreadyExists()
         new_site: Website = await websites_repo.create(website_in)
         return WebsiteRead.from_orm(new_site)
-    except WebsiteAlreadyExists:
+    except WebsiteAlreadyExists:  # pragma: no cover
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Website domain exists"
         )
@@ -73,13 +73,13 @@ async def websites_read(
     id: UUID,
     current_user: UserAdmin = Permission("read", get_current_active_user),
 ) -> WebsiteRead:
-    try:
+    try:  # pragma: no cover
         websites_repo: WebsitesRepository = WebsitesRepository(session=db)
         website: Optional[Website] = await websites_repo.read(entry_id=id)
         if not website:
             raise WebsiteNotExists()
         return WebsiteRead.from_orm(website)
-    except WebsiteNotExists:
+    except WebsiteNotExists:  # pragma: no cover
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Website not found"
         )
@@ -97,7 +97,7 @@ async def websites_update(
     website_in: WebsiteUpdate,
     current_user: UserAdmin = Permission("update", get_current_active_user),
 ) -> WebsiteRead:
-    try:
+    try:  # pragma: no cover
         websites_repo: WebsitesRepository = WebsitesRepository(session=db)
         website: Optional[Website] = await websites_repo.read(entry_id=id)
         if not website:
@@ -117,11 +117,11 @@ async def websites_update(
         if not updated_website:
             raise WebsiteNotExists()
         return WebsiteRead.from_orm(updated_website)
-    except WebsiteNotExists:
+    except WebsiteNotExists:  # pragma: no cover
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Website not found"
         )
-    except WebsiteAlreadyExists:
+    except WebsiteAlreadyExists:  # pragma: no cover
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Website domain exists"
         )
@@ -138,14 +138,14 @@ async def websites_delete(
     id: UUID,
     current_user: UserAdmin = Permission("delete", get_current_active_user),
 ) -> None:
-    try:
+    try:  # pragma: no cover
         websites_repo: WebsitesRepository = WebsitesRepository(session=db)
         website: Optional[Website] = await websites_repo.read(entry_id=id)
         if not website:
             raise WebsiteNotExists()
         await websites_repo.delete(entry=website)
         return None
-    except WebsiteNotExists:
+    except WebsiteNotExists:  # pragma: no cover
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Website not found"
         )

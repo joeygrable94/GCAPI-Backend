@@ -10,11 +10,12 @@ from .token import (
 )
 from .user import (
     RequestUserCreate,
+    UserAdmin,
     UserCreate,
     UserInDB,
     UserRead,
-    UserAdmin,
     UserUpdate,
+    UserUpdateAuthPermissions,
 )
 from .user_client import UserClientCreate, UserClientRead, UserClientUpdate
 from .website import WebsiteCreate, WebsiteRead, WebsiteUpdate

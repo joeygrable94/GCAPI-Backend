@@ -15,9 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class User(TableBase):
     __tablename__: str = "user"
-    email: Mapped[str] = Column(
-        String(length=320), unique=True, index=True, nullable=False
-    )
+    email: Mapped[str] = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password: Mapped[str] = Column(String(length=1024), nullable=False)
     is_active: Mapped[bool] = Column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = Column(Boolean, default=False, nullable=False)

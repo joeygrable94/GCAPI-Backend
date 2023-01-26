@@ -1,24 +1,49 @@
 from typing import Any, List, Optional, Tuple
 
 from fastapi_permissions import Allow
-from pydantic import UUID4, Field
+from pydantic import UUID4, validator
 
+from app.core.utilities import domain_name_regex
 from app.db.schemas.base import BaseSchema, BaseSchemaRead
 
 
 class WebsiteBase(BaseSchema):
-    domain: str = Field("", max_length=255)
+    domain: str
     is_secure: bool = False
 
 
 class WebsiteCreate(BaseSchema):
-    domain: str = Field("", max_length=255)
+    domain: str
     is_secure: Optional[bool] = False
+
+    @validator("domain")
+    def limits_domain(cls, v: str) -> str:
+        if len(v) < 5:
+            raise ValueError("domain must contain 5 or more characters")
+        if len(v) > 255:
+            raise ValueError("domain must contain less than 255 characters")
+        if not domain_name_regex.search(v):
+            raise ValueError(
+                "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
+            )
+        return v
 
 
 class WebsiteUpdate(BaseSchema):
-    domain: Optional[str] = Field(None, max_length=255)
+    domain: Optional[str]
     is_secure: Optional[bool] = False
+
+    @validator("domain")
+    def limits_domain(cls, v: Optional[str]) -> Optional[str]:
+        if v and len(v) < 5:
+            raise ValueError("domain must contain 5 or more characters")
+        if v and len(v) > 255:
+            raise ValueError("domain must contain less than 255 characters")
+        if v and not domain_name_regex.search(v):
+            raise ValueError(
+                "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
+            )
+        return v
 
 
 class WebsiteRead(WebsiteBase, BaseSchemaRead):

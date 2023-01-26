@@ -37,9 +37,9 @@ from app.db.schemas import (
     BearerResponse,
     JWToken,
     RequestUserCreate,
+    UserAdmin,
     UserCreate,
     UserRead,
-    UserAdmin,
     UserUpdate,
 )
 from app.db.tables import User
@@ -83,9 +83,7 @@ async def auth_register(
         created_user: User = await oauth.users.create(
             schema=UserCreate(**create_user_dict)
         )
-        new_user: UserAdmin = UserAdmin.from_orm(
-            created_user
-        )  # pragma: no cover
+        new_user: UserAdmin = UserAdmin.from_orm(created_user)  # pragma: no cover
         # create verification token
         verify_token: str
         verify_token_csrf: str
@@ -411,9 +409,7 @@ async def auth_refresh(
 )
 async def auth_revoke(
     response: Response,
-    user_token: Tuple[UserAdmin, JWToken, str] = Depends(
-        get_current_user_access_token
-    ),
+    user_token: Tuple[UserAdmin, JWToken, str] = Depends(get_current_user_access_token),
     oauth: AuthManager = Depends(get_user_auth),
 ) -> BearerResponse:
     """
@@ -442,9 +438,7 @@ async def auth_revoke(
 )
 async def auth_logout(
     response: Response,
-    user_token: Tuple[UserAdmin, JWToken, str] = Depends(
-        get_current_user_access_token
-    ),
+    user_token: Tuple[UserAdmin, JWToken, str] = Depends(get_current_user_access_token),
     oauth: AuthManager = Depends(get_user_auth),
 ) -> BearerResponse:
     """

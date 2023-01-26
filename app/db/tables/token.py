@@ -10,8 +10,8 @@ from app.db.types import GUID
 
 class AccessToken(TableBase):
     __tablename__: str = "accesstoken"
-    token_jti: Mapped[str] = Column(String(length=43), primary_key=True)
-    csrf: Mapped[str] = Column(String(43), default="", nullable=True)
+    token_jti: Mapped[str] = Column(String(64), primary_key=True)
+    csrf: Mapped[str] = Column(String(64), default="", nullable=False)
     expires_at: Mapped[datetime] = Column(DateTime(timezone=True), nullable=True)
     is_revoked: Mapped[bool] = Column(Boolean, default=False, nullable=False)
 

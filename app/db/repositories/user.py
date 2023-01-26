@@ -1,12 +1,12 @@
-from typing import Any, Optional, Type
+from typing import Any, List, Optional, Type
 
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import func, select
 
-from app.api.exceptions import UserAlreadyExists, UserNotExists
+from app.api.exceptions import ApiAuthException, UserAlreadyExists, UserNotExists
 from app.core.utilities import password_helper
 from app.db.repositories.base import BaseRepository
-from app.db.schemas import UserCreate, UserRead, UserUpdate
+from app.db.schemas import UserCreate, UserRead, UserUpdate, UserUpdateAuthPermissions
 from app.db.tables import User
 
 
@@ -87,6 +87,36 @@ class UsersRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
                 valid_dict["hashed_password"] = password_helper.hash(v)
             else:
                 valid_dict[f] = v
+        for k, d in valid_dict.items():
+            setattr(entry, k, d)
+        await self._db.commit()
+        await self._db.refresh(entry)
+        return entry
+
+    async def updatePermissions(
+        self, entry: User, schema: UserUpdateAuthPermissions, method: str
+    ) -> User:  # type: ignore
+        user_permissions: List[str] = []
+        for f, v in schema.dict(exclude_unset=True, exclude_none=True).items():
+            if f == "email":
+                if v == entry.email:
+                    try:
+                        found: Optional[User] = await self.read_by_email(v)
+                        if not found:
+                            raise UserNotExists()  # pragma: no cover
+                    except UserNotExists:  # pragma: no cover
+                        raise ApiAuthException(
+                            "cannot update the permissions of the requested user"
+                        )
+                else:
+                    raise ApiAuthException("email must match the user to update")
+            if f == "principals":
+                if method in ["add", "append", "extend"]:
+                    user_permissions = list(entry.principals)
+                    user_permissions.extend(p for p in v if p not in user_permissions)
+                elif method in ["remove", "delete", "trim"]:
+                    user_permissions = [i for i in entry.principals if i not in v]
+        valid_dict = {"principals": user_permissions}
         for k, d in valid_dict.items():
             setattr(entry, k, d)
         await self._db.commit()

@@ -1,6 +1,19 @@
 from typing import Any
 
 
+# API Auth
+class ApiAuthException(Exception):
+    """
+    Base except which all api authentication errors extend
+    """
+
+    def __init__(
+        self,
+        reason: Any,
+    ) -> None:
+        self.reason: Any = reason
+
+
 # Generics
 class EntityException(Exception):
     pass

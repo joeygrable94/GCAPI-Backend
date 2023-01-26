@@ -4,7 +4,7 @@ from httpx import AsyncClient, Response
 from tests.utils.utils import random_email, random_lower_string
 
 from app.core.config import settings
-from app.db.schemas import UserCreate, UserRead, UserAdmin
+from app.db.schemas import UserAdmin, UserCreate, UserRead
 from app.db.tables import User
 from app.security import AuthManager
 

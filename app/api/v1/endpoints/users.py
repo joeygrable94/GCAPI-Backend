@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.api.errors import ErrorCode
 from app.api.exceptions import (
+    ApiAuthException,
     InvalidPasswordException,
     UserAlreadyExists,
     UserNotExists,
@@ -18,7 +19,8 @@ from app.api.openapi import (
 )
 from app.core.config import Settings, get_settings
 from app.core.logger import logger
-from app.db.schemas import UserCreate, UserRead, UserAdmin, UserUpdate
+from app.db.schemas import UserAdmin, UserCreate, UserRead, UserUpdate
+from app.db.schemas.user import UserUpdateAuthPermissions
 from app.db.tables import User
 from app.security import (
     AuthManager,
@@ -153,9 +155,7 @@ async def create_user(
     """
     try:
         created_user: User = await oauth.users.create(schema=user_create)
-        new_user: UserAdmin = UserAdmin.from_orm(
-            created_user
-        )  # pragma: no cover
+        new_user: UserAdmin = UserAdmin.from_orm(created_user)  # pragma: no cover
         if settings.DEBUG_MODE:  # pragma: no cover
             logger.info(f"User {new_user.id} was created.")
         if current_user.is_superuser:  # pragma: no cover
@@ -207,7 +207,7 @@ async def get_user(
 
 @router.patch(
     "/{id}",
-    name="users:patch_user",
+    name="users:update_user",
     dependencies=[
         Depends(get_current_active_user),
         Depends(get_user_or_404),
@@ -245,6 +245,70 @@ async def update_user(
                 "code": ErrorCode.USER_PASSWORD_INVALID,
                 "reason": e.reason,
             },
+        )
+
+
+@router.patch(
+    "/{id}/permissions/add",
+    name="users:add_permissions_to_user",
+    dependencies=[
+        Depends(get_current_active_user),
+        Depends(get_user_or_404),
+        Depends(get_user_auth),
+    ],
+    # responses=add_permissions_to_user_responses,
+    response_model=UserAdmin,
+    status_code=status.HTTP_200_OK,
+)
+async def add_user_permissions(
+    user_update_permissions: UserUpdateAuthPermissions,
+    current_user: UserAdmin = Permission("super", get_current_active_user),
+    fetch_user: User = Depends(get_user_or_404),
+    oauth: AuthManager = Depends(get_user_auth),
+) -> UserAdmin:
+    try:
+        if not current_user.is_superuser:
+            raise ApiAuthException(reason="permission denied")
+        user: User = await oauth.users.updatePermissions(
+            fetch_user, user_update_permissions, method="add"
+        )
+        return UserAdmin.from_orm(user)
+    except ApiAuthException as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=e.reason,
+        )
+
+
+@router.patch(
+    "/{id}/permissions/remove",
+    name="users:remove_permissions_from_user",
+    dependencies=[
+        Depends(get_current_active_user),
+        Depends(get_user_or_404),
+        Depends(get_user_auth),
+    ],
+    # responses=remove_permissions_from_user_responses,
+    response_model=UserAdmin,
+    status_code=status.HTTP_200_OK,
+)
+async def remove_user_permissions(
+    user_update_permissions: UserUpdateAuthPermissions,
+    current_user: UserAdmin = Permission("super", get_current_active_user),
+    fetch_user: User = Depends(get_user_or_404),
+    oauth: AuthManager = Depends(get_user_auth),
+) -> UserAdmin:
+    try:
+        if not current_user.is_superuser:
+            raise ApiAuthException(reason="permission denied")
+        user: User = await oauth.users.updatePermissions(
+            fetch_user, user_update_permissions, method="remove"
+        )
+        return UserAdmin.from_orm(user)
+    except ApiAuthException as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=e.reason,
         )
 
 

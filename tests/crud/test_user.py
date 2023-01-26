@@ -5,11 +5,16 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_email, random_lower_string
 
-from app.api.exceptions import InvalidPasswordException, UserAlreadyExists
+from app.api.exceptions import (
+    ApiAuthException,
+    InvalidPasswordException,
+    UserAlreadyExists,
+)
 from app.core.config import settings
 from app.core.utilities import password_helper
 from app.db.repositories import UsersRepository
 from app.db.schemas import UserCreate, UserRead, UserUpdate
+from app.db.schemas.user import UserUpdateAuthPermissions
 from app.db.tables import User
 
 pytestmark = pytest.mark.asyncio
@@ -147,3 +152,68 @@ async def test_authenticate_user_raise_not_exists(db_session: AsyncSession) -> N
     )
     user: Optional[User] = await user_repo.authenticate(credentials=login_form)
     assert user is None
+
+
+async def test_crud_update_permissions_add(db_session: AsyncSession) -> None:
+    user_repo: UsersRepository = UsersRepository(session=db_session)
+    username: str = random_email()
+    password: str = random_lower_string()
+    user_in: UserCreate = UserCreate(
+        email=username, password=password, is_superuser=True
+    )
+    user: User = await user_repo.create(schema=user_in)
+    assert user
+    new_role: str = "role:manager"
+    update_data: UserUpdateAuthPermissions = UserUpdateAuthPermissions(
+        email=user.email, principals=[new_role]
+    )
+    updated_user: User = await user_repo.updatePermissions(
+        entry=user, schema=update_data, method="add"
+    )
+    assert "role:user" in updated_user.principals
+    assert f"user:{user.email}" in updated_user.principals
+    assert new_role in updated_user.principals
+
+
+async def test_crud_update_permissions_remove(db_session: AsyncSession) -> None:
+    user_repo: UsersRepository = UsersRepository(session=db_session)
+    username: str = random_email()
+    password: str = random_lower_string()
+    user_in: UserCreate = UserCreate(
+        email=username, password=password, is_superuser=True
+    )
+    user: User = await user_repo.create(schema=user_in)
+    assert user
+    remove_role: str = "role:manager"
+    update_data: UserUpdateAuthPermissions = UserUpdateAuthPermissions(
+        email=user.email, principals=[remove_role]
+    )
+    updated_user: User = await user_repo.updatePermissions(
+        entry=user, schema=update_data, method="remove"
+    )
+    assert "role:user" in updated_user.principals
+    assert f"user:{user.email}" in updated_user.principals
+    assert remove_role not in updated_user.principals
+
+
+async def test_crud_update_permissions_remove_email_not_exists(
+    db_session: AsyncSession,
+) -> None:
+    user_repo: UsersRepository = UsersRepository(session=db_session)
+    fake_username: str = random_email()
+    username: str = random_email()
+    password: str = random_lower_string()
+    user_in: UserCreate = UserCreate(
+        email=username, password=password, is_superuser=True
+    )
+    user: User = await user_repo.create(schema=user_in)
+    assert user
+    new_role: str = "role:admin"
+    update_data: UserUpdateAuthPermissions = UserUpdateAuthPermissions(
+        email=fake_username, principals=[new_role]
+    )
+    with pytest.raises(ApiAuthException):
+        updated_user: Any = await user_repo.updatePermissions(
+            entry=user, schema=update_data, method="remove"
+        )
+        assert not updated_user

@@ -10,11 +10,9 @@ from app.db.schemas import BearerResponse
 class BearerTransport:
     scheme: OAuth2PasswordBearer
 
-    def __init__(self, tokenUrl: str, tokenScopes: Optional[Dict[str, str]]):
+    def __init__(self, tokenUrl: str, tokenScopes: Dict[str, str]):
         self.scheme = OAuth2PasswordBearer(
-            tokenUrl,
-            scopes=tokenScopes,
-            auto_error=False,
+            tokenUrl, scopes=tokenScopes, auto_error=False
         )
 
     async def get_login_response(

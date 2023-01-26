@@ -4,7 +4,7 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.users import create_new_user, get_current_user_tokens
-from tests.utils.utils import random_boolean, random_domain
+from tests.utils.utils import random_boolean, random_domain, random_lower_string
 from tests.utils.websites import create_random_website
 
 from app.api.errors import ErrorCode
@@ -131,6 +131,60 @@ async def test_create_website_as_testuser(
     assert error["detail"] == ErrorCode.USER_INSUFFICIENT_PERMISSIONS
 
 
+async def test_create_website_as_superuser_domain_too_short(
+    client: AsyncClient,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    domain: str = "a.co"
+    is_secure: bool = random_boolean()
+    data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
+    response: Response = await client.post(
+        "websites/",
+        headers=superuser_token_headers,
+        json=data,
+    )
+    assert response.status_code == 422
+    entry: Dict[str, Any] = response.json()
+    assert entry["detail"][0]["msg"] == "domain must contain 5 or more characters"
+
+
+async def test_create_website_as_superuser_domain_too_long(
+    client: AsyncClient,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    domain: str = random_lower_string() * 10 + ".com"
+    is_secure: bool = random_boolean()
+    data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
+    response: Response = await client.post(
+        "websites/",
+        headers=superuser_token_headers,
+        json=data,
+    )
+    assert response.status_code == 422
+    entry: Dict[str, Any] = response.json()
+    assert entry["detail"][0]["msg"] == "domain must contain less than 255 characters"
+
+
+async def test_create_website_as_superuser_domain_is_not_valid_domain(
+    client: AsyncClient,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    domain: str = "https://src.pub"
+    is_secure: bool = random_boolean()
+    data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
+    response: Response = await client.post(
+        "websites/",
+        headers=superuser_token_headers,
+        json=data,
+    )
+    assert response.status_code == 422
+    entry: Dict[str, Any] = response.json()
+    assert (
+        entry["detail"][0]["msg"]
+        == "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
+    )
+
+
 async def test_read_website_by_id_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
@@ -202,6 +256,63 @@ async def test_update_website_already_exists(
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 400
     assert updated_entry["detail"] == "Website domain exists"
+
+
+async def test_update_website_as_superuser_domain_too_short(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    entry_a: WebsiteRead = await create_random_website(db_session)
+    new_domain: str = "a.co"
+    data: Dict[str, Any] = {"domain": new_domain, "is_secure": random_boolean()}
+    response: Response = await client.patch(
+        f"websites/{entry_a.id}",
+        headers=superuser_token_headers,
+        json=data,
+    )
+    assert response.status_code == 422
+    entry: Dict[str, Any] = response.json()
+    assert entry["detail"][0]["msg"] == "domain must contain 5 or more characters"
+
+
+async def test_update_website_as_superuser_domain_too_long(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    entry_a: WebsiteRead = await create_random_website(db_session)
+    new_domain: str = random_lower_string() * 10 + ".com"
+    data: Dict[str, Any] = {"domain": new_domain, "is_secure": random_boolean()}
+    response: Response = await client.patch(
+        f"websites/{entry_a.id}",
+        headers=superuser_token_headers,
+        json=data,
+    )
+    assert response.status_code == 422
+    entry: Dict[str, Any] = response.json()
+    assert entry["detail"][0]["msg"] == "domain must contain less than 255 characters"
+
+
+async def test_update_website_as_superuser_domain_invalid(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    entry_a: WebsiteRead = await create_random_website(db_session)
+    new_domain: str = "https://" + random_lower_string() + ".com"
+    data: Dict[str, Any] = {"domain": new_domain, "is_secure": random_boolean()}
+    response: Response = await client.patch(
+        f"websites/{entry_a.id}",
+        headers=superuser_token_headers,
+        json=data,
+    )
+    assert response.status_code == 422
+    entry: Dict[str, Any] = response.json()
+    assert (
+        entry["detail"][0]["msg"]
+        == "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
+    )
 
 
 async def test_delete_website_by_id_as_superuser(
