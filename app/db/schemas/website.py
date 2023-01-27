@@ -7,14 +7,24 @@ from app.core.utilities import domain_name_regex
 from app.db.schemas.base import BaseSchema, BaseSchemaRead
 
 
-class WebsiteBase(BaseSchema):
-    domain: str
-    is_secure: bool = False
+# ACL
+class WebsiteACL(BaseSchema):
+    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
+        return [
+            (Allow, "role:admin", "list"),
+            (Allow, "role:admin", "create"),
+            (Allow, "role:admin", "read"),
+            (Allow, "role:admin", "update"),
+            (Allow, "role:admin", "delete"),
+            (Allow, "role:user", "list"),
+            (Allow, "role:user", "create"),
+            (Allow, "role:user", "read"),
+        ]
 
 
-class WebsiteCreate(BaseSchema):
+# validators
+class ValidateWebsiteDomainRequired(BaseSchema):
     domain: str
-    is_secure: Optional[bool] = False
 
     @validator("domain")
     def limits_domain(cls, v: str) -> str:
@@ -29,9 +39,8 @@ class WebsiteCreate(BaseSchema):
         return v
 
 
-class WebsiteUpdate(BaseSchema):
+class ValidateWebsiteDomainOptional(BaseSchema):
     domain: Optional[str]
-    is_secure: Optional[bool] = False
 
     @validator("domain")
     def limits_domain(cls, v: Optional[str]) -> Optional[str]:
@@ -46,17 +55,20 @@ class WebsiteUpdate(BaseSchema):
         return v
 
 
-class WebsiteRead(WebsiteBase, BaseSchemaRead):
-    id: UUID4
+class WebsiteBase(ValidateWebsiteDomainRequired):
+    domain: str
+    is_secure: bool = False
 
-    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
-        return [
-            (Allow, "role:admin", "list"),
-            (Allow, "role:admin", "create"),
-            (Allow, "role:admin", "read"),
-            (Allow, "role:admin", "update"),
-            (Allow, "role:admin", "delete"),
-            (Allow, "role:user", "list"),
-            (Allow, "role:user", "create"),
-            (Allow, "role:user", "read"),
-        ]
+
+class WebsiteCreate(ValidateWebsiteDomainRequired):
+    domain: str
+    is_secure: Optional[bool] = False
+
+
+class WebsiteUpdate(ValidateWebsiteDomainOptional):
+    domain: Optional[str]
+    is_secure: Optional[bool] = False
+
+
+class WebsiteRead(WebsiteACL, WebsiteBase, BaseSchemaRead):
+    id: UUID4

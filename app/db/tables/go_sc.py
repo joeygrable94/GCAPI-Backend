@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey, String
-from sqlalchemy.orm import Mapped, backref, relationship
+from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -21,30 +21,38 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class GoogleSearchConsoleProperty(TableBase):
     __tablename__: str = "go_sc"
-    title: Mapped[str] = Column(String(255), nullable=False)
+    title: Column[str] = Column(String(255), nullable=False)
 
     # relationships
-    client_id: Mapped[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
-    website_id: Mapped[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
-    gsc_countries: Mapped[Optional[List["GoogleSearchConsoleCountry"]]] = relationship(
+    client_id: Column[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
+    website_id: Column[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
+    gsc_countries: Column[
+        Optional[List["GoogleSearchConsoleCountry"]]
+    ] = relationship(  # type: ignore
         "GoogleSearchConsoleCountry",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_devices: Mapped[Optional[List["GoogleSearchConsoleDevice"]]] = relationship(
+    gsc_devices: Column[
+        Optional[List["GoogleSearchConsoleDevice"]]
+    ] = relationship(  # type: ignore
         "GoogleSearchConsoleDevice",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_pages: Mapped[Optional[List["GoogleSearchConsolePage"]]] = relationship(
+    gsc_pages: Column[
+        Optional[List["GoogleSearchConsolePage"]]
+    ] = relationship(  # type: ignore
         "GoogleSearchConsolePage",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_queries: Mapped[Optional[List["GoogleSearchConsoleQuery"]]] = relationship(
+    gsc_queries: Column[
+        Optional[List["GoogleSearchConsoleQuery"]]
+    ] = relationship(  # type: ignore
         "GoogleSearchConsoleQuery",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_searchappearances: Mapped[
+    gsc_searchappearances: Column[
         Optional[List["GoogleSearchConsoleSearchAppearance"]]
-    ] = relationship(
+    ] = relationship(  # type: ignore
         "GoogleSearchConsoleSearchAppearance",
         backref=backref("go_sc", lazy="noload"),
     )

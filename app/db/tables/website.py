@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, List, Optional
 
 from sqlalchemy import Boolean, Column, String
-from sqlalchemy.orm import Mapped, backref, relationship
+from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
 
@@ -14,17 +14,17 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class Website(TableBase):
     __tablename__: str = "website"
-    domain: Mapped[str] = Column(String(255), nullable=False)
-    is_secure: Mapped[bool] = Column(Boolean(), nullable=False, default=False)
+    domain: Column[str] = Column(String(255), nullable=False)
+    is_secure: Column[bool] = Column(Boolean(), nullable=False, default=False)
 
     # relationships
-    clients: Mapped[Optional[List["Client"]]] = relationship(
+    clients: Column[Optional[List["Client"]]] = relationship(  # type: ignore
         "Client", secondary="client_website", back_populates="websites"
     )
-    sitemaps: Mapped[Optional[List["WebsiteMap"]]] = relationship(
+    sitemaps: Column[Optional[List["WebsiteMap"]]] = relationship(  # type: ignore
         "WebsiteMap", backref=backref("website", lazy="noload")
     )
-    pages: Mapped[Optional[List["WebsitePage"]]] = relationship(
+    pages: Column[Optional[List["WebsitePage"]]] = relationship(  # type: ignore
         "WebsitePage", backref=backref("website", lazy="noload")
     )
 

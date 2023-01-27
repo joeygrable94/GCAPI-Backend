@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy.orm import Mapped
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -16,8 +15,8 @@ class UserClient(TableBase):
     __tablename__: str = "user_client"
 
     # relationships
-    user_id: Mapped[UUID] = Column(GUID, ForeignKey("user.id"), nullable=False)
-    client_id: Mapped[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
+    user_id: Column[UUID] = Column(GUID, ForeignKey("user.id"), nullable=False)
+    client_id: Column[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
 
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (

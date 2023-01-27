@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy.orm import Mapped
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -14,8 +13,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class UserIpAddress(TableBase):
     __tablename__: str = "user_ipaddress"
-    user_id: Mapped[UUID] = Column(GUID, ForeignKey("user.id"), nullable=False)
-    ipaddress_id: Mapped[UUID] = Column(
+    user_id: Column[UUID] = Column(GUID, ForeignKey("user.id"), nullable=False)
+    ipaddress_id: Column[UUID] = Column(
         GUID, ForeignKey("ipaddress.id"), nullable=False
     )
 

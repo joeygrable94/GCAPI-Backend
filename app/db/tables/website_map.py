@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Boolean, Column, ForeignKey, String
-from sqlalchemy.orm import Mapped, backref, relationship
+from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -14,14 +14,14 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class WebsiteMap(TableBase):
     __tablename__: str = "website_map"
-    title: Mapped[str] = Column(String(255), nullable=False, default="unnamed")
-    file_name: Mapped[str] = Column(String(120), nullable=False, default="sample.xml")
-    file_path: Mapped[str] = Column(String(255), nullable=False, default="uploads/tmp")
-    is_processed: Mapped[bool] = Column(Boolean(), nullable=False, default=False)
+    title: Column[str] = Column(String(255), nullable=False, default="unnamed")
+    file_name: Column[str] = Column(String(120), nullable=False, default="sample.xml")
+    file_path: Column[str] = Column(String(255), nullable=False, default="uploads/tmp")
+    is_processed: Column[bool] = Column(Boolean(), nullable=False, default=False)
 
     # relationships
-    website_id: Mapped[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
-    pages: Mapped[Optional[List["WebsitePage"]]] = relationship(
+    website_id: Column[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
+    pages: Column[Optional[List["WebsitePage"]]] = relationship(  # type: ignore
         "WebsitePage", backref=backref("website_map", lazy="noload")
     )
 

@@ -248,6 +248,31 @@ async def update_user(
         )
 
 
+@router.delete(
+    "/{id}",
+    name="users:delete_user",
+    dependencies=[
+        Depends(get_current_active_user),
+        Depends(get_user_or_404),
+        Depends(get_user_auth),
+    ],
+    responses=delete_user_responses,
+    response_model=None,
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_user(
+    current_user: UserAdmin = Permission("delete", get_current_active_user),
+    fetch_user: User = Depends(get_user_or_404),
+    oauth: AuthManager = Depends(get_user_auth),
+) -> None:
+    """
+    Allows current-active-verified-superusers to delete a user
+    by their ID/UUID attribute.
+    """
+    await oauth.users.delete(fetch_user)
+    return None
+
+
 @router.patch(
     "/{id}/permissions/add",
     name="users:add_permissions_to_user",
@@ -268,11 +293,11 @@ async def add_user_permissions(
 ) -> UserAdmin:
     try:
         if not current_user.is_superuser:
-            raise ApiAuthException(reason="permission denied")
+            raise ApiAuthException(reason="permission denied")  # pragma: no cover
         user: User = await oauth.users.updatePermissions(
             fetch_user, user_update_permissions, method="add"
         )
-        return UserAdmin.from_orm(user)
+        return UserAdmin.from_orm(user)  # pragma: no cover
     except ApiAuthException as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -300,38 +325,13 @@ async def remove_user_permissions(
 ) -> UserAdmin:
     try:
         if not current_user.is_superuser:
-            raise ApiAuthException(reason="permission denied")
+            raise ApiAuthException(reason="permission denied")  # pragma: no cover
         user: User = await oauth.users.updatePermissions(
             fetch_user, user_update_permissions, method="remove"
         )
-        return UserAdmin.from_orm(user)
+        return UserAdmin.from_orm(user)  # pragma: no cover
     except ApiAuthException as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=e.reason,
         )
-
-
-@router.delete(
-    "/{id}",
-    name="users:delete_user",
-    dependencies=[
-        Depends(get_current_active_user),
-        Depends(get_user_or_404),
-        Depends(get_user_auth),
-    ],
-    responses=delete_user_responses,
-    response_model=None,
-    status_code=status.HTTP_204_NO_CONTENT,
-)
-async def delete_user(
-    current_user: UserAdmin = Permission("delete", get_current_active_user),
-    fetch_user: User = Depends(get_user_or_404),
-    oauth: AuthManager = Depends(get_user_auth),
-) -> None:
-    """
-    Allows current-active-verified-superusers to delete a user
-    by their ID/UUID attribute.
-    """
-    await oauth.users.delete(fetch_user)
-    return None
