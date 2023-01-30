@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey, String
-from sqlalchemy.orm import Mapped, backref, relationship
+from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -15,14 +15,16 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class GoogleAnalytics4Property(TableBase):
     __tablename__: str = "go_a4"
-    title: Mapped[str] = Column(String(255), nullable=False)
-    measurement_id: Mapped[str] = Column(String(16), nullable=False)
-    property_id: Mapped[str] = Column(String(16), nullable=False)
+    title: Column[str] = Column(String(255), nullable=False)
+    measurement_id: Column[str] = Column(String(16), nullable=False)
+    property_id: Column[str] = Column(String(16), nullable=False)
 
     # relationships
-    client_id: Mapped[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
-    website_id: Mapped[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
-    ga4_streams: Mapped[Optional[List["GoogleAnalytics4Stream"]]] = relationship(
+    client_id: Column[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
+    website_id: Column[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
+    ga4_streams: Column[
+        Optional[List["GoogleAnalytics4Stream"]]
+    ] = relationship(  # type: ignore
         "GoogleAnalytics4Stream",
         backref=backref("go_a4", lazy="subquery"),
     )

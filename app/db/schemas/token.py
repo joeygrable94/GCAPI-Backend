@@ -1,10 +1,38 @@
 from datetime import datetime
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-from fastapi_permissions import Allow
-from pydantic import UUID4, BaseModel
+from fastapi_permissions import Allow, Authenticated
+from pydantic import UUID4, BaseModel, validator
 
+from app.core.config import settings
 from app.db.schemas.base import BaseSchema, BaseSchemaRead
+
+
+# ACL
+class AccessTokenACL(BaseSchema):
+    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
+        return [
+            (Allow, Authenticated, "use"),
+            (Allow, f"user:{settings.FIRST_SUPERUSER}", "super"),
+        ]
+
+
+# validators
+class ValidateAccessTokenIdentifiers(BaseSchema):  # pragma: no cover
+    token_jti: str
+    csrf: str
+
+    @validator("token_jti")
+    def limits_token_jti(cls, v: str) -> str:
+        if len(v) > 64:
+            raise ValueError("token identifiers must contain less than 64 characters")
+        return v
+
+    @validator("csrf")
+    def limits_csrf(cls, v: str) -> str:
+        if len(v) > 64:
+            raise ValueError("token csrf must contain less than 64 characters")
+        return v
 
 
 # JWT Bearer Response
@@ -56,18 +84,18 @@ class JWToken(BaseToken):
 
 
 # DB JWT
-class AccessTokenInDB(BaseSchema):
+class AccessTokenInDB(ValidateAccessTokenIdentifiers):
     token_jti: str
     csrf: str
-    expires_at: datetime
+    expires_at: Optional[datetime]
     is_revoked: bool
     user_id: UUID4
 
 
-class AccessTokenCreate(BaseSchema):
+class AccessTokenCreate(ValidateAccessTokenIdentifiers):
     token_jti: str
     csrf: str
-    expires_at: datetime
+    expires_at: Optional[datetime]
     is_revoked: bool = False
     user_id: UUID4
 
@@ -76,14 +104,9 @@ class AccessTokenUpdate(BaseSchema):
     is_revoked: Optional[bool] = True
 
 
-class AccessTokenRead(BaseSchemaRead):
+class AccessTokenRead(AccessTokenACL, BaseSchemaRead, ValidateAccessTokenIdentifiers):
     token_jti: str
     csrf: str
-    expires_at: datetime
+    expires_at: Optional[datetime]
     is_revoked: bool
     user_id: UUID4
-
-    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
-        return [
-            (Allow, "role:admin", "use"),
-        ]

@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Boolean, Column, ForeignKey, String
-from sqlalchemy.orm import Mapped, backref, relationship
+from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -13,16 +13,20 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class ImageUpload(TableBase):
     __tablename__: str = "imageupload"
-    file_name: Mapped[str] = Column(String(120), nullable=False, default="default.jpg")
-    file_path: Mapped[str] = Column(String(255), nullable=False, default="uploads/tmp")
-    title: Mapped[str] = Column(String(255), nullable=True)
-    caption: Mapped[str] = Column(String(255), nullable=True)
-    is_geotagged: Mapped[bool] = Column(Boolean(), nullable=True, default=False)
+    file_name: Column[str] = Column(String(120), nullable=False, default="default.jpg")
+    file_path: Column[str] = Column(String(255), nullable=False, default="uploads/tmp")
+    title: Column[Optional[str]] = Column(String(255), nullable=True)
+    caption: Column[Optional[str]] = Column(String(255), nullable=True)
+    is_geotagged: Column[Optional[bool]] = Column(
+        Boolean(), nullable=True, default=False
+    )
 
     # relationships
-    user_id: Mapped[UUID] = Column(GUID, ForeignKey("user.id"), nullable=True)
-    geocoord_id: Mapped[UUID] = Column(GUID, ForeignKey("geocoord.id"), nullable=True)
-    geotag: Mapped[Optional[List["GeoCoord"]]] = relationship(
+    user_id: Column[Optional[UUID]] = Column(GUID, ForeignKey("user.id"), nullable=True)
+    geocoord_id: Column[Optional[UUID]] = Column(
+        GUID, ForeignKey("geocoord.id"), nullable=True
+    )
+    geotag: Column[Optional[List["GeoCoord"]]] = relationship(  # type: ignore
         "GeoCoord", backref=backref("imageupload", lazy="noload")
     )
 

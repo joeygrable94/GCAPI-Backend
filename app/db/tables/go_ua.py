@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey, String
-from sqlalchemy.orm import Mapped, backref, relationship
+from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -15,13 +15,15 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class GoogleUniversalAnalyticsProperty(TableBase):
     __tablename__: str = "go_ua"
-    title: Mapped[str] = Column(String(255), nullable=False)
-    tracking_id: Mapped[str] = Column(String(16), nullable=False)
+    title: Column[str] = Column(String(255), nullable=False)
+    tracking_id: Column[str] = Column(String(16), nullable=False)
 
     # relationships
-    client_id: Mapped[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
-    website_id: Mapped[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
-    gua_views: Mapped[Optional[List["GoogleUniversalAnalyticsView"]]] = relationship(
+    client_id: Column[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
+    website_id: Column[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
+    gua_views: Column[
+        Optional[List["GoogleUniversalAnalyticsView"]]
+    ] = relationship(  # type: ignore
         "GoogleUniversalAnalyticsView",
         backref=backref("go_ua", lazy="subquery"),
     )

@@ -1,9 +1,8 @@
 from datetime import datetime
-from enum import unique
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String
-from sqlalchemy.orm import Mapped
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -11,13 +10,15 @@ from app.db.types import GUID
 
 class AccessToken(TableBase):
     __tablename__: str = "accesstoken"
-    token_jti: Mapped[str] = Column(String(64), unique=True, nullable=False)
-    csrf: Mapped[str] = Column(String(64), default="", nullable=False)
-    expires_at: Mapped[datetime] = Column(DateTime(timezone=True), nullable=True)
-    is_revoked: Mapped[bool] = Column(Boolean, default=False, nullable=False)
+    token_jti: Column[str] = Column(String(64), unique=True, nullable=False)
+    csrf: Column[str] = Column(String(64), nullable=False, default="")
+    expires_at: Column[Optional[datetime]] = Column(
+        DateTime(timezone=True), nullable=True
+    )
+    is_revoked: Column[bool] = Column(Boolean, default=False, nullable=False)
 
     # relationships
-    user_id: Mapped[UUID] = Column(
+    user_id: Column[UUID] = Column(
         GUID, ForeignKey("user.id", ondelete="cascade"), nullable=False
     )
 

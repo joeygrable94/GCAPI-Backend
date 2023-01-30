@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, List, Optional
 
 from sqlalchemy import Column, String
-from sqlalchemy.orm import Mapped, backref, relationship
+from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
 
@@ -18,28 +18,34 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class Client(TableBase):
     __tablename__: str = "client"
-    title: Mapped[str] = Column(String(96), nullable=False)
-    content: Mapped[str] = Column(String(255), nullable=True)
+    title: Column[str] = Column(String(96), nullable=False)
+    content: Column[Optional[str]] = Column(String(255), nullable=True)
 
     # relationships
-    users: Mapped[Optional[List["User"]]] = relationship(
+    users: Column[Optional[List["User"]]] = relationship(  # type: ignore
         "User", secondary="user_client", back_populates="clients"
     )
-    websites: Mapped[Optional[List["Website"]]] = relationship(
+    websites: Column[Optional[List["Website"]]] = relationship(  # type: ignore
         "Website", secondary="client_website", back_populates="clients"
     )
-    gcloud_accounts: Mapped[Optional[List["GoogleCloudProperty"]]] = relationship(
+    gcloud_accounts: Column[
+        Optional[List["GoogleCloudProperty"]]
+    ] = relationship(  # type: ignore
         "GoogleCloudProperty", backref=backref("client", lazy="noload")
     )
-    ga4_accounts: Mapped[Optional[List["GoogleAnalytics4Property"]]] = relationship(
+    ga4_accounts: Column[
+        Optional[List["GoogleAnalytics4Property"]]
+    ] = relationship(  # type: ignore
         "GoogleAnalytics4Property", backref=backref("client", lazy="noload")
     )
-    gua_accounts: Mapped[
+    gua_accounts: Column[
         Optional[List["GoogleUniversalAnalyticsProperty"]]
-    ] = relationship(
+    ] = relationship(  # type: ignore
         "GoogleUniversalAnalyticsProperty", backref=backref("client", lazy="noload")
     )
-    sharpspring_accounts: Mapped[Optional[List["SharpSpring"]]] = relationship(
+    sharpspring_accounts: Column[
+        Optional[List["SharpSpring"]]
+    ] = relationship(  # type: ignore
         "SharpSpring", backref=backref("client", lazy="noload")
     )
 

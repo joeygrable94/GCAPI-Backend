@@ -6,6 +6,18 @@ from pydantic import UUID4
 from app.db.schemas.base import BaseSchema
 
 
+# ACL
+class ClientWebsiteACL(BaseSchema):
+    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
+        return [
+            (Allow, "role:admin", "list"),
+            (Allow, "role:admin", "create"),
+            (Allow, "role:admin", "read"),
+            (Allow, "role:admin", "update"),
+            (Allow, "role:admin", "delete"),
+        ]
+
+
 class ClientWebsiteBase(BaseSchema):
     client_id: UUID4
     website_id: UUID4
@@ -19,14 +31,5 @@ class ClientWebsiteUpdate(ClientWebsiteBase):
     pass
 
 
-class ClientWebsiteRead(ClientWebsiteBase):
+class ClientWebsiteRead(ClientWebsiteACL, ClientWebsiteBase):
     id: UUID4
-
-    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
-        return [
-            (Allow, "role:admin", "list"),
-            (Allow, "role:admin", "create"),
-            (Allow, "role:admin", "read"),
-            (Allow, "role:admin", "update"),
-            (Allow, "role:admin", "delete"),
-        ]

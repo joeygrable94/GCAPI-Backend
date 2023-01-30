@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import Mapped, backref, relationship
+from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -19,26 +19,36 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class GCFTSnap(TableBase):
     __tablename__: str = "gcft_snap"
-    snap_name: Mapped[str] = Column(String(255), nullable=False)
-    snap_slug: Mapped[str] = Column(String(12), nullable=False)
-    altitude: Mapped[int] = Column(Integer, nullable=False)
+    snap_name: Column[str] = Column(String(255), nullable=False)
+    snap_slug: Column[str] = Column(String(12), nullable=False)
+    altitude: Column[int] = Column(Integer, nullable=False)
 
     # relationships
-    geocoord_id: Mapped[UUID] = Column(GUID, ForeignKey("geocoord.id"), nullable=True)
-    gcft_id: Mapped[UUID] = Column(GUID, ForeignKey("gcft.id"), nullable=False)
-    snap_views: Mapped[Optional[List["GCFTSnapView"]]] = relationship(
+    geocoord_id: Column[Optional[UUID]] = Column(
+        GUID, ForeignKey("geocoord.id"), nullable=True
+    )
+    gcft_id: Column[UUID] = Column(GUID, ForeignKey("gcft.id"), nullable=False)
+    snap_views: Column[Optional[List["GCFTSnapView"]]] = relationship(  # type: ignore
         "GCFTSnapView", backref=backref("gcft_snap", lazy="noload")
     )
-    active_durations: Mapped[Optional[List["GCFTSnapActiveDuration"]]] = relationship(
+    active_durations: Column[
+        Optional[List["GCFTSnapActiveDuration"]]
+    ] = relationship(  # type: ignore
         "GCFTSnapActiveDuration", backref=backref("gcft_snap", lazy="noload")
     )
-    hotspot_clicks: Mapped[Optional[List["GCFTSnapHotspotClick"]]] = relationship(
+    hotspot_clicks: Column[
+        Optional[List["GCFTSnapHotspotClick"]]
+    ] = relationship(  # type: ignore
         "GCFTSnapHotspotClick", backref=backref("gcft_snap", lazy="noload")
     )
-    traffic_sources: Mapped[Optional[List["GCFTSnapTrafficSource"]]] = relationship(
+    traffic_sources: Column[
+        Optional[List["GCFTSnapTrafficSource"]]
+    ] = relationship(  # type: ignore
         "GCFTSnapTrafficSource", backref=backref("gcft_snap", lazy="noload")
     )
-    browser_reports: Mapped[Optional[List["GCFTSnapBrowserReport"]]] = relationship(
+    browser_reports: Column[
+        Optional[List["GCFTSnapBrowserReport"]]
+    ] = relationship(  # type: ignore
         "GCFTSnapBrowserReport", backref=backref("gcft_snap", lazy="noload")
     )
 

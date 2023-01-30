@@ -1,9 +1,8 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, DateTime, ForeignKey, String, Text
-from sqlalchemy.orm import Mapped
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -15,24 +14,24 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class GCFTSnapHotspotClick(TableBase):
     __tablename__: str = "gcft_snap_hotspotclick"
-    session_id: Mapped[str] = Column(String(36), nullable=False)
-    reporting_id: Mapped[str] = Column(String(255), nullable=True)
-    hotspot_type_name: Mapped[str] = Column(String(32), nullable=True)
-    hotspot_content: Mapped[str] = Column(Text, nullable=True)
-    hotspot_icon_name: Mapped[str] = Column(String(255), nullable=True)
-    hotspot_name: Mapped[str] = Column(String(255), nullable=True)
-    hotspot_user_icon_name: Mapped[str] = Column(String(255), nullable=True)
-    linked_snap_name: Mapped[str] = Column(String(255), nullable=True)
-    snap_file_name: Mapped[str] = Column(String(255), nullable=True)
-    icon_color: Mapped[str] = Column(String(20), nullable=True)
-    bg_color: Mapped[str] = Column(String(20), nullable=True)
-    text_color: Mapped[str] = Column(String(20), nullable=True)
-    hotspot_update_date: Mapped[datetime] = Column(DateTime(), nullable=False)
-    click_date: Mapped[datetime] = Column(DateTime(), nullable=False)
+    session_id: Column[str] = Column(String(36), nullable=False)
+    reporting_id: Column[Optional[str]] = Column(String(255), nullable=True)
+    hotspot_type_name: Column[Optional[str]] = Column(String(32), nullable=True)
+    hotspot_content: Column[Optional[str]] = Column(Text, nullable=True)
+    hotspot_icon_name: Column[Optional[str]] = Column(String(255), nullable=True)
+    hotspot_name: Column[Optional[str]] = Column(String(255), nullable=True)
+    hotspot_user_icon_name: Column[Optional[str]] = Column(String(255), nullable=True)
+    linked_snap_name: Column[Optional[str]] = Column(String(255), nullable=True)
+    snap_file_name: Column[Optional[str]] = Column(String(255), nullable=True)
+    icon_color: Column[Optional[str]] = Column(String(20), nullable=True)
+    bg_color: Column[Optional[str]] = Column(String(20), nullable=True)
+    text_color: Column[Optional[str]] = Column(String(20), nullable=True)
+    hotspot_update_date: Column[datetime] = Column(DateTime(), nullable=False)
+    click_date: Column[datetime] = Column(DateTime(), nullable=False)
 
     # relationships
-    gcft_id: Mapped[UUID] = Column(GUID, ForeignKey("gcft.id"), nullable=False)
-    snap_id: Mapped[UUID] = Column(GUID, ForeignKey("gcft_snap.id"), nullable=False)
+    gcft_id: Column[UUID] = Column(GUID, ForeignKey("gcft.id"), nullable=False)
+    snap_id: Column[UUID] = Column(GUID, ForeignKey("gcft_snap.id"), nullable=False)
 
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"GCFTSnapHotspotClick({self.session_id} \
