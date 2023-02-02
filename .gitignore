@@ -45,4 +45,4 @@ start-reload.sh
 ex_*
 
 # DB migrations
-alembic
+alembic/versions
