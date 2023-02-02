@@ -19,8 +19,14 @@ from app.api.openapi import (
 )
 from app.core.config import Settings, get_settings
 from app.core.logger import logger
-from app.db.schemas import UserAdmin, UserCreate, UserRead, UserUpdate
-from app.db.schemas.user import UserUpdateAuthPermissions
+from app.db.schemas import (
+    UserAdmin,
+    UserCreate,
+    UserRead,
+    UserUpdate,
+    UserUpdateAuthPermissions,
+)
+from app.db.schemas.user import UserAdminRelations, UserReadRelations
 from app.db.tables import User
 from app.security import (
     AuthManager,
@@ -38,7 +44,7 @@ router = APIRouter()
     name="users:current_user",
     dependencies=[Depends(get_current_active_user)],
     responses=get_user_or_404_responses,
-    response_model=Union[UserAdmin, UserRead],
+    response_model=Union[UserAdminRelations, UserReadRelations],
     status_code=status.HTTP_200_OK,
 )
 async def me(
@@ -48,7 +54,7 @@ async def me(
     Allows current-active-verified-users to fetch the details on their account.
     """
     if current_user.is_superuser:
-        return current_user
+        return UserAdmin.from_orm(current_user)
     else:
         return UserRead.from_orm(current_user)
 
@@ -61,7 +67,7 @@ async def me(
         Depends(get_user_auth),
     ],
     responses=update_user_me_responses,
-    response_model=Union[UserAdmin, UserRead],
+    response_model=Union[UserAdminRelations, UserReadRelations],
     status_code=status.HTTP_200_OK,
 )
 async def update_me(
@@ -108,7 +114,7 @@ async def update_me(
         Depends(get_user_auth),
     ],
     responses=get_all_users_responses,
-    response_model=Union[List[UserAdmin], List[UserRead], List],
+    response_model=Union[List[UserAdminRelations], List[UserReadRelations], List],
     status_code=status.HTTP_200_OK,
 )
 async def get_users_list(
@@ -141,7 +147,7 @@ async def get_users_list(
         Depends(get_user_auth),
     ],
     # responses=create_user_responses,
-    response_model=Union[UserAdmin, UserRead],
+    response_model=Union[UserAdminRelations, UserReadRelations],
     status_code=status.HTTP_200_OK,
 )
 async def create_user(
@@ -185,7 +191,7 @@ async def create_user(
         Depends(get_user_or_404),
     ],
     responses=get_user_reponses,
-    response_model=Union[UserAdmin, UserRead],
+    response_model=Union[UserAdminRelations, UserReadRelations],
     status_code=status.HTTP_200_OK,
 )
 async def get_user(
@@ -214,7 +220,7 @@ async def get_user(
         Depends(get_user_auth),
     ],
     responses=update_user_responses,
-    response_model=Union[UserAdmin, UserRead],
+    response_model=Union[UserAdminRelations, UserReadRelations],
     status_code=status.HTTP_200_OK,
 )
 async def update_user(
@@ -282,7 +288,7 @@ async def delete_user(
         Depends(get_user_auth),
     ],
     # responses=add_permissions_to_user_responses,
-    response_model=UserAdmin,
+    response_model=UserAdminRelations,
     status_code=status.HTTP_200_OK,
 )
 async def add_user_permissions(
@@ -314,7 +320,7 @@ async def add_user_permissions(
         Depends(get_user_auth),
     ],
     # responses=remove_permissions_from_user_responses,
-    response_model=UserAdmin,
+    response_model=UserAdminRelations,
     status_code=status.HTTP_200_OK,
 )
 async def remove_user_permissions(
@@ -335,3 +341,7 @@ async def remove_user_permissions(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=e.reason,
         )
+
+
+# users_tokens_read
+# users_clients_read

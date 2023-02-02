@@ -15,8 +15,12 @@ class UserClient(TableBase):
     __tablename__: str = "user_client"
 
     # relationships
-    user_id: Column[UUID] = Column(GUID, ForeignKey("user.id"), nullable=False)
-    client_id: Column[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
+    user_id: Column[UUID] = Column(
+        GUID, ForeignKey("user.id"), primary_key=True, nullable=False
+    )
+    client_id: Column[UUID] = Column(
+        GUID, ForeignKey("client.id"), primary_key=True, nullable=False
+    )
 
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (

@@ -7,8 +7,9 @@ from sqlalchemy.orm import backref, relationship
 from app.db.tables.base import TableBase
 
 if TYPE_CHECKING:  # pragma: no cover
+    from .accesstoken import AccessToken  # noqa: F401
     from .client import Client  # noqa: F401
-    from .token import AccessToken  # noqa: F401
+    from .ipaddress import IpAddress  # noqa: F401
 
 
 class User(TableBase):
@@ -25,6 +26,9 @@ class User(TableBase):
     # relationships
     tokens: Column[Optional[List["AccessToken"]]] = relationship(  # type: ignore
         "AccessToken", backref=backref("user", lazy="subquery")
+    )
+    ip_addresses: Column[Optional[List["IpAddress"]]] = relationship(  # type: ignore
+        "IpAddress", secondary="user_ipaddress", back_populates="users"
     )
     clients: Column[Optional[List["Client"]]] = relationship(  # type: ignore
         "Client", secondary="user_client", back_populates="users"

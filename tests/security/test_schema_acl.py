@@ -1,10 +1,15 @@
 from typing import Any
 
+from app.db.schemas.accesstoken import AccessTokenACL
 from app.db.schemas.client import ClientACL
 from app.db.schemas.client_website import ClientWebsiteACL
-from app.db.schemas.token import AccessTokenACL
+from app.db.schemas.ipaddress import IpAddressACL
 from app.db.schemas.user_client import UserClientACL
 from app.db.schemas.website import WebsiteACL
+
+
+def test_ipaddress_acl() -> Any:
+    assert len(IpAddressACL.__acl__(IpAddressACL)) > 0  # type: ignore
 
 
 def test_client_acl() -> Any:

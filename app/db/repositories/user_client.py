@@ -9,9 +9,5 @@ class UsersClientsRepository(
     BaseRepository[UserClientCreate, UserClientRead, UserClientUpdate, UserClient]
 ):
     @property
-    def _schema_read(self) -> Type[UserClientRead]:  # type: ignore
-        return UserClientRead
-
-    @property
     def _table(self) -> Type[UserClient]:  # type: ignore
         return UserClient

@@ -25,11 +25,6 @@ class BaseRepository(
 
     @property
     @abc.abstractmethod
-    def _schema_read(self) -> SCHEMA_READ:
-        pass  # pragma: no cover
-
-    @property
-    @abc.abstractmethod
     def _table(self) -> TABLE:
         pass  # pragma: no cover
 
@@ -97,3 +92,20 @@ class BaseRepository(
         await self._db.delete(entry)
         await self._db.commit()
         return None
+
+    async def exists_by_two(
+        self,
+        field_name_a: str,
+        field_value_a: Any,
+        field_name_b: str,
+        field_value_b: Any,
+    ) -> Optional[TABLE]:
+        check_val_a: Any = getattr(self._table, field_name_a)
+        check_val_b: Any = getattr(self._table, field_name_b)
+        query: Any = sql_select(self._table).where(
+            (check_val_a == field_value_a) & (check_val_b == field_value_b)
+        )
+        entry: Any = await self._get(query)
+        if not entry:
+            return None
+        return entry

@@ -13,8 +13,12 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class ClientWebsite(TableBase):
     __tablename__: str = "client_website"
-    client_id: Column[UUID] = Column(GUID, ForeignKey("client.id"), nullable=False)
-    website_id: Column[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)
+    client_id: Column[UUID] = Column(
+        GUID, ForeignKey("client.id"), primary_key=True, nullable=False
+    )
+    website_id: Column[UUID] = Column(
+        GUID, ForeignKey("website.id"), primary_key=True, nullable=False
+    )
 
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (

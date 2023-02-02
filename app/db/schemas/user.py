@@ -1,49 +1,13 @@
-from typing import Any, List, Optional, Tuple
+from __future__ import annotations
 
-from fastapi_permissions import Allow, Authenticated
+from typing import List, Optional
+
 from pydantic import BaseModel, EmailStr, validator
 
 from app.core.config import settings
 from app.core.utilities import scope_regex
+from app.db.acls.user import UserACL
 from app.db.schemas.base import BaseSchema, BaseSchemaRead
-
-
-# ACL
-class UserACL(BaseSchema):
-    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
-        """Defines who can do what.
-
-        Returns a list of tuples (1, 2, 3):
-            1. access level:
-                Allow
-                Deny
-            2. principal identifier:
-                Everyone
-                Authenticated
-                role:admin
-                role:user
-            3. permissions:
-                super
-                self
-                list
-                create
-                read
-                update
-                delete
-
-        If a role is not listed (like "role:user") the access will be
-        automatically denied, as if (Deny, Everyone, All) is appended.
-        """
-        return [
-            (Allow, Authenticated, "self"),
-            (Allow, "role:admin", "list"),
-            (Allow, "role:admin", "create"),
-            (Allow, "role:admin", "read"),
-            (Allow, "role:admin", "update"),
-            (Allow, "role:admin", "delete"),
-            (Allow, f"user:{settings.FIRST_SUPERUSER}", "super"),
-            (Allow, f"user:{self.email}", "self"),  # type: ignore
-        ]
 
 
 # validators
@@ -137,3 +101,23 @@ class UserRead(UserACL, BaseSchemaRead, ValidateUserEmailRequired):
 
 class UserAdmin(UserRead, ValidateUserPrincipals):
     principals: List[str]
+
+
+# relationships
+class UserReadRelations(UserRead):
+    clients: Optional[List["ClientRead"]] = []
+
+
+class UserAdminRelations(UserAdmin):
+    ip_addresses: Optional[List["IpAddressRead"]] = []
+    tokens: Optional[List["AccessTokenRead"]] = []
+    clients: Optional[List["ClientRead"]] = []
+
+
+# import and update pydantic relationship refs
+from app.db.schemas.accesstoken import AccessTokenRead  # noqa: E402
+from app.db.schemas.client import ClientRead  # noqa: E402
+from app.db.schemas.ipaddress import IpAddressRead  # noqa: E402
+
+UserReadRelations.update_forward_refs()
+UserAdminRelations.update_forward_refs()

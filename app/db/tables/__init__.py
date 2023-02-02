@@ -1,3 +1,4 @@
+from .accesstoken import AccessToken
 from .client import Client
 from .client_website import ClientWebsite
 from .gcft import GCFT
@@ -23,7 +24,6 @@ from .imageupload import ImageUpload
 from .ipaddress import IpAddress
 from .note import Note
 from .sharpspring import SharpSpring
-from .token import AccessToken
 from .user import User
 from .user_client import UserClient
 from .user_ipaddress import UserIpAddress

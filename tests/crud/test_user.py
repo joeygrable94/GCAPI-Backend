@@ -13,16 +13,11 @@ from app.api.exceptions import (
 from app.core.config import settings
 from app.core.utilities import password_helper
 from app.db.repositories import UsersRepository
-from app.db.schemas import UserCreate, UserRead, UserUpdate
+from app.db.schemas import UserCreate, UserUpdate
 from app.db.schemas.user import UserUpdateAuthPermissions
 from app.db.tables import User
 
 pytestmark = pytest.mark.asyncio
-
-
-async def test_user_repo_schema_read(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
-    assert user_repo._schema_read is UserRead
 
 
 async def test_user_repo_table(db_session: AsyncSession) -> None:

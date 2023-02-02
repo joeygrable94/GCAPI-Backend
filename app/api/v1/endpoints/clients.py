@@ -7,7 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_async_db
 from app.api.exceptions import ClientAlreadyExists, ClientNotExists
 from app.db.repositories import ClientsRepository
-from app.db.schemas import ClientCreate, ClientRead, ClientUpdate, UserAdmin
+from app.db.schemas import (
+    ClientCreate,
+    ClientRead,
+    ClientReadRelations,
+    ClientUpdate,
+    UserAdmin,
+)
 from app.db.tables import Client
 from app.security import Permission, get_current_active_user
 
@@ -17,7 +23,7 @@ router: APIRouter = APIRouter()
 @router.get(
     "/",
     name="clients:read_clients",
-    response_model=List[ClientRead],
+    response_model=List[ClientReadRelations],
 )
 async def clients_list(
     db: AsyncSession = Depends(get_async_db),
@@ -34,7 +40,7 @@ async def clients_list(
 @router.post(
     "/",
     name="clients:create_client",
-    response_model=ClientRead,
+    response_model=ClientReadRelations,
 )
 async def clients_create(
     *,
@@ -64,7 +70,7 @@ async def clients_create(
 @router.get(
     "/{id}",
     name="clients:read_client",
-    response_model=ClientRead,
+    response_model=ClientReadRelations,
 )
 async def clients_read(
     *,
@@ -87,7 +93,7 @@ async def clients_read(
 @router.patch(
     "/{id}",
     name="clients:update_client",
-    response_model=ClientRead,
+    response_model=ClientReadRelations,
 )
 async def clients_update(
     *,
@@ -147,3 +153,12 @@ async def clients_delete(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Client not found"
         )
+
+
+# clients_users_read
+# clients_websites_read
+
+# clients_gcloud_accounts_read
+# clients_ga4_accounts_read
+# clients_gua_accounts_read
+# clients_sharpspring_accounts_read

@@ -9,15 +9,10 @@ from tests.utils.utils import random_lower_string
 from app.core.config import settings
 from app.core.utilities import get_uuid, get_uuid_str
 from app.db.repositories import AccessTokensRepository
-from app.db.schemas import AccessTokenCreate, AccessTokenRead, AccessTokenUpdate
+from app.db.schemas import AccessTokenCreate, AccessTokenUpdate
 from app.db.tables import AccessToken
 
 pytestmark = pytest.mark.asyncio
-
-
-async def test_token_repo_schema_read(db_session: AsyncSession) -> None:
-    token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
-    assert token_repo._schema_read is AccessTokenRead
 
 
 async def test_token_repo_table(db_session: AsyncSession) -> None:

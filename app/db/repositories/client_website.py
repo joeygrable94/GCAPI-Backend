@@ -11,9 +11,5 @@ class ClientsWebsitesRepository(
     ]
 ):
     @property
-    def _schema_read(self) -> Type[ClientWebsiteRead]:  # type: ignore
-        return ClientWebsiteRead
-
-    @property
     def _table(self) -> Type[ClientWebsite]:  # type: ignore
         return ClientWebsite

@@ -1,25 +1,12 @@
-from typing import Any, List, Optional, Tuple
+from __future__ import annotations
 
-from fastapi_permissions import Allow
+from typing import List, Optional
+
 from pydantic import UUID4, validator
 
 from app.core.utilities import domain_name_regex
+from app.db.acls.website import WebsiteACL
 from app.db.schemas.base import BaseSchema, BaseSchemaRead
-
-
-# ACL
-class WebsiteACL(BaseSchema):
-    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
-        return [
-            (Allow, "role:admin", "list"),
-            (Allow, "role:admin", "create"),
-            (Allow, "role:admin", "read"),
-            (Allow, "role:admin", "update"),
-            (Allow, "role:admin", "delete"),
-            (Allow, "role:user", "list"),
-            (Allow, "role:user", "create"),
-            (Allow, "role:user", "read"),
-        ]
 
 
 # validators
@@ -72,3 +59,16 @@ class WebsiteUpdate(ValidateWebsiteDomainOptional):
 
 class WebsiteRead(WebsiteACL, WebsiteBase, BaseSchemaRead):
     id: UUID4
+
+
+# relationships
+class WebsiteReadRelations(WebsiteRead):
+    clients: Optional[List["ClientRead"]] = []
+    # sitemaps: Optional[List["WebsiteMapRead"]]
+    # pages: Optional[List["WebsitePageRead"]]
+
+
+# import and update pydantic relationship refs
+from app.db.schemas.client import ClientRead  # noqa: E402
+
+WebsiteReadRelations.update_forward_refs()

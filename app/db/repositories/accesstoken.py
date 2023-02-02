@@ -16,10 +16,6 @@ class AccessTokensRepository(
     ]
 ):
     @property
-    def _schema_read(self) -> Type[AccessTokenRead]:  # type: ignore
-        return AccessTokenRead
-
-    @property
     def _table(self) -> Type[AccessToken]:  # type: ignore
         return AccessToken
 

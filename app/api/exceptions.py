@@ -31,6 +31,10 @@ class InvalidID(EntityException):
     pass
 
 
+class EntityIdNotProvided(EntityException):
+    pass
+
+
 # Users
 class UsersException(EntityException):
     pass

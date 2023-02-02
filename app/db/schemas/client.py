@@ -1,24 +1,11 @@
-from typing import Any, List, Optional, Tuple
+from __future__ import annotations
 
-from fastapi_permissions import Allow
+from typing import List, Optional
+
 from pydantic import UUID4, validator
 
+from app.db.acls.client import ClientACL
 from app.db.schemas.base import BaseSchema, BaseSchemaRead
-
-
-# ACL
-class ClientACL(BaseSchema):
-    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
-        return [
-            (Allow, "role:admin", "list"),
-            (Allow, "role:admin", "create"),
-            (Allow, "role:admin", "read"),
-            (Allow, "role:admin", "update"),
-            (Allow, "role:admin", "delete"),
-            (Allow, "role:user", "list"),
-            (Allow, "role:user", "create"),
-            (Allow, "role:user", "read"),
-        ]
 
 
 # validators
@@ -73,3 +60,18 @@ class ClientUpdate(ValidateClientTitleOptional, ValidateClientContentOptional):
 
 class ClientRead(ClientACL, ClientBase, BaseSchemaRead):
     id: UUID4
+
+
+# relationships
+class ClientReadRelations(ClientRead):
+    websites: Optional[List["WebsiteRead"]] = []
+    # gcloud_accounts: Optional[List["GoogleCloudPropertyRead"]] = []
+    # ga4_accounts: Optional[List["GoogleAnalytics4PropertyRead"]] = []
+    # gua_accounts: Optional[List["GoogleUniversalAnalyticsPropertyRead"]] = []
+    # sharpspring_accounts: Optional[List["SharpSpringRead"]] = []
+
+
+# import and update pydantic relationship refs
+from app.db.schemas.website import WebsiteRead  # noqa: E402
+
+ClientReadRelations.update_forward_refs()

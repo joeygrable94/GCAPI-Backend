@@ -1,20 +1,10 @@
 from datetime import datetime
-from typing import Any, List, Optional, Sequence, Tuple, Union
+from typing import Optional, Sequence, Union
 
-from fastapi_permissions import Allow, Authenticated
 from pydantic import UUID4, BaseModel, validator
 
-from app.core.config import settings
+from app.db.acls.accesstoken import AccessTokenACL
 from app.db.schemas.base import BaseSchema, BaseSchemaRead
-
-
-# ACL
-class AccessTokenACL(BaseSchema):
-    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
-        return [
-            (Allow, Authenticated, "use"),
-            (Allow, f"user:{settings.FIRST_SUPERUSER}", "super"),
-        ]
 
 
 # validators

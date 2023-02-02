@@ -12,10 +12,6 @@ from app.db.tables import User
 
 class UsersRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
     @property
-    def _schema_read(self) -> Type[UserRead]:  # type: ignore
-        return UserRead
-
-    @property
     def _table(self) -> Type[User]:  # type: ignore
         return User
 
