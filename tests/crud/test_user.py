@@ -12,7 +12,7 @@ from app.api.exceptions import (
 )
 from app.core.config import settings
 from app.core.utilities import password_helper
-from app.db.repositories import UsersRepository
+from app.db.repositories import UserRepository
 from app.db.schemas import UserCreate, UserUpdate
 from app.db.schemas.user import UserUpdateAuthPermissions
 from app.db.tables import User
@@ -21,12 +21,12 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_user_repo_table(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     assert user_repo._table is User
 
 
 async def test_create_user(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     username: str = random_email()
     password: str = random_lower_string()
     user_in: UserCreate = UserCreate(email=username, password=password, is_active=True)
@@ -41,7 +41,7 @@ async def test_create_user(db_session: AsyncSession) -> None:
 
 
 async def test_create_user_password_too_short(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     username: str = random_email()
     password: str = "abc123"
     user_in: UserCreate = UserCreate(email=username, password=password, is_active=True)
@@ -50,7 +50,7 @@ async def test_create_user_password_too_short(db_session: AsyncSession) -> None:
 
 
 async def test_create_user_password_too_long(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     username: str = random_email()
     password: str = random_lower_string() * 4
     user_in: UserCreate = UserCreate(email=username, password=password, is_active=True)
@@ -59,7 +59,7 @@ async def test_create_user_password_too_long(db_session: AsyncSession) -> None:
 
 
 async def test_create_user_already_exists(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     username: str = random_email()
     password: str = random_lower_string()
     user_in: UserCreate = UserCreate(email=username, password=password, is_active=True)
@@ -70,7 +70,7 @@ async def test_create_user_already_exists(db_session: AsyncSession) -> None:
 
 
 async def test_read_user(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     username: str = random_email()
     password: str = random_lower_string()
     user_in: UserCreate = UserCreate(
@@ -85,7 +85,7 @@ async def test_read_user(db_session: AsyncSession) -> None:
 
 
 async def test_update_user(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     username: str = random_email()
     password: str = random_lower_string()
     user_in: UserCreate = UserCreate(
@@ -107,7 +107,7 @@ async def test_update_user(db_session: AsyncSession) -> None:
 
 
 async def test_delete_user(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     username: str = random_email()
     password: str = random_lower_string()
     user_in: UserCreate = UserCreate(
@@ -120,7 +120,7 @@ async def test_delete_user(db_session: AsyncSession) -> None:
 
 
 async def test_authenticate_user(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     login_form: OAuth2PasswordRequestForm = OAuth2PasswordRequestForm(
         grant_type="password",
         username=settings.FIRST_SUPERUSER,
@@ -138,7 +138,7 @@ async def test_authenticate_user(db_session: AsyncSession) -> None:
 
 
 async def test_authenticate_user_raise_not_exists(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     login_form: OAuth2PasswordRequestForm = OAuth2PasswordRequestForm(
         grant_type="password",
         username=random_email(),
@@ -150,7 +150,7 @@ async def test_authenticate_user_raise_not_exists(db_session: AsyncSession) -> N
 
 
 async def test_crud_update_permissions_add(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     username: str = random_email()
     password: str = random_lower_string()
     user_in: UserCreate = UserCreate(
@@ -171,7 +171,7 @@ async def test_crud_update_permissions_add(db_session: AsyncSession) -> None:
 
 
 async def test_crud_update_permissions_remove(db_session: AsyncSession) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     username: str = random_email()
     password: str = random_lower_string()
     user_in: UserCreate = UserCreate(
@@ -194,7 +194,7 @@ async def test_crud_update_permissions_remove(db_session: AsyncSession) -> None:
 async def test_crud_update_permissions_remove_email_not_exists(
     db_session: AsyncSession,
 ) -> None:
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     fake_username: str = random_email()
     username: str = random_email()
     password: str = random_lower_string()

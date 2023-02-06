@@ -2,7 +2,7 @@ from app.api.exceptions import UserAlreadyExists
 from app.core.config import settings
 from app.core.logger import logger
 from app.db.base import Base
-from app.db.repositories import UsersRepository
+from app.db.repositories import UserRepository
 from app.db.schemas import UserCreate
 from app.db.session import async_session, engine
 
@@ -24,7 +24,7 @@ async def create_init_data() -> None:
     async with async_session() as session:
         # make superadmin
         try:
-            user_crud: UsersRepository = UsersRepository(session)
+            user_crud: UserRepository = UserRepository(session)
             await user_crud.create(
                 schema=UserCreate(
                     email=settings.FIRST_SUPERUSER,

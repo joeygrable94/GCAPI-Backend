@@ -7,7 +7,7 @@ from tests.utils.users import create_new_user, get_current_user_tokens
 from tests.utils.websites import create_random_website
 
 from app.api.errors import ErrorCode
-from app.db.repositories import WebsitesRepository
+from app.db.repositories import WebsiteRepository
 from app.db.schemas import WebsiteRead
 from app.db.schemas.user import UserAdmin
 from app.security.auth.manager import AuthManager
@@ -26,7 +26,7 @@ async def test_delete_website_by_id_as_superuser(
         headers=superuser_token_headers,
     )
     assert 200 <= response.status_code < 300
-    repo: WebsitesRepository = WebsitesRepository(db_session)
+    repo: WebsiteRepository = WebsiteRepository(db_session)
     data_not_found: Optional[Any] = await repo.read_by("domain", entry.domain)
     assert data_not_found is None
 

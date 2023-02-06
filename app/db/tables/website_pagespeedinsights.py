@@ -2,7 +2,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Union
 from uuid import UUID
 
-from sqlalchemy import Column, Float, ForeignKey
+from sqlalchemy import Column, Float, ForeignKey, String
 
 from app.db.tables.base import TableBase
 from app.db.types import GUID
@@ -15,7 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class WebsitePageSpeedInsights(TableBase):
     __tablename__: str = "website_pagespeedinsights"
     ps_grade: Column[Union[float, Decimal]] = Column(Float, nullable=False, default=0.0)
-    ps_value: Column[Union[float, Decimal]] = Column(Float, nullable=False, default=0.0)
+    ps_value: Column[str] = Column(String(4), nullable=False, default="0%")
     fcp_grade: Column[Union[float, Decimal]] = Column(
         Float, nullable=False, default=0.0
     )

@@ -82,6 +82,7 @@ class AccessTokenInDB(ValidateAccessTokenIdentifiers):
     user_id: UUID4
 
 
+# schemas
 class AccessTokenCreate(ValidateAccessTokenIdentifiers):
     token_jti: str
     csrf: str
@@ -94,7 +95,7 @@ class AccessTokenUpdate(BaseSchema):
     is_revoked: Optional[bool] = True
 
 
-class AccessTokenRead(AccessTokenACL, BaseSchemaRead, ValidateAccessTokenIdentifiers):
+class AccessTokenRead(AccessTokenACL, ValidateAccessTokenIdentifiers, BaseSchemaRead):
     token_jti: str
     csrf: str
     expires_at: Optional[datetime]

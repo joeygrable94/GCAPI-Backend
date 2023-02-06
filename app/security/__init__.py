@@ -11,7 +11,7 @@ from app.api.errors import ErrorCode
 from app.api.exceptions import InvalidID, UserNotExists
 from app.core.config import Settings, get_settings, settings
 from app.core.utilities import parse_id
-from app.db.repositories import AccessTokensRepository, UsersRepository
+from app.db.repositories import AccessTokenRepository, UserRepository
 from app.db.schemas import JWToken, UserRead
 from app.db.schemas.user import UserAdmin
 from app.db.tables import User
@@ -37,20 +37,20 @@ async def get_jwt_strategy(
 
 async def get_token_db(
     session: AsyncSession = Depends(get_async_db),
-) -> AsyncGenerator[AccessTokensRepository, None]:  # pragma: no cover
-    token_repo: AccessTokensRepository = AccessTokensRepository(session)
+) -> AsyncGenerator[AccessTokenRepository, None]:  # pragma: no cover
+    token_repo: AccessTokenRepository = AccessTokenRepository(session)
     yield token_repo
 
 
 async def get_user_db(
     session: AsyncSession = Depends(get_async_db),
-) -> AsyncGenerator[UsersRepository, None]:  # pragma: no cover
-    user_repo: UsersRepository = UsersRepository(session)
+) -> AsyncGenerator[UserRepository, None]:  # pragma: no cover
+    user_repo: UserRepository = UserRepository(session)
     yield user_repo
 
 
 async def get_db_strategy(
-    token_db: AccessTokensRepository = Depends(get_token_db),
+    token_db: AccessTokenRepository = Depends(get_token_db),
 ) -> AsyncGenerator:  # pragma: no cover
     yield DatabaseStrategy(token_db=token_db)
 
@@ -58,7 +58,7 @@ async def get_db_strategy(
 async def get_user_auth(
     jwt_strategy: JWTStrategy = Depends(get_jwt_strategy),
     db_strategy: DatabaseStrategy = Depends(get_db_strategy),
-    user_database: UsersRepository = Depends(get_user_db),
+    user_database: UserRepository = Depends(get_user_db),
 ) -> AsyncGenerator:  # pragma: no cover
     yield AuthManager(
         bearer=bearer_transport,

@@ -5,7 +5,7 @@ from app.db.schemas import UserClientCreate, UserClientRead, UserClientUpdate
 from app.db.tables import UserClient
 
 
-class UsersClientsRepository(
+class UserClientRepository(
     BaseRepository[UserClientCreate, UserClientRead, UserClientUpdate, UserClient]
 ):
     @property

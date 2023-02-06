@@ -4,7 +4,7 @@ from fastapi_permissions import Allow
 from pydantic import BaseModel
 
 
-class WebsiteACL(BaseModel):
+class WebsiteKeywordCorpusACL(BaseModel):
     def __acl__(self) -> List[Tuple[Any, Any, Any]]:
         return [
             (Allow, "role:admin", "list"),

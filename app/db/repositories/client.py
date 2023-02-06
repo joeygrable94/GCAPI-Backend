@@ -5,7 +5,7 @@ from app.db.schemas import ClientCreate, ClientRead, ClientUpdate
 from app.db.tables import Client
 
 
-class ClientsRepository(BaseRepository[ClientCreate, ClientRead, ClientUpdate, Client]):
+class ClientRepository(BaseRepository[ClientCreate, ClientRead, ClientUpdate, Client]):
     @property
     def _table(self) -> Type[Client]:  # type: ignore
         return Client

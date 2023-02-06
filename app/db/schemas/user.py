@@ -57,6 +57,7 @@ class ValidateUserPrincipals(BaseModel):
         return v
 
 
+# schemas
 class UserInDB(BaseSchema):
     email: EmailStr
     hashed_password: str
@@ -92,7 +93,7 @@ class UserUpdateAuthPermissions(ValidateUserEmailRequired, ValidateUserPrincipal
     principals: List[str]
 
 
-class UserRead(UserACL, BaseSchemaRead, ValidateUserEmailRequired):
+class UserRead(UserACL, ValidateUserEmailRequired, BaseSchemaRead):
     email: EmailStr
     is_active: bool
     is_superuser: bool

@@ -14,7 +14,7 @@ async def test_create_ipaddress_as_superuser(
     superuser_token_headers: Dict[str, str],
 ) -> None:
     address: str = random_lower_string()
-    data: Dict[str, str] = {"address": address}
+    data: Dict[str, str] = {"address": address, "is_blocked": False}
     response: Response = await client.post(
         "ip/",
         headers=superuser_token_headers,
@@ -30,7 +30,7 @@ async def test_create_ipaddress_as_superuser_address_already_exists(
     superuser_token_headers: Dict[str, str],
 ) -> None:
     address: str = random_lower_string()
-    data: Dict[str, str] = {"address": address}
+    data: Dict[str, str] = {"address": address, "is_blocked": False}
     response: Response = await client.post(
         "ip/",
         headers=superuser_token_headers,
@@ -39,7 +39,7 @@ async def test_create_ipaddress_as_superuser_address_already_exists(
     assert 200 <= response.status_code < 300
     entry: Dict[str, Any] = response.json()
     assert entry["address"] == address
-    data_2: Dict[str, str] = {"address": address}
+    data_2: Dict[str, str] = {"address": address, "is_blocked": False}
     response_2: Response = await client.post(
         "ip/",
         headers=superuser_token_headers,
@@ -55,7 +55,7 @@ async def test_create_ipaddress_as_testuser(
     testuser_token_headers: Dict[str, str],
 ) -> None:
     address: str = random_lower_string()
-    data: Dict[str, str] = {"address": address}
+    data: Dict[str, str] = {"address": address, "is_blocked": False}
     response: Response = await client.post(
         "ip/",
         headers=testuser_token_headers,
@@ -71,7 +71,7 @@ async def test_create_ipaddress_as_superuser_address_too_short(
     superuser_token_headers: Dict[str, str],
 ) -> None:
     address: str = "::"
-    data: Dict[str, str] = {"address": address}
+    data: Dict[str, str] = {"address": address, "is_blocked": False}
     response: Response = await client.post(
         "ip/",
         headers=superuser_token_headers,
@@ -87,7 +87,7 @@ async def test_create_ipaddress_as_superuser_address_too_long(
     superuser_token_headers: Dict[str, str],
 ) -> None:
     address: str = random_lower_string() * 10
-    data: Dict[str, str] = {"address": address}
+    data: Dict[str, str] = {"address": address, "is_blocked": False}
     response: Response = await client.post(
         "ip/",
         headers=superuser_token_headers,
@@ -106,7 +106,7 @@ async def test_create_ipaddress_as_superuser_isp_too_long(
 ) -> None:
     address: str = random_lower_string()
     isp: str = random_lower_string() * 10
-    data: Dict[str, str] = {"address": address, "isp": isp}
+    data: Dict[str, str] = {"address": address, "is_blocked": False, "isp": isp}
     response: Response = await client.post(
         "ip/",
         headers=superuser_token_headers,
@@ -126,7 +126,7 @@ async def test_create_ipaddress_as_superuser_location_too_long(
 ) -> None:
     address: str = random_lower_string()
     location: str = random_lower_string() * 50
-    data: Dict[str, str] = {"address": address, "location": location}
+    data: Dict[str, str] = {"address": address, "is_blocked": False, "location": location}
     response: Response = await client.post(
         "ip/",
         headers=superuser_token_headers,

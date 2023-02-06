@@ -10,7 +10,7 @@ from app.db.schemas import UserCreate, UserRead, UserUpdate, UserUpdateAuthPermi
 from app.db.tables import User
 
 
-class UsersRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
+class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
     @property
     def _table(self) -> Type[User]:  # type: ignore
         return User

@@ -10,7 +10,7 @@ from app.api.errors import ErrorCode
 from app.api.exceptions import InvalidID, UserNotExists
 from app.core.config import settings
 from app.core.utilities import get_int_from_datetime, get_uuid_str, parse_id
-from app.db.repositories import UsersRepository
+from app.db.repositories import UserRepository
 from app.db.schemas import AccessTokenRead, JWToken
 from app.db.schemas.user import UserAdmin
 from app.db.tables import User
@@ -36,7 +36,7 @@ class AuthManager:
         bearer: BearerTransport,
         jwt: JWTStrategy,
         tokens: DatabaseStrategy,
-        user_db: UsersRepository,
+        user_db: UserRepository,
     ):
         self.bearer = bearer
         self.jwt = jwt

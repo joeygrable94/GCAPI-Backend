@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.clients import create_random_client
 
 from app.api.errors import ErrorCode
-from app.db.repositories import ClientsRepository
+from app.db.repositories import ClientRepository
 from app.db.schemas import ClientRead
 
 pytestmark = pytest.mark.asyncio
@@ -23,7 +23,7 @@ async def test_delete_client_by_id_as_superuser(
         headers=superuser_token_headers,
     )
     assert 200 <= response.status_code < 300
-    repo: ClientsRepository = ClientsRepository(db_session)
+    repo: ClientRepository = ClientRepository(db_session)
     data_not_found: Optional[Any] = await repo.read_by("title", entry.title)
     assert data_not_found is None
 

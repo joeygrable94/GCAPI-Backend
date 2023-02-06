@@ -8,7 +8,7 @@ from tests.utils.utils import random_lower_string
 
 from app.core.config import settings
 from app.core.utilities import get_uuid, get_uuid_str
-from app.db.repositories import AccessTokensRepository
+from app.db.repositories import AccessTokenRepository
 from app.db.schemas import AccessTokenCreate, AccessTokenUpdate
 from app.db.tables import AccessToken
 
@@ -16,12 +16,12 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_token_repo_table(db_session: AsyncSession) -> None:
-    token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
+    token_repo: AccessTokenRepository = AccessTokenRepository(session=db_session)
     assert token_repo._table is AccessToken
 
 
 async def test_create_token(db_session: AsyncSession) -> None:
-    token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
+    token_repo: AccessTokenRepository = AccessTokenRepository(session=db_session)
     fake_token: str = random_lower_string()
     fake_csrf: str = get_uuid_str()
     fake_expire: datetime = datetime.now(timezone.utc) + timedelta(
@@ -41,7 +41,7 @@ async def test_create_token(db_session: AsyncSession) -> None:
 
 
 async def test_read_token_not_found(db_session: AsyncSession) -> None:
-    token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
+    token_repo: AccessTokenRepository = AccessTokenRepository(session=db_session)
     fake_token: str = random_lower_string()
     fake_csrf: str = get_uuid_str()
     fake_expire: datetime = datetime.now(timezone.utc) + timedelta(
@@ -64,7 +64,7 @@ async def test_read_token_not_found(db_session: AsyncSession) -> None:
 
 
 async def test_read_by_token(db_session: AsyncSession) -> None:
-    token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
+    token_repo: AccessTokenRepository = AccessTokenRepository(session=db_session)
     fake_user: UUID4 = get_uuid()
     fake_token: str = random_lower_string()
     fake_csrf: str = get_uuid_str()
@@ -89,7 +89,7 @@ async def test_read_by_token(db_session: AsyncSession) -> None:
 
 
 async def test_read_by_token_user(db_session: AsyncSession) -> None:
-    token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
+    token_repo: AccessTokenRepository = AccessTokenRepository(session=db_session)
     fake_user: UUID4 = get_uuid()
     fake_token: str = random_lower_string()
     fake_csrf: str = get_uuid_str()
@@ -112,7 +112,7 @@ async def test_read_by_token_user(db_session: AsyncSession) -> None:
 
 
 async def test_read_by_token_user_not_found(db_session: AsyncSession) -> None:
-    token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
+    token_repo: AccessTokenRepository = AccessTokenRepository(session=db_session)
     fake_user_2: UUID4 = get_uuid()
     fake_user: UUID4 = get_uuid()
     fake_token: str = random_lower_string()
@@ -134,7 +134,7 @@ async def test_read_by_token_user_not_found(db_session: AsyncSession) -> None:
 
 
 async def test_update_token(db_session: AsyncSession) -> None:
-    token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
+    token_repo: AccessTokenRepository = AccessTokenRepository(session=db_session)
     fake_user: UUID4 = get_uuid()
     fake_token: str = random_lower_string()
     fake_csrf: str = get_uuid_str()
@@ -159,7 +159,7 @@ async def test_update_token(db_session: AsyncSession) -> None:
 
 
 async def test_list_tokens(db_session: AsyncSession) -> None:
-    token_repo: AccessTokensRepository = AccessTokensRepository(session=db_session)
+    token_repo: AccessTokenRepository = AccessTokenRepository(session=db_session)
     fake_user: UUID4 = get_uuid()
     t1: str = random_lower_string()
     fake_csrf: str = get_uuid_str()

@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_async_db
 from app.api.exceptions import ClientAlreadyExists, ClientNotExists
-from app.db.repositories import ClientsRepository
+from app.db.repositories import ClientRepository
 from app.db.schemas import (
     ClientCreate,
     ClientRead,
@@ -30,7 +30,7 @@ async def clients_list(
     page: int = 1,
     current_user: UserAdmin = Permission("list", get_current_active_user),
 ) -> List[ClientRead] | List:
-    clients_repo: ClientsRepository = ClientsRepository(session=db)
+    clients_repo: ClientRepository = ClientRepository(session=db)
     clients: List[Client] | List[None] | None = await clients_repo.list(page=page)
     if clients and len(clients):  # pragma: no cover
         return [ClientRead.from_orm(c) for c in clients]
@@ -49,7 +49,7 @@ async def clients_create(
     current_user: UserAdmin = Permission("create", get_current_active_user),
 ) -> ClientRead:
     try:
-        clients_repo: ClientsRepository = ClientsRepository(session=db)
+        clients_repo: ClientRepository = ClientRepository(session=db)
         data: Dict = client_in.dict()
         check_title: Optional[str] = data.get("title")
         if check_title:
@@ -79,7 +79,7 @@ async def clients_read(
     current_user: UserAdmin = Permission("read", get_current_active_user),
 ) -> ClientRead:
     try:  # pragma: no cover
-        clients_repo: ClientsRepository = ClientsRepository(session=db)
+        clients_repo: ClientRepository = ClientRepository(session=db)
         client: Optional[Client] = await clients_repo.read(entry_id=id)
         if not client:
             raise ClientNotExists()
@@ -103,7 +103,7 @@ async def clients_update(
     current_user: UserAdmin = Permission("update", get_current_active_user),
 ) -> ClientRead:
     try:  # pragma: no cover
-        clients_repo: ClientsRepository = ClientsRepository(session=db)
+        clients_repo: ClientRepository = ClientRepository(session=db)
         client: Optional[Client] = await clients_repo.read(entry_id=id)
         if not client:
             raise ClientNotExists()
@@ -143,7 +143,7 @@ async def clients_delete(
     current_user: UserAdmin = Permission("delete", get_current_active_user),
 ) -> None:  # pragma: no cover
     try:
-        clients_repo: ClientsRepository = ClientsRepository(session=db)
+        clients_repo: ClientRepository = ClientRepository(session=db)
         client: Optional[Client] = await clients_repo.read(entry_id=id)
         if not client:
             raise ClientNotExists()

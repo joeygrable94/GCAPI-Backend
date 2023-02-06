@@ -12,7 +12,7 @@ from app.api.exceptions import (
     WebsiteNotExists,
 )
 from app.core.utilities.uuids import parse_id
-from app.db.repositories import ClientsRepository, WebsitesRepository
+from app.db.repositories import ClientRepository, WebsiteRepository
 from app.db.schemas.client import ClientRead
 from app.db.schemas.website import WebsiteRead
 from app.db.tables import Client, Website
@@ -28,7 +28,7 @@ async def get_client_or_404(
         if client_id is None:
             raise EntityIdNotProvided()
         parsed_id: UUID = parse_id(client_id)
-        client_repo: ClientsRepository = ClientsRepository(session=db)
+        client_repo: ClientRepository = ClientRepository(session=db)
         client: Client | None = await client_repo.read(entry_id=parsed_id)
         if not client:
             raise ClientNotExists()
@@ -52,7 +52,7 @@ async def get_website_or_404(
         if website_id is None:
             raise EntityIdNotProvided()
         parsed_id: UUID = parse_id(website_id)
-        website_repo: WebsitesRepository = WebsitesRepository(session=db)
+        website_repo: WebsiteRepository = WebsiteRepository(session=db)
         website: Website | None = await website_repo.read(entry_id=parsed_id)
         if not website:
             raise WebsiteNotExists()

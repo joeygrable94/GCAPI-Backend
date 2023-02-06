@@ -42,6 +42,7 @@ class ValidateWebsiteDomainOptional(BaseSchema):
         return v
 
 
+# schemas
 class WebsiteBase(ValidateWebsiteDomainRequired):
     domain: str
     is_secure: bool = False
@@ -64,11 +65,13 @@ class WebsiteRead(WebsiteACL, WebsiteBase, BaseSchemaRead):
 # relationships
 class WebsiteReadRelations(WebsiteRead):
     clients: Optional[List["ClientRead"]] = []
-    # sitemaps: Optional[List["WebsiteMapRead"]]
-    # pages: Optional[List["WebsitePageRead"]]
+    sitemaps: Optional[List["WebsiteMapRead"]] = []
+    pages: Optional[List["WebsitePageRead"]] = []
 
 
 # import and update pydantic relationship refs
 from app.db.schemas.client import ClientRead  # noqa: E402
+from app.db.schemas.website_map import WebsiteMapRead  # noqa: E402
+from app.db.schemas.website_page import WebsitePageRead  # noqa: E402
 
 WebsiteReadRelations.update_forward_refs()

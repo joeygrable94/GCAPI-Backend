@@ -2,9 +2,9 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_email, random_lower_string
 
-from app.db.repositories import UsersClientsRepository
-from app.db.repositories.client import ClientsRepository
-from app.db.repositories.user import UsersRepository
+from app.db.repositories import UserClientRepository
+from app.db.repositories.client import ClientRepository
+from app.db.repositories.user import UserRepository
 from app.db.schemas.client import ClientCreate
 from app.db.schemas.user import UserCreate
 from app.db.schemas.user_client import UserClientCreate
@@ -16,25 +16,25 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_users_clients_repo_table(db_session: AsyncSession) -> None:
-    repo: UsersClientsRepository = UsersClientsRepository(session=db_session)
+    repo: UserClientRepository = UserClientRepository(session=db_session)
     assert repo._table is UserClient
 
 
 async def test_create_user_client_exists_by_two_none(db_session: AsyncSession) -> None:
     # create user
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     username: str = random_email()
     password: str = random_lower_string()
     user_in: UserCreate = UserCreate(email=username, password=password, is_active=True)
     user: User = await user_repo.create(schema=user_in)
     # create client
-    client_repo: ClientsRepository = ClientsRepository(session=db_session)
+    client_repo: ClientRepository = ClientRepository(session=db_session)
     title: str = random_lower_string()
     content: str = random_lower_string() * 5
     client_in: ClientCreate = ClientCreate(title=title, content=content)
     client: Client = await client_repo.create(schema=client_in)
     # check user client not exists
-    user_client_repo: UsersClientsRepository = UsersClientsRepository(
+    user_client_repo: UserClientRepository = UserClientRepository(
         session=db_session
     )
     user_client_exists: UserClient | None = await user_client_repo.exists_by_two(
@@ -48,19 +48,19 @@ async def test_create_user_client_exists_by_two_none(db_session: AsyncSession) -
 
 async def test_create_user_client_exists_by_two_found(db_session: AsyncSession) -> None:
     # create user
-    user_repo: UsersRepository = UsersRepository(session=db_session)
+    user_repo: UserRepository = UserRepository(session=db_session)
     username: str = random_email()
     password: str = random_lower_string()
     user_in: UserCreate = UserCreate(email=username, password=password, is_active=True)
     user: User = await user_repo.create(schema=user_in)
     # create client
-    client_repo: ClientsRepository = ClientsRepository(session=db_session)
+    client_repo: ClientRepository = ClientRepository(session=db_session)
     title: str = random_lower_string()
     content: str = random_lower_string() * 5
     client_in: ClientCreate = ClientCreate(title=title, content=content)
     client: Client = await client_repo.create(schema=client_in)
     # create user client
-    user_client_repo: UsersClientsRepository = UsersClientsRepository(
+    user_client_repo: UserClientRepository = UserClientRepository(
         session=db_session
     )
     user_client_id: UserClientCreate = UserClientCreate(

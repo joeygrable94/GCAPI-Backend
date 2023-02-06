@@ -7,7 +7,7 @@ from tests.utils.clients import create_random_client
 
 from app.api.errors import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
-from app.db.repositories import ClientsRepository
+from app.db.repositories import ClientRepository
 from app.db.schemas import ClientRead
 
 pytestmark = pytest.mark.asyncio
@@ -26,7 +26,7 @@ async def test_read_client_by_id_as_superuser(
     data: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
     assert data["id"] == str(entry.id)
-    repo: ClientsRepository = ClientsRepository(db_session)
+    repo: ClientRepository = ClientRepository(db_session)
     existing_data: Any = await repo.read_by("title", entry.title)
     assert existing_data
     assert existing_data.title == data["title"]

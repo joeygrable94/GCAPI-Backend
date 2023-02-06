@@ -9,8 +9,8 @@ from app.api.exceptions import WebsiteAlreadyExists, WebsiteNotExists
 from app.api.utils import get_client_or_404
 from app.core.config import Settings, get_settings
 from app.core.logger import logger
-from app.db.repositories import WebsitesRepository
-from app.db.repositories.client_website import ClientsWebsitesRepository
+from app.db.repositories import WebsiteRepository
+from app.db.repositories.client_website import ClientWebsiteRepository
 from app.db.schemas import (
     ClientRead,
     ClientWebsiteCreate,
@@ -37,7 +37,7 @@ async def websites_list(
     page: int = 1,
     current_user: UserAdmin = Permission("list", get_current_active_user),
 ) -> List[WebsiteRead] | List:
-    websites_repo: WebsitesRepository = WebsitesRepository(session=db)
+    websites_repo: WebsiteRepository = WebsiteRepository(session=db)
     websites: List[Website] | List[None] | None = await websites_repo.list(page=page)
     if websites and len(websites):  # pragma: no cover
         return [WebsiteRead.from_orm(w) for w in websites]
@@ -58,7 +58,7 @@ async def websites_create(
     settings: Settings = Depends(get_settings),
 ) -> WebsiteRead:
     try:  # pragma: no cover
-        websites_repo: WebsitesRepository = WebsitesRepository(session=db)
+        websites_repo: WebsiteRepository = WebsiteRepository(session=db)
         data: Dict[str, str] = website_in.dict()
         check_domain: Optional[str] = data.get("domain")
         if check_domain:
@@ -74,7 +74,7 @@ async def websites_create(
             db=db, client_id=client_id
         )
         if client is not None:
-            client_website_repo: ClientsWebsitesRepository = ClientsWebsitesRepository(
+            client_website_repo: ClientWebsiteRepository = ClientWebsiteRepository(
                 session=db
             )
             client_site_exists: ClientWebsite | None = (
@@ -114,7 +114,7 @@ async def websites_read(
     current_user: UserAdmin = Permission("read", get_current_active_user),
 ) -> WebsiteRead:
     try:  # pragma: no cover
-        websites_repo: WebsitesRepository = WebsitesRepository(session=db)
+        websites_repo: WebsiteRepository = WebsiteRepository(session=db)
         website: Optional[Website] = await websites_repo.read(entry_id=id)
         if not website:
             raise WebsiteNotExists()
@@ -138,7 +138,7 @@ async def websites_update(
     current_user: UserAdmin = Permission("update", get_current_active_user),
 ) -> WebsiteRead:
     try:  # pragma: no cover
-        websites_repo: WebsitesRepository = WebsitesRepository(session=db)
+        websites_repo: WebsiteRepository = WebsiteRepository(session=db)
         website: Optional[Website] = await websites_repo.read(entry_id=id)
         if not website:
             raise WebsiteNotExists()
@@ -179,7 +179,7 @@ async def websites_delete(
     current_user: UserAdmin = Permission("delete", get_current_active_user),
 ) -> None:
     try:  # pragma: no cover
-        websites_repo: WebsitesRepository = WebsitesRepository(session=db)
+        websites_repo: WebsiteRepository = WebsiteRepository(session=db)
         website: Optional[Website] = await websites_repo.read(entry_id=id)
         if not website:
             raise WebsiteNotExists()

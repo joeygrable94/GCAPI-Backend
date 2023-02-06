@@ -5,7 +5,7 @@ from app.db.schemas import ClientWebsiteCreate, ClientWebsiteRead, ClientWebsite
 from app.db.tables import ClientWebsite
 
 
-class ClientsWebsitesRepository(
+class ClientWebsiteRepository(
     BaseRepository[
         ClientWebsiteCreate, ClientWebsiteRead, ClientWebsiteUpdate, ClientWebsite
     ]

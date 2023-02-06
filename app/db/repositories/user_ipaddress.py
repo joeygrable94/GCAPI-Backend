@@ -5,7 +5,7 @@ from app.db.schemas import UserIpCreate, UserIpRead, UserIpUpdate
 from app.db.tables import UserIpAddress
 
 
-class UsersIpAddressRepository(
+class UserIpAddressRepository(
     BaseRepository[UserIpCreate, UserIpRead, UserIpUpdate, UserIpAddress]
 ):
     @property

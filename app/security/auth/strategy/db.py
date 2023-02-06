@@ -3,14 +3,14 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.repositories import AccessTokensRepository
+from app.db.repositories import AccessTokenRepository
 from app.db.schemas import AccessTokenCreate, AccessTokenRead, AccessTokenUpdate
 from app.db.tables import AccessToken
 
 
 class DatabaseStrategy:
-    def __init__(self, token_db: AccessTokensRepository):
-        self.token_repo: AccessTokensRepository = token_db
+    def __init__(self, token_db: AccessTokenRepository):
+        self.token_repo: AccessTokenRepository = token_db
 
     async def read_token(
         self,

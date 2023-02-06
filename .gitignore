@@ -43,6 +43,3 @@ start-reload.sh
 
 # examples
 ex_*
-
-# DB migrations
-alembic/versions

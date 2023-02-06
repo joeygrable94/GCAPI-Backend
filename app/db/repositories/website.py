@@ -5,7 +5,7 @@ from app.db.schemas import WebsiteCreate, WebsiteRead, WebsiteUpdate
 from app.db.tables import Website
 
 
-class WebsitesRepository(
+class WebsiteRepository(
     BaseRepository[WebsiteCreate, WebsiteRead, WebsiteUpdate, Website]
 ):
     @property

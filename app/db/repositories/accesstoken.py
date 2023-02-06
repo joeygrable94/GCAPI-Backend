@@ -7,7 +7,7 @@ from app.db.schemas import AccessTokenCreate, AccessTokenRead, AccessTokenUpdate
 from app.db.tables import AccessToken
 
 
-class AccessTokensRepository(
+class AccessTokenRepository(
     BaseRepository[
         AccessTokenCreate,
         AccessTokenRead,

@@ -14,7 +14,7 @@ from tests.utils.users import get_current_user, get_current_user_tokens
 from app.api.deps import get_async_db
 from app.core.config import settings
 from app.db.init_db import build_database, create_init_data
-from app.db.repositories import AccessTokensRepository, UsersRepository
+from app.db.repositories import AccessTokenRepository, UserRepository
 from app.db.schemas import UserRead
 from app.db.schemas.user import UserAdmin
 from app.db.session import async_engine, async_session
@@ -75,20 +75,20 @@ async def get_jwt_strategy() -> AsyncGenerator:
 
 @pytest.fixture(scope="session")
 async def get_token_db(db_session: AsyncSession) -> AsyncGenerator:
-    token_repo: AccessTokensRepository = AccessTokensRepository(db_session)
+    token_repo: AccessTokenRepository = AccessTokenRepository(db_session)
     yield token_repo
 
 
 @pytest.fixture(scope="session")
 async def get_db_strategy(
-    get_token_db: AccessTokensRepository,
+    get_token_db: AccessTokenRepository,
 ) -> AsyncGenerator:
     yield DatabaseStrategy(token_db=get_token_db)
 
 
 @pytest.fixture(scope="session")
 async def get_user_db(db_session: AsyncSession) -> AsyncGenerator:
-    user_repo: UsersRepository = UsersRepository(db_session)
+    user_repo: UserRepository = UserRepository(db_session)
     yield user_repo
 
 
@@ -96,7 +96,7 @@ async def get_user_db(db_session: AsyncSession) -> AsyncGenerator:
 async def user_auth(
     get_jwt_strategy: JWTStrategy,
     get_db_strategy: DatabaseStrategy,
-    get_user_db: UsersRepository,
+    get_user_db: UserRepository,
 ) -> AsyncGenerator:
     yield AuthManager(
         bearer=bearer_transport,
@@ -110,7 +110,7 @@ async def user_auth(
 async def override_get_user_auth(
     get_jwt_strategy: JWTStrategy,
     get_db_strategy: DatabaseStrategy,
-    get_user_db: UsersRepository,
+    get_user_db: UserRepository,
 ) -> Callable:
     async def _override_get_user_auth() -> AsyncGenerator[AuthManager, None]:
         yield AuthManager(

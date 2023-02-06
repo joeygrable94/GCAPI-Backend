@@ -43,6 +43,7 @@ class ValidateClientContentOptional(BaseSchema):
         return v
 
 
+# schemas
 class ClientBase(ValidateClientTitleRequired, ValidateClientContentOptional):
     title: str
     content: Optional[str]

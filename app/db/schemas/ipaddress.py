@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import UUID4, validator
 
 from app.db.acls.ipaddress import IpAddressACL
-from app.db.schemas.base import BaseSchema
+from app.db.schemas.base import BaseSchema, BaseSchemaRead
 
 
 # validators
@@ -53,6 +53,7 @@ class ValidateIpLocationOptional(BaseSchema):
         return v
 
 
+# schemas
 class IpAddressBase(BaseSchema):
     isp: Optional[str] = None
     location: Optional[str] = None
@@ -66,6 +67,7 @@ class IpAddressCreate(
     IpAddressBase,
 ):
     address: str
+    is_blocked: bool
 
 
 class IpAddressUpdate(
@@ -75,6 +77,7 @@ class IpAddressUpdate(
     IpAddressBase,
 ):
     address: Optional[str]
+    is_blocked: Optional[bool]
 
 
 class IpAddressRead(
@@ -83,6 +86,7 @@ class IpAddressRead(
     ValidateIpIspOptional,
     ValidateIpLocationOptional,
     IpAddressBase,
+    BaseSchemaRead,
 ):
     id: UUID4
 
