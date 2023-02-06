@@ -22,7 +22,7 @@ PyMySQL = "1.0.2"
 SQLAlchemy = {version = "1.4.46", extras = ["mypy", "asyncio"]}
 sqlalchemy-stubs = "0.4"
 SQLAlchemy-Utils = "0.38.3"
-databases = "0.6.1"
+databases = "0.7.0"
 PyJWT = "^2.4.0"
 alembic = "1.8.1"
 asgi-correlation-id = "^3.2.1"
