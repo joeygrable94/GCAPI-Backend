@@ -24,7 +24,7 @@ sqlalchemy-stubs = "0.4"
 SQLAlchemy-Utils = "0.38.3"
 databases = "0.6.1"
 PyJWT = "^2.4.0"
-alembic = "1.8.1"
+alembic = "1.9.2"
 asgi-correlation-id = "^3.2.1"
 asgi-lifespan = "^2.0.0"
 anyio = {version = "3.6.2", extras = ["trio"]}
