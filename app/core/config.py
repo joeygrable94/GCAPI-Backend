@@ -31,6 +31,11 @@ class Settings(BaseSettings):
         "BACKEND_CORS_ORIGINS", []
     )
 
+    # Worker
+    REDIS_CONN_URI: str = environ.get("REDIS_CONN_URI", "redis://cache:6379")
+    CELERY_WORKER_BROKER: str = environ.get("CELERY_WORKER_BROKER", '/0')
+    CELERY_WORKER_BACKEND: str = environ.get("CELERY_WORKER_BACKEND", '/0')
+
     # Tokens: lifetime = seconds * minutes * hours * days = total seconds
     ACCESS_TOKEN_AUDIENCE: str = "auth:access"
     ACCESS_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1  # 3600
