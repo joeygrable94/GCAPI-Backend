@@ -55,6 +55,8 @@ class ValidateIpLocationOptional(BaseSchema):
 
 # schemas
 class IpAddressBase(BaseSchema):
+    address: str
+    is_blocked: bool
     isp: Optional[str] = None
     location: Optional[str] = None
     geocoord_id: Optional[UUID4] = None
@@ -67,17 +69,19 @@ class IpAddressCreate(
     IpAddressBase,
 ):
     address: str
-    is_blocked: bool
+    is_blocked: bool = False
 
 
 class IpAddressUpdate(
     ValidateIpAddressOptional,
     ValidateIpIspOptional,
     ValidateIpLocationOptional,
-    IpAddressBase,
 ):
-    address: Optional[str]
-    is_blocked: Optional[bool]
+    address: Optional[str] = None
+    is_blocked: Optional[bool] = None
+    isp: Optional[str] = None
+    location: Optional[str] = None
+    geocoord_id: Optional[UUID4] = None
 
 
 class IpAddressRead(

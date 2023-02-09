@@ -17,7 +17,7 @@ class IpAddress(TableBase):
     address: Column[str] = Column(
         String(64), unique=True, nullable=False, default="::1"
     )
-    is_blocked: Column[bool] = Column(Boolean(), nullable=False, default=False)
+    is_blocked: Column[bool] = Column(Boolean, nullable=False, default=False)
     isp: Column[Optional[str]] = Column(String(255), nullable=True)
     location: Column[Optional[str]] = Column(String(500), nullable=True)
 

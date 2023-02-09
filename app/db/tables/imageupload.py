@@ -18,7 +18,7 @@ class ImageUpload(TableBase):
     title: Column[Optional[str]] = Column(String(255), nullable=True)
     caption: Column[Optional[str]] = Column(String(255), nullable=True)
     is_geotagged: Column[Optional[bool]] = Column(
-        Boolean(), nullable=True, default=False
+        Boolean, nullable=True, default=False
     )
 
     # relationships

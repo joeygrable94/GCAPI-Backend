@@ -17,7 +17,7 @@ class WebsiteMap(TableBase):
     title: Column[str] = Column(String(255), nullable=False, default="unnamed")
     file_name: Column[str] = Column(String(120), nullable=False, default="sample.xml")
     file_path: Column[str] = Column(String(255), nullable=False, default="uploads/tmp")
-    is_processed: Column[bool] = Column(Boolean(), nullable=False, default=False)
+    is_processed: Column[bool] = Column(Boolean, nullable=False, default=False)
 
     # relationships
     website_id: Column[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)

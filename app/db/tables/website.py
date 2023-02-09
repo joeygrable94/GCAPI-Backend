@@ -15,7 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class Website(TableBase):
     __tablename__: str = "website"
     domain: Column[str] = Column(String(255), nullable=False)
-    is_secure: Column[bool] = Column(Boolean(), nullable=False, default=False)
+    is_secure: Column[bool] = Column(Boolean, nullable=False, default=False)
 
     # relationships
     clients: Column[Optional[List["Client"]]] = relationship(  # type: ignore
