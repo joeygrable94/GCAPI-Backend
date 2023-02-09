@@ -1,5 +1,5 @@
 import asyncio
-from typing import AsyncGenerator, Callable, Dict, Generator, Tuple
+from typing import Any, AsyncGenerator, Callable, Dict, Generator, Tuple
 
 # import alembic
 import pytest
@@ -143,6 +143,11 @@ async def client(app: FastAPI) -> AsyncGenerator:
             headers={"Content-Type": "application/json"},
         ) as client:
             yield client
+
+
+@pytest.fixture(scope="session")
+def celery_config() -> Any:
+    return {"broker_url": "memory://", "result_backend": "rpc"}
 
 
 @pytest.fixture(scope="module")

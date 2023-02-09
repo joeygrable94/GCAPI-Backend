@@ -19,7 +19,7 @@ import logging
 import sys
 from typing import Any
 
-from asgi_correlation_id.log_filters import CorrelationIdFilter
+from asgi_correlation_id.log_filters import CeleryTracingIdsFilter, CorrelationIdFilter
 
 from app.core.config import settings
 
@@ -143,6 +143,10 @@ class Logger:
             name="correlation_id",
             uuid_length=8 if not settings.DEBUG_MODE else 32,
         )
+        self.worker_process_id_filter: CeleryTracingIdsFilter = CeleryTracingIdsFilter(
+            name="celery_tracing",
+            uuid_length=8 if not settings.DEBUG_MODE else 32,
+        )
         self.file_frmt: logging.Formatter = logging.Formatter(
             "%(levelname)s:\t\b%(asctime)s [%(correlation_id)s] \
 %(name)s:%(lineno)d %(message)s"
@@ -165,6 +169,8 @@ class Logger:
         # add filter
         self.fh.addFilter(self.process_id_filter)
         self.ch.addFilter(self.process_id_filter)
+        self.fh.addFilter(self.worker_process_id_filter)
+        self.ch.addFilter(self.worker_process_id_filter)
         # set formatter
         if any("celery" in i for i in sys.argv):  # pragma: no cover
             self.fh.setFormatter(self.worker_frmt)

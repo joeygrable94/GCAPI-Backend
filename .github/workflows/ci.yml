@@ -15,7 +15,8 @@ jobs:
       fail-fast: true
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.11"]
+        python-version: ["3.11", "3.10"]
+        redis-version: ["7"]
     env:
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
       SMTP_USER: ${{ secrets.SMTP_USER }}
@@ -27,6 +28,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.4.0
+        with:
+          redis-version: ${{ matrix.redis-version }}
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip \
