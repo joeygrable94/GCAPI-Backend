@@ -1,5 +1,9 @@
+from datetime import datetime
 import random
 import string
+
+now = datetime.now()
+random.seed(int(round(now.timestamp())))
 
 
 def random_boolean() -> bool:
@@ -12,7 +16,3 @@ def random_lower_string() -> str:
 
 def random_email() -> str:
     return f"{random_lower_string()}@getcommunity.com"
-
-
-def random_domain() -> str:
-    return f"{random_lower_string()}.com"

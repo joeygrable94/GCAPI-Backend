@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from pydantic import UUID4, validator
+from pydantic import UUID4, BaseModel, validator
 
 from app.core.utilities import domain_name_regex
 from app.db.acls.website import WebsiteACL
@@ -60,6 +60,12 @@ class WebsiteUpdate(ValidateWebsiteDomainOptional):
 
 class WebsiteRead(WebsiteACL, WebsiteBase, BaseSchemaRead):
     id: UUID4
+
+
+# tasks
+class WebsiteCreateProcessing(BaseModel):
+    website: WebsiteRead
+    sitemap_task_id: UUID4
 
 
 # relationships

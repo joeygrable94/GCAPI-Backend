@@ -77,3 +77,15 @@ class WebsiteAlreadyExists(WebsitesException):
 
 class WebsiteNotExists(WebsitesException):
     pass
+
+
+class WebsiteDomainInvalid(WebsitesException):
+    pass
+
+# Website Sitemaps
+class WebsiteMapNotExists(WebsitesException):
+    pass
+
+# Website Pages
+class WebsitePageNotExists(WebsitesException):
+    pass

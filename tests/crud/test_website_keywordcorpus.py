@@ -7,6 +7,6 @@ from app.db.tables import WebsiteKeywordCorpus
 pytestmark = pytest.mark.asyncio
 
 
-async def test_websites_repo_table(db_session: AsyncSession) -> None:
+async def test_website_keyword_corpus_repo_table(db_session: AsyncSession) -> None:
     repo: WebsiteKeywordCorpusRepository = WebsiteKeywordCorpusRepository(session=db_session)
     assert repo._table is WebsiteKeywordCorpus

@@ -7,6 +7,7 @@ class BaseSchema(BaseModel):
     class Config(BaseConfig):
         allow_population_by_field_name: bool = True
         orm_mode: bool = True
+        use_enum_values: bool = True
 
 
 class BaseSchemaRead(BaseSchema):

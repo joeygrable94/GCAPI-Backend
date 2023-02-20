@@ -9,7 +9,7 @@
 - [Security Policy](#security-policy)
   - [Getting Starting](#getting-starting)
   - [User Registration and Verification](#user-registration-and-verification)
-  - [Identy Access Management (IAM): Authetication & Authorization (Permissions)](#identy-access-management-iam-authetication--authorization-permissions)
+  - [Identy Access Management (IAM): Authetication \& Authorization (Permissions)](#identy-access-management-iam-authetication--authorization-permissions)
     - [IAM: Identity Access Management](#iam-identity-access-management)
       - [Identity: Authentication Flow](#identity-authentication-flow)
       - [Access: Permissions Flow](#access-permissions-flow)

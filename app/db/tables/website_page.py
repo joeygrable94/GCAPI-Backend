@@ -1,7 +1,9 @@
-from typing import TYPE_CHECKING, List, Optional
+from datetime import datetime
+from decimal import Decimal
+from typing import TYPE_CHECKING, List, Optional, Union
 from uuid import UUID
 
-from sqlalchemy import Column, ForeignKey, Integer, Text
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import backref, relationship
 
 from app.db.tables.base import TableBase
@@ -14,8 +16,11 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class WebsitePage(TableBase):
     __tablename__: str = "website_page"
-    path: Column[str] = Column(Text, nullable=False, default="/")
+    url: Column[str] = Column(Text, nullable=False, default="/")
     status: Column[int] = Column(Integer, nullable=False, default=200)
+    priority: Column[Union[float, Decimal]] = Column(Float, nullable=False, default=0.5)
+    last_modified: Column[Optional[datetime]] = Column(DateTime(), nullable=True)
+    change_frequency: Column[Optional[str]] = Column(String(64), nullable=True, default=None)
 
     # relationships
     website_id: Column[UUID] = Column(GUID, ForeignKey("website.id"), nullable=False)

@@ -7,7 +7,6 @@ from app.db.tables.base import TableBase
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
-    from .client_website import ClientWebsite  # noqa: F401
     from .website_map import WebsiteMap  # noqa: F401
     from .website_page import WebsitePage  # noqa: F401
 

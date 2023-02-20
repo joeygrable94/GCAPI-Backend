@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import auth, clients, ipaddress, public, users, websites
+from app.api.v1.endpoints import auth, clients, ipaddress, public, tasks, users, websites
 
 router_v1 = APIRouter()
 
@@ -13,6 +13,13 @@ router_v1.include_router(
     auth.router,
     prefix="/auth",
     tags=["auth"],
+)
+
+# task routes
+router_v1.include_router(
+    tasks.router,
+    prefix="/tasks",
+    tags=["tasks"],
 )
 
 # ip address routes

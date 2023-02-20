@@ -46,7 +46,7 @@ async def test_read_website_by_id_as_superuser_website_not_found(
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 404
-    assert data["detail"] == "Website not found"
+    assert data["detail"] == ErrorCode.WEBSITE_NOT_FOUND
 
 
 async def test_read_website_by_id_as_testuser(
