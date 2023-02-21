@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     # APP
     PROJECT_NAME: str = environ.get("PROJECT_NAME", "FastAPI")
-    PROJECT_VERSION: str = environ.get("PROJECT_VERSION", "0.0.1")
+    PROJECT_VERSION: str = environ.get("TAG", "0.0.1")
     DEBUG_MODE: bool = bool(environ.get("APP_DEBUG", True))
     LOGGING_LEVEL: str = environ.get("BACKEND_LOG_LEVEL", "DEBUG").upper()
     LOGGER_NAME: str = environ.get("PROJECT_NAME", "debug")
@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     # API
     API_PREFIX_V1: str = "/api/v1"
     SERVER_NAME: str = environ.get("DOMAIN", "localhost:8888")
+    SERVER_NAME_STAGING: str = environ.get("DOMAIN_STAGING", "test.localhost")
 
     # Security
     SECURITY_ALGORITHM: str = "HS256"
@@ -27,9 +28,28 @@ class Settings(BaseSettings):
     SECRET_KEY: str = environ.get(
         "SECRET_KEY", "54295fb3ad6577bf6ec55fc8a4e2ce86b4a490b5f1666f1e871e94855f6dc0a7"
     )
-    BACKEND_CORS_ORIGINS: Union[str, List[str]] = environ.get(
-        "BACKEND_CORS_ORIGINS", []
-    )
+    BACKEND_CORS_ORIGINS: Union[str, List[str]] = [
+        f'http://{SERVER_NAME}',
+        f'http://{SERVER_NAME}:8888',
+        f'http://{SERVER_NAME}:80',
+        f'http://{SERVER_NAME}:8080',
+        f'http://{SERVER_NAME}:4200',
+        f'http://{SERVER_NAME}:3000',
+        f'https://{SERVER_NAME}',
+        f'https://{SERVER_NAME}:8888',
+        f'https://{SERVER_NAME}:80',
+        f'https://{SERVER_NAME}:8080',
+        f'https://{SERVER_NAME}:4200',
+        f'https://{SERVER_NAME}:3000',
+        f'http://{SERVER_NAME_STAGING}',
+        f'https://{SERVER_NAME_STAGING}',
+        f'http://whoami.{SERVER_NAME_STAGING}',
+        f'https://whoami.{SERVER_NAME_STAGING}',
+        f'http://dbadmin.{SERVER_NAME_STAGING}',
+        f'https://dbadmin.{SERVER_NAME_STAGING}',
+        f'http://flower.{SERVER_NAME_STAGING}',
+        f'https://flower.{SERVER_NAME_STAGING}',
+    ]
 
     # Tokens: lifetime = seconds * minutes * hours * days = total seconds
     ACCESS_TOKEN_AUDIENCE: str = "auth:access"
