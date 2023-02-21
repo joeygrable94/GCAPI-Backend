@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     # APP
     PROJECT_NAME: str = environ.get("PROJECT_NAME", "FastAPI")
-    PROJECT_VERSION: str = environ.get("PROJECT_VERSION", "0.0.1")
+    PROJECT_VERSION: str = environ.get("TAG", "0.0.1")
     DEBUG_MODE: bool = bool(environ.get("APP_DEBUG", True))
     LOGGING_LEVEL: str = environ.get("BACKEND_LOG_LEVEL", "DEBUG").upper()
     LOGGER_NAME: str = environ.get("PROJECT_NAME", "debug")
