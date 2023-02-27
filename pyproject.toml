@@ -21,7 +21,7 @@ python-dotenv = "0.21.0"
 PyMySQL = "1.0.2"
 SQLAlchemy = {version = "1.4.46", extras = ["mypy", "asyncio"]}
 sqlalchemy-stubs = "0.4"
-SQLAlchemy-Utils = "0.39.0"
+SQLAlchemy-Utils = "0.40.0"
 databases = "0.7.0"
 PyJWT = "^2.4.0"
 alembic = "1.9.3"
