@@ -65,7 +65,7 @@ class WebsiteRead(WebsiteACL, WebsiteBase, BaseSchemaRead):
 # tasks
 class WebsiteCreateProcessing(BaseModel):
     website: WebsiteRead
-    sitemap_task_id: UUID4
+    task_id: UUID4
 
 
 # relationships

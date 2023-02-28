@@ -37,7 +37,7 @@ from app.db.schemas import (
     BearerResponse,
     JWToken,
     RequestUserCreate,
-    UserAdmin,
+    UserPrincipals,
     UserCreate,
     UserRead,
     UserUpdate,
@@ -83,7 +83,7 @@ async def auth_register(
         created_user: User = await oauth.users.create(
             schema=UserCreate(**create_user_dict)
         )
-        new_user: UserAdmin = UserAdmin.from_orm(created_user)  # pragma: no cover
+        new_user: UserPrincipals = UserPrincipals.from_orm(created_user)  # pragma: no cover
         # create verification token
         verify_token: str
         verify_token_csrf: str
@@ -131,7 +131,7 @@ async def auth_register(
 )
 async def auth_verification(
     background_tasks: BackgroundTasks,
-    user: UserAdmin = Depends(get_current_user_by_email),
+    user: UserPrincipals = Depends(get_current_user_by_email),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
 ) -> None:
@@ -207,7 +207,7 @@ async def auth_confirmation(
 )
 async def auth_forgot_password(
     background_tasks: BackgroundTasks,
-    user: UserAdmin = Depends(get_current_user_by_email),
+    user: UserPrincipals = Depends(get_current_user_by_email),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
 ) -> None:
@@ -298,7 +298,7 @@ async def auth_access(
     """
     Authenticates the user and grants them an access and a refresh token.
     """
-    user: Optional[UserAdmin] = await oauth.certify(credentials)
+    user: Optional[UserPrincipals] = await oauth.certify(credentials)
     if user is None:  # pragma: no cover
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -354,7 +354,7 @@ async def auth_access(
 )
 async def auth_refresh(
     response: Response,
-    user_token: Tuple[UserAdmin, JWToken, str] = Depends(
+    user_token: Tuple[UserPrincipals, JWToken, str] = Depends(
         get_current_active_refresh_user
     ),
     oauth: AuthManager = Depends(get_user_auth),
@@ -363,7 +363,7 @@ async def auth_refresh(
     """
     Refreshes current user access token and refresh tokens.
     """
-    user: UserAdmin
+    user: UserPrincipals
     token_data: JWToken
     token_str: str
     user, token_data, token_str = user_token
@@ -409,13 +409,13 @@ async def auth_refresh(
 )
 async def auth_revoke(
     response: Response,
-    user_token: Tuple[UserAdmin, JWToken, str] = Depends(get_current_user_access_token),
+    user_token: Tuple[UserPrincipals, JWToken, str] = Depends(get_current_user_access_token),
     oauth: AuthManager = Depends(get_user_auth),
 ) -> BearerResponse:
     """
     Revokes current user access token by adding it to the denylist.
     """
-    user: UserAdmin
+    user: UserPrincipals
     token_data: JWToken
     token_str: str
     user, token_data, token_str = user_token
@@ -438,13 +438,13 @@ async def auth_revoke(
 )
 async def auth_logout(
     response: Response,
-    user_token: Tuple[UserAdmin, JWToken, str] = Depends(get_current_user_access_token),
+    user_token: Tuple[UserPrincipals, JWToken, str] = Depends(get_current_user_access_token),
     oauth: AuthManager = Depends(get_user_auth),
 ) -> BearerResponse:
     """
     Logout the current active user by access token and invalidates token id.
     """
-    user: UserAdmin
+    user: UserPrincipals
     token_data: JWToken
     token_str: str
     user, token_data, token_str = user_token

@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from celery.result import AsyncResult
 from pydantic import BaseModel
 
-from app.db.schemas.user import UserAdmin
+from app.db.schemas.user import UserPrincipals
 from app.security import Permission, get_current_active_user
 
 router: APIRouter = APIRouter()
@@ -22,7 +22,7 @@ class TaskState(BaseModel):
 )
 def get_status(
     task_id: Any,
-    current_user: UserAdmin = Permission("list", get_current_active_user),
+    current_user: UserPrincipals = Permission("list", get_current_active_user),
 ) -> Dict[str, Any]:
     task_result = AsyncResult(task_id)
     return TaskState(

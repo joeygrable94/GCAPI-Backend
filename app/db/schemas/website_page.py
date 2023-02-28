@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional, Union
 
-from pydantic import UUID4, validator
+from pydantic import UUID4, BaseModel, validator
 from usp.objects.page import SitemapPageChangeFrequency
 
 from app.db.acls.website_page import WebsitePageACL
@@ -59,6 +59,12 @@ class WebsitePageUpdate(ValidateWebsitePageUrlOptional, BaseSchema):
 
 class WebsitePageRead(WebsitePageACL, WebsitePageBase, BaseSchemaRead):
     id: UUID4
+
+
+# task
+class WebsitePageFetchPSIProcessing(BaseModel):
+    page: WebsitePageRead
+    task_id: UUID4
 
 
 # relationships

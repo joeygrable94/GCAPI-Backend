@@ -29,7 +29,7 @@ from app.db.repositories import (
 from app.db.schemas import (
     ClientRead,
     ClientWebsiteCreate,
-    UserAdmin,
+    UserPrincipals,
     WebsiteCreate,
     WebsiteRead,
     WebsiteUpdate,
@@ -39,10 +39,12 @@ from app.db.schemas import (
     WebsiteMapReadRelations,
     WebsitePageRead,
     WebsitePageReadRelations,
+    WebsitePageFetchPSIProcessing,
+    WebsitePageSpeedInsightsRead,
 )
 from app.db.tables import ClientWebsite, Website, WebsiteMap, WebsitePage
 from app.security import Permission, get_current_active_user
-from app.worker import task_process_website_map
+from app.worker import task_process_website_map, task_fetch_website_page_pagespeedinsights
 
 router: APIRouter = APIRouter()
 
@@ -55,7 +57,7 @@ router: APIRouter = APIRouter()
 async def website_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
-    current_user: UserAdmin = Permission("list", get_current_active_user),
+    current_user: UserPrincipals = Permission("list", get_current_active_user),
 ) -> List[WebsiteRead] | List:
     websites_repo: WebsiteRepository = WebsiteRepository(session=db)
     websites: List[Website] | List[None] | None = await websites_repo.list(page=page)
@@ -74,7 +76,7 @@ async def website_create(
     db: AsyncSession = Depends(get_async_db),
     website_in: WebsiteCreate,
     client_id: Any | None = None,
-    current_user: UserAdmin = Permission("create", get_current_active_user),
+    current_user: UserPrincipals = Permission("create", get_current_active_user),
     settings: Settings = Depends(get_settings),
 ) -> WebsiteCreateProcessing:
     try:  # pragma: no cover
@@ -123,7 +125,7 @@ async def website_create(
                     )
         return WebsiteCreateProcessing(
             website=WebsiteRead.from_orm(new_site),
-            sitemap_task_id=sitemap_task.id
+            task_id=sitemap_task.id
         )
     except WebsiteDomainInvalid:  # pragma: no cover
         raise HTTPException(
@@ -144,7 +146,7 @@ async def website_read(
     *,
     db: AsyncSession = Depends(get_async_db),
     website_id: Any,
-    current_user: UserAdmin = Permission("read", get_current_active_user),
+    current_user: UserPrincipals = Permission("read", get_current_active_user),
 ) -> WebsiteRead:
     website: Website | None = await get_website_or_404(db, website_id)
     return WebsiteRead.from_orm(website)  # pragma: no cover
@@ -160,7 +162,7 @@ async def website_update(
     db: AsyncSession = Depends(get_async_db),
     website_id: Any,
     website_in: WebsiteUpdate,
-    current_user: UserAdmin = Permission("update", get_current_active_user),
+    current_user: UserPrincipals = Permission("update", get_current_active_user),
 ) -> WebsiteRead:
     try:  # pragma: no cover
         website: Website | None = await get_website_or_404(db, website_id)
@@ -201,7 +203,7 @@ async def website_delete(
     *,
     db: AsyncSession = Depends(get_async_db),
     website_id: Any,
-    current_user: UserAdmin = Permission("delete", get_current_active_user),
+    current_user: UserPrincipals = Permission("delete", get_current_active_user),
 ) -> None:
     try:  # pragma: no cover
         website: Website | None = await get_website_or_404(db, website_id)
@@ -226,7 +228,7 @@ async def website_sitemaps_list(
     db: AsyncSession = Depends(get_async_db),
     website_id: Any,
     page: int = 1,
-    current_user: UserAdmin = Permission("read", get_current_active_user),
+    current_user: UserPrincipals = Permission("read", get_current_active_user),
 ) -> List[WebsiteMapRead]:
     try:  # pragma: no cover
         website: Website | None = await get_website_or_404(db, website_id)
@@ -255,7 +257,7 @@ async def website_sitemaps_read(
     db: AsyncSession = Depends(get_async_db),
     website_id: Any,
     sitemap_id: Any,
-    current_user: UserAdmin = Permission("read", get_current_active_user),
+    current_user: UserPrincipals = Permission("read", get_current_active_user),
 ) -> WebsiteMapRead:
     try:  # pragma: no cover
         website: Website | None = await get_website_or_404(db, website_id)
@@ -286,7 +288,7 @@ async def website_sitemaps_pages_read(
     website_id: Any,
     sitemap_id: Any,
     page: int = 1,
-    current_user: UserAdmin = Permission("read", get_current_active_user),
+    current_user: UserPrincipals = Permission("read", get_current_active_user),
 ) -> List[WebsitePageRead] | List:
     try:  # pragma: no cover
         website: Website | None = await get_website_or_404(db, website_id)
@@ -322,7 +324,7 @@ async def website_pages_list(
     db: AsyncSession = Depends(get_async_db),
     website_id: Any,
     page: int = 1,
-    current_user: UserAdmin = Permission("read", get_current_active_user),
+    current_user: UserPrincipals = Permission("read", get_current_active_user),
 ) -> WebsitePageRead:
     try:  # pragma: no cover
         website: Website | None = await get_website_or_404(db, website_id)
@@ -352,7 +354,7 @@ async def website_pages_read(
     db: AsyncSession = Depends(get_async_db),
     website_id: Any,
     page_id: Any,
-    current_user: UserAdmin = Permission("read", get_current_active_user),
+    current_user: UserPrincipals = Permission("read", get_current_active_user),
 ) -> WebsitePageRead:
     try:  # pragma: no cover
         website: Website | None = await get_website_or_404(db, website_id)
@@ -370,3 +372,59 @@ async def website_pages_read(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ErrorCode.WEBSITE_PAGE_NOT_FOUND
         )
+
+
+@router.post(
+    "/{website_id}/pages/{page_id}/psi/",
+    name="websites:list_website_page_psi",
+    response_model=List[WebsitePageSpeedInsightsRead],
+)
+async def website_pages_psi_list() -> List[WebsitePageSpeedInsightsRead]:
+    return []
+
+
+@router.post(
+    "/{website_id}/pages/{page_id}/psi/fetch",
+    name="websites:fetch_website_page_psi",
+    response_model=WebsitePageFetchPSIProcessing,
+)
+async def website_pages_psi_fetch(
+    *,
+    db: AsyncSession = Depends(get_async_db),
+    website_id: Any,
+    page_id: Any,
+    current_user: UserPrincipals = Permission("create", get_current_active_user),
+) -> WebsitePageFetchPSIProcessing:
+    try:  # pragma: no cover
+        website: Website | None = await get_website_or_404(db, website_id)
+        if not website:
+            raise WebsiteNotExists()
+        website_page: WebsitePage | None = await get_website_page_or_404(db, page_id)
+        if not website_page:
+            raise WebsitePageNotExists()
+        fetch_psi_task = task_fetch_website_page_pagespeedinsights.delay(
+            website_id=website.id,
+            page_id=website_page.id,
+            fetch_psi_url=website.get_link()
+        )
+        return WebsitePageFetchPSIProcessing(
+            page=WebsitePageRead.from_orm(website_page),
+            task_id=fetch_psi_task.id,
+        )
+    except WebsiteNotExists:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Website not found"
+        )
+    except WebsitePageNotExists:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Website page not found found"
+        )
+
+
+@router.get(
+    "/{website_id}/pages/{page_id}/psi/{psi_id}",
+    name="websites:read_website_page_psi",
+    response_model=WebsitePageSpeedInsightsRead,
+)
+async def website_page_psi_read() -> WebsitePageSpeedInsightsRead:
+    pass

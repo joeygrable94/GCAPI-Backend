@@ -16,8 +16,8 @@ from .ipaddress import (
 )
 from .user import (
     RequestUserCreate,
-    UserAdmin,
-    UserAdminRelations,
+    UserPrincipals,
+    AdminReadUserPrincipals,
     UserCreate,
     UserInDB,
     UserRead,
@@ -44,8 +44,10 @@ from .website_page import (
     WebsitePageRead,
     WebsitePageReadRelations,
     WebsitePageUpdate,
+    WebsitePageFetchPSIProcessing,
 )
 from .website_pagespeedinsights import (
+    WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsCreate,
     WebsitePageSpeedInsightsRead,
     WebsitePageSpeedInsightsUpdate,

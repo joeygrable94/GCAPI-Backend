@@ -100,7 +100,7 @@ class UserRead(UserACL, ValidateUserEmailRequired, BaseSchemaRead):
     is_verified: bool
 
 
-class UserAdmin(UserRead, ValidateUserPrincipals):
+class UserPrincipals(UserRead, ValidateUserPrincipals):
     principals: List[str]
 
 
@@ -109,7 +109,7 @@ class UserReadRelations(UserRead):
     clients: Optional[List["ClientRead"]] = []
 
 
-class UserAdminRelations(UserAdmin):
+class AdminReadUserPrincipals(UserPrincipals):
     ip_addresses: Optional[List["IpAddressRead"]] = []
     tokens: Optional[List["AccessTokenRead"]] = []
     clients: Optional[List["ClientRead"]] = []
@@ -121,4 +121,4 @@ from app.db.schemas.client import ClientRead  # noqa: E402
 from app.db.schemas.ipaddress import IpAddressRead  # noqa: E402
 
 UserReadRelations.update_forward_refs()
-UserAdminRelations.update_forward_refs()
+AdminReadUserPrincipals.update_forward_refs()

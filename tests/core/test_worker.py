@@ -6,8 +6,6 @@ from tests.utils.utils import random_lower_string
 from app.core.utilities.uuids import get_uuid
 from app.worker import task_speak, task_process_website_map
 
-pytestmark = pytest.mark.asyncio
-
 
 def test_celery_task_speak(celery_worker: Any) -> None:
     random_word = random_lower_string()

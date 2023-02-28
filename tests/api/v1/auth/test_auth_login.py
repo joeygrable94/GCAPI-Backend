@@ -8,7 +8,7 @@ from tests.utils.utils import random_email, random_lower_string
 from app.api.errors import ErrorCode
 from app.core.config import settings
 from app.db.schemas import UserCreate
-from app.db.schemas.user import UserAdmin
+from app.db.schemas.user import UserPrincipals
 from app.db.tables.user import User
 from app.security import AuthManager
 
@@ -53,7 +53,7 @@ async def test_auth_login_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin
+    a_user: UserPrincipals
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     response: Response = await client.post(

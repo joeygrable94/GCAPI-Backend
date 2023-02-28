@@ -8,7 +8,7 @@ from tests.utils.users import create_random_user
 from app.api.errors import ErrorCode
 from app.core.config import settings
 from app.core.utilities import get_uuid_str
-from app.db.schemas.user import UserAdmin
+from app.db.schemas.user import UserPrincipals
 from app.security import AuthManager
 
 pytestmark = pytest.mark.asyncio
@@ -18,7 +18,7 @@ async def test_auth_verify_confirm_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin = await create_random_user(user_auth)
+    a_user: UserPrincipals = await create_random_user(user_auth)
     a_tok: str
     a_tok_csrf: str
     a_tok, a_tok_csrf = await user_auth.store_token(
@@ -49,7 +49,7 @@ async def test_auth_verify_confirm_random_user_bad_token(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin = await create_random_user(user_auth)  # noqa: F841
+    a_user: UserPrincipals = await create_random_user(user_auth)  # noqa: F841
     a_tok: str = get_uuid_str()
     a_tok_csrf: str = get_uuid_str()
     fast_mail.config.SUPPRESS_SEND = 1
@@ -69,7 +69,7 @@ async def test_auth_verify_confirm_random_user_bad_csrf(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin = await create_random_user(user_auth)
+    a_user: UserPrincipals = await create_random_user(user_auth)
     a_tok: str
     a_tok_csrf: str
     a_tok, a_tok_csrf = await user_auth.store_token(

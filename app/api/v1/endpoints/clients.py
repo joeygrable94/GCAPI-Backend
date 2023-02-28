@@ -12,7 +12,7 @@ from app.db.schemas import (
     ClientRead,
     ClientReadRelations,
     ClientUpdate,
-    UserAdmin,
+    UserPrincipals,
 )
 from app.db.tables import Client
 from app.security import Permission, get_current_active_user
@@ -28,7 +28,7 @@ router: APIRouter = APIRouter()
 async def clients_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
-    current_user: UserAdmin = Permission("list", get_current_active_user),
+    current_user: UserPrincipals = Permission("list", get_current_active_user),
 ) -> List[ClientRead] | List:
     clients_repo: ClientRepository = ClientRepository(session=db)
     clients: List[Client] | List[None] | None = await clients_repo.list(page=page)
@@ -46,7 +46,7 @@ async def clients_create(
     *,
     db: AsyncSession = Depends(get_async_db),
     client_in: ClientCreate,
-    current_user: UserAdmin = Permission("create", get_current_active_user),
+    current_user: UserPrincipals = Permission("create", get_current_active_user),
 ) -> ClientRead:
     try:
         clients_repo: ClientRepository = ClientRepository(session=db)
@@ -76,7 +76,7 @@ async def clients_read(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
-    current_user: UserAdmin = Permission("read", get_current_active_user),
+    current_user: UserPrincipals = Permission("read", get_current_active_user),
 ) -> ClientRead:
     try:  # pragma: no cover
         clients_repo: ClientRepository = ClientRepository(session=db)
@@ -100,7 +100,7 @@ async def clients_update(
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
     client_in: ClientUpdate,
-    current_user: UserAdmin = Permission("update", get_current_active_user),
+    current_user: UserPrincipals = Permission("update", get_current_active_user),
 ) -> ClientRead:
     try:  # pragma: no cover
         clients_repo: ClientRepository = ClientRepository(session=db)
@@ -140,7 +140,7 @@ async def clients_delete(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
-    current_user: UserAdmin = Permission("delete", get_current_active_user),
+    current_user: UserPrincipals = Permission("delete", get_current_active_user),
 ) -> None:  # pragma: no cover
     try:
         clients_repo: ClientRepository = ClientRepository(session=db)

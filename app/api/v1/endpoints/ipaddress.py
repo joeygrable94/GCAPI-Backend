@@ -12,7 +12,7 @@ from app.db.schemas import (
     IpAddressRead,
     IpAddressReadRelations,
     IpAddressUpdate,
-    UserAdmin,
+    UserPrincipals,
 )
 from app.db.tables import IpAddress
 from app.security import Permission, get_current_active_user
@@ -28,7 +28,7 @@ router: APIRouter = APIRouter()
 async def ipaddress_list(
     db: AsyncSession = Depends(get_async_db),
     page: int = 1,
-    current_user: UserAdmin = Permission("list", get_current_active_user),
+    current_user: UserPrincipals = Permission("list", get_current_active_user),
 ) -> List[IpAddressRead] | List:
     ipaddress_repo: IpAddressRepository = IpAddressRepository(session=db)
     ipaddress: List[IpAddress] | List[None] | None = await ipaddress_repo.list(
@@ -48,7 +48,7 @@ async def ipaddress_create(
     *,
     db: AsyncSession = Depends(get_async_db),
     ipaddress_in: IpAddressCreate,
-    current_user: UserAdmin = Permission("create", get_current_active_user),
+    current_user: UserPrincipals = Permission("create", get_current_active_user),
 ) -> IpAddressRead:
     try:
         ipaddress_repo: IpAddressRepository = IpAddressRepository(session=db)
@@ -80,7 +80,7 @@ async def ipaddress_read(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
-    current_user: UserAdmin = Permission("read", get_current_active_user),
+    current_user: UserPrincipals = Permission("read", get_current_active_user),
 ) -> IpAddressRead:
     try:  # pragma: no cover
         ipaddress_repo: IpAddressRepository = IpAddressRepository(session=db)
@@ -104,7 +104,7 @@ async def ipaddress_update(
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
     ipaddress_in: IpAddressUpdate,
-    current_user: UserAdmin = Permission("update", get_current_active_user),
+    current_user: UserPrincipals = Permission("update", get_current_active_user),
 ) -> IpAddressRead:
     try:  # pragma: no cover
         ipaddress_repo: IpAddressRepository = IpAddressRepository(session=db)
@@ -144,7 +144,7 @@ async def ipaddress_delete(
     *,
     db: AsyncSession = Depends(get_async_db),
     id: UUID,
-    current_user: UserAdmin = Permission("delete", get_current_active_user),
+    current_user: UserPrincipals = Permission("delete", get_current_active_user),
 ) -> None:  # pragma: no cover
     try:
         ipaddress_repo: IpAddressRepository = IpAddressRepository(session=db)

@@ -77,11 +77,14 @@ def run_migrations_online():
     url = get_url()
     configuration = config.get_section(config.config_ini_section)
     configuration["url"] = url  # type: ignore
-    connectable = engine_from_config(
-        configuration,
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    connectable = context.config.attributes.get("connection", None)
+    
+    if connectable is None:
+        connectable = engine_from_config(
+            configuration,
+            prefix="sqlalchemy.",
+            poolclass=pool.NullPool,
+        )
 
     with connectable.connect() as connection:
         context.configure(

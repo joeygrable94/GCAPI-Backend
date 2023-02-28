@@ -9,7 +9,7 @@ from tests.utils.utils import random_lower_string
 from app.api.errors import ErrorCode
 from app.core.config import settings
 from app.db.schemas import UserRead
-from app.db.schemas.user import UserAdmin
+from app.db.schemas.user import UserPrincipals
 from app.security import AuthManager
 
 pytestmark = pytest.mark.asyncio
@@ -19,7 +19,7 @@ async def test_auth_random_user_reset_password(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin
+    a_user: UserPrincipals
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     a_user_new_pass: str = random_lower_string()
@@ -54,7 +54,7 @@ async def test_auth_unauthorized_user_reset_password(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin
+    a_user: UserPrincipals
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     a_user_new_pass: str = random_lower_string()
@@ -82,7 +82,7 @@ async def test_auth_random_user_reset_password_too_long(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin
+    a_user: UserPrincipals
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     a_user_new_pass: str = random_lower_string() * 10
@@ -114,7 +114,7 @@ async def test_auth_random_user_reset_password_too_short(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin
+    a_user: UserPrincipals
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     a_user_new_pass: str = "1234567"

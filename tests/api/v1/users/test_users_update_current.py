@@ -9,7 +9,7 @@ from tests.utils.utils import random_lower_string
 from app.api.errors import ErrorCode
 from app.core.config import settings
 from app.db.schemas import UserRead, UserUpdate
-from app.db.schemas.user import UserAdmin
+from app.db.schemas.user import UserPrincipals
 from app.security import AuthManager
 
 pytestmark = pytest.mark.asyncio
@@ -17,9 +17,9 @@ pytestmark = pytest.mark.asyncio
 
 async def test_update_current_superuser(
     client: AsyncClient,
-    current_superuser: Tuple[UserAdmin | UserRead, Dict[str, str]],
+    current_superuser: Tuple[UserPrincipals | UserRead, Dict[str, str]],
 ) -> None:
-    current_user: UserAdmin | UserRead
+    current_user: UserPrincipals | UserRead
     current_token_headers: Dict[str, str]
     current_user, current_token_headers = current_superuser
     update_dict = UserUpdate(is_verified=True)
@@ -35,9 +35,9 @@ async def test_update_current_superuser(
 
 async def test_update_current_superuser_email_taken(
     client: AsyncClient,
-    current_superuser: Tuple[UserAdmin | UserRead, Dict[str, str]],
+    current_superuser: Tuple[UserPrincipals | UserRead, Dict[str, str]],
 ) -> None:
-    current_user: UserAdmin | UserRead
+    current_user: UserPrincipals | UserRead
     current_token: Dict[str, str]
     current_user, current_token = current_superuser
     update_dict = UserUpdate(
@@ -59,9 +59,9 @@ async def test_update_current_superuser_email_taken(
 
 async def test_update_current_superuser_password_too_short(
     client: AsyncClient,
-    current_superuser: Tuple[UserAdmin | UserRead, Dict[str, str]],
+    current_superuser: Tuple[UserPrincipals | UserRead, Dict[str, str]],
 ) -> None:
-    current_user: UserAdmin | UserRead
+    current_user: UserPrincipals | UserRead
     current_token: Dict[str, str]
     current_user, current_token = current_superuser
     update_dict = UserUpdate(password="short")
@@ -79,9 +79,9 @@ async def test_update_current_superuser_password_too_short(
 
 async def test_update_current_superuser_password_too_long(
     client: AsyncClient,
-    current_superuser: Tuple[UserAdmin | UserRead, Dict[str, str]],
+    current_superuser: Tuple[UserPrincipals | UserRead, Dict[str, str]],
 ) -> None:
-    current_user: UserAdmin | UserRead
+    current_user: UserPrincipals | UserRead
     current_token: Dict[str, str]
     current_user, current_token = current_superuser
     new_pass: str = random_lower_string() * 10
@@ -120,7 +120,7 @@ async def test_update_current_testuser_email_taken(
     user_auth: AuthManager,
     current_testuser: Tuple[UserRead, Dict[str, str]],
 ) -> None:
-    a_user: UserAdmin = await create_random_user(user_auth)
+    a_user: UserPrincipals = await create_random_user(user_auth)
     current_user: UserRead
     current_token_headers: Dict[str, str]
     current_user, current_token_headers = current_testuser

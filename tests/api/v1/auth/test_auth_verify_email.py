@@ -6,7 +6,7 @@ from tests.utils.email import fast_mail
 from tests.utils.users import create_random_user
 
 from app.core.config import settings
-from app.db.schemas.user import UserAdmin
+from app.db.schemas.user import UserPrincipals
 from app.security import AuthManager
 
 pytestmark = pytest.mark.asyncio
@@ -16,7 +16,7 @@ async def test_auth_verify_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin = await create_random_user(user_auth)
+    a_user: UserPrincipals = await create_random_user(user_auth)
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
         response: Response = await client.post(

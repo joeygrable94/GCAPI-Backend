@@ -8,7 +8,7 @@ from tests.utils.websites import create_random_website
 
 from app.api.errors import ErrorCode
 from app.db.schemas import WebsiteRead
-from app.db.schemas.user import UserAdmin
+from app.db.schemas.user import UserPrincipals
 from app.security.auth.manager import AuthManager
 
 pytestmark = pytest.mark.asyncio
@@ -37,7 +37,7 @@ async def test_list_websites_as_testuser(
     db_session: AsyncSession,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin
+    a_user: UserPrincipals
     a_user_password: str
     a_user, a_user_password = await create_new_user(user_auth)
     a_user_access_header = await get_current_user_tokens(

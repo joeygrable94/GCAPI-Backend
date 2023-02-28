@@ -5,7 +5,7 @@ from httpx import AsyncClient, Response
 from tests.utils.users import create_new_user, get_current_user_tokens
 
 from app.core.config import settings
-from app.db.schemas.user import UserAdmin
+from app.db.schemas.user import UserPrincipals
 from app.security import AuthManager
 
 pytestmark = pytest.mark.asyncio
@@ -45,7 +45,7 @@ async def test_auth_logout_random_user(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin
+    a_user: UserPrincipals
     a_user_pass: str
     a_user, a_user_pass = await create_new_user(user_auth)
     random_user_tokens: Dict[str, str] = await get_current_user_tokens(

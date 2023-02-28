@@ -7,7 +7,7 @@ from tests.utils.utils import random_boolean, random_lower_string
 
 from app.api.errors import ErrorCode
 from app.db.schemas.client import ClientRead
-from app.db.schemas.user import UserAdmin
+from app.db.schemas.user import UserPrincipals
 from app.security.auth.manager import AuthManager
 
 pytestmark = pytest.mark.asyncio
@@ -28,10 +28,10 @@ async def test_create_website_as_superuser(
     )
     assert 200 <= response.status_code < 300
     entry: Dict[str, Any] = response.json()
-    assert entry["sitemap_task_id"] is not None
+    assert entry["task_id"] is not None
     assert entry["website"]["domain"] == domain
     assert entry["website"]["is_secure"] == is_secure
-    task_id = entry["sitemap_task_id"]
+    task_id = entry["task_id"]
     response: Response = await client.get(
         f"tasks/{task_id}",
         headers=superuser_token_headers,
@@ -55,7 +55,7 @@ async def test_create_website_as_superuser_website_already_exists(
     )
     assert 200 <= response.status_code < 300
     entry: Dict[str, Any] = response.json()
-    assert entry["sitemap_task_id"] is not None
+    assert entry["task_id"] is not None
     assert entry["website"]["domain"] == domain
     assert entry["website"]["is_secure"] == is_secure
     is_secure_2: bool = random_boolean()
@@ -74,7 +74,7 @@ async def test_create_website_as_testuser(
     client: AsyncClient,
     user_auth: AuthManager,
 ) -> None:
-    a_user: UserAdmin
+    a_user: UserPrincipals
     a_user_password: str
     a_user, a_user_password = await create_new_user(user_auth)
     a_user_access_header = await get_current_user_tokens(
@@ -171,6 +171,6 @@ async def test_create_website_as_superuser_assign_to_client(
     )
     entry: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
-    assert entry["sitemap_task_id"] is not None
+    assert entry["task_id"] is not None
     assert entry["website"]["domain"] == domain
     assert entry["website"]["is_secure"] == is_secure

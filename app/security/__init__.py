@@ -13,7 +13,7 @@ from app.core.config import Settings, get_settings, settings
 from app.core.utilities import parse_id
 from app.db.repositories import AccessTokenRepository, UserRepository
 from app.db.schemas import JWToken, UserRead
-from app.db.schemas.user import UserAdmin
+from app.db.schemas.user import UserPrincipals
 from app.db.tables import User
 
 from .auth import (
@@ -90,9 +90,9 @@ async def get_user_or_404(
 async def get_current_user_by_email(
     email: EmailStr = Body(..., embed=True),
     oauth: AuthManager = Depends(get_user_auth),
-) -> UserAdmin:  # pragma: no cover
+) -> UserPrincipals:  # pragma: no cover
     """Fetches user by email string."""
-    user: Optional[UserAdmin] = await oauth.fetch_user(email)
+    user: Optional[UserPrincipals] = await oauth.fetch_user(email)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -103,7 +103,7 @@ async def get_current_user_by_email(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ErrorCode.USER_NOT_ACTIVE,
         )
-    return UserAdmin.from_orm(user)
+    return UserPrincipals.from_orm(user)
 
 
 # VERIFY/CONFIRM
@@ -114,7 +114,7 @@ async def get_current_user_for_verification(
     settings: Settings = Depends(get_settings),
 ) -> User:
     try:
-        user: UserAdmin
+        user: UserPrincipals
         token_data: JWToken
         token_str: str
         # verify the token's associated user
@@ -150,7 +150,7 @@ async def get_current_user_refresh_token(
     token: str = Depends(bearer_transport.scheme),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
-) -> Tuple[UserAdmin, JWToken, str]:  # pragma: no cover
+) -> Tuple[UserPrincipals, JWToken, str]:  # pragma: no cover
     try:
         return await oauth.verify_token(
             token=token,
@@ -168,11 +168,11 @@ async def get_current_user_refresh_token(
 
 
 async def get_current_verified_refresh_user(
-    current_user_access_token: Tuple[UserAdmin, JWToken, str] = Depends(
+    current_user_access_token: Tuple[UserPrincipals, JWToken, str] = Depends(
         get_current_user_refresh_token
     ),
-) -> Tuple[UserAdmin, JWToken, str]:  # pragma: no cover
-    current_user: UserAdmin
+) -> Tuple[UserPrincipals, JWToken, str]:  # pragma: no cover
+    current_user: UserPrincipals
     token_data: JWToken
     token_str: str
     current_user, token_data, token_str = current_user_access_token
@@ -185,11 +185,11 @@ async def get_current_verified_refresh_user(
 
 
 async def get_current_active_refresh_user(
-    current_user_access_token: Tuple[UserAdmin, JWToken, str] = Depends(
+    current_user_access_token: Tuple[UserPrincipals, JWToken, str] = Depends(
         get_current_verified_refresh_user
     ),
-) -> Tuple[UserAdmin, JWToken, str]:  # pragma: no cover
-    current_user: UserAdmin
+) -> Tuple[UserPrincipals, JWToken, str]:  # pragma: no cover
+    current_user: UserPrincipals
     token_data: JWToken
     token_str: str
     current_user, token_data, token_str = current_user_access_token
@@ -206,7 +206,7 @@ async def get_current_user_access_token(
     token: str = Depends(bearer_transport.scheme),
     oauth: AuthManager = Depends(get_user_auth),
     settings: Settings = Depends(get_settings),
-) -> Tuple[UserAdmin, JWToken, str]:
+) -> Tuple[UserPrincipals, JWToken, str]:
     try:
         return await oauth.verify_token(
             token=token,
@@ -225,11 +225,11 @@ async def get_current_user_access_token(
 
 
 async def get_current_verified_user(
-    current_user_access_token: Tuple[UserAdmin, JWToken, str] = Depends(
+    current_user_access_token: Tuple[UserPrincipals, JWToken, str] = Depends(
         get_current_user_access_token
     ),
-) -> UserAdmin:  # pragma: no cover
-    current_user: UserAdmin
+) -> UserPrincipals:  # pragma: no cover
+    current_user: UserPrincipals
     token_data: JWToken
     token_str: str
     current_user, token_data, token_str = current_user_access_token
@@ -242,8 +242,8 @@ async def get_current_verified_user(
 
 
 async def get_current_active_user(
-    current_user: UserAdmin = Depends(get_current_verified_user),
-) -> UserAdmin:  # pragma: no cover
+    current_user: UserPrincipals = Depends(get_current_verified_user),
+) -> UserPrincipals:  # pragma: no cover
     if not current_user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

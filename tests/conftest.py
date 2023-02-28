@@ -15,8 +15,7 @@ from app.api.deps import get_async_db
 from app.core.config import settings
 from app.db.init_db import build_database, create_init_data
 from app.db.repositories import AccessTokenRepository, UserRepository
-from app.db.schemas import UserRead
-from app.db.schemas.user import UserAdmin
+from app.db.schemas import UserPrincipals, UserRead
 from app.db.session import async_engine, async_session
 from app.main import create_app
 from app.security import (
@@ -178,8 +177,8 @@ async def testuser_token_headers(client: AsyncClient) -> Dict[str, str]:
 async def current_superuser(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
-) -> Tuple[UserAdmin | UserRead, Dict[str, str]]:
-    current_user: UserAdmin | UserRead
+) -> Tuple[UserPrincipals | UserRead, Dict[str, str]]:
+    current_user: UserPrincipals | UserRead
     token_header: Dict[str, str]
     current_user, token_header = await get_current_user(
         client=client,

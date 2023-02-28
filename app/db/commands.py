@@ -17,6 +17,8 @@ async def check_db_connected() -> None:  # pragma: no cover
                 await database.connect()
                 await database.execute(stmt)
                 logger.info("+ ASYCN F(X) --> MYSQL CONNECTED!")
+            else:
+                await database.disconnect()
         logger.info("Database is ready for connections. (^_^)")
     except Exception as e:
         logger.info("+ ASYNC F(X) --> There was a problem connecting to DB...")
