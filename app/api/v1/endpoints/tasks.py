@@ -1,32 +1,26 @@
-from typing import Any, Dict
+from typing import Any
 
-from fastapi import APIRouter
-from celery.result import AsyncResult
-from pydantic import BaseModel
+from celery.result import AsyncResult  # type: ignore
+from fastapi import APIRouter, Depends
 
-from app.db.schemas.user import UserPrincipals
-from app.security import Permission, get_current_active_user
+from app.api.deps import CurrentUser, GetQueryParams
+from app.core.auth import auth
+from app.schemas import TaskState
 
 router: APIRouter = APIRouter()
 
 
-class TaskState(BaseModel):
-    task_id: Any
-    task_status: Any
-    task_result: Any
-
-
 @router.get(
     "/{task_id}",
+    dependencies=[Depends(auth.implicit_scheme)],
     response_model=TaskState,
 )
 def get_status(
+    current_user: CurrentUser,
+    query: GetQueryParams,
     task_id: Any,
-    current_user: UserPrincipals = Permission("list", get_current_active_user),
-) -> Dict[str, Any]:
+) -> TaskState:
     task_result = AsyncResult(task_id)
     return TaskState(
-        task_id=task_id,
-        task_status=task_result.status,
-        task_result=task_result.result
+        task_id=task_id, task_status=task_result.status, task_result=task_result.result
     )

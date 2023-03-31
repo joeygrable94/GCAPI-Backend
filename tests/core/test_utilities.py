@@ -24,7 +24,7 @@ def test_get_date() -> None:
 
 
 def test_get_int_from_timestamp() -> None:
-    now: Any = datetime.now()
+    now: datetime = datetime.now()
     now_int: Any = get_int_from_datetime(now)
     assert type(now_int) is int
 

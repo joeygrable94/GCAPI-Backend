@@ -1,21 +1,21 @@
-from typing import Dict, List, Optional
-from uuid import UUID
+from typing import Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_async_db
-from app.api.exceptions import ClientAlreadyExists, ClientNotExists
-from app.db.repositories import ClientRepository
-from app.db.schemas import (
-    ClientCreate,
-    ClientRead,
-    ClientReadRelations,
-    ClientUpdate,
-    UserPrincipals,
+from app.api.deps import (
+    AsyncDatabaseSession,
+    CurrentUser,
+    FetchClientOr404,
+    GetClientWebsiteQueryParams,
+    get_async_db,
+    get_client_or_404,
 )
-from app.db.tables import Client
-from app.security import Permission, get_current_active_user
+from app.api.errors import ErrorCode
+from app.api.exceptions import ClientAlreadyExists, ClientNotExists
+from app.core.auth import auth
+from app.crud import ClientRepository
+from app.models import Client
+from app.schemas import ClientCreate, ClientRead, ClientReadRelations, ClientUpdate
 
 router: APIRouter = APIRouter()
 
@@ -23,142 +23,148 @@ router: APIRouter = APIRouter()
 @router.get(
     "/",
     name="clients:read_clients",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+    ],
     response_model=List[ClientReadRelations],
 )
 async def clients_list(
-    db: AsyncSession = Depends(get_async_db),
-    page: int = 1,
-    current_user: UserPrincipals = Permission("list", get_current_active_user),
+    current_user: CurrentUser,
+    db: AsyncDatabaseSession,
+    query: GetClientWebsiteQueryParams,
 ) -> List[ClientRead] | List:
     clients_repo: ClientRepository = ClientRepository(session=db)
-    clients: List[Client] | List[None] | None = await clients_repo.list(page=page)
-    if clients and len(clients):  # pragma: no cover
+    clients: List[Client] | List[None] | None = await clients_repo.list(page=query.page)
+    if len(clients):
         return [ClientRead.from_orm(c) for c in clients]
-    return []  # pragma: no cover
+    return []
 
 
 @router.post(
     "/",
     name="clients:create_client",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+    ],
     response_model=ClientReadRelations,
 )
 async def clients_create(
-    *,
-    db: AsyncSession = Depends(get_async_db),
+    current_user: CurrentUser,
+    db: AsyncDatabaseSession,
     client_in: ClientCreate,
-    current_user: UserPrincipals = Permission("create", get_current_active_user),
 ) -> ClientRead:
     try:
         clients_repo: ClientRepository = ClientRepository(session=db)
         data: Dict = client_in.dict()
-        check_title: Optional[str] = data.get("title")
+        check_title: str | None = data.get("title")
         if check_title:
-            a_client: Optional[Client] = await clients_repo.read_by(
+            a_client: Client | None = await clients_repo.read_by(
                 field_name="title",
                 field_value=check_title,
             )
-            if a_client:  # pragma: no cover
+            if a_client:
                 raise ClientAlreadyExists()
-        new_client: Client = await clients_repo.create(client_in)  # pragma: no cover
-        return ClientRead.from_orm(new_client)  # pragma: no cover
-    except ClientAlreadyExists:  # pragma: no cover
+        new_client: Client = await clients_repo.create(client_in)
+        return ClientRead.from_orm(new_client)
+    except ClientAlreadyExists:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Client exists"
         )
 
 
 @router.get(
-    "/{id}",
+    "/{client_id}",
     name="clients:read_client",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_client_or_404),
+    ],
     response_model=ClientReadRelations,
 )
 async def clients_read(
-    *,
-    db: AsyncSession = Depends(get_async_db),
-    id: UUID,
-    current_user: UserPrincipals = Permission("read", get_current_active_user),
+    current_user: CurrentUser,
+    db: AsyncDatabaseSession,
+    client: FetchClientOr404,
 ) -> ClientRead:
-    try:  # pragma: no cover
-        clients_repo: ClientRepository = ClientRepository(session=db)
-        client: Optional[Client] = await clients_repo.read(entry_id=id)
+    try:
         if not client:
             raise ClientNotExists()
         return ClientRead.from_orm(client)
-    except ClientNotExists:  # pragma: no cover
+    except ClientNotExists:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Client not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=ErrorCode.CLIENT_NOT_FOUND
         )
 
 
 @router.patch(
-    "/{id}",
+    "/{client_id}",
     name="clients:update_client",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_client_or_404),
+    ],
     response_model=ClientReadRelations,
 )
 async def clients_update(
-    *,
-    db: AsyncSession = Depends(get_async_db),
-    id: UUID,
+    current_user: CurrentUser,
+    db: AsyncDatabaseSession,
+    client: FetchClientOr404,
     client_in: ClientUpdate,
-    current_user: UserPrincipals = Permission("update", get_current_active_user),
 ) -> ClientRead:
-    try:  # pragma: no cover
-        clients_repo: ClientRepository = ClientRepository(session=db)
-        client: Optional[Client] = await clients_repo.read(entry_id=id)
+    try:
         if not client:
             raise ClientNotExists()
+        clients_repo: ClientRepository = ClientRepository(session=db)
         data: Dict = client_in.dict()
-        check_title: Optional[str] = data.get("title")
+        check_title: str | None = data.get("title")
         if check_title:
             a_client = await clients_repo.read_by(
                 field_name="title", field_value=check_title
             )
             if a_client:
                 raise ClientAlreadyExists()
-        updated_client: Optional[Client] = await clients_repo.update(
+        updated_client: Client | None = await clients_repo.update(
             entry=client, schema=client_in
         )
         if not updated_client:
             raise ClientNotExists()
         return ClientRead.from_orm(updated_client)
-    except ClientNotExists:  # pragma: no cover
+    except ClientNotExists:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Client not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=ErrorCode.CLIENT_NOT_FOUND
         )
-    except ClientAlreadyExists:  # pragma: no cover
+    except ClientAlreadyExists:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Client exists"
         )
 
 
 @router.delete(
-    "/{id}",
+    "/{client_id}",
     name="clients:delete_client",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_client_or_404),
+    ],
     response_model=None,
 )
 async def clients_delete(
-    *,
-    db: AsyncSession = Depends(get_async_db),
-    id: UUID,
-    current_user: UserPrincipals = Permission("delete", get_current_active_user),
-) -> None:  # pragma: no cover
+    current_user: CurrentUser,
+    db: AsyncDatabaseSession,
+    client: FetchClientOr404,
+) -> None:
     try:
-        clients_repo: ClientRepository = ClientRepository(session=db)
-        client: Optional[Client] = await clients_repo.read(entry_id=id)
         if not client:
             raise ClientNotExists()
+        clients_repo: ClientRepository = ClientRepository(session=db)
         await clients_repo.delete(entry=client)
         return None
-    except ClientNotExists:  # pragma: no cover
+    except ClientNotExists:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Client not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=ErrorCode.CLIENT_NOT_FOUND
         )
-
-
-# clients_users_read
-# clients_websites_read
-
-# clients_gcloud_accounts_read
-# clients_ga4_accounts_read
-# clients_gua_accounts_read
-# clients_sharpspring_accounts_read

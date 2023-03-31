@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_lower_string
 
-from app.db.repositories import ClientRepository
-from app.db.schemas import ClientCreate, ClientRead
-from app.db.tables import Client
+from app.crud import ClientRepository
+from app.models import Client
+from app.schemas import ClientCreate, ClientRead
 
 
 async def create_random_client(db_session: AsyncSession) -> ClientRead:

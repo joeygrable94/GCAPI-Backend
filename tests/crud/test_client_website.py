@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.repositories import ClientWebsiteRepository
-from app.db.tables import ClientWebsite
+from app.crud import ClientWebsiteRepository
+from app.models import ClientWebsite
 
 pytestmark = pytest.mark.asyncio
 

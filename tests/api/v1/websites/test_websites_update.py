@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_boolean, random_lower_string
 from tests.utils.websites import create_random_website
 
-from app.db.schemas import WebsiteRead, WebsiteUpdate
+from app.api.errors import ErrorCode
+from app.schemas import WebsiteRead, WebsiteUpdate
 
 pytestmark = pytest.mark.asyncio
 
@@ -26,7 +27,7 @@ async def test_update_website_already_exists(
     )
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 400
-    assert updated_entry["detail"] == "Website domain exists"
+    assert updated_entry["detail"] == ErrorCode.WEBSITE_DOMAIN_EXISTS
 
 
 async def test_update_website_as_superuser_domain_too_short(

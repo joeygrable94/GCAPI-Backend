@@ -1,6 +1,6 @@
 from typing import Any
 
-from celery import Celery
+from celery import Celery  # type: ignore
 
 from app.core.config import settings
 
@@ -15,5 +15,5 @@ celery_app.conf.result_backend = (
 celery_app.conf.task_routes = {
     "app.worker.task_speak": settings.CELERY_WORKER_TASK_QUEUE,
     "app.worker.task_process_website_map": settings.CELERY_WORKER_TASK_QUEUE,
-    "app.worker.task_fetch_website_page_pagespeedinsights": settings.CELERY_WORKER_TASK_QUEUE
+    "app.worker.task_fetch_website_page_pagespeedinsights": settings.CELERY_WORKER_TASK_QUEUE,  # noqa: E501
 }

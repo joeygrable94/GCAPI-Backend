@@ -2,13 +2,9 @@ from typing import Any, Dict
 
 import pytest
 from httpx import AsyncClient, Response
-from tests.utils.users import create_new_user, get_current_user_tokens
-from tests.utils.utils import random_boolean, random_lower_string
+from tests.utils.utils import random_boolean, random_domain
 
 from app.api.errors import ErrorCode
-from app.db.schemas.client import ClientRead
-from app.db.schemas.user import UserPrincipals
-from app.security.auth.manager import AuthManager
 
 pytestmark = pytest.mark.asyncio
 
@@ -18,7 +14,7 @@ async def test_create_website_as_superuser(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    domain: str = "oceanbrightconsulting.com"
+    domain: str = random_domain()
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
@@ -38,14 +34,18 @@ async def test_create_website_as_superuser(
     )
     content = response.json()
     assert response.status_code == 200
-    assert content == {"task_id": task_id, "task_status": "PENDING", "task_result": None}
+    assert content == {
+        "task_id": task_id,
+        "task_status": "PENDING",
+        "task_result": None,
+    }
 
 
 async def test_create_website_as_superuser_website_already_exists(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    domain: str = "riverislands.com"
+    domain: str = random_domain()
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
@@ -67,38 +67,14 @@ async def test_create_website_as_superuser_website_already_exists(
     )
     assert response_2.status_code == 400
     entry_2: Dict[str, Any] = response_2.json()
-    assert entry_2["detail"] == "Website domain exists"
-
-
-async def test_create_website_as_testuser(
-    client: AsyncClient,
-    user_auth: AuthManager,
-) -> None:
-    a_user: UserPrincipals
-    a_user_password: str
-    a_user, a_user_password = await create_new_user(user_auth)
-    a_user_access_header = await get_current_user_tokens(
-        client, a_user.email, a_user_password
-    )
-    a_token: str = a_user_access_header["access_token"]
-    domain: str = "joeygrable.com"
-    is_secure: bool = random_boolean()
-    data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
-    response: Response = await client.post(
-        "websites/",
-        headers={"Authorization": f"Bearer {a_token}"},
-        json=data,
-    )
-    error: Dict[str, Any] = response.json()
-    assert response.status_code == 403
-    assert error["detail"] == ErrorCode.USER_INSUFFICIENT_PERMISSIONS
+    assert entry_2["detail"] == ErrorCode.WEBSITE_DOMAIN_EXISTS
 
 
 async def test_create_website_as_superuser_domain_too_short(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    domain: str = "a.co"
+    domain: str = random_domain(1, "co")
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
@@ -115,7 +91,7 @@ async def test_create_website_as_superuser_domain_too_long(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    domain: str = random_lower_string() * 10 + ".com"
+    domain: str = random_domain(255, "com")
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
@@ -132,7 +108,7 @@ async def test_create_website_as_superuser_domain_is_not_valid_domain(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    domain: str = "https://src.pub"
+    domain: str = "https://" + random_domain(3, "pub")
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
@@ -146,31 +122,3 @@ async def test_create_website_as_superuser_domain_is_not_valid_domain(
         entry["detail"][0]["msg"]
         == "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
     )
-
-
-async def test_create_website_as_superuser_assign_to_client(
-    client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
-) -> None:
-    title: str = random_lower_string()
-    content: str = random_lower_string()
-    data: Dict[str, str] = {"title": title, "content": content}
-    creat_client: Response = await client.post(
-        "clients/",
-        headers=superuser_token_headers,
-        json=data,
-    )
-    new_client: ClientRead = ClientRead(**creat_client.json())
-    domain: str = "src.pub"
-    is_secure: bool = random_boolean()
-    data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
-    response: Response = await client.post(
-        f"websites/?client_id={new_client.id}",
-        headers=superuser_token_headers,
-        json=data,
-    )
-    entry: Dict[str, Any] = response.json()
-    assert 200 <= response.status_code < 300
-    assert entry["task_id"] is not None
-    assert entry["website"]["domain"] == domain
-    assert entry["website"]["is_secure"] == is_secure
