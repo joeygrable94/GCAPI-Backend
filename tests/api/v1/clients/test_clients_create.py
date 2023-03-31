@@ -4,8 +4,6 @@ import pytest
 from httpx import AsyncClient, Response
 from tests.utils.utils import random_lower_string
 
-from app.api.errors import ErrorCode
-
 pytestmark = pytest.mark.asyncio
 
 
@@ -53,23 +51,6 @@ async def test_create_client_as_superuser_client_already_exists(
     assert response_2.status_code == 400
     entry_2: Dict[str, Any] = response_2.json()
     assert entry_2["detail"] == "Client exists"
-
-
-async def test_create_client_as_testuser(
-    client: AsyncClient,
-    testuser_token_headers: Dict[str, str],
-) -> None:
-    title: str = random_lower_string()
-    content: str = random_lower_string()
-    data: Dict[str, str] = {"title": title, "content": content}
-    response: Response = await client.post(
-        "clients/",
-        headers=testuser_token_headers,
-        json=data,
-    )
-    error: Dict[str, Any] = response.json()
-    assert response.status_code == 403
-    assert error["detail"] == ErrorCode.USER_INSUFFICIENT_PERMISSIONS
 
 
 async def test_create_client_as_superuser_client_title_too_short(

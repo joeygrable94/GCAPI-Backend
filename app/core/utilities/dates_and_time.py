@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 
 def get_date() -> datetime:
@@ -11,7 +10,7 @@ def get_date() -> datetime:
     return datetime.now()
 
 
-def get_int_from_datetime(value: Optional[datetime]) -> int:
+def get_int_from_datetime(value: datetime) -> int:
     """generates a datetime value with or without timezone,
     if don't contains timezone it will managed as it is UTC
 
@@ -24,8 +23,6 @@ def get_int_from_datetime(value: Optional[datetime]) -> int:
     Returns:
         int: seconds since the Epoch
     """
-    if not isinstance(value, datetime):  # pragma: no cover
-        raise TypeError("a datetime is required")
     return int(value.timestamp())
 
 
@@ -38,6 +35,4 @@ def get_datetime_from_int(value: int) -> datetime:
     Returns:
         datetime: object
     """
-    if not isinstance(value, int):  # pragma: no cover
-        raise TypeError("an integer is required")
     return datetime.fromtimestamp(value)

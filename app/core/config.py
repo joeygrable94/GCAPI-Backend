@@ -3,7 +3,8 @@ from os import environ
 from typing import Any, Dict, List, Optional, Union
 
 from dotenv import load_dotenv
-from pydantic import AnyUrl, BaseSettings, validator
+from pydantic import BaseSettings, validator
+from sqlalchemy import URL
 
 load_dotenv()
 
@@ -19,52 +20,45 @@ class Settings(BaseSettings):
 
     # API
     API_PREFIX_V1: str = "/api/v1"
-    SERVER_NAME: str = environ.get("DOMAIN", "localhost:8888")
+    SERVER_NAME: str = environ.get("DOMAIN", "localhost")
     SERVER_NAME_STAGING: str = environ.get("DOMAIN_STAGING", "test.localhost")
 
     # Security
-    SECURITY_ALGORITHM: str = "HS256"
     ASGI_ID_HEADER_KEY: str = "x-request-id"
     SECRET_KEY: str = environ.get(
         "SECRET_KEY", "54295fb3ad6577bf6ec55fc8a4e2ce86b4a490b5f1666f1e871e94855f6dc0a7"
     )
     BACKEND_CORS_ORIGINS: Union[str, List[str]] = [
-        f'http://{SERVER_NAME}',
-        f'http://{SERVER_NAME}:8888',
-        f'http://{SERVER_NAME}:80',
-        f'http://{SERVER_NAME}:8080',
-        f'http://{SERVER_NAME}:4200',
-        f'http://{SERVER_NAME}:3000',
-        f'https://{SERVER_NAME}',
-        f'https://{SERVER_NAME}:8888',
-        f'https://{SERVER_NAME}:80',
-        f'https://{SERVER_NAME}:8080',
-        f'https://{SERVER_NAME}:4200',
-        f'https://{SERVER_NAME}:3000',
-        f'http://{SERVER_NAME_STAGING}',
-        f'https://{SERVER_NAME_STAGING}',
-        f'http://whoami.{SERVER_NAME_STAGING}',
-        f'https://whoami.{SERVER_NAME_STAGING}',
-        f'http://dbadmin.{SERVER_NAME_STAGING}',
-        f'https://dbadmin.{SERVER_NAME_STAGING}',
-        f'http://flower.{SERVER_NAME_STAGING}',
-        f'https://flower.{SERVER_NAME_STAGING}',
+        f"http://{SERVER_NAME}",
+        f"http://{SERVER_NAME}:8888",
+        f"http://{SERVER_NAME}:80",
+        f"http://{SERVER_NAME}:8080",
+        f"http://{SERVER_NAME}:4200",
+        f"http://{SERVER_NAME}:3000",
+        f"https://{SERVER_NAME}",
+        f"https://{SERVER_NAME}:8888",
+        f"https://{SERVER_NAME}:80",
+        f"https://{SERVER_NAME}:8080",
+        f"https://{SERVER_NAME}:4200",
+        f"https://{SERVER_NAME}:3000",
+        f"http://{SERVER_NAME_STAGING}",
+        f"https://{SERVER_NAME_STAGING}",
+        f"http://whoami.{SERVER_NAME_STAGING}",
+        f"https://whoami.{SERVER_NAME_STAGING}",
+        f"http://dbadmin.{SERVER_NAME_STAGING}",
+        f"https://dbadmin.{SERVER_NAME_STAGING}",
+        f"http://flower.{SERVER_NAME_STAGING}",
+        f"https://flower.{SERVER_NAME_STAGING}",
     ]
 
-    # Tokens: lifetime = seconds * minutes * hours * days = total seconds
-    ACCESS_TOKEN_AUDIENCE: str = "auth:access"
-    ACCESS_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1  # 3600
-    REFRESH_TOKEN_AUDIENCE: str = "auth:refresh"
-    REFRESH_TOKEN_LIFETIME: int = 60 * 60 * 24 * 1  # 86400
-    RESET_PASSWORD_TOKEN_AUDIENCE: str = "auth:reset"
-    RESET_PASSWORD_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1  # 3600
-    VERIFY_USER_TOKEN_AUDIENCE: str = "auth:verify"
-    VERIFY_USER_TOKEN_LIFETIME: int = 60 * 60 * 1 * 1  # 3600
+    # Auth0
+    AUTH0_DOMAIN: str = environ.get("AUTH0_DOMAIN", "")
+    AUTH0_API_AUDIENCE: str = environ.get("AUTH0_API_AUDIENCE", "")
     BASE_PRINCIPALS: Dict[str, str] = {
-        "role:admin": "Administrators control administrative actions.",
-        "role:user": "User controls things like logging in and out, \
-            reset their password, etc.",
-        "user:example@email.com": "Read information about the current user.",
+        "access:admin": "Administrators control administrative actions.",
+        "access:client": "User is a client with unique access to their data.",
+        "access:user": "User controls things like logging in and out and accessing the api.",  # noqa: E501
+        "access:tests": "Read test data.",
     }
 
     # Database
@@ -73,10 +67,8 @@ class Settings(BaseSettings):
     DATABASE_USER: str = environ.get("DATABASE_USER", "")
     DATABASE_PASSWORD: str = environ.get("DATABASE_PASSWORD", "")
     DATABASE_NAME: str = environ.get("DATABASE_NAME", "gcapidb")
-    DATABASE_URI: Optional[Union[str, AnyUrl]] = environ.get("DATABASE_URI", None)
-    ASYNC_DATABASE_URI: Optional[Union[str, AnyUrl]] = environ.get(
-        "ASYNC_DATABASE_URI", None
-    )
+    DATABASE_URI: Union[str, URL] = environ.get("DATABASE_URI", "")
+    ASYNC_DATABASE_URI: Union[str, URL] = environ.get("ASYNC_DATABASE_URI", "")
 
     # Redis
     REDIS_CONN_URI: str = environ.get("REDIS_CONN_URI", "redis://localhost:6379")
@@ -101,7 +93,6 @@ class Settings(BaseSettings):
         "SMTP_EMAILS_FROM_EMAIL", "noreply@example.com"
     )
     EMAILS_FROM_NAME: Optional[str] = environ.get("SMTP_EMAILS_FROM_NAME", None)
-    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
     EMAIL_TEMPLATES_DIR: str = "./app/templates/email/build"
     EMAIL_PROVIDER_RESTRICTION: bool = bool(
         environ.get("EMAIL_PROVIDER_RESTRICTION", True)
@@ -112,27 +103,24 @@ class Settings(BaseSettings):
     EMAIL_TEST_USER: str = environ.get("SMTP_EMAIL_TEST_USER", "test@getcommunity.com")
 
     # Data
-    FIRST_SUPERUSER: str = environ.get("FIRST_SUPERUSER", "admin@getcommunity.com")
-    FIRST_SUPERUSER_PASSWORD: str = environ.get("FIRST_SUPERUSER_PASSWORD", "password")
-    TEST_NORMAL_USER: str = environ.get("TEST_NORMAL_USER", "joey@getcommunity.com")
-    TEST_NORMAL_USER_PASSWORD: str = environ.get(
-        "TEST_NORMAL_USER_PASSWORD", "password"
+    FIRST_SUPERUSER: str = environ.get("FIRST_SUPERUSER", "joey@getcommunity.com")
+    FIRST_SUPERUSER_PASSWORD: Optional[str] = environ.get(
+        "FIRST_SUPERUSER_PASSWORD", None
     )
-    USERS_OPEN_REGISTRATION: bool = bool(environ.get("USERS_OPEN_REGISTRATION", False))
-    USERS_REQUIRE_VERIFICATION: bool = bool(
-        environ.get("USERS_REQUIRE_VERIFICATION", True)
+    TEST_NORMAL_USER: str = environ.get("TEST_NORMAL_USER", "admin@getcommunity.com")
+    TEST_NORMAL_USER_PASSWORD: Optional[str] = environ.get(
+        "TEST_NORMAL_USER_PASSWORD", None
     )
 
-    # Query Limits
-    PASSWORD_LENGTH_MIN: int = 8
-    PASSWORD_LENGTH_MAX: int = 100
+    # Limits
+    # Request Size
     PAYLOAD_LIMIT: int = 2000000
+    # Query
+    QUERY_DEFAULT_LIMIT_OFFSET: int = int(environ.get("QUERY_DEFAULT_LIMIT_OFFSET", 0))
     QUERY_DEFAULT_LIMIT_ROWS: int = int(environ.get("QUERY_DEFAULT_LIMIT_ROWS", 100))
+    QUERY_MAX_LIMIT_ROWS: int = int(environ.get("QUERY_MAX_LIMIT_ROWS", 1000))
+    # Filetypes
     ACCEPTED_TYPES = ["png", "jpg", "jpeg", "gif", "csv", "xml", "json", "pdf"]
-    # URL_DEFAULT_TTL=300
-    # QUERY_DEFAULT_TTL=10
-    # QUERY_CONCURRENT_LIMIT=10
-    # QUERY_DEFAULT_WAITING_TIME=1
 
     # Validators
     @validator("BACKEND_CORS_ORIGINS", pre=True)
@@ -147,8 +135,8 @@ class Settings(BaseSettings):
 
     @validator("DATABASE_URI", pre=True)
     def assemble_db_uri(
-        cls, v: Optional[str], values: Dict[str, Any]
-    ) -> Union[str, AnyUrl]:  # pragma: no cover
+        cls, v: Optional[Union[str, URL]], values: Dict[str, Any]
+    ) -> Union[str, URL]:  # pragma: no cover
         # .env provided connection string
         if isinstance(v, str):
             return v
@@ -168,8 +156,8 @@ class Settings(BaseSettings):
 
     @validator("ASYNC_DATABASE_URI", pre=True)
     def assemble_async_db_uri(
-        cls, v: Optional[str], values: Dict[str, Any]
-    ) -> Union[str, AnyUrl]:  # pragma: no cover
+        cls, v: Optional[Union[str, URL]], values: Dict[str, Any]
+    ) -> Union[str, URL]:  # pragma: no cover
         # .env provided connection string
         if isinstance(v, str):
             return v
@@ -206,6 +194,22 @@ class Settings(BaseSettings):
             and values.get("SMTP_USER")
             and values.get("SMTP_PASSWORD")
         )
+
+    @validator("FIRST_SUPERUSER_PASSWORD", pre=True)
+    def assemble_first_superuser_password(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> str:
+        if not v:
+            raise ValueError("FIRST_SUPERUSER_PASSWORD not set")  # pragma: no cover
+        return v
+
+    @validator("TEST_NORMAL_USER_PASSWORD", pre=True)
+    def assemble_test_normal_user_password(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> str:
+        if not v:
+            raise ValueError("TEST_NORMAL_USER_PASSWORD not set")  # pragma: no cover
+        return v
 
     class Config:
         case_sensitive: bool = True

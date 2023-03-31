@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.repositories import WebsitePageRepository
-from app.db.tables import WebsitePage
+from app.crud import WebsitePageRepository
+from app.models import WebsitePage
 
 pytestmark = pytest.mark.asyncio
 

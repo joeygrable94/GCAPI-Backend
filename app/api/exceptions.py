@@ -1,19 +1,3 @@
-from typing import Any
-
-
-# API Auth
-class ApiAuthException(Exception):
-    """
-    Base except which all api authentication errors extend
-    """
-
-    def __init__(
-        self,
-        reason: Any,
-    ) -> None:
-        self.reason: Any = reason
-
-
 # Generics
 class EntityException(Exception):
     pass
@@ -35,22 +19,8 @@ class EntityIdNotProvided(EntityException):
     pass
 
 
-# Users
-class UsersException(EntityException):
+class EntityValueRequired(Exception):
     pass
-
-
-class UserAlreadyExists(UsersException):
-    pass
-
-
-class UserNotExists(UsersException):
-    pass
-
-
-class InvalidPasswordException(UsersException):
-    def __init__(self, reason: Any) -> None:
-        self.reason: Any = reason
 
 
 # Clients
@@ -82,10 +52,25 @@ class WebsiteNotExists(WebsitesException):
 class WebsiteDomainInvalid(WebsitesException):
     pass
 
+
 # Website Sitemaps
+class WebsiteMapAlreadyExists(WebsitesException):
+    pass
+
+
 class WebsiteMapNotExists(WebsitesException):
     pass
 
+
 # Website Pages
+class WebsitePageAlreadyExists(WebsitesException):
+    pass
+
+
 class WebsitePageNotExists(WebsitesException):
+    pass
+
+
+# Website Page Speed Insights
+class WebsitePageSpeedInsightsNotExists(WebsitesException):
     pass

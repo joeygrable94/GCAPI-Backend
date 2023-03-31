@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.clients import create_random_client
 from tests.utils.utils import random_lower_string
 
-from app.db.schemas import ClientRead, ClientUpdate
+from app.schemas import ClientRead, ClientUpdate
 
 pytestmark = pytest.mark.asyncio
 

@@ -1,14 +1,14 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.utils import random_boolean
+from tests.utils.utils import random_boolean, random_domain
 
-from app.db.repositories import WebsiteRepository
-from app.db.schemas import WebsiteCreate, WebsiteRead
-from app.db.tables import Website
+from app.crud import WebsiteRepository
+from app.models import Website
+from app.schemas import WebsiteCreate, WebsiteRead
 
 
 async def create_random_website(db_session: AsyncSession) -> WebsiteRead:
     repo: WebsiteRepository = WebsiteRepository(session=db_session)
     website: Website = await repo.create(
-        schema=WebsiteCreate(domain="gcembed.getcommunity.com", is_secure=random_boolean())
+        schema=WebsiteCreate(domain=random_domain(), is_secure=random_boolean())
     )
     return WebsiteRead.from_orm(website)

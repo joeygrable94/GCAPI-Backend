@@ -1,46 +1,46 @@
-from logging.config import fileConfig
-from os import environ, path
-import sys
+from __future__ import with_statement
+
+import os
 
 from alembic import context
-from dotenv import load_dotenv
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
-# Load the current location into the env path
-alembic_env_file = __file__.split('/')
-alem_last_i = alembic_env_file.index('alembic')
-alembic_base_dir = '/'.join(alembic_env_file[0:alem_last_i])
-sys.path.append(alembic_base_dir)
-
-# Load the dotenv to use in alembic
-try:
-    load_dotenv(path.join(alembic_base_dir, ".env"))
-except Exception as err:
-    print('Alembic Error:', err)
-
-# database uri
-def get_url() -> str:
-    dburi: str = environ.get("DATABASE_URI", "sqlite:///./app.db")
-    return dburi
+from sqlalchemy import engine_from_config, pool
+from logging.config import fileConfig
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-print(get_url())
-
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+fileConfig(config.config_file_name)
 
-# add your model's MetaData object here for 'autogenerate' support
-from app.db.base import Base  # noqa: E402
+# add your model's MetaData object here
+# for 'autogenerate' support
+# from myapp import mymodel
+# target_metadata = mymodel.Base.metadata
+# target_metadata = None
+
+from app.db.base import Base  # noqa
+
 target_metadata = Base.metadata
 
-# set DB URI
-config.set_main_option("sqlalchemy.url", get_url())
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option("my_important_option")
+# ... etc.
+
+# database uri
+def get_url() -> str:
+    dburi: str = os.environ.get("DATABASE_URI", "sqlite:///./app.db")
+    return dburi
+
+def get_async_url() -> str:
+    dburi: str = os.environ.get("ASYNC_DATABASE_URI", "sqlite+aiosqlite:///./app.db")
+    return dburi
+
+
+print( get_url() )
+print( get_async_url() )
 
 
 def run_migrations_offline():
@@ -55,14 +55,9 @@ def run_migrations_offline():
     script output.
 
     """
-    # url = config.get_main_option("sqlalchemy.url")
     url = get_url()
     context.configure(
-        url=url,
-        target_metadata=target_metadata,
-        literal_binds=True,
-        compare_type=True,
-        dialect_opts={"paramstyle": "named"},
+        url=url, target_metadata=target_metadata, literal_binds=True, compare_type=True
     )
 
     with context.begin_transaction():
@@ -76,23 +71,15 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    url = get_url()
     configuration = config.get_section(config.config_ini_section)
-    configuration["url"] = url  # type: ignore
-    connectable = context.config.attributes.get("connection", None)
-    
-    if connectable is None:
-        connectable = engine_from_config(
-            configuration,
-            prefix="sqlalchemy.",
-            poolclass=pool.NullPool,
-        )
+    configuration["sqlalchemy.url"] = get_url()
+    connectable = engine_from_config(
+        configuration, prefix="sqlalchemy.", poolclass=pool.NullPool,
+    )
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            compare_type=True
+            connection=connection, target_metadata=target_metadata, compare_type=True
         )
 
         with context.begin_transaction():
