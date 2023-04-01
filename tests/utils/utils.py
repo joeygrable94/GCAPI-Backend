@@ -1,7 +1,6 @@
 import random
 import string
 from datetime import datetime
-from faker.providers.internet import Provider as InternetProvider
 
 now = datetime.now()
 random.seed(int(round(now.timestamp())))
@@ -20,5 +19,4 @@ def random_email() -> str:
 
 
 def random_domain(chars: int = 16, top_level: str = "com") -> str:
-    return InternetProvider.domain_name()
-    # return "".join(random.choices(string.ascii_lowercase, k=chars)) + "." + top_level
+    return "".join(random.choices(string.ascii_lowercase, k=chars)) + "." + top_level

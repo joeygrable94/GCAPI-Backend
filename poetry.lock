@@ -910,21 +910,6 @@ files = [
 test = ["pytest (>=6)"]
 
 [[package]]
-name = "faker"
-version = "18.3.1"
-description = "Faker is a Python package that generates fake data for you."
-category = "main"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "Faker-18.3.1-py3-none-any.whl", hash = "sha256:4c98c42984db54be2246d40e6407cd983db7b1511a70eaff64c3f383a51bace6"},
-    {file = "Faker-18.3.1.tar.gz", hash = "sha256:9bd71833146b844d848791b79720c7806108130c9603c7074123b3f77b4e97a1"},
-]
-
-[package.dependencies]
-python-dateutil = ">=2.4"
-
-[[package]]
 name = "fastapi"
 version = "0.95.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -2938,4 +2923,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a64e7abc1a601ae68d989495da74a2d748897816af12ec9e8b5f8515ca5f52ed"
+content-hash = "a6863792c699a069db9e0c2d165119bfa73f08ce5549677a9bb0af08d8b8539b"

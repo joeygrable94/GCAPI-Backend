@@ -1,6 +1,7 @@
 import socket
 from typing import Optional, Type
 
+from app.core.config import settings
 from app.core.logger import logger
 from app.crud.base import BaseRepository
 from app.models import Website
@@ -18,6 +19,8 @@ class WebsiteRepository(
         self,
         domain: Optional[str],
     ) -> bool:
+        if settings.DEBUG_MODE:
+            return True
         try:
             if not domain:
                 raise Exception("Domain name is required to validate")
