@@ -63,10 +63,6 @@ class Settings(BaseSettings):
 
     # Database
     DB_ECHO_LOG: bool = False if bool(environ.get("APP_DEBUG", True)) else False
-    DATABASE_SERVER: str = environ.get("DATABASE_SERVER", "")
-    DATABASE_USER: str = environ.get("DATABASE_USER", "")
-    DATABASE_PASSWORD: str = environ.get("DATABASE_PASSWORD", "")
-    DATABASE_NAME: str = environ.get("DATABASE_NAME", "gcapidb")
     DATABASE_URI: Union[str, URL] = environ.get("DATABASE_URI", "")
     ASYNC_DATABASE_URI: Union[str, URL] = environ.get("ASYNC_DATABASE_URI", "")
 
@@ -137,43 +133,17 @@ class Settings(BaseSettings):
     def assemble_db_uri(
         cls, v: Optional[Union[str, URL]], values: Dict[str, Any]
     ) -> Union[str, URL]:  # pragma: no cover
-        # .env provided connection string
         if isinstance(v, str):
             return v
-        else:
-            # no connection string provided
-            # debug mode active
-            if values.get("DEBUG_MODE"):
-                return "sqlite:///./{}.db".format(values.get("DATABASE_NAME"))
-            else:
-                # default connection driver: mysql+pymysql
-                return "mysql+pymysql://{}:{}@{}/{}?charset=UTF8MB4".format(
-                    values.get("DATABASE_USER"),
-                    values.get("DATABASE_PASSWORD"),
-                    values.get("DATABASE_SERVER"),
-                    values.get("DATABASE_NAME"),
-                )
+        return "sqlite:///./app.db"
 
     @validator("ASYNC_DATABASE_URI", pre=True)
     def assemble_async_db_uri(
         cls, v: Optional[Union[str, URL]], values: Dict[str, Any]
     ) -> Union[str, URL]:  # pragma: no cover
-        # .env provided connection string
         if isinstance(v, str):
             return v
-        else:
-            # no connection string provided
-            # debug mode active
-            if values.get("DEBUG_MODE"):
-                return "sqlite+aiosqlite:///./{}.db".format(values.get("DATABASE_NAME"))
-            else:
-                # default asynchronous connection driver: mysql+aiomysql
-                return "mysql+aiomysql://{}:{}@{}/{}?charset=UTF8MB4".format(
-                    values.get("DATABASE_USER"),
-                    values.get("DATABASE_PASSWORD"),
-                    values.get("DATABASE_SERVER"),
-                    values.get("DATABASE_NAME"),
-                )
+        return "sqlite+aiosqlite:///./app.db"
 
     @validator("EMAILS_FROM_NAME")
     def assemble_emails_sent_from(

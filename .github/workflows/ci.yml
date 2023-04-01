@@ -18,6 +18,15 @@ jobs:
         python-version: ["3.11", "3.10"]
         redis-version: ["7"]
     env:
+      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+      AUTH0_API_AUDIENCE: ${{ secrets.AUTH0_API_AUDIENCE }}
+      AUTH0_SPA_CLIENT_ID: ${{ secrets.AUTH0_SPA_CLIENT_ID }}
+      AUTH0_SPA_CLIENT_SECRET: ${{ secrets.AUTH0_SPA_CLIENT_SECRET }}
+      FIRST_SUPERUSER: ${{ secrets.FIRST_SUPERUSER }}
+      FIRST_SUPERUSER_PASSWORD: ${{ secrets.FIRST_SUPERUSER_PASSWORD }}
+      TEST_NORMAL_USER: ${{ secrets.TEST_NORMAL_USER }}
+      TEST_NORMAL_USER_PASSWORD: ${{ secrets.TEST_NORMAL_USER_PASSWORD }}
+      GOOGLE_CLOUD_API_KEY: ${{ secrets.GOOGLE_CLOUD_API_KEY }}
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
       SMTP_USER: ${{ secrets.SMTP_USER }}
     steps:

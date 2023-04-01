@@ -76,7 +76,7 @@ async def website_create(
         )
         if a_site:
             raise WebsiteAlreadyExists()
-        if not websites_repo.validate(domain=website_in.domain):
+        if not await websites_repo.validate(domain=website_in.domain):
             raise WebsiteDomainInvalid()
         new_site: Website = await websites_repo.create(website_in)
         sitemap_task = task_process_website_map.delay(
