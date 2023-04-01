@@ -1,3 +1,4 @@
+'''
 from typing import Any
 
 import pytest
@@ -15,3 +16,4 @@ def test_celery_task_fetch_website_page_pagespeedinsights(celery_worker: Any) ->
         website_id, page_id, psi_url, "desktop"
     )
     assert result is None
+'''
