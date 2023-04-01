@@ -63,8 +63,8 @@ class Settings(BaseSettings):
 
     # Database
     DB_ECHO_LOG: bool = False if bool(environ.get("APP_DEBUG", True)) else False
-    DATABASE_URI: Union[str, URL] = environ.get("DATABASE_URI", "")
-    ASYNC_DATABASE_URI: Union[str, URL] = environ.get("ASYNC_DATABASE_URI", "")
+    DATABASE_URI: Union[str, URL] = environ.get("DATABASE_URI", "sqlite:///./app.db")
+    ASYNC_DATABASE_URI: Union[str, URL] = environ.get("ASYNC_DATABASE_URI", "sqlite+aiosqlite:///./app.db")
 
     # Redis
     REDIS_CONN_URI: str = environ.get("REDIS_CONN_URI", "redis://localhost:6379")
@@ -128,22 +128,6 @@ class Settings(BaseSettings):
         elif isinstance(v, (list, str)):
             return v
         return ["*"]
-
-    @validator("DATABASE_URI", pre=True)
-    def assemble_db_uri(
-        cls, v: Optional[Union[str, URL]], values: Dict[str, Any]
-    ) -> Union[str, URL]:  # pragma: no cover
-        if isinstance(v, str):
-            return v
-        return "sqlite:///./app.db"
-
-    @validator("ASYNC_DATABASE_URI", pre=True)
-    def assemble_async_db_uri(
-        cls, v: Optional[Union[str, URL]], values: Dict[str, Any]
-    ) -> Union[str, URL]:  # pragma: no cover
-        if isinstance(v, str):
-            return v
-        return "sqlite+aiosqlite:///./app.db"
 
     @validator("EMAILS_FROM_NAME")
     def assemble_emails_sent_from(
