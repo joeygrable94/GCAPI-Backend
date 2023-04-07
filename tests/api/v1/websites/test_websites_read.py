@@ -18,7 +18,7 @@ async def test_read_website_by_id_as_superuser(
     db_session: AsyncSession,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    domain: str = random_domain()
+    domain: str = "greatersmc.com"
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(

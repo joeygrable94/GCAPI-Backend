@@ -26,7 +26,7 @@ from app.schemas import (
     WebsitePageReadRelations,
     WebsitePageUpdate,
 )
-from app.worker import task_fetch_website_page_pagespeedinsights
+from app.worker import task_website_page_pagespeedinsights_fetch
 
 router: APIRouter = APIRouter()
 
@@ -88,13 +88,13 @@ async def website_page_create(
         if a_website is None:
             raise WebsiteNotExists()
         fetch_page = a_website.get_link() + website_page.url
-        website_page_psi_mobile = task_fetch_website_page_pagespeedinsights.delay(
+        website_page_psi_mobile = task_website_page_pagespeedinsights_fetch.delay(
             website_id=a_website.id,
             page_id=website_page.id,
             fetch_psi_url=fetch_page,
             device="mobile",
         )
-        website_page_psi_desktop = task_fetch_website_page_pagespeedinsights.delay(
+        website_page_psi_desktop = task_website_page_pagespeedinsights_fetch.delay(
             website_id=a_website.id,
             page_id=website_page.id,
             fetch_psi_url=fetch_page,

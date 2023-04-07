@@ -14,7 +14,7 @@ async def test_create_website_as_superuser(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    domain: str = random_domain()
+    domain: str = "joeygrable.com"
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
@@ -45,7 +45,7 @@ async def test_create_website_as_superuser_website_already_exists(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    domain: str = random_domain()
+    domain: str = "oceanbrightconsulting.com"
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(

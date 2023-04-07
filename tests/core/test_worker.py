@@ -4,7 +4,7 @@ import pytest
 from tests.utils.utils import random_lower_string
 
 from app.core.utilities.uuids import get_uuid
-from app.worker import task_process_website_map, task_speak
+from app.worker import task_website_sitemap_fetch_url, task_speak
 
 
 @pytest.mark.celery
@@ -15,9 +15,9 @@ def test_celery_task_speak(celery_worker: Any) -> None:
 
 '''
 @pytest.mark.celery
-def test_task_process_website_map(celery_worker: Any) -> None:
+def test_celery_task_website_sitemap_fetch_url(celery_worker: Any) -> None:
     website_id = get_uuid()
     sitemap_url = "https://getcommunity.com/"
-    result = task_process_website_map(website_id, sitemap_url)
+    result = task_website_sitemap_fetch_url(website_id, sitemap_url)
     assert result is None
 '''

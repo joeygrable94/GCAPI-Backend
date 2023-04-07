@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any
+from typing import Any, Tuple
 
 from asgi_correlation_id.context import correlation_id
 from pydantic import UUID4, AnyHttpUrl
@@ -11,7 +11,7 @@ from app.api.utils import fetch_pagespeedinsights, save_sitemap_pages
 from app.core.celery import celery_app
 from app.core.config import settings
 from app.core.logger import logger
-from app.schemas import PageSpeedInsightsDevice
+from app.schemas import PageSpeedInsightsDevice, WebsitePageSpeedInsightsBase
 
 if not settings.DEBUG_MODE:  # pragma: no cover
 
@@ -34,25 +34,28 @@ def task_speak(word: str) -> str:
 
 
 @celery_app.task(acks_late=True)
-def task_process_website_map(website_id: UUID4, sitemap_url: AnyHttpUrl) -> None:
-    logger.info(f"Processing sitemap {sitemap_url} for website_id {website_id}")
+def task_website_sitemap_fetch_url(website_id: UUID4, sitemap_url: AnyHttpUrl) -> AbstractSitemap:
+    logger.info(f"Fetching sitemap for website_id {website_id}")
     sitemap: AbstractSitemap = sitemap_tree_for_homepage(sitemap_url)
-    asyncio.run(save_sitemap_pages(website_id, sitemap))
+    return sitemap
 
 
 @celery_app.task(acks_late=True)
-def task_fetch_website_page_pagespeedinsights(
+async def task_website_sitemap_process_pages(website_id: UUID4, sitemap: AbstractSitemap) -> None:
+    logger.info(f"Processing sitemap for website_id {website_id}")
+    await save_sitemap_pages(website_id, sitemap)
+
+
+@celery_app.task(acks_late=True)
+async def task_website_page_pagespeedinsights_fetch(
     website_id: UUID4,
     page_id: UUID4,
     fetch_psi_url: AnyHttpUrl,
     device: str,
-) -> None:
+) -> Tuple[UUID4, UUID4, WebsitePageSpeedInsightsBase]:
     logger.info(f"Fetching PageSpeedInsights for website {website_id}, page {page_id}")
-    asyncio.run(
-        fetch_pagespeedinsights(
-            website_id,
-            page_id,
-            fetch_url=fetch_psi_url,
-            device=PageSpeedInsightsDevice(device=device),
-        )
+    insights: WebsitePageSpeedInsightsBase = await fetch_pagespeedinsights(
+        fetch_url=fetch_psi_url,
+        device=PageSpeedInsightsDevice(device=device),
     )
+    return website_id, page_id, insights

@@ -115,11 +115,9 @@ async def create_website_page_pagespeedinsights(
 
 
 async def fetch_pagespeedinsights(
-    website_id: UUID4,
-    page_id: UUID4,
     fetch_url: AnyHttpUrl,
     device: PageSpeedInsightsDevice,
-) -> None:
+) -> WebsitePageSpeedInsightsBase:
     try:
         api_key: Optional[str] = environ.get("GOOGLE_CLOUD_API_KEY", None)
         if api_key is None:
@@ -170,39 +168,70 @@ async def fetch_pagespeedinsights(
                     results[audit_key_value]["unit"] = audits_index[audit["id"]][
                         "numericUnit"
                     ]
-        await create_website_page_pagespeedinsights(
-            website_id=website_id,
-            page_id=website_id,
-            psi=WebsitePageSpeedInsightsBase(
-                strategy=device.device,
-                ps_weight=results["performance-score"]["weight"],
-                ps_grade=results["performance-score"]["score"],
-                ps_value=results["performance-score"]["value"],
-                ps_unit=results["performance-score"]["unit"],
-                fcp_weight=results["first-contentful-paint"]["weight"],
-                fcp_grade=results["first-contentful-paint"]["score"],
-                fcp_value=results["first-contentful-paint"]["value"],
-                fcp_unit=results["first-contentful-paint"]["unit"],
-                lcp_weight=results["largest-contentful-paint"]["weight"],
-                lcp_grade=results["largest-contentful-paint"]["score"],
-                lcp_value=results["largest-contentful-paint"]["value"],
-                lcp_unit=results["largest-contentful-paint"]["unit"],
-                cls_weight=results["cumulative-layout-shift"]["weight"],
-                cls_grade=results["cumulative-layout-shift"]["score"],
-                cls_value=results["cumulative-layout-shift"]["value"],
-                cls_unit=results["cumulative-layout-shift"]["unit"],
-                si_weight=results["speed-index"]["weight"],
-                si_grade=results["speed-index"]["score"],
-                si_value=results["speed-index"]["value"],
-                si_unit=results["speed-index"]["unit"],
-                tbt_weight=results["total-blocking-time"]["weight"],
-                tbt_grade=results["total-blocking-time"]["score"],
-                tbt_value=results["total-blocking-time"]["value"],
-                tbt_unit=results["total-blocking-time"]["unit"],
-            ),
+        return WebsitePageSpeedInsightsBase(
+            strategy=device.device,
+            ps_weight=results["performance-score"]["weight"],
+            ps_grade=results["performance-score"]["score"],
+            ps_value=results["performance-score"]["value"],
+            ps_unit=results["performance-score"]["unit"],
+            fcp_weight=results["first-contentful-paint"]["weight"],
+            fcp_grade=results["first-contentful-paint"]["score"],
+            fcp_value=results["first-contentful-paint"]["value"],
+            fcp_unit=results["first-contentful-paint"]["unit"],
+            lcp_weight=results["largest-contentful-paint"]["weight"],
+            lcp_grade=results["largest-contentful-paint"]["score"],
+            lcp_value=results["largest-contentful-paint"]["value"],
+            lcp_unit=results["largest-contentful-paint"]["unit"],
+            cls_weight=results["cumulative-layout-shift"]["weight"],
+            cls_grade=results["cumulative-layout-shift"]["score"],
+            cls_value=results["cumulative-layout-shift"]["value"],
+            cls_unit=results["cumulative-layout-shift"]["unit"],
+            si_weight=results["speed-index"]["weight"],
+            si_grade=results["speed-index"]["score"],
+            si_value=results["speed-index"]["value"],
+            si_unit=results["speed-index"]["unit"],
+            tbt_weight=results["total-blocking-time"]["weight"],
+            tbt_grade=results["total-blocking-time"]["score"],
+            tbt_value=results["total-blocking-time"]["value"],
+            tbt_unit=results["total-blocking-time"]["unit"],
         )
     except Exception as e:
-        exc_str = f"Error fetching page speed insights for Website({website_id}) on Page({page_id})"  # noqa: E501
+        exc_str = f"Error fetching page speed insights for URL[{fetch_url}]"  # noqa: E501
         logger.warning(exc_str, e)
     finally:
         logger.info("Finished Fetching Page Speed Insights")
+
+
+'''
+await create_website_page_pagespeedinsights(
+        website_id=website_id,
+        page_id=website_id,
+        psi=WebsitePageSpeedInsightsBase(
+            strategy=device.device,
+            ps_weight=results["performance-score"]["weight"],
+            ps_grade=results["performance-score"]["score"],
+            ps_value=results["performance-score"]["value"],
+            ps_unit=results["performance-score"]["unit"],
+            fcp_weight=results["first-contentful-paint"]["weight"],
+            fcp_grade=results["first-contentful-paint"]["score"],
+            fcp_value=results["first-contentful-paint"]["value"],
+            fcp_unit=results["first-contentful-paint"]["unit"],
+            lcp_weight=results["largest-contentful-paint"]["weight"],
+            lcp_grade=results["largest-contentful-paint"]["score"],
+            lcp_value=results["largest-contentful-paint"]["value"],
+            lcp_unit=results["largest-contentful-paint"]["unit"],
+            cls_weight=results["cumulative-layout-shift"]["weight"],
+            cls_grade=results["cumulative-layout-shift"]["score"],
+            cls_value=results["cumulative-layout-shift"]["value"],
+            cls_unit=results["cumulative-layout-shift"]["unit"],
+            si_weight=results["speed-index"]["weight"],
+            si_grade=results["speed-index"]["score"],
+            si_value=results["speed-index"]["value"],
+            si_unit=results["speed-index"]["unit"],
+            tbt_weight=results["total-blocking-time"]["weight"],
+            tbt_grade=results["total-blocking-time"]["score"],
+            tbt_value=results["total-blocking-time"]["value"],
+            tbt_unit=results["total-blocking-time"]["unit"],
+        ),
+    )
+'''

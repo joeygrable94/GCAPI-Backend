@@ -26,7 +26,7 @@ from app.schemas import (
     WebsiteReadRelations,
     WebsiteUpdate,
 )
-from app.worker import task_process_website_map
+from app.worker import task_website_sitemap_fetch_url
 
 router: APIRouter = APIRouter()
 
@@ -79,7 +79,7 @@ async def website_create(
         if not await websites_repo.validate(domain=website_in.domain):
             raise WebsiteDomainInvalid()
         new_site: Website = await websites_repo.create(website_in)
-        sitemap_task = task_process_website_map.delay(
+        sitemap_task = task_website_sitemap_fetch_url.delay(
             website_id=new_site.id, sitemap_url=new_site.get_link()
         )
         return WebsiteCreateProcessing(
