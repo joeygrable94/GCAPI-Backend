@@ -22,7 +22,10 @@ async def test_create_or_update_website_page_create_then_update() -> None:
     website_id: UUID4 = get_uuid()
     sitemap_id: UUID4 = get_uuid()
     page = SitemapPage(url=page_url, priority=0.5)
+    page_b = SitemapPage(url=page_url, priority=0.25)
     output_a = await create_or_update_website_page(website_id, sitemap_id, page)  # type: ignore  # noqa: E501
     output_b = await create_or_update_website_page(website_id, sitemap_id, page)  # type: ignore  # noqa: E501
+    output_c = await create_or_update_website_page(website_id, sitemap_id, page_b)  # type: ignore  # noqa: E501
     assert output_a is None
     assert output_b is None
+    assert output_c is None
