@@ -48,9 +48,7 @@ async def sitemap_list(
         page=query.page,
         website_id=query.website_id,
     )
-    if len(sitemaps):
-        return [WebsiteMapRead.from_orm(w) for w in sitemaps]
-    return []
+    return [WebsiteMapRead.from_orm(w) for w in sitemaps] if len(sitemaps) else []
 
 
 @router.post(

@@ -51,9 +51,7 @@ async def website_page_list(
         website_id=query.website_id,
         sitemap_id=query.sitemap_id,
     )
-    if len(website_list):
-        return [WebsitePageRead.from_orm(w) for w in website_list]
-    return []
+    return [WebsitePageRead.from_orm(w) for w in website_list] if len(website_list) else []
 
 
 @router.post(

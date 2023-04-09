@@ -36,9 +36,7 @@ async def clients_list(
 ) -> List[ClientRead] | List:
     clients_repo: ClientRepository = ClientRepository(session=db)
     clients: List[Client] | List[None] | None = await clients_repo.list(page=query.page)
-    if len(clients):
-        return [ClientRead.from_orm(c) for c in clients]
-    return []
+    return [ClientRead.from_orm(c) for c in clients] if len(clients) else []
 
 
 @router.post(

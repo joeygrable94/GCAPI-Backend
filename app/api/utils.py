@@ -12,15 +12,13 @@ from app.core.logger import logger
 from app.crud import (
     WebsiteMapRepository,
     WebsitePageRepository,
-    WebsitePageSpeedInsightsRepository,
 )
 from app.db.session import get_db_session
-from app.models import WebsiteMap, WebsitePage, WebsitePageSpeedInsights
+from app.models import WebsiteMap, WebsitePage
 from app.schemas import (
     WebsiteMapCreate,
     WebsitePageCreate,
     WebsitePageSpeedInsightsBase,
-    WebsitePageSpeedInsightsCreate,
     WebsitePageUpdate,
 )
 from app.schemas import PageSpeedInsightsDevice
@@ -86,32 +84,6 @@ async def save_sitemap_pages(website_id: UUID4, sitemap: AbstractSitemap) -> Non
                 await create_or_update_website_page(website_id, website_map.id, page)
     except Exception as e:
         logger.info("Error saving sitemap pages:", e)
-
-
-async def create_website_page_pagespeedinsights(
-    website_id: UUID4, page_id: UUID4, psi: WebsitePageSpeedInsightsBase
-) -> None:
-    try:
-        session: AsyncSession
-        async with get_db_session() as session:
-            site_psi_repo: WebsitePageSpeedInsightsRepository = (
-                WebsitePageSpeedInsightsRepository(session)
-            )
-            psi_create: WebsitePageSpeedInsightsCreate = WebsitePageSpeedInsightsCreate(
-                **psi.dict(),
-                page_id=page_id,
-                website_id=website_id,
-            )
-            psi_in_db: WebsitePageSpeedInsights = await site_psi_repo.create(
-                schema=psi_create
-            )
-            logger.info(
-                "Created Website Page Speed Insights:",
-                psi_in_db.id,
-                psi_in_db.created_on,
-            )
-    except Exception as e:
-        logger.info("Error saving website page speed insights:", e)
 
 
 async def fetch_pagespeedinsights(
@@ -200,38 +172,3 @@ async def fetch_pagespeedinsights(
         logger.warning(exc_str, e)
     finally:
         logger.info("Finished Fetching Page Speed Insights")
-
-
-'''
-await create_website_page_pagespeedinsights(
-        website_id=website_id,
-        page_id=website_id,
-        psi=WebsitePageSpeedInsightsBase(
-            strategy=device.device,
-            ps_weight=results["performance-score"]["weight"],
-            ps_grade=results["performance-score"]["score"],
-            ps_value=results["performance-score"]["value"],
-            ps_unit=results["performance-score"]["unit"],
-            fcp_weight=results["first-contentful-paint"]["weight"],
-            fcp_grade=results["first-contentful-paint"]["score"],
-            fcp_value=results["first-contentful-paint"]["value"],
-            fcp_unit=results["first-contentful-paint"]["unit"],
-            lcp_weight=results["largest-contentful-paint"]["weight"],
-            lcp_grade=results["largest-contentful-paint"]["score"],
-            lcp_value=results["largest-contentful-paint"]["value"],
-            lcp_unit=results["largest-contentful-paint"]["unit"],
-            cls_weight=results["cumulative-layout-shift"]["weight"],
-            cls_grade=results["cumulative-layout-shift"]["score"],
-            cls_value=results["cumulative-layout-shift"]["value"],
-            cls_unit=results["cumulative-layout-shift"]["unit"],
-            si_weight=results["speed-index"]["weight"],
-            si_grade=results["speed-index"]["score"],
-            si_value=results["speed-index"]["value"],
-            si_unit=results["speed-index"]["unit"],
-            tbt_weight=results["total-blocking-time"]["weight"],
-            tbt_grade=results["total-blocking-time"]["score"],
-            tbt_value=results["total-blocking-time"]["value"],
-            tbt_unit=results["total-blocking-time"]["unit"],
-        ),
-    )
-'''

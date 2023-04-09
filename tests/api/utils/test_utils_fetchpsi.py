@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from app.core.utilities.uuids import get_uuid
 from app.schemas import PageSpeedInsightsDevice
 from app.worker import fetch_pagespeedinsights
 

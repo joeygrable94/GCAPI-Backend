@@ -72,5 +72,9 @@ class WebsitePageNotExists(WebsitesException):
 
 
 # Website Page Speed Insights
+class WebsitePageSpeedInsightsAlreadyExists(WebsitesException):
+    pass
+
+
 class WebsitePageSpeedInsightsNotExists(WebsitesException):
     pass
