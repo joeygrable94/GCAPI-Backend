@@ -22,7 +22,7 @@ router: APIRouter = APIRouter()
 
 @router.get(
     "/",
-    name="clients:read_clients",
+    name="clients:list",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -41,7 +41,7 @@ async def clients_list(
 
 @router.post(
     "/",
-    name="clients:create_client",
+    name="clients:create",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -68,13 +68,13 @@ async def clients_create(
         return ClientRead.from_orm(new_client)
     except ClientAlreadyExists:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Client exists"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=ErrorCode.CLIENT_EXISTS
         )
 
 
 @router.get(
     "/{client_id}",
-    name="clients:read_client",
+    name="clients:read",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -99,7 +99,7 @@ async def clients_read(
 
 @router.patch(
     "/{client_id}",
-    name="clients:update_client",
+    name="clients:update",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -137,13 +137,13 @@ async def clients_update(
         )
     except ClientAlreadyExists:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Client exists"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=ErrorCode.CLIENT_EXISTS
         )
 
 
 @router.delete(
     "/{client_id}",
-    name="clients:delete_client",
+    name="clients:delete",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),

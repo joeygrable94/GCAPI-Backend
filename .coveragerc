@@ -1,2 +1,3 @@
 [run]
-omit = app/db/tables/unused/*
+concurrency = greenlet
+omit = app/models/unused/*

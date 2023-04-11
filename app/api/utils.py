@@ -1,12 +1,11 @@
 import json
 from os import environ
-from typing import Optional
+from typing import List, Optional
 from urllib import request
+from urllib.parse import urlparse
 
 from pydantic import UUID4, AnyHttpUrl
 from sqlalchemy.ext.asyncio import AsyncSession
-from usp.objects.page import SitemapPage  # type: ignore
-from usp.tree import AbstractSitemap  # type: ignore
 
 from app.core.logger import logger
 from app.crud import (
@@ -16,32 +15,34 @@ from app.crud import (
 from app.db.session import get_db_session
 from app.models import WebsiteMap, WebsitePage
 from app.schemas import (
+    PageSpeedInsightsDevice,
     WebsiteMapCreate,
     WebsitePageCreate,
     WebsitePageSpeedInsightsBase,
     WebsitePageUpdate,
+    WebsiteMapPage,
 )
-from app.schemas import PageSpeedInsightsDevice
 
 
 async def create_or_update_website_page(
-    website_id: UUID4, sitemap_id: UUID4, page: SitemapPage
+    website_id: UUID4, sitemap_id: UUID4, page: WebsiteMapPage
 ) -> None:
     try:
+        parsed_url = urlparse(page.url)
         status_code = request.urlopen(page.url).getcode()
         session: AsyncSession
         async with get_db_session() as session:
             pages_repo: WebsitePageRepository = WebsitePageRepository(session)
             website_page: WebsitePage | None = await pages_repo.exists_by_two(
                 field_name_a="url",
-                field_value_a=page.url,
+                field_value_a=parsed_url.path,
                 field_name_b="website_id",
                 field_value_b=website_id,
             )
             if website_page is None:
                 website_page = await pages_repo.create(
                     schema=WebsitePageCreate(
-                        url=page.url,
+                        url=parsed_url.path,
                         status=status_code,
                         priority=page.priority,
                         last_modified=page.last_modified,
@@ -58,41 +59,50 @@ async def create_or_update_website_page(
                         priority=page.priority,
                         last_modified=page.last_modified,
                         change_frequency=page.change_frequency,
+                        sitemap_id=sitemap_id,
                     ),
                 )
     except Exception as e:
         logger.info("Error creating or updating website pages:", e)
 
 
-async def save_sitemap_pages(website_id: UUID4, sitemap: AbstractSitemap) -> None:
+async def save_sitemap_pages(
+    website_id: UUID4,
+    sitemap_url: AnyHttpUrl,
+    sitemap_pages: List[WebsiteMapPage]
+) -> UUID4:
     try:
+        sitemap_id: UUID4 | None
         session: AsyncSession
         async with get_db_session() as session:
+            parsed_url = urlparse(sitemap_url.url)
             sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session)
             website_map: WebsiteMap | None = await sitemap_repo.exists_by_two(
                 field_name_a="url",
-                field_value_a=sitemap.url,
+                field_value_a=parsed_url.path,
                 field_name_b="website_id",
                 field_value_b=website_id,
             )
             if website_map is None:
                 website_map = await sitemap_repo.create(
-                    WebsiteMapCreate(url=sitemap.url, website_id=website_id)
+                    WebsiteMapCreate(url=parsed_url.path, website_id=website_id)
                 )
-            page: SitemapPage
-            for page in sitemap.all_pages():
+            page: WebsiteMapPage
+            for page in sitemap_pages:
                 await create_or_update_website_page(website_id, website_map.id, page)
-    except Exception as e:
+            sitemap_id = website_map.id
+        return sitemap_id
+    except Exception as e:  # pragma: no cover
         logger.info("Error saving sitemap pages:", e)
 
 
-async def fetch_pagespeedinsights(
+def fetch_pagespeedinsights(
     fetch_url: AnyHttpUrl,
     device: PageSpeedInsightsDevice,
 ) -> WebsitePageSpeedInsightsBase:
     try:
         api_key: Optional[str] = environ.get("GOOGLE_CLOUD_API_KEY", None)
-        if api_key is None:
+        if api_key is None:  # pragma: no cover
             raise Exception("Google Cloud API Key not found in environment variables")
         fetch_req = "https://%s/%s/%s?url=%s&key=%s&strategy=%s" % (
             "www.googleapis.com/pagespeedonline",
@@ -167,8 +177,8 @@ async def fetch_pagespeedinsights(
             tbt_value=results["total-blocking-time"]["value"],
             tbt_unit=results["total-blocking-time"]["unit"],
         )
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         exc_str = f"Error fetching page speed insights for URL[{fetch_url}]"  # noqa: E501
         logger.warning(exc_str, e)
-    finally:
+    finally:  # pragma: no cover
         logger.info("Finished Fetching Page Speed Insights")

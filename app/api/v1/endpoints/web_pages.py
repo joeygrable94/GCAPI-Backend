@@ -33,7 +33,7 @@ router: APIRouter = APIRouter()
 
 @router.get(
     "/",
-    name="website_pages:list_website_pages",
+    name="website_pages:list",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -56,7 +56,7 @@ async def website_page_list(
 
 @router.post(
     "/",
-    name="website_pages:create_website_page",
+    name="website_pages:create",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -117,7 +117,7 @@ async def website_page_create(
 
 @router.get(
     "/{page_id}",
-    name="website_pages:read_website_page",
+    name="website_pages:read",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -142,7 +142,7 @@ async def website_page_read(
 
 @router.patch(
     "/{page_id}",
-    name="website_pages:update_website_page",
+    name="website_pages:update",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -175,7 +175,7 @@ async def website_page_update(
 
 @router.delete(
     "/{page_id}",
-    name="website_pages:delete_website_page",
+    name="website_pages:delete",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),

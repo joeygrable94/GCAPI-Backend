@@ -31,7 +31,7 @@ router: APIRouter = APIRouter()
 
 @router.get(
     "/",
-    name="website_sitemaps:read_sitemaps",
+    name="website_sitemaps:list",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -53,7 +53,7 @@ async def sitemap_list(
 
 @router.post(
     "/",
-    name="website_sitemaps:create_sitemap",
+    name="website_sitemaps:create",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -98,7 +98,7 @@ async def sitemap_create(
 
 @router.get(
     "/{sitemap_id}",
-    name="website_sitemaps:read_sitemap",
+    name="website_sitemaps:read",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -123,7 +123,7 @@ async def sitemap_read(
 
 @router.patch(
     "/{sitemap_id}",
-    name="website_sitemaps:update_sitemap",
+    name="website_sitemaps:update",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -156,7 +156,7 @@ async def sitemap_update(
 
 @router.delete(
     "/{sitemap_id}",
-    name="website_sitemaps:delete_sitemap",
+    name="website_sitemaps:delete",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),

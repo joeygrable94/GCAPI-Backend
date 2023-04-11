@@ -28,7 +28,7 @@ router: APIRouter = APIRouter()
 
 @router.get(
     "/",
-    name="website_page_speed_insights:list_website_page_speed_insights",
+    name="website_page_speed_insights:list",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -53,7 +53,7 @@ async def website_pagespeedinsights_list(
 
 @router.post(
     "/",
-    name="website_page_speed_insights:create_website_page_speed_insights",
+    name="website_page_speed_insights:create",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -114,7 +114,7 @@ async def website_pagespeedinsights_create(
 
 @router.get(
     "/{psi_id}",
-    name="website_page_speed_insights:read_website_page_speed_insights",
+    name="website_page_speed_insights:read",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -139,7 +139,7 @@ async def website_pagespeedinsights_read(
 
 @router.delete(
     "/{psi_id}",
-    name="website_page_speed_insights:delete_website_page_speed_insights",
+    name="website_page_speed_insights:delete",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),

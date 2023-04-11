@@ -14,7 +14,7 @@ celery_app.conf.result_backend = (
 # load celery tasks
 celery_app.conf.task_routes = {
     "app.worker.task_speak": settings.CELERY_WORKER_TASK_QUEUE,
-    "app.worker.task_website_sitemap_fetch_url": settings.CELERY_WORKER_TASK_QUEUE,
+    "app.worker.task_website_sitemap_fetch_pages": settings.CELERY_WORKER_TASK_QUEUE,
     "app.worker.task_website_sitemap_process_pages": settings.CELERY_WORKER_TASK_QUEUE,
     "app.worker.task_website_page_pagespeedinsights_fetch": settings.CELERY_WORKER_TASK_QUEUE,  # noqa: E501
 }

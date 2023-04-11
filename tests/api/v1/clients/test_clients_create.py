@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 import pytest
 from httpx import AsyncClient, Response
+from app.api.errors import ErrorCode
 from tests.utils.utils import random_lower_string
 
 pytestmark = pytest.mark.asyncio
@@ -50,7 +51,7 @@ async def test_create_client_as_superuser_client_already_exists(
     )
     assert response_2.status_code == 400
     entry_2: Dict[str, Any] = response_2.json()
-    assert entry_2["detail"] == "Client exists"
+    assert entry_2["detail"] == ErrorCode.CLIENT_EXISTS
 
 
 async def test_create_client_as_superuser_client_title_too_short(

@@ -1,5 +1,7 @@
 import asyncio
+import json
 from os import environ
+import os
 from typing import Any, AsyncGenerator, Callable, Dict, Generator
 
 import pytest
@@ -7,24 +9,20 @@ import requests
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.api.deps import get_async_db
 from app.core.config import settings
 from app.db.base import Base
+from app.db.session import async_engine, async_session
 from app.main import create_app
 
 pytestmark = pytest.mark.asyncio
 
 
 # test database setup
-SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
-test_engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=False, future=True)
-test_async_session = async_sessionmaker(test_engine, expire_on_commit=False)
-
-
 def test_async_session_generator() -> async_sessionmaker:
-    return test_async_session
+    return async_session
 
 
 @pytest.fixture(scope="session")
@@ -45,7 +43,7 @@ def celery_config() -> Any:
 @pytest.fixture(scope="session")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     # create all tables
-    async with test_engine.begin() as conn:
+    async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
     # create new async session
@@ -57,7 +55,7 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
         await session.rollback()
 
     # drop all tables
-    async with test_engine.begin() as conn:
+    async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
 
@@ -106,3 +104,21 @@ def superuser_token_headers() -> Dict[str, str]:
     data = response.json()
     access_token = data["access_token"]
     return {"Authorization": f"Bearer {access_token}"}
+
+
+@pytest.fixture(scope="session")
+def mock_fetch_psi() -> Dict[str, Any]:
+    mocked_response = {}
+    here = os.path.dirname(os.path.abspath(__file__))
+    with open(f'{here}/utils/fetchpsi.json') as f:
+        mocked_response = json.load(f)
+    return mocked_response
+
+
+@pytest.fixture(scope="session")
+def mock_fetch_sitemap() -> Dict[str, Any]:
+    mocked_response = {}
+    here = os.path.dirname(os.path.abspath(__file__))
+    with open(f'{here}/utils/sitemap.json') as f:
+        mocked_response = json.load(f)
+    return mocked_response

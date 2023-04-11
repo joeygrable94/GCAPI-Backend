@@ -1,11 +1,34 @@
 from __future__ import annotations
 
 from typing import List, Optional
+from decimal import Decimal
+from datetime import datetime
 
-from pydantic import UUID4, validator
+from pydantic import UUID4, BaseModel, validator
+from usp.objects.page import SITEMAP_PAGE_DEFAULT_PRIORITY, SitemapPage, SitemapPageChangeFrequency, SitemapNewsStory  # type: ignore
 
 from app.db.acls import WebsiteMapACL
 from app.schemas.base import BaseSchema, BaseSchemaRead
+
+
+# generics
+class GoogleNewsStory(BaseModel):
+    title: str
+    publish_date: datetime
+    publication_name: Optional[str] = None
+    publication_language: Optional[str] = None
+    access: Optional[str] = None
+    genres: List[str] = None
+    keywords: List[str] = None
+    stock_tickers: List[str] = None
+
+
+class WebsiteMapPage(BaseModel):
+    url: str
+    priority: Decimal = SITEMAP_PAGE_DEFAULT_PRIORITY
+    last_modified: Optional[datetime] = None
+    change_frequency: Optional[SitemapPageChangeFrequency] = None
+    news_story: Optional[GoogleNewsStory] = None
 
 
 # validators
@@ -55,6 +78,11 @@ class WebsiteMapUpdate(
 
 class WebsiteMapRead(WebsiteMapACL, WebsiteMapCreate, WebsiteMapBase, BaseSchemaRead):
     id: UUID4
+
+
+# tasks
+class WebsiteMapProcessing(WebsiteMapCreate):
+    task_id: UUID4
 
 
 # relationships

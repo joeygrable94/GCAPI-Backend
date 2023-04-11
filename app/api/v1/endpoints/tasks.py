@@ -12,6 +12,7 @@ router: APIRouter = APIRouter()
 
 @router.get(
     "/{task_id}",
+    name="tasks:get_status",
     dependencies=[Depends(auth.implicit_scheme)],
     response_model=TaskState,
 )

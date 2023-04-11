@@ -3,6 +3,7 @@ from typing import Any, Dict
 import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.api.errors import ErrorCode
 from tests.utils.clients import create_random_client
 from tests.utils.utils import random_lower_string
 
@@ -91,4 +92,4 @@ async def test_update_client_already_exists(
     )
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 400
-    assert updated_entry["detail"] == "Client exists"
+    assert updated_entry["detail"] == ErrorCode.CLIENT_EXISTS

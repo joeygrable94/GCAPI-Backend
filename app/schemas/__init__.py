@@ -17,6 +17,8 @@ from .website_map import (
     WebsiteMapCreate,
     WebsiteMapRead,
     WebsiteMapReadRelations,
+    WebsiteMapPage,
+    WebsiteMapProcessing,
     WebsiteMapUpdate,
 )
 from .website_page import (
