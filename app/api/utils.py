@@ -72,26 +72,25 @@ async def save_sitemap_pages(
     sitemap_pages: List[WebsiteMapPage]
 ) -> UUID4:
     try:
-        sitemap_id: UUID4 | None
         session: AsyncSession
+        sitemap: WebsiteMap
         async with get_db_session() as session:
-            parsed_url = urlparse(sitemap_url.url)
+            parsed_url = urlparse(sitemap_url)
             sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session)
-            website_map: WebsiteMap | None = await sitemap_repo.exists_by_two(
+            sitemap: WebsiteMap | None = await sitemap_repo.exists_by_two(
                 field_name_a="url",
                 field_value_a=parsed_url.path,
                 field_name_b="website_id",
                 field_value_b=website_id,
             )
-            if website_map is None:
-                website_map = await sitemap_repo.create(
+            if sitemap is None:
+                sitemap = await sitemap_repo.create(
                     WebsiteMapCreate(url=parsed_url.path, website_id=website_id)
                 )
-            page: WebsiteMapPage
-            for page in sitemap_pages:
-                await create_or_update_website_page(website_id, website_map.id, page)
-            sitemap_id = website_map.id
-        return sitemap_id
+        page: WebsiteMapPage
+        for page in sitemap_pages:
+            await create_or_update_website_page(website_id, sitemap.id, page)
+        return sitemap.id
     except Exception as e:  # pragma: no cover
         logger.info("Error saving sitemap pages:", e)
 
