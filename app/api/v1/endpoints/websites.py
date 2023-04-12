@@ -111,15 +111,7 @@ async def website_read(
     current_user: CurrentUser,
     website: FetchWebsiteOr404,
 ) -> WebsiteRead:
-    try:
-        if not website:
-            raise WebsiteNotExists()
-        return WebsiteRead.from_orm(website)
-    except WebsiteNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_NOT_FOUND,
-        )
+    return WebsiteRead.from_orm(website)
 
 
 @router.patch(
@@ -152,9 +144,7 @@ async def website_update(
         updated_website: Website | None = await websites_repo.update(
             entry=website, schema=website_in
         )
-        if not updated_website:
-            raise WebsiteNotExists()
-        return WebsiteRead.from_orm(updated_website)
+        return WebsiteRead.from_orm(updated_website) if updated_website else WebsiteRead.from_orm(website)
     except WebsiteNotExists:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -182,14 +172,6 @@ async def website_delete(
     db: AsyncDatabaseSession,
     website: FetchWebsiteOr404,
 ) -> None:
-    try:
-        if not website:
-            raise WebsiteNotExists()
-        websites_repo: WebsiteRepository = WebsiteRepository(session=db)
-        await websites_repo.delete(entry=website)
-        return None
-    except WebsiteNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_NOT_FOUND,
-        )
+    websites_repo: WebsiteRepository = WebsiteRepository(session=db)
+    await websites_repo.delete(entry=website)
+    return None

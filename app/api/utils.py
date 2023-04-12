@@ -62,7 +62,7 @@ async def create_or_update_website_page(
                         sitemap_id=sitemap_id,
                     ),
                 )
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         logger.info("Error creating or updating website pages:", e)
 
 

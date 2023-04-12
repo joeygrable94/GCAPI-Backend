@@ -16,6 +16,8 @@ class ErrorCodeReasonModel(BaseModel):
 class ErrorCode(str, Enum):
     # authorization
     UNAUTHORIZED = "UNAUTHORIZED"
+    # generics
+    INVALID_ID = "INVALID_ID"
     # clients
     CLIENT_NOT_FOUND = "CLIENT_NOT_FOUND"
     CLIENT_EXISTS = "CLIENT_EXISTS"

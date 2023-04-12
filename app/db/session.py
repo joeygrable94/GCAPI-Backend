@@ -44,7 +44,7 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, Any]:
         try:
             yield session
             await session.commit()
-        except Exception:
+        except Exception:  # pragma: no cover
             await session.rollback()
             raise
         finally:

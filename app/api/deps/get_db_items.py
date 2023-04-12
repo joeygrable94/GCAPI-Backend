@@ -31,7 +31,6 @@ from app.models import (
 )
 
 
-
 async def get_client_or_404(
     db: AsyncDatabaseSession,
     client_id: Any | None = None,

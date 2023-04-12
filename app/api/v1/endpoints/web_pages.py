@@ -129,15 +129,7 @@ async def website_page_read(
     current_user: CurrentUser,
     website_page: FetchWebPageOr404,
 ) -> WebsitePageRead:
-    try:
-        if not website_page:
-            raise WebsitePageNotExists()
-        return WebsitePageRead.from_orm(website_page)
-    except WebsitePageNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_PAGE_NOT_FOUND,
-        )
+    return WebsitePageRead.from_orm(website_page)
 
 
 @router.patch(
@@ -157,15 +149,11 @@ async def website_page_update(
     website_page_in: WebsitePageUpdate,
 ) -> WebsitePageRead:
     try:
-        if not website_page:
-            raise WebsitePageNotExists()
         web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
         updated_website_page: WebsitePage | None = await web_pages_repo.update(
             entry=website_page, schema=website_page_in
         )
-        if updated_website_page is None:
-            raise WebsitePageNotExists()
-        return WebsitePageRead.from_orm(updated_website_page)
+        return WebsitePageRead.from_orm(updated_website_page) if updated_website_page else WebsitePageRead.from_orm(website_page)
     except WebsitePageNotExists:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -188,14 +176,6 @@ async def website_page_delete(
     db: AsyncDatabaseSession,
     website_page: FetchWebPageOr404,
 ) -> None:
-    try:
-        if not website_page:
-            raise WebsitePageNotExists()
-        web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
-        await web_pages_repo.delete(entry=website_page)
-        return None
-    except WebsitePageNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_PAGE_NOT_FOUND,
-        )
+    web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
+    await web_pages_repo.delete(entry=website_page)
+    return None

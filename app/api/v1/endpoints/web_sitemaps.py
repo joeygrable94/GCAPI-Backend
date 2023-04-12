@@ -110,15 +110,7 @@ async def sitemap_read(
     current_user: CurrentUser,
     sitemap: FetchSitemapOr404,
 ) -> WebsiteMapRead:
-    try:
-        if not sitemap:
-            raise WebsiteMapNotExists()
-        return WebsiteMapRead.from_orm(sitemap)
-    except WebsiteMapNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_MAP_NOT_FOUND,
-        )
+    return WebsiteMapRead.from_orm(sitemap)
 
 
 @router.patch(
@@ -138,15 +130,11 @@ async def sitemap_update(
     sitemap_in: WebsiteMapUpdate,
 ) -> WebsiteMapRead:
     try:
-        if not sitemap:
-            raise WebsiteMapNotExists()
         sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
         updated_sitemap: WebsiteMap | None = await sitemap_repo.update(
             entry=sitemap, schema=sitemap_in
         )
-        if updated_sitemap is None:
-            raise WebsiteMapNotExists()
-        return WebsiteMapRead.from_orm(updated_sitemap)
+        return WebsiteMapRead.from_orm(updated_sitemap) if updated_sitemap else WebsiteMapRead.from_orm(sitemap)
     except WebsiteMapNotExists:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -169,14 +157,6 @@ async def sitemap_delete(
     db: AsyncDatabaseSession,
     sitemap: FetchSitemapOr404,
 ) -> None:
-    try:
-        if not sitemap:
-            raise WebsiteMapNotExists()
-        sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
-        await sitemap_repo.delete(entry=sitemap)
-        return None
-    except WebsiteMapNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_MAP_NOT_FOUND,
-        )
+    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
+    await sitemap_repo.delete(entry=sitemap)
+    return None

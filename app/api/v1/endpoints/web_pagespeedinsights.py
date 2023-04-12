@@ -14,13 +14,11 @@ from app.api.errors import ErrorCode
 from app.api.exceptions import (
     WebsiteNotExists,
     WebsitePageNotExists,
-    WebsitePageSpeedInsightsAlreadyExists,
-    WebsitePageSpeedInsightsNotExists,
 )
 from app.core.auth import auth
 from app.core.logger import logger
-from app.crud import WebsitePageSpeedInsightsRepository
-from app.models import WebsitePageSpeedInsights
+from app.crud import WebsiteRepository, WebsitePageRepository, WebsitePageSpeedInsightsRepository
+from app.models import Website, WebsitePage, WebsitePageSpeedInsights
 from app.schemas import WebsitePageSpeedInsightsBase, WebsitePageSpeedInsightsCreate, WebsitePageSpeedInsightsRead
 
 router: APIRouter = APIRouter()
@@ -67,12 +65,21 @@ async def website_pagespeedinsights_create(
     psi_in: WebsitePageSpeedInsightsBase,
 ) -> WebsitePageSpeedInsightsRead:
     try:
-        # TODO: check if website exists
+        # check if website exists
         if query.website_id is None:
             raise WebsiteNotExists()
-        # TODO: check if page exists
+        website_repo: WebsiteRepository = WebsiteRepository(db)
+        a_website: Website | None = await website_repo.read(entry_id=query.website_id)
+        if a_website is None:
+            raise WebsiteNotExists()
+        # check if page exists
         if query.page_id is None:
             raise WebsitePageNotExists()
+        web_page_repo: WebsitePageRepository = WebsitePageRepository(db)
+        a_web_page: WebsitePage | None = await web_page_repo.read(entry_id=query.page_id)
+        if a_web_page is None:
+            raise WebsitePageNotExists()
+        # create website page speed insights
         web_psi_repo: WebsitePageSpeedInsightsRepository
         web_psi_repo = WebsitePageSpeedInsightsRepository(db)
         psi_create: WebsitePageSpeedInsightsCreate = WebsitePageSpeedInsightsCreate(
@@ -80,14 +87,11 @@ async def website_pagespeedinsights_create(
             page_id=query.page_id,
             website_id=query.website_id,
         )
-        # create website page speed insights
         psi_in_db: WebsitePageSpeedInsights = await web_psi_repo.create(
             schema=psi_create
         )
         logger.info(
-            "Created Website Page Speed Insights:",
-            psi_in_db.id,
-            psi_in_db.created_on,
+            "Created Website Page Speed Insights:", psi_in_db.id, psi_in_db.created_on,
         )
         return WebsitePageSpeedInsightsRead.from_orm(psi_in_db)
     except WebsiteNotExists:
@@ -99,16 +103,6 @@ async def website_pagespeedinsights_create(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=ErrorCode.WEBSITE_PAGE_NOT_FOUND,
-        )
-    except WebsitePageSpeedInsightsNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_PAGE_SPEED_INSIGHTS_NOT_FOUND,
-        )
-    except WebsitePageSpeedInsightsAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ErrorCode.WEBSITE_PAGE_SPEED_INSIGHTS_EXISTS,
         )
 
 
@@ -126,15 +120,7 @@ async def website_pagespeedinsights_read(
     current_user: CurrentUser,
     web_page_psi: FetchWebPageSpeedInsightOr404,
 ) -> WebsitePageSpeedInsightsRead:
-    try:
-        if not web_page_psi:
-            raise WebsitePageSpeedInsightsNotExists()
-        return WebsitePageSpeedInsightsRead.from_orm(web_page_psi)
-    except WebsitePageSpeedInsightsNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_PAGE_SPEED_INSIGHTS_NOT_FOUND,
-        )
+    return WebsitePageSpeedInsightsRead.from_orm(web_page_psi)
 
 
 @router.delete(
@@ -152,15 +138,7 @@ async def website_pagespeedinsights_delete(
     db: AsyncDatabaseSession,
     web_page_psi: FetchWebPageSpeedInsightOr404,
 ) -> None:
-    try:
-        if not web_page_psi:
-            raise WebsitePageSpeedInsightsNotExists()
-        web_psi_repo: WebsitePageSpeedInsightsRepository
-        web_psi_repo = WebsitePageSpeedInsightsRepository(session=db)
-        await web_psi_repo.delete(entry=web_page_psi)
-        return None
-    except WebsitePageSpeedInsightsNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_PAGE_SPEED_INSIGHTS_NOT_FOUND,
-        )
+    web_psi_repo: WebsitePageSpeedInsightsRepository
+    web_psi_repo = WebsitePageSpeedInsightsRepository(session=db)
+    await web_psi_repo.delete(entry=web_page_psi)
+    return None

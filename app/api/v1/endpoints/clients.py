@@ -11,7 +11,7 @@ from app.api.deps import (
     get_client_or_404,
 )
 from app.api.errors import ErrorCode
-from app.api.exceptions import ClientAlreadyExists, ClientNotExists
+from app.api.exceptions import ClientAlreadyExists
 from app.core.auth import auth
 from app.crud import ClientRepository
 from app.models import Client
@@ -87,14 +87,7 @@ async def clients_read(
     db: AsyncDatabaseSession,
     client: FetchClientOr404,
 ) -> ClientRead:
-    try:
-        if not client:
-            raise ClientNotExists()
-        return ClientRead.from_orm(client)
-    except ClientNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=ErrorCode.CLIENT_NOT_FOUND
-        )
+    return ClientRead.from_orm(client)
 
 
 @router.patch(
@@ -114,13 +107,11 @@ async def clients_update(
     client_in: ClientUpdate,
 ) -> ClientRead:
     try:
-        if not client:
-            raise ClientNotExists()
         clients_repo: ClientRepository = ClientRepository(session=db)
         data: Dict = client_in.dict()
         check_title: str | None = data.get("title")
         if check_title:
-            a_client = await clients_repo.read_by(
+            a_client: Client | None = await clients_repo.read_by(
                 field_name="title", field_value=check_title
             )
             if a_client:
@@ -128,13 +119,7 @@ async def clients_update(
         updated_client: Client | None = await clients_repo.update(
             entry=client, schema=client_in
         )
-        if not updated_client:
-            raise ClientNotExists()
-        return ClientRead.from_orm(updated_client)
-    except ClientNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=ErrorCode.CLIENT_NOT_FOUND
-        )
+        return ClientRead.from_orm(updated_client) if updated_client else ClientRead.from_orm(client)
     except ClientAlreadyExists:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=ErrorCode.CLIENT_EXISTS
@@ -156,13 +141,6 @@ async def clients_delete(
     db: AsyncDatabaseSession,
     client: FetchClientOr404,
 ) -> None:
-    try:
-        if not client:
-            raise ClientNotExists()
-        clients_repo: ClientRepository = ClientRepository(session=db)
-        await clients_repo.delete(entry=client)
-        return None
-    except ClientNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=ErrorCode.CLIENT_NOT_FOUND
-        )
+    clients_repo: ClientRepository = ClientRepository(session=db)
+    await clients_repo.delete(entry=client)
+    return None
