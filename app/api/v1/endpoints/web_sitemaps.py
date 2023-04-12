@@ -129,17 +129,11 @@ async def sitemap_update(
     sitemap: FetchSitemapOr404,
     sitemap_in: WebsiteMapUpdate,
 ) -> WebsiteMapRead:
-    try:
-        sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
-        updated_sitemap: WebsiteMap | None = await sitemap_repo.update(
-            entry=sitemap, schema=sitemap_in
-        )
-        return WebsiteMapRead.from_orm(updated_sitemap) if updated_sitemap else WebsiteMapRead.from_orm(sitemap)
-    except WebsiteMapNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_MAP_NOT_FOUND,
-        )
+    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
+    updated_sitemap: WebsiteMap | None = await sitemap_repo.update(
+        entry=sitemap, schema=sitemap_in
+    )
+    return WebsiteMapRead.from_orm(updated_sitemap) if updated_sitemap else WebsiteMapRead.from_orm(sitemap)
 
 
 @router.delete(

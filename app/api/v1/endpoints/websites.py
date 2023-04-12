@@ -16,6 +16,7 @@ from app.api.exceptions import (
     WebsiteDomainInvalid,
     WebsiteNotExists,
 )
+from app.core.logger import logger
 from app.core.auth import auth
 from app.crud import WebsiteRepository
 from app.models import Website
@@ -49,9 +50,7 @@ async def website_list(
     websites: List[Website] | List[None] | None = await websites_repo.list(
         page=query.page
     )
-    if len(websites):
-        return [WebsiteRead.from_orm(w) for w in websites]
-    return []
+    return [WebsiteRead.from_orm(w) for w in websites] if len(websites) else []
 
 
 @router.post(
@@ -131,10 +130,8 @@ async def website_update(
     website_in: WebsiteUpdate,
 ) -> WebsiteRead:
     try:
-        if not website:
-            raise WebsiteNotExists()
         websites_repo: WebsiteRepository = WebsiteRepository(session=db)
-        if website_in.domain:
+        if website_in.domain is not None:
             domain_found: Website | None = await websites_repo.read_by(
                 field_name="domain",
                 field_value=website_in.domain,
@@ -145,11 +142,6 @@ async def website_update(
             entry=website, schema=website_in
         )
         return WebsiteRead.from_orm(updated_website) if updated_website else WebsiteRead.from_orm(website)
-    except WebsiteNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_NOT_FOUND,
-        )
     except WebsiteAlreadyExists:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

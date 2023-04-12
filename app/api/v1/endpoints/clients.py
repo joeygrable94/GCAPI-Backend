@@ -108,11 +108,9 @@ async def clients_update(
 ) -> ClientRead:
     try:
         clients_repo: ClientRepository = ClientRepository(session=db)
-        data: Dict = client_in.dict()
-        check_title: str | None = data.get("title")
-        if check_title:
+        if client_in.title is not None:
             a_client: Client | None = await clients_repo.read_by(
-                field_name="title", field_value=check_title
+                field_name="title", field_value=client_in.title
             )
             if a_client:
                 raise ClientAlreadyExists()

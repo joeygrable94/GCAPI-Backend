@@ -12,6 +12,26 @@ from app.schemas import ClientRead, ClientUpdate
 pytestmark = pytest.mark.asyncio
 
 
+async def test_update_client_as_superuser(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    entry_a: ClientRead = await create_random_client(db_session)
+    title: str = "New Client Title"
+    data: Dict[str, str] = {"title": title}
+    response: Response = await client.patch(
+        f"clients/{entry_a.id}",
+        headers=superuser_token_headers,
+        json=data,
+    )
+    updated_entry: Dict[str, Any] = response.json()
+    assert 200 <= response.status_code < 300
+    assert updated_entry["title"] == title
+    assert updated_entry["id"] == str(entry_a.id)
+    assert updated_entry["content"] == entry_a.content
+
+
 async def test_update_client_as_superuser_title_too_short(
     client: AsyncClient,
     db_session: AsyncSession,

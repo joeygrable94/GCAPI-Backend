@@ -70,6 +70,23 @@ async def test_create_website_as_superuser_website_already_exists(
     assert entry_2["detail"] == ErrorCode.WEBSITE_DOMAIN_EXISTS
 
 
+async def test_create_website_as_superuser_domain_invalid(
+    client: AsyncClient,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    bad_domain: str = random_domain(16, "co")
+    is_secure: bool = random_boolean()
+    data: Dict[str, Any] = {"domain": bad_domain, "is_secure": is_secure}
+    response: Response = await client.post(
+        "websites/",
+        headers=superuser_token_headers,
+        json=data,
+    )
+    assert response.status_code == 400
+    entry: Dict[str, Any] = response.json()
+    assert entry["detail"] == ErrorCode.WEBSITE_DOMAIN_INVALID
+
+
 async def test_create_website_as_superuser_domain_too_short(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],

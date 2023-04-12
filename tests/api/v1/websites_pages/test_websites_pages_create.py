@@ -1,8 +1,10 @@
 from typing import Any, Dict
+from pydantic import UUID4
 
 import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.utilities.uuids import get_uuid
 from tests.utils.utils import random_lower_string
 from tests.utils.website_maps import create_random_website_map
 from tests.utils.website_pages import create_random_website_page
@@ -139,3 +141,29 @@ async def test_create_website_page_as_superuser_url_too_long(
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
     assert entry["detail"][0]["msg"] == "url must contain less than 5000 characters"
+
+
+async def test_create_website_page_as_superuser_website_not_exists(
+    celery_worker: Any,
+    client: AsyncClient,
+    db_session: AsyncSession,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    website: WebsiteRead = await create_random_website(db_session)
+    web_fake_id: UUID4 = get_uuid()
+    sitemap: WebsiteMapRead = await create_random_website_map(db_session)
+    data = {
+        "url": "/",
+        "status": 200,
+        "priority": 0.5,
+        "website_id": str(web_fake_id),
+        "sitemap_id": str(sitemap.id),
+    }
+    response: Response = await client.post(
+        "webpages/",
+        headers=superuser_token_headers,
+        json=data,
+    )
+    assert response.status_code == 400
+    entry: Dict[str, Any] = response.json()
+    assert entry["detail"] == ErrorCode.WEBSITE_PAGE_UNASSIGNED_WEBSITE_ID

@@ -12,6 +12,26 @@ from app.schemas import WebsiteRead, WebsiteUpdate
 pytestmark = pytest.mark.asyncio
 
 
+async def test_update_website_as_superuser(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    superuser_token_headers: Dict[str, str],
+) -> None:
+    entry_a: WebsiteRead = await create_random_website(db_session)
+    new_is_secure: bool = random_boolean()
+    update_dict = WebsiteUpdate(is_secure=new_is_secure)
+    response: Response = await client.patch(
+        f"websites/{entry_a.id}",
+        headers=superuser_token_headers,
+        json=update_dict.dict(),
+    )
+    assert 200 <= response.status_code < 300
+    entry: Dict[str, Any] = response.json()
+    assert entry["id"] == str(entry_a.id)
+    assert entry["domain"] == entry_a.domain
+    assert entry["is_secure"] == new_is_secure
+
+
 async def test_update_website_already_exists(
     client: AsyncClient,
     db_session: AsyncSession,

@@ -81,10 +81,11 @@ async def website_page_create(
         if a_page is not None:
             raise WebsitePageAlreadyExists()
         # check website page is assigned to a website
-        website_page: WebsitePage = await web_pages_repo.create(website_page_in)
         a_website: Website | None = await website_repo.read(website_page_in.website_id)
         if a_website is None:
             raise WebsiteNotExists()
+        # create the website page
+        website_page: WebsitePage = await web_pages_repo.create(website_page_in)
         fetch_page = a_website.get_link() + website_page.url
         website_page_psi_mobile = task_website_page_pagespeedinsights_fetch.delay(
             website_id=a_website.id,
@@ -148,17 +149,11 @@ async def website_page_update(
     website_page: FetchWebPageOr404,
     website_page_in: WebsitePageUpdate,
 ) -> WebsitePageRead:
-    try:
-        web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
-        updated_website_page: WebsitePage | None = await web_pages_repo.update(
-            entry=website_page, schema=website_page_in
-        )
-        return WebsitePageRead.from_orm(updated_website_page) if updated_website_page else WebsitePageRead.from_orm(website_page)
-    except WebsitePageNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_PAGE_NOT_FOUND,
-        )
+    web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
+    updated_website_page: WebsitePage | None = await web_pages_repo.update(
+        entry=website_page, schema=website_page_in
+    )
+    return WebsitePageRead.from_orm(updated_website_page) if updated_website_page else WebsitePageRead.from_orm(website_page)
 
 
 @router.delete(

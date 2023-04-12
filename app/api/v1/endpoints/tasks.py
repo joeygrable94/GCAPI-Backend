@@ -16,7 +16,7 @@ router: APIRouter = APIRouter()
     dependencies=[Depends(auth.implicit_scheme)],
     response_model=TaskState,
 )
-def get_status(
+def get_tasks_status(
     current_user: CurrentUser,
     query: GetQueryParams,
     task_id: Any,

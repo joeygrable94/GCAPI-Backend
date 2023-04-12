@@ -85,7 +85,7 @@ class BaseRepository(
         entry: TABLE,
         schema: Union[SCHEMA_UPDATE, Any],
     ) -> Optional[TABLE]:
-        for k, v in schema.dict(exclude_unset=True).items():
+        for k, v in schema.dict(exclude_unset=True, exclude_none=True).items():
             setattr(entry, k, v)
         await self._db.commit()
         await self._db.refresh(entry)  # pragma: no cover
