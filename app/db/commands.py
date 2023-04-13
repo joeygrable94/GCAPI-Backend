@@ -1,12 +1,24 @@
 from typing import Any  # pragma: no cover
 
+import logging
+
+from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 from sqlalchemy.sql import text  # pragma: no cover
 
 from app.core.config import settings  # pragma: no cover
 from app.core.logger import logger  # pragma: no cover
 from app.db.session import engine  # pragma: no cover
 
+max_tries = 60 * 5  # 5 minutes
+wait_seconds = 3
 
+
+@retry(
+    stop=stop_after_attempt(max_tries),
+    wait=wait_fixed(wait_seconds),
+    before=before_log(logger, logging.INFO),
+    after=after_log(logger, logging.WARN),
+)
 async def check_db_connected() -> None:  # pragma: no cover
     try:
         dburl: str = str(settings.ASYNC_DATABASE_URI)
