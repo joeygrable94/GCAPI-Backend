@@ -54,17 +54,15 @@ async def get_client_or_404(
         return None
 
 
-FetchClientOr404 = Annotated[Client | None, Depends(get_client_or_404)]
+FetchClientOr404 = Annotated[Client, Depends(get_client_or_404)]
 
 
 async def get_website_or_404(
     db: AsyncDatabaseSession,
-    website_id: Any | None = None,
+    website_id: Any,
 ) -> Website | None:
     """Parses uuid/int and fetches website by id."""
     try:
-        if website_id is None:
-            raise EntityIdNotProvided()
         parsed_id: UUID = parse_id(website_id)
         website_repo: WebsiteRepository = WebsiteRepository(session=db)
         website: Website | None = await website_repo.read(entry_id=parsed_id)
@@ -76,21 +74,17 @@ async def get_website_or_404(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=ErrorCode.WEBSITE_NOT_FOUND,
         )
-    except EntityIdNotProvided:
-        return None
 
 
-FetchWebsiteOr404 = Annotated[Website | None, Depends(get_website_or_404)]
+FetchWebsiteOr404 = Annotated[Website, Depends(get_website_or_404)]
 
 
 async def get_website_map_or_404(
     db: AsyncDatabaseSession,
-    sitemap_id: Any | None = None,
-) -> WebsiteMap | None:
+    sitemap_id: Any,
+) -> WebsiteMap:
     """Parses uuid/int and fetches sitemap by id."""
     try:
-        if sitemap_id is None:
-            raise EntityIdNotProvided()
         parsed_id: UUID = parse_id(sitemap_id)
         sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
         sitemap: WebsiteMap | None = await sitemap_repo.read(entry_id=parsed_id)
@@ -102,21 +96,17 @@ async def get_website_map_or_404(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=ErrorCode.WEBSITE_MAP_NOT_FOUND,
         )
-    except EntityIdNotProvided:
-        return None
 
 
-FetchSitemapOr404 = Annotated[WebsiteMap | None, Depends(get_website_map_or_404)]
+FetchSitemapOr404 = Annotated[WebsiteMap, Depends(get_website_map_or_404)]
 
 
 async def get_website_page_or_404(
     db: AsyncDatabaseSession,
-    page_id: Any | None = None,
+    page_id: Any,
 ) -> WebsitePage | None:
     """Parses uuid/int and fetches website page by id."""
     try:
-        if page_id is None:
-            raise EntityIdNotProvided()
         parsed_id: UUID = parse_id(page_id)
         website_page_repo: WebsitePageRepository = WebsitePageRepository(session=db)
         website_page: WebsitePage | None = await website_page_repo.read(
@@ -130,21 +120,17 @@ async def get_website_page_or_404(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=ErrorCode.WEBSITE_PAGE_NOT_FOUND,
         )
-    except EntityIdNotProvided:
-        return None
 
 
-FetchWebPageOr404 = Annotated[WebsitePage | None, Depends(get_website_page_or_404)]
+FetchWebPageOr404 = Annotated[WebsitePage, Depends(get_website_page_or_404)]
 
 
 async def get_website_page_psi_or_404(
     db: AsyncDatabaseSession,
-    psi_id: Any | None = None,
+    psi_id: Any,
 ) -> WebsitePageSpeedInsights | None:
     """Parses uuid/int and fetches website page by id."""
     try:
-        if psi_id is None:
-            raise EntityIdNotProvided()
         parsed_id: UUID = parse_id(psi_id)
         website_page_psi_repo: WebsitePageSpeedInsightsRepository = (
             WebsitePageSpeedInsightsRepository(session=db)
@@ -160,10 +146,8 @@ async def get_website_page_psi_or_404(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=ErrorCode.WEBSITE_PAGE_SPEED_INSIGHTS_NOT_FOUND,
         )
-    except EntityIdNotProvided:
-        return None
 
 
 FetchWebPageSpeedInsightOr404 = Annotated[
-    WebsitePageSpeedInsights | None, Depends(get_website_page_psi_or_404)
+    WebsitePageSpeedInsights, Depends(get_website_page_psi_or_404)
 ]

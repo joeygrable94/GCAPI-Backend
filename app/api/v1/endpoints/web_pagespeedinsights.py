@@ -80,9 +80,7 @@ async def website_pagespeedinsights_create(
         if query.website_id is None:
             raise WebsiteNotExists()
         website_repo: WebsiteRepository = WebsiteRepository(db)
-        # print(query.website_id)
         a_website: Website | None = await website_repo.read(entry_id=query.website_id)
-        # print(a_website)
         if a_website is None:
             raise WebsiteNotExists()
         # check if page exists

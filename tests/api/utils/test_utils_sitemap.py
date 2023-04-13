@@ -1,19 +1,19 @@
 from unittest.mock import patch
 
 import pytest
+from pydantic import AnyHttpUrl
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.websites import create_random_website
 
 from app.api.utils import save_sitemap_pages
-from app.models.website import Website
-from app.schemas import WebsiteMapPage
+from app.schemas import WebsiteMapPage, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 
 
 async def test_save_sitemap_pages(db_session: AsyncSession) -> None:
-    website: Website = await create_random_website(db_session)
-    sitemap_url = "https://getcommunity.com/"
+    website: WebsiteRead = await create_random_website(db_session)
+    sitemap_url: AnyHttpUrl = "https://getcommunity.com/"  # type: ignore
     sitemap_pages = [
         WebsiteMapPage(
             url="https://getcommunity.com/products/",

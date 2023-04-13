@@ -64,55 +64,55 @@ async def test_get_async_db() -> None:
         assert session is not None
 
 
-def test_query_page_param_validation():
+def test_query_page_param_validation() -> None:
     with pytest.raises(HTTPException) as exc_info:
         PageQueryParams(page=0)
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "Page number must be greater than 0"
 
 
-def test_query_client_id_param_validation():
+def test_query_client_id_param_validation() -> None:
     with pytest.raises(HTTPException) as exc_info:
         ClientQueryParams(client_id="invalid_id")
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "Invalid client ID"
 
 
-def test_query_website_id_param_validation():
+def test_query_website_id_param_validation() -> None:
     with pytest.raises(HTTPException) as exc_info:
         WebsiteQueryParams(website_id="invalid_id")
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "Invalid website ID"
 
 
-def test_query_sitemap_id_param_validation():
+def test_query_sitemap_id_param_validation() -> None:
     with pytest.raises(HTTPException) as exc_info:
         WebsiteMapQueryParams(sitemap_id="invalid_id")
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "Invalid sitemap ID"
 
 
-def test_query_page_id_param_validation():
+def test_query_page_id_param_validation() -> None:
     with pytest.raises(HTTPException) as exc_info:
         WebsitePageQueryParams(page_id="invalid_id")
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "Invalid page ID"
 
 
-def test_query_devices_param_validation():
+def test_query_devices_param_validation() -> None:
     with pytest.raises(HTTPException) as exc_info:
         DeviceStrategyQueryParams(strategy=["invalid_strategy"])
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "Invalid strategy"
 
 
-def test_query_common_valid_params():
+def test_query_common_valid_params() -> None:
     params = CommonQueryParams(page=1)
 
     assert params.page == 1
 
 
-def test_query_common_client_valid_params():
+def test_query_common_client_valid_params() -> None:
     test_uuid = get_uuid_str()
     params = CommonClientQueryParams(page=1, client_id=test_uuid)
 
@@ -121,7 +121,7 @@ def test_query_common_client_valid_params():
     assert isinstance(params.client_id, UUID)
 
 
-def test_query_common_website_valid_params():
+def test_query_common_website_valid_params() -> None:
     test_uuid = get_uuid_str()
     params = CommonWebsiteQueryParams(page=1, website_id=test_uuid)
 
@@ -130,7 +130,7 @@ def test_query_common_website_valid_params():
     assert isinstance(params.website_id, UUID)
 
 
-def test_query_common_website_client_valid_params():
+def test_query_common_website_client_valid_params() -> None:
     test_uuid = get_uuid_str()
     test_uuid_2 = get_uuid_str()
     params = CommonClientWebsiteQueryParams(
@@ -144,7 +144,7 @@ def test_query_common_website_client_valid_params():
     assert isinstance(params.website_id, UUID)
 
 
-def test_query_common_website_page_valid_params():
+def test_query_common_website_page_valid_params() -> None:
     test_uuid = get_uuid_str()
     test_uuid_2 = get_uuid_str()
     params = CommonWebsitePageQueryParams(
@@ -158,7 +158,7 @@ def test_query_common_website_page_valid_params():
     assert isinstance(params.website_id, UUID)
 
 
-def test_query_common_website_map_valid_params():
+def test_query_common_website_map_valid_params() -> None:
     test_uuid = get_uuid_str()
     params = CommonWebsiteMapQueryParams(page=1, website_id=test_uuid)
 
@@ -167,7 +167,7 @@ def test_query_common_website_map_valid_params():
     assert isinstance(params.website_id, UUID)
 
 
-def test_query_common_website_pagespeedinsights_valid_params():
+def test_query_common_website_pagespeedinsights_valid_params() -> None:
     test_uuid = get_uuid_str()
     test_uuid_2 = get_uuid_str()
     params = CommonWebsitePageSpeedInsightsQueryParams(

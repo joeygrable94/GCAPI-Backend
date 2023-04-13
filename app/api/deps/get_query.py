@@ -1,11 +1,13 @@
 from typing import Annotated, Any, List
-from uuid import UUID
 
 from fastapi import Depends, HTTPException, Query, status
+from pydantic import UUID4
 
 from app.api.exceptions import InvalidID
 from app.core.utilities.uuids import parse_id
 from app.schemas import PageSpeedInsightsDevice
+
+# from uuid import UUID
 
 
 class PageQueryParams:
@@ -20,7 +22,7 @@ class PageQueryParams:
 
 class ClientQueryParams:
     def __init__(self, client_id: Any | None = None):
-        q_client_id: UUID | None
+        q_client_id: UUID4 | None
         try:
             q_client_id = None if not client_id else parse_id(client_id)
         except InvalidID:
@@ -28,12 +30,12 @@ class ClientQueryParams:
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Invalid client ID",
             )
-        self.client_id: UUID | None = q_client_id
+        self.client_id: UUID4 | None = q_client_id
 
 
 class WebsiteQueryParams:
     def __init__(self, website_id: Any | None = None):
-        q_website_id: UUID | None
+        q_website_id: UUID4 | None
         try:
             q_website_id = None if not website_id else parse_id(website_id)
         except InvalidID:
@@ -41,12 +43,12 @@ class WebsiteQueryParams:
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Invalid website ID",
             )
-        self.website_id: UUID | None = q_website_id
+        self.website_id: UUID4 | None = q_website_id
 
 
 class WebsiteMapQueryParams:
     def __init__(self, sitemap_id: Any | None = None):
-        q_sitemap_id: UUID | None
+        q_sitemap_id: UUID4 | None
         try:
             q_sitemap_id = None if not sitemap_id else parse_id(sitemap_id)
         except InvalidID:
@@ -54,12 +56,12 @@ class WebsiteMapQueryParams:
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Invalid sitemap ID",
             )
-        self.sitemap_id: UUID | None = q_sitemap_id
+        self.sitemap_id: UUID4 | None = q_sitemap_id
 
 
 class WebsitePageQueryParams:
     def __init__(self, page_id: Any | None = None):
-        q_page_id: UUID | None
+        q_page_id: UUID4 | None
         try:
             q_page_id = None if not page_id else parse_id(page_id)
         except InvalidID:
@@ -67,7 +69,7 @@ class WebsitePageQueryParams:
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Invalid page ID",
             )
-        self.page_id: UUID | None = q_page_id
+        self.page_id: UUID4 | None = q_page_id
 
 
 class DeviceStrategyQueryParams:
@@ -78,7 +80,7 @@ class DeviceStrategyQueryParams:
                 q_devices = []
                 for stg in strategy:
                     device = PageSpeedInsightsDevice(device=stg)
-                    q_devices.append(stg)
+                    q_devices.append(device.device)
         except (TypeError, ValueError):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

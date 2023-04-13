@@ -9,7 +9,7 @@ from tests.utils.website_pagespeedinsights import (
 )
 from tests.utils.websites import create_random_website
 
-from app.schemas import WebsiteMapRead, WebsitePageSpeedInsightsRead, WebsiteRead
+from app.schemas import WebsitePageRead, WebsitePageSpeedInsightsRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 
@@ -54,24 +54,24 @@ async def test_list_website_pagespeedinsights_as_superuser(
             assert entry["website_id"] == entry_2.website_id
 
 
-async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id_devices_all(
+async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id_devices_all(  # noqa: E501
     client: AsyncClient,
     db_session: AsyncSession,
     superuser_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(
+    webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
-    webpage_b: WebsiteMapRead = await create_random_website_page(
+    webpage_b: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_b.id
     )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = (
+    entry_1: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_2: WebsitePageSpeedInsightsRead = (
+    entry_2: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
     entry_3: WebsitePageSpeedInsightsRead = (
@@ -82,7 +82,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_4: WebsitePageSpeedInsightsRead = (
+    entry_4: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -90,7 +90,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_5: WebsitePageSpeedInsightsRead = (
+    entry_5: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -98,7 +98,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_6: WebsitePageSpeedInsightsRead = (
+    entry_6: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -114,7 +114,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="mobile",
         )
     )
-    entry_8: WebsitePageSpeedInsightsRead = (
+    entry_8: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -122,7 +122,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="mobile",
         )
     )
-    entry_9: WebsitePageSpeedInsightsRead = (
+    entry_9: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -130,7 +130,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="mobile",
         )
     )
-    entry_10: WebsitePageSpeedInsightsRead = (
+    entry_10: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -142,8 +142,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
         "psi/",
         headers=superuser_token_headers,
         params={
-            "website_id": website_a.id,
-            "page_id": webpage_a.id,
+            "website_id": str(website_a.id),
+            "page_id": str(webpage_a.id),
             "strategy": ["desktop", "mobile"],
         },
     )
@@ -161,24 +161,24 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             assert entry["website_id"] == entry_7.website_id
 
 
-async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id_devices_desktop(
+async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id_devices_desktop(  # noqa: E501
     client: AsyncClient,
     db_session: AsyncSession,
     superuser_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(
+    webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
-    webpage_b: WebsiteMapRead = await create_random_website_page(
+    webpage_b: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_b.id
     )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = (
+    entry_1: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_2: WebsitePageSpeedInsightsRead = (
+    entry_2: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
     entry_3: WebsitePageSpeedInsightsRead = (
@@ -189,7 +189,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_4: WebsitePageSpeedInsightsRead = (
+    entry_4: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -197,7 +197,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_5: WebsitePageSpeedInsightsRead = (
+    entry_5: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -205,7 +205,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_6: WebsitePageSpeedInsightsRead = (
+    entry_6: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -213,7 +213,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_7: WebsitePageSpeedInsightsRead = (
+    entry_7: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -221,7 +221,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="mobile",
         )
     )
-    entry_8: WebsitePageSpeedInsightsRead = (
+    entry_8: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -229,7 +229,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="mobile",
         )
     )
-    entry_9: WebsitePageSpeedInsightsRead = (
+    entry_9: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -237,7 +237,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="mobile",
         )
     )
-    entry_10: WebsitePageSpeedInsightsRead = (
+    entry_10: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -249,8 +249,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
         "psi/",
         headers=superuser_token_headers,
         params={
-            "website_id": website_a.id,
-            "page_id": webpage_a.id,
+            "website_id": str(website_a.id),
+            "page_id": str(webpage_a.id),
             "strategy": ["desktop"],
         },
     )
@@ -264,27 +264,27 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             assert entry["website_id"] == entry_3.website_id
 
 
-async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id_devices_mobile(
+async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id_devices_mobile(  # noqa: E501
     client: AsyncClient,
     db_session: AsyncSession,
     superuser_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(
+    webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
-    webpage_b: WebsiteMapRead = await create_random_website_page(
+    webpage_b: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_b.id
     )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = (
+    entry_1: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_2: WebsitePageSpeedInsightsRead = (
+    entry_2: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_3: WebsitePageSpeedInsightsRead = (
+    entry_3: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -292,7 +292,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_4: WebsitePageSpeedInsightsRead = (
+    entry_4: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -300,7 +300,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_5: WebsitePageSpeedInsightsRead = (
+    entry_5: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -308,7 +308,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_6: WebsitePageSpeedInsightsRead = (
+    entry_6: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -316,7 +316,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_7: WebsitePageSpeedInsightsRead = (
+    entry_7: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -324,7 +324,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="mobile",
         )
     )
-    entry_8: WebsitePageSpeedInsightsRead = (
+    entry_8: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -340,7 +340,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="mobile",
         )
     )
-    entry_10: WebsitePageSpeedInsightsRead = (
+    entry_10: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -352,8 +352,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
         "psi/",
         headers=superuser_token_headers,
         params={
-            "website_id": website_b.id,
-            "page_id": webpage_b.id,
+            "website_id": str(website_b.id),
+            "page_id": str(webpage_b.id),
             "strategy": ["mobile"],
         },
     )
@@ -374,17 +374,17 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(
+    webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
-    webpage_b: WebsiteMapRead = await create_random_website_page(
+    webpage_b: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_b.id
     )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = (
+    entry_1: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_2: WebsitePageSpeedInsightsRead = (
+    entry_2: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
     entry_3: WebsitePageSpeedInsightsRead = (
@@ -395,7 +395,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_4: WebsitePageSpeedInsightsRead = (
+    entry_4: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -403,7 +403,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_5: WebsitePageSpeedInsightsRead = (
+    entry_5: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -411,7 +411,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="desktop",
         )
     )
-    entry_6: WebsitePageSpeedInsightsRead = (
+    entry_6: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -427,7 +427,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="mobile",
         )
     )
-    entry_8: WebsitePageSpeedInsightsRead = (
+    entry_8: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -435,7 +435,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="mobile",
         )
     )
-    entry_9: WebsitePageSpeedInsightsRead = (
+    entry_9: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -443,7 +443,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             device_strategy="mobile",
         )
     )
-    entry_10: WebsitePageSpeedInsightsRead = (
+    entry_10: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -455,8 +455,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
         "psi/",
         headers=superuser_token_headers,
         params={
-            "website_id": website_a.id,
-            "page_id": webpage_a.id,
+            "website_id": str(website_a.id),
+            "page_id": str(webpage_a.id),
         },
     )
     assert 200 <= response.status_code < 300
@@ -480,20 +480,20 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(
+    webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
-    webpage_b: WebsiteMapRead = await create_random_website_page(
+    webpage_b: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_b.id
     )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = (
+    entry_1: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_2: WebsitePageSpeedInsightsRead = (
+    entry_2: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_3: WebsitePageSpeedInsightsRead = (
+    entry_3: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -501,7 +501,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
             device_strategy="desktop",
         )
     )
-    entry_4: WebsitePageSpeedInsightsRead = (
+    entry_4: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -509,7 +509,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
             device_strategy="desktop",
         )
     )
-    entry_5: WebsitePageSpeedInsightsRead = (
+    entry_5: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -517,7 +517,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
             device_strategy="desktop",
         )
     )
-    entry_6: WebsitePageSpeedInsightsRead = (
+    entry_6: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -541,7 +541,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
             device_strategy="mobile",
         )
     )
-    entry_9: WebsitePageSpeedInsightsRead = (
+    entry_9: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -549,7 +549,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
             device_strategy="mobile",
         )
     )
-    entry_10: WebsitePageSpeedInsightsRead = (
+    entry_10: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -561,7 +561,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
         "psi/",
         headers=superuser_token_headers,
         params={
-            "website_id": website_a.id,
+            "website_id": str(website_a.id),
             "strategy": ["mobile"],
         },
     )
@@ -586,20 +586,20 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(
+    webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
-    webpage_b: WebsiteMapRead = await create_random_website_page(
+    webpage_b: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_b.id
     )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = (
+    entry_1: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_2: WebsitePageSpeedInsightsRead = (
+    entry_2: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_3: WebsitePageSpeedInsightsRead = (
+    entry_3: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -623,7 +623,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
             device_strategy="desktop",
         )
     )
-    entry_6: WebsitePageSpeedInsightsRead = (
+    entry_6: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -631,7 +631,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
             device_strategy="desktop",
         )
     )
-    entry_7: WebsitePageSpeedInsightsRead = (
+    entry_7: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -639,7 +639,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
             device_strategy="mobile",
         )
     )
-    entry_8: WebsitePageSpeedInsightsRead = (
+    entry_8: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -647,7 +647,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
             device_strategy="mobile",
         )
     )
-    entry_9: WebsitePageSpeedInsightsRead = (
+    entry_9: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -655,7 +655,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
             device_strategy="mobile",
         )
     )
-    entry_10: WebsitePageSpeedInsightsRead = (
+    entry_10: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -667,7 +667,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
         "psi/",
         headers=superuser_token_headers,
         params={
-            "page_id": webpage_b.id,
+            "page_id": str(webpage_b.id),
             "strategy": ["desktop"],
         },
     )
@@ -692,17 +692,17 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(
+    webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
-    webpage_b: WebsiteMapRead = await create_random_website_page(
+    webpage_b: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_b.id
     )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = (
+    entry_1: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_2: WebsitePageSpeedInsightsRead = (
+    entry_2: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
     entry_3: WebsitePageSpeedInsightsRead = (
@@ -721,7 +721,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
             device_strategy="desktop",
         )
     )
-    entry_5: WebsitePageSpeedInsightsRead = (
+    entry_5: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -729,7 +729,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
             device_strategy="desktop",
         )
     )
-    entry_6: WebsitePageSpeedInsightsRead = (
+    entry_6: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -753,7 +753,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
             device_strategy="mobile",
         )
     )
-    entry_9: WebsitePageSpeedInsightsRead = (
+    entry_9: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -761,7 +761,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
             device_strategy="mobile",
         )
     )
-    entry_10: WebsitePageSpeedInsightsRead = (
+    entry_10: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -773,7 +773,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
         "psi/",
         headers=superuser_token_headers,
         params={
-            "website_id": website_a.id,
+            "website_id": str(website_a.id),
         },
     )
     assert 200 <= response.status_code < 300
@@ -805,20 +805,20 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(
+    webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
-    webpage_b: WebsiteMapRead = await create_random_website_page(
+    webpage_b: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_b.id
     )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = (
+    entry_1: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_2: WebsitePageSpeedInsightsRead = (
+    entry_2: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_3: WebsitePageSpeedInsightsRead = (
+    entry_3: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -842,7 +842,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
             device_strategy="desktop",
         )
     )
-    entry_6: WebsitePageSpeedInsightsRead = (
+    entry_6: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -850,7 +850,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
             device_strategy="desktop",
         )
     )
-    entry_7: WebsitePageSpeedInsightsRead = (
+    entry_7: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_a.id,
@@ -874,7 +874,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
             device_strategy="mobile",
         )
     )
-    entry_10: WebsitePageSpeedInsightsRead = (
+    entry_10: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(
             db_session,
             website_id=website_b.id,
@@ -886,7 +886,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
         "psi/",
         headers=superuser_token_headers,
         params={
-            "page_id": webpage_b.id,
+            "page_id": str(webpage_b.id),
         },
     )
     assert 200 <= response.status_code < 300
@@ -918,17 +918,17 @@ async def test_list_website_pagespeedinsights_as_superuser_by_devices_all(
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(
+    webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
-    webpage_b: WebsiteMapRead = await create_random_website_page(
+    webpage_b: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_b.id
     )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = (
+    entry_1: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
-    entry_2: WebsitePageSpeedInsightsRead = (
+    entry_2: WebsitePageSpeedInsightsRead = (  # noqa: F841
         await create_random_website_page_speed_insights(db_session)
     )
     entry_3: WebsitePageSpeedInsightsRead = (

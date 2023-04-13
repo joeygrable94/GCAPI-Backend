@@ -6,7 +6,7 @@ from pydantic import UUID4
 from app.api.exceptions import InvalidID
 
 
-def parse_id(value: Any) -> uuid.UUID:
+def parse_id(value: Any) -> UUID4:
     if isinstance(value, uuid.UUID):
         return value
     try:

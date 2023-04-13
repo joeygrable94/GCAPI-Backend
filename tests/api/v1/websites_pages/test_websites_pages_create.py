@@ -149,7 +149,7 @@ async def test_create_website_page_as_superuser_website_not_exists(
     db_session: AsyncSession,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    website: WebsiteRead = await create_random_website(db_session)
+    website: WebsiteRead = await create_random_website(db_session)  # noqa: F841
     web_fake_id: UUID4 = get_uuid()
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
     data = {

@@ -1,5 +1,5 @@
 import json
-from typing import Iterator
+from typing import Any, Iterator
 
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,7 +13,7 @@ from app.schemas import WebsiteMapCreate, WebsiteMapRead, WebsiteRead
 
 
 class MockSitemap:
-    def __init__(self, url, pages) -> None:
+    def __init__(self, url: Any, pages: Any) -> None:
         self.url = url
         self.pages = pages
 
@@ -22,7 +22,7 @@ class MockSitemap:
             yield SitemapPage(pg)
 
 
-def generate_mock_sitemap(sitemap_url: str, mock_sitemap_str: str):
+def generate_mock_sitemap(sitemap_url: str, mock_sitemap_str: str) -> MockSitemap:
     pages = json.dumps(mock_sitemap_str, indent=4)
     return MockSitemap(sitemap_url, pages)
 

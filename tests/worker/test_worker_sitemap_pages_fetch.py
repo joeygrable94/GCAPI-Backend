@@ -31,5 +31,6 @@ async def test_task_website_sitemap_fetch_pages(
         assert sitemap_task.website_id == website_id
         assert isinstance(sitemap_task.task_id, UUID)
 
-        # Check that the sitemap and sitemap saving functions were called with the correct arguments
+        # Check that the sitemap and sitemap saving functions
+        # were called with the correct arguments
         mock_sitemap_tree.assert_called_once_with(sitemap_url)

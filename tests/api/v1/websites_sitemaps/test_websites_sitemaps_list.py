@@ -11,20 +11,6 @@ from app.schemas import WebsiteMapRead, WebsiteRead
 pytestmark = pytest.mark.asyncio
 
 
-"""
-async def test_list_website_sitemaps_as_superuser_none_found(
-    client: AsyncClient,
-    db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
-) -> None:
-    response: Response = await client.get("sitemaps/", headers=superuser_token_headers)
-    assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert isinstance(all_entries, list)
-    assert len(all_entries) == 0
-"""
-
-
 async def test_list_website_sitemaps_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
@@ -62,16 +48,16 @@ async def test_list_website_sitemaps_as_superuser_by_website_id(
     entry_3: WebsiteMapRead = await create_random_website_map(
         db_session, website_id=website_a.id
     )
-    entry_4: WebsiteMapRead = await create_random_website_map(
+    entry_4: WebsiteMapRead = await create_random_website_map(  # noqa: F841
         db_session, website_id=website_b.id
     )
-    entry_5: WebsiteMapRead = await create_random_website_map(
+    entry_5: WebsiteMapRead = await create_random_website_map(  # noqa: F841
         db_session, website_id=website_b.id
     )
     response: Response = await client.get(
         "sitemaps/",
         headers=superuser_token_headers,
-        params={"website_id": website_a.id},
+        params={"website_id": str(website_a.id)},
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()

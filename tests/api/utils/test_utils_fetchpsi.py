@@ -3,13 +3,15 @@ import os
 from typing import Any, Dict
 from unittest.mock import MagicMock, patch
 
+from pydantic import AnyHttpUrl
+
 from app.api.utils import fetch_pagespeedinsights
 from app.schemas import PageSpeedInsightsDevice
 
 
-def test_fetch_pagespeedinsights(mock_fetch_psi: Dict[str, Any]):
-    fetch_url = "https://getcommunity.com"
-    strategy = PageSpeedInsightsDevice(device="mobile")
+def test_fetch_pagespeedinsights(mock_fetch_psi: Dict[str, Any]) -> None:
+    fetch_url: AnyHttpUrl = "https://getcommunity.com"  # type: ignore
+    strategy: PageSpeedInsightsDevice = PageSpeedInsightsDevice(device="mobile")
     api_key: str | None = os.environ.get("GOOGLE_CLOUD_API_KEY", None)
     if api_key is None:
         raise Exception("Google Cloud API Key not found in environment variables")

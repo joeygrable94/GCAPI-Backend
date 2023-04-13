@@ -31,7 +31,3 @@ async def test_get_website_page_psi_or_404(db_session: AsyncSession) -> None:
     fake_clid_uuid: str = "00000000-0000-0000-0000-000000000000"
     with pytest.raises(HTTPException):
         await get_website_page_psi_or_404(db_session, fake_clid_uuid)
-
-    # Test with no website_page_id
-    result = await get_website_page_psi_or_404(db_session)
-    assert result is None
