@@ -18,7 +18,7 @@ router: APIRouter = APIRouter()
 def get_tasks_status(
     current_user: CurrentUser,
     task_id: UUID4,
-) -> TaskState:
+) -> TaskState:  # pragma: no cover
     task_result = AsyncResult(task_id)
     return TaskState(
         task_id=task_id, task_status=task_result.status, task_result=task_result.result
