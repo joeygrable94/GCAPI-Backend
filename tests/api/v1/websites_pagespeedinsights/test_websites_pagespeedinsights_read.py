@@ -3,12 +3,14 @@ from typing import Any, Dict
 import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.website_pagespeedinsights import WebsitePageSpeedInsights
-from tests.utils.website_pagespeedinsights import create_random_website_page_speed_insights
+from tests.utils.website_pagespeedinsights import (
+    create_random_website_page_speed_insights,
+)
 
 from app.api.errors import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
 from app.crud import WebsitePageSpeedInsightsRepository
+from app.models.website_pagespeedinsights import WebsitePageSpeedInsights
 from app.schemas import WebsitePageSpeedInsightsRead
 
 pytestmark = pytest.mark.asyncio
@@ -19,7 +21,9 @@ async def test_read_website_pagespeedinsights_by_id_as_superuser(
     db_session: AsyncSession,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    entry: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
+    entry: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
+    )
     response: Response = await client.get(
         f"psi/{entry.id}",
         headers=superuser_token_headers,
@@ -30,7 +34,9 @@ async def test_read_website_pagespeedinsights_by_id_as_superuser(
     assert data["strategy"] == entry.strategy
     assert data["website_id"] == str(entry.website_id)
     assert data["page_id"] == str(entry.page_id)
-    repo: WebsitePageSpeedInsightsRepository = WebsitePageSpeedInsightsRepository(db_session)
+    repo: WebsitePageSpeedInsightsRepository = WebsitePageSpeedInsightsRepository(
+        db_session
+    )
     existing_data: WebsitePageSpeedInsights | None = await repo.read(entry.id)
     assert existing_data
     assert data["strategy"] == existing_data.strategy

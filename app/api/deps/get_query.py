@@ -1,10 +1,9 @@
 from typing import Annotated, Any, List
 from uuid import UUID
 
-from fastapi import Depends, HTTPException, status, Query
+from fastapi import Depends, HTTPException, Query, status
 
 from app.api.exceptions import InvalidID
-from app.core.logger import logger
 from app.core.utilities.uuids import parse_id
 from app.schemas import PageSpeedInsightsDevice
 
@@ -89,8 +88,9 @@ class DeviceStrategyQueryParams:
 
 
 class CommonQueryParams(PageQueryParams):
-    def __init__(self, page: int = Query(1)):
+    def __init__(self, page: int = Query(1), speak: str | None = Query(None)):
         PageQueryParams.__init__(self, page)
+        self.speak = speak
 
 
 GetQueryParams = Annotated[CommonQueryParams, Depends()]
@@ -122,7 +122,9 @@ class CommonWebsiteQueryParams(PageQueryParams, WebsiteQueryParams):
 GetWebsiteQueryParams = Annotated[CommonClientQueryParams, Depends()]
 
 
-class CommonClientWebsiteQueryParams(PageQueryParams, ClientQueryParams, WebsiteQueryParams):
+class CommonClientWebsiteQueryParams(
+    PageQueryParams, ClientQueryParams, WebsiteQueryParams
+):
     def __init__(
         self,
         page: int = 1,
@@ -137,7 +139,9 @@ class CommonClientWebsiteQueryParams(PageQueryParams, ClientQueryParams, Website
 GetClientWebsiteQueryParams = Annotated[CommonClientWebsiteQueryParams, Depends()]
 
 
-class CommonWebsitePageQueryParams(PageQueryParams, WebsiteQueryParams, WebsiteMapQueryParams):
+class CommonWebsitePageQueryParams(
+    PageQueryParams, WebsiteQueryParams, WebsiteMapQueryParams
+):
     def __init__(
         self,
         page: int = 1,
@@ -169,7 +173,7 @@ class CommonWebsitePageSpeedInsightsQueryParams(
     PageQueryParams,
     WebsiteQueryParams,
     WebsitePageQueryParams,
-    DeviceStrategyQueryParams
+    DeviceStrategyQueryParams,
 ):
     def __init__(
         self,
@@ -184,4 +188,6 @@ class CommonWebsitePageSpeedInsightsQueryParams(
         DeviceStrategyQueryParams.__init__(self, strategy)
 
 
-GetWebsitePageSpeedInsightsQueryParams = Annotated[CommonWebsitePageSpeedInsightsQueryParams, Depends()]
+GetWebsitePageSpeedInsightsQueryParams = Annotated[
+    CommonWebsitePageSpeedInsightsQueryParams, Depends()
+]

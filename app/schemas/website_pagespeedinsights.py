@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel, UUID4, validator
+from pydantic import UUID4, BaseModel, validator
 
 from app.db.acls import WebsitePageSpeedInsightsACL
 from app.schemas.base import BaseSchema, BaseSchemaRead

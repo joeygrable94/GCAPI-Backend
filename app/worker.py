@@ -1,13 +1,10 @@
-import asyncio
-import csv
-import json
-from typing import Any, List, Tuple
-from datetime import datetime
+from typing import Any, Dict, List, Tuple
 
 from asgi_correlation_id.context import correlation_id
 from pydantic import UUID4, AnyHttpUrl
 from raven import Client  # type: ignore
-from usp.tree import AbstractSitemap, sitemap_tree_for_homepage  # type: ignore
+from usp.tree import AbstractSitemap  # type: ignore
+from usp.tree import sitemap_tree_for_homepage
 
 from app.api.utils import fetch_pagespeedinsights, save_sitemap_pages
 from app.core.celery import celery_app
@@ -15,13 +12,12 @@ from app.core.config import settings
 from app.core.logger import logger
 from app.schemas import (
     PageSpeedInsightsDevice,
-    WebsitePageSpeedInsightsBase,
-    WebsiteMapProcessing,
     WebsiteMapPage,
+    WebsiteMapProcessing,
+    WebsitePageSpeedInsightsBase,
 )
 
 if not settings.DEBUG_MODE:  # pragma: no cover
-
     if settings.SENTRY_DSN:
         client_sentry: Client = Client(settings.SENTRY_DSN)
 
@@ -47,7 +43,8 @@ def task_website_sitemap_fetch_pages(
 ) -> WebsiteMapProcessing:
     logger.info(f"Fetching sitemap pages for website_id {website_id}")
     sitemap: AbstractSitemap = sitemap_tree_for_homepage(sitemap_url)
-    sitemap_pages: List[WebsiteMapPage] = []
+    # sitemap_pages: List[WebsiteMapPage] = []
+    sitemap_pages: List[Dict[str, Any]] = []
     for pg in sitemap.all_pages():
         sitemap_pages.append(
             WebsiteMapPage(

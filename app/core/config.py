@@ -10,7 +10,6 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
-
     # APP
     PROJECT_NAME: str = environ.get("PROJECT_NAME", "FastAPI")
     PROJECT_VERSION: str = environ.get("TAG", "0.0.1")
@@ -64,7 +63,9 @@ class Settings(BaseSettings):
     # Database
     DB_ECHO_LOG: bool = False if bool(environ.get("APP_DEBUG", True)) else False
     DATABASE_URI: Union[str, URL] = environ.get("DATABASE_URI", "sqlite:///./app.db")
-    ASYNC_DATABASE_URI: Union[str, URL] = environ.get("ASYNC_DATABASE_URI", "sqlite+aiosqlite:///./app.db")
+    ASYNC_DATABASE_URI: Union[str, URL] = environ.get(
+        "ASYNC_DATABASE_URI", "sqlite+aiosqlite:///./app.db"
+    )
 
     # Redis
     REDIS_CONN_URI: str = environ.get("REDIS_CONN_URI", "redis://localhost:6379")

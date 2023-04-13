@@ -3,7 +3,7 @@ from typing import Any, Dict
 import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.utils import random_boolean, random_domain
+from tests.utils.utils import random_boolean
 
 from app.api.errors import ErrorCode
 from app.core.utilities.uuids import get_uuid_str

@@ -1,9 +1,8 @@
-from typing import Any
-
-from uuid import UUID
-import pytest
 import unittest.mock
+from typing import Any
+from uuid import UUID
 
+import pytest
 from tests.utils.website_maps import generate_mock_sitemap
 
 from app.core.utilities.uuids import get_uuid
@@ -12,15 +11,21 @@ from app.worker import task_website_sitemap_fetch_pages
 
 
 @pytest.mark.celery
-async def test_task_website_sitemap_fetch_pages(celery_worker: Any, mock_fetch_sitemap: Any) -> None:
+async def test_task_website_sitemap_fetch_pages(
+    celery_worker: Any, mock_fetch_sitemap: Any
+) -> None:
     website_id = get_uuid()
     sitemap_url = "https://getcommunity.com/"
     mock_sitemap = generate_mock_sitemap(sitemap_url, mock_fetch_sitemap)
 
-    with unittest.mock.patch("app.worker.sitemap_tree_for_homepage") as mock_sitemap_tree:
+    with unittest.mock.patch(
+        "app.worker.sitemap_tree_for_homepage"
+    ) as mock_sitemap_tree:
         mock_sitemap_tree.return_value = mock_sitemap
 
-        sitemap_task: WebsiteMapProcessing = task_website_sitemap_fetch_pages(website_id, sitemap_url)
+        sitemap_task: WebsiteMapProcessing = task_website_sitemap_fetch_pages(
+            website_id, sitemap_url
+        )
 
         assert sitemap_task.url == sitemap_url
         assert sitemap_task.website_id == website_id

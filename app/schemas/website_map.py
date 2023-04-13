@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import List, Optional
-from decimal import Decimal
 from datetime import datetime
+from decimal import Decimal
+from typing import List, Optional
 
 from pydantic import UUID4, BaseModel, validator
-from usp.objects.page import SITEMAP_PAGE_DEFAULT_PRIORITY, SitemapPage, SitemapPageChangeFrequency, SitemapNewsStory  # type: ignore
+from usp.objects.page import SITEMAP_PAGE_DEFAULT_PRIORITY  # type: ignore
+from usp.objects.page import SitemapPageChangeFrequency
 
 from app.db.acls import WebsiteMapACL
 from app.schemas.base import BaseSchema, BaseSchemaRead
@@ -18,9 +19,9 @@ class GoogleNewsStory(BaseModel):
     publication_name: Optional[str] = None
     publication_language: Optional[str] = None
     access: Optional[str] = None
-    genres: List[str] = None
-    keywords: List[str] = None
-    stock_tickers: List[str] = None
+    genres: Optional[List[str]] = None
+    keywords: Optional[List[str]] = None
+    stock_tickers: Optional[List[str]] = None
 
 
 class WebsiteMapPage(BaseModel):

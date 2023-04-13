@@ -11,11 +11,7 @@ from app.api.deps import (
     get_website_map_or_404,
 )
 from app.api.errors import ErrorCode
-from app.api.exceptions import (
-    WebsiteMapAlreadyExists,
-    WebsiteMapNotExists,
-    WebsiteNotExists,
-)
+from app.api.exceptions import WebsiteMapAlreadyExists, WebsiteNotExists
 from app.core.auth import auth
 from app.crud import WebsiteMapRepository, WebsiteRepository
 from app.models import Website, WebsiteMap
@@ -48,7 +44,7 @@ async def sitemap_list(
         page=query.page,
         website_id=query.website_id,
     )
-    return [WebsiteMapRead.from_orm(w) for w in sitemaps] if len(sitemaps) else []
+    return [WebsiteMapRead.from_orm(w) for w in sitemaps] if sitemaps else []
 
 
 @router.post(
@@ -133,7 +129,11 @@ async def sitemap_update(
     updated_sitemap: WebsiteMap | None = await sitemap_repo.update(
         entry=sitemap, schema=sitemap_in
     )
-    return WebsiteMapRead.from_orm(updated_sitemap) if updated_sitemap else WebsiteMapRead.from_orm(sitemap)
+    return (
+        WebsiteMapRead.from_orm(updated_sitemap)
+        if updated_sitemap
+        else WebsiteMapRead.from_orm(sitemap)
+    )
 
 
 @router.delete(

@@ -11,12 +11,7 @@ from app.api.deps import (
     get_website_or_404,
 )
 from app.api.errors import ErrorCode
-from app.api.exceptions import (
-    WebsiteAlreadyExists,
-    WebsiteDomainInvalid,
-    WebsiteNotExists,
-)
-from app.core.logger import logger
+from app.api.exceptions import WebsiteAlreadyExists, WebsiteDomainInvalid
 from app.core.auth import auth
 from app.crud import WebsiteRepository
 from app.models import Website
@@ -50,7 +45,7 @@ async def website_list(
     websites: List[Website] | List[None] | None = await websites_repo.list(
         page=query.page
     )
-    return [WebsiteRead.from_orm(w) for w in websites] if len(websites) else []
+    return [WebsiteRead.from_orm(w) for w in websites] if websites else []
 
 
 @router.post(
@@ -141,7 +136,11 @@ async def website_update(
         updated_website: Website | None = await websites_repo.update(
             entry=website, schema=website_in
         )
-        return WebsiteRead.from_orm(updated_website) if updated_website else WebsiteRead.from_orm(website)
+        return (
+            WebsiteRead.from_orm(updated_website)
+            if updated_website
+            else WebsiteRead.from_orm(website)
+        )
     except WebsiteAlreadyExists:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

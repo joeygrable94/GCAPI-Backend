@@ -1,22 +1,23 @@
 from typing import List
 from uuid import UUID
+
 import pytest
 from fastapi.exceptions import HTTPException
 
 from app.api.deps import (
+    ClientQueryParams,
     CommonClientQueryParams,
     CommonClientWebsiteQueryParams,
-    CommonWebsiteQueryParams,
     CommonQueryParams,
-    CommonWebsitePageQueryParams,
     CommonWebsiteMapQueryParams,
+    CommonWebsitePageQueryParams,
     CommonWebsitePageSpeedInsightsQueryParams,
+    CommonWebsiteQueryParams,
+    DeviceStrategyQueryParams,
     PageQueryParams,
-    ClientQueryParams,
-    WebsiteQueryParams,
     WebsiteMapQueryParams,
     WebsitePageQueryParams,
-    DeviceStrategyQueryParams,
+    WebsiteQueryParams,
     get_async_db,
     verify_content_length,
     verify_content_type,
@@ -132,7 +133,9 @@ def test_query_common_website_valid_params():
 def test_query_common_website_client_valid_params():
     test_uuid = get_uuid_str()
     test_uuid_2 = get_uuid_str()
-    params = CommonClientWebsiteQueryParams(page=1, client_id=test_uuid, website_id=test_uuid_2)
+    params = CommonClientWebsiteQueryParams(
+        page=1, client_id=test_uuid, website_id=test_uuid_2
+    )
 
     assert params.page == 1
     assert str(params.client_id) == test_uuid
@@ -144,7 +147,9 @@ def test_query_common_website_client_valid_params():
 def test_query_common_website_page_valid_params():
     test_uuid = get_uuid_str()
     test_uuid_2 = get_uuid_str()
-    params = CommonWebsitePageQueryParams(page=1, website_id=test_uuid_2, sitemap_id=test_uuid)
+    params = CommonWebsitePageQueryParams(
+        page=1, website_id=test_uuid_2, sitemap_id=test_uuid
+    )
 
     assert params.page == 1
     assert str(params.sitemap_id) == test_uuid

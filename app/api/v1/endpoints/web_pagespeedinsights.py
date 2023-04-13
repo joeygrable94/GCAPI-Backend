@@ -11,15 +11,20 @@ from app.api.deps import (
     get_website_page_psi_or_404,
 )
 from app.api.errors import ErrorCode
-from app.api.exceptions import (
-    WebsiteNotExists,
-    WebsitePageNotExists,
-)
+from app.api.exceptions import WebsiteNotExists, WebsitePageNotExists
 from app.core.auth import auth
 from app.core.logger import logger
-from app.crud import WebsiteRepository, WebsitePageRepository, WebsitePageSpeedInsightsRepository
+from app.crud import (
+    WebsitePageRepository,
+    WebsitePageSpeedInsightsRepository,
+    WebsiteRepository,
+)
 from app.models import Website, WebsitePage, WebsitePageSpeedInsights
-from app.schemas import WebsitePageSpeedInsightsBase, WebsitePageSpeedInsightsCreate, WebsitePageSpeedInsightsRead
+from app.schemas import (
+    WebsitePageSpeedInsightsBase,
+    WebsitePageSpeedInsightsCreate,
+    WebsitePageSpeedInsightsRead,
+)
 
 router: APIRouter = APIRouter()
 
@@ -40,13 +45,19 @@ async def website_pagespeedinsights_list(
 ) -> List[WebsitePageSpeedInsightsRead] | List:
     web_psi_repo: WebsitePageSpeedInsightsRepository
     web_psi_repo = WebsitePageSpeedInsightsRepository(session=db)
-    web_psi_list: List[WebsitePageSpeedInsights] | List[None] | None = await web_psi_repo.list(
+    web_psi_list: List[WebsitePageSpeedInsights] | List[
+        None
+    ] | None = await web_psi_repo.list(
         page=query.page,
         website_id=query.website_id,
         page_id=query.page_id,
         devices=query.devices,
     )
-    return [WebsitePageSpeedInsightsRead.from_orm(wpsi) for wpsi in web_psi_list] if len(web_psi_list) else []
+    return (
+        [WebsitePageSpeedInsightsRead.from_orm(wpsi) for wpsi in web_psi_list]
+        if web_psi_list
+        else []
+    )
 
 
 @router.post(
@@ -69,14 +80,18 @@ async def website_pagespeedinsights_create(
         if query.website_id is None:
             raise WebsiteNotExists()
         website_repo: WebsiteRepository = WebsiteRepository(db)
+        # print(query.website_id)
         a_website: Website | None = await website_repo.read(entry_id=query.website_id)
+        # print(a_website)
         if a_website is None:
             raise WebsiteNotExists()
         # check if page exists
         if query.page_id is None:
             raise WebsitePageNotExists()
         web_page_repo: WebsitePageRepository = WebsitePageRepository(db)
-        a_web_page: WebsitePage | None = await web_page_repo.read(entry_id=query.page_id)
+        a_web_page: WebsitePage | None = await web_page_repo.read(
+            entry_id=query.page_id
+        )
         if a_web_page is None:
             raise WebsitePageNotExists()
         # create website page speed insights
@@ -91,7 +106,9 @@ async def website_pagespeedinsights_create(
             schema=psi_create
         )
         logger.info(
-            "Created Website Page Speed Insights:", psi_in_db.id, psi_in_db.created_on,
+            "Created Website Page Speed Insights:",
+            psi_in_db.id,
+            psi_in_db.created_on,
         )
         return WebsitePageSpeedInsightsRead.from_orm(psi_in_db)
     except WebsiteNotExists:

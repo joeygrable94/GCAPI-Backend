@@ -3,10 +3,10 @@ from typing import Any, Dict
 import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.errors import ErrorCode
 from tests.utils.clients import create_random_client
 from tests.utils.utils import random_lower_string
 
+from app.api.errors import ErrorCode
 from app.schemas import ClientRead, ClientUpdate
 
 pytestmark = pytest.mark.asyncio

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import Depends, HTTPException, status

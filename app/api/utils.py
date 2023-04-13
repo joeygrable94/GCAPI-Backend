@@ -8,19 +8,16 @@ from pydantic import UUID4, AnyHttpUrl
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import logger
-from app.crud import (
-    WebsiteMapRepository,
-    WebsitePageRepository,
-)
+from app.crud import WebsiteMapRepository, WebsitePageRepository
 from app.db.session import get_db_session
 from app.models import WebsiteMap, WebsitePage
 from app.schemas import (
     PageSpeedInsightsDevice,
     WebsiteMapCreate,
+    WebsiteMapPage,
     WebsitePageCreate,
     WebsitePageSpeedInsightsBase,
     WebsitePageUpdate,
-    WebsiteMapPage,
 )
 
 
@@ -67,17 +64,15 @@ async def create_or_update_website_page(
 
 
 async def save_sitemap_pages(
-    website_id: UUID4,
-    sitemap_url: AnyHttpUrl,
-    sitemap_pages: List[WebsiteMapPage]
+    website_id: UUID4, sitemap_url: AnyHttpUrl, sitemap_pages: List[WebsiteMapPage]
 ) -> UUID4:
     try:
         session: AsyncSession
-        sitemap: WebsiteMap
+        sitemap: WebsiteMap | None
         async with get_db_session() as session:
             parsed_url = urlparse(sitemap_url)
             sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session)
-            sitemap: WebsiteMap | None = await sitemap_repo.exists_by_two(
+            sitemap = await sitemap_repo.exists_by_two(
                 field_name_a="url",
                 field_value_a=parsed_url.path,
                 field_name_b="website_id",
@@ -177,7 +172,9 @@ def fetch_pagespeedinsights(
             tbt_unit=results["total-blocking-time"]["unit"],
         )
     except Exception as e:  # pragma: no cover
-        exc_str = f"Error fetching page speed insights for URL[{fetch_url}]"  # noqa: E501
+        exc_str = (
+            f"Error fetching page speed insights for URL[{fetch_url}]"  # noqa: E501
+        )
         logger.warning(exc_str, e)
     finally:  # pragma: no cover
         logger.info("Finished Fetching Page Speed Insights")

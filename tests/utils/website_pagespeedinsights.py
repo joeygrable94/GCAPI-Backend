@@ -7,41 +7,41 @@ from app.crud import WebsitePageSpeedInsightsRepository
 from app.models import WebsitePageSpeedInsights
 from app.schemas import (
     WebsitePageRead,
+    WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsCreate,
     WebsitePageSpeedInsightsRead,
     WebsiteRead,
-    WebsitePageSpeedInsightsBase,
 )
 
 
 def generate_psi_base(device_strategy: str = "mobile") -> WebsitePageSpeedInsightsBase:
     return WebsitePageSpeedInsightsBase(
-            strategy=device_strategy,
-            ps_weight=10,
-            ps_grade=0.5,
-            ps_value="50%",
-            ps_unit="percent",
-            fcp_weight=10,
-            fcp_grade=0.5,
-            fcp_value=2500,
-            fcp_unit="milliseconds",
-            lcp_weight=10,
-            lcp_grade=0.5,
-            lcp_value=2500,
-            lcp_unit="milliseconds",
-            cls_weight=10,
-            cls_grade=1.0,
-            cls_value=0.0001,
-            cls_unit="unitless",
-            si_weight=10,
-            si_grade=0.5,
-            si_value=2500.00,
-            si_unit="milliseconds",
-            tbt_weight=10,
-            tbt_grade=0.5,
-            tbt_value=250.0,
-            tbt_unit="milliseconds",
-        )
+        strategy=device_strategy,
+        ps_weight=10,
+        ps_grade=0.5,
+        ps_value="50%",
+        ps_unit="percent",
+        fcp_weight=10,
+        fcp_grade=0.5,
+        fcp_value=2500,
+        fcp_unit="milliseconds",
+        lcp_weight=10,
+        lcp_grade=0.5,
+        lcp_value=2500,
+        lcp_unit="milliseconds",
+        cls_weight=10,
+        cls_grade=1.0,
+        cls_value=0.0001,
+        cls_unit="unitless",
+        si_weight=10,
+        si_grade=0.5,
+        si_value=2500.00,
+        si_unit="milliseconds",
+        tbt_weight=10,
+        tbt_grade=0.5,
+        tbt_value=250.0,
+        tbt_unit="milliseconds",
+    )
 
 
 async def create_random_website_page_speed_insights(

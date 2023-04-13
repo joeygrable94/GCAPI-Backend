@@ -3,23 +3,18 @@ from typing import Any, Dict
 import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.website_pagespeedinsights import create_random_website_page_speed_insights
 from tests.utils.website_pages import create_random_website_page
-from tests.utils.websites import create_random_website
-from tests.utils.website_maps import create_random_website_map
-
-from app.schemas import (
-    WebsitePageSpeedInsightsRead,
-    WebsitePageRead,
-    WebsiteMapRead,
-    WebsiteRead,
-    PageSpeedInsightsDevice,
+from tests.utils.website_pagespeedinsights import (
+    create_random_website_page_speed_insights,
 )
+from tests.utils.websites import create_random_website
+
+from app.schemas import WebsiteMapRead, WebsitePageSpeedInsightsRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 
 
-'''
+"""
 async def test_list_website_pagespeedinsights_as_superuser_none_found(
     client: AsyncClient,
     db_session: AsyncSession,
@@ -30,7 +25,7 @@ async def test_list_website_pagespeedinsights_as_superuser_none_found(
     all_entries: Any = response.json()
     assert len(all_entries) == 0
     assert isinstance(all_entries, list)
-'''
+"""
 
 
 async def test_list_website_pagespeedinsights_as_superuser(
@@ -38,8 +33,12 @@ async def test_list_website_pagespeedinsights_as_superuser(
     db_session: AsyncSession,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    entry_1: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_2: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
+    entry_1: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
+    )
+    entry_2: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
+    )
     response: Response = await client.get("psi/", headers=superuser_token_headers)
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
@@ -62,34 +61,82 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_a.id)
-    webpage_b: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_b.id)
+    webpage_a: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_a.id
+    )
+    webpage_b: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_2: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_3: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_1: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_4: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_2: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_5: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_3: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_6: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_4: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_7: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_5: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_8: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_6: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_9: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_7: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
-    entry_10: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_8: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_9: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_10: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
     response: Response = await client.get(
         "psi/",
@@ -98,7 +145,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             "website_id": website_a.id,
             "page_id": webpage_a.id,
             "strategy": ["desktop", "mobile"],
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
@@ -121,34 +168,82 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_a.id)
-    webpage_b: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_b.id)
+    webpage_a: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_a.id
+    )
+    webpage_b: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_2: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_3: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_1: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_4: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_2: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_5: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_3: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_6: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_4: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_7: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_5: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_8: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_6: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_9: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_7: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
-    entry_10: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_8: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_9: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_10: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
     response: Response = await client.get(
         "psi/",
@@ -157,7 +252,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             "website_id": website_a.id,
             "page_id": webpage_a.id,
             "strategy": ["desktop"],
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
@@ -176,34 +271,82 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_a.id)
-    webpage_b: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_b.id)
+    webpage_a: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_a.id
+    )
+    webpage_b: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_2: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_3: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_1: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_4: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_2: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_5: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_3: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_6: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_4: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_7: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_5: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_8: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_6: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_9: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_7: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
-    entry_10: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_8: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_9: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_10: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
     response: Response = await client.get(
         "psi/",
@@ -212,7 +355,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
             "website_id": website_b.id,
             "page_id": webpage_b.id,
             "strategy": ["mobile"],
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
@@ -231,34 +374,82 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_a.id)
-    webpage_b: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_b.id)
+    webpage_a: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_a.id
+    )
+    webpage_b: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_2: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_3: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_1: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_4: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_2: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_5: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_3: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_6: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_4: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_7: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_5: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_8: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_6: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_9: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_7: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
-    entry_10: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_8: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_9: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_10: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
     response: Response = await client.get(
         "psi/",
@@ -266,7 +457,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
         params={
             "website_id": website_a.id,
             "page_id": webpage_a.id,
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
@@ -289,34 +480,82 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_a.id)
-    webpage_b: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_b.id)
+    webpage_a: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_a.id
+    )
+    webpage_b: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_2: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_3: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_1: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_4: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_2: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_5: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_3: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_6: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_4: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_7: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_5: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_8: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_6: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_9: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_7: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
-    entry_10: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_8: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_9: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_10: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
     response: Response = await client.get(
         "psi/",
@@ -324,7 +563,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
         params={
             "website_id": website_a.id,
             "strategy": ["mobile"],
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
@@ -347,34 +586,82 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_a.id)
-    webpage_b: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_b.id)
+    webpage_a: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_a.id
+    )
+    webpage_b: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_2: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_3: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_1: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_4: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_2: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_5: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_3: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_6: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_4: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_7: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_5: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_8: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_6: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_9: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_7: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
-    entry_10: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_8: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_9: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_10: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
     response: Response = await client.get(
         "psi/",
@@ -382,7 +669,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
         params={
             "page_id": webpage_b.id,
             "strategy": ["desktop"],
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
@@ -405,41 +692,89 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_a.id)
-    webpage_b: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_b.id)
+    webpage_a: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_a.id
+    )
+    webpage_b: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_2: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_3: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_1: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_4: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_2: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_5: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_3: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_6: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_4: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_7: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_5: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_8: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_6: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_9: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_7: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
-    entry_10: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_8: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_9: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_10: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
     response: Response = await client.get(
         "psi/",
         headers=superuser_token_headers,
         params={
             "website_id": website_a.id,
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
@@ -470,41 +805,89 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_a.id)
-    webpage_b: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_b.id)
+    webpage_a: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_a.id
+    )
+    webpage_b: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_2: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_3: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_1: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_4: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_2: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_5: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_3: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_6: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_4: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_7: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_5: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_8: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_6: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_9: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_7: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
-    entry_10: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_8: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_9: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_10: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
     response: Response = await client.get(
         "psi/",
         headers=superuser_token_headers,
         params={
             "page_id": webpage_b.id,
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
@@ -535,41 +918,89 @@ async def test_list_website_pagespeedinsights_as_superuser_by_devices_all(
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    webpage_a: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_a.id)
-    webpage_b: WebsiteMapRead = await create_random_website_page(db_session, website_id=website_b.id)
+    webpage_a: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_a.id
+    )
+    webpage_b: WebsiteMapRead = await create_random_website_page(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_2: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(db_session)
-    entry_3: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_1: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_4: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_2: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(db_session)
     )
-    entry_5: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="desktop"
+    entry_3: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_6: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="desktop"
+    entry_4: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_7: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_5: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="desktop",
+        )
     )
-    entry_8: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_a.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_6: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="desktop",
+        )
     )
-    entry_9: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_b.id, device_strategy="mobile"
+    entry_7: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
-    entry_10: WebsitePageSpeedInsightsRead = await create_random_website_page_speed_insights(
-        db_session, website_id=website_b.id, page_id=webpage_a.id, device_strategy="mobile"
+    entry_8: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_a.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_9: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_b.id,
+            device_strategy="mobile",
+        )
+    )
+    entry_10: WebsitePageSpeedInsightsRead = (
+        await create_random_website_page_speed_insights(
+            db_session,
+            website_id=website_b.id,
+            page_id=webpage_a.id,
+            device_strategy="mobile",
+        )
     )
     response: Response = await client.get(
         "psi/",
         headers=superuser_token_headers,
         params={
             "strategy": ["desktop", "mobile"],
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()

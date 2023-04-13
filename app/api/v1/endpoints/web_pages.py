@@ -11,11 +11,7 @@ from app.api.deps import (
     get_website_page_or_404,
 )
 from app.api.errors import ErrorCode
-from app.api.exceptions import (
-    WebsiteNotExists,
-    WebsitePageAlreadyExists,
-    WebsitePageNotExists,
-)
+from app.api.exceptions import WebsiteNotExists, WebsitePageAlreadyExists
 from app.core.auth import auth
 from app.crud import WebsitePageRepository, WebsiteRepository
 from app.models import Website, WebsitePage
@@ -51,7 +47,7 @@ async def website_page_list(
         website_id=query.website_id,
         sitemap_id=query.sitemap_id,
     )
-    return [WebsitePageRead.from_orm(w) for w in website_list] if len(website_list) else []
+    return [WebsitePageRead.from_orm(w) for w in website_list] if website_list else []
 
 
 @router.post(
@@ -153,7 +149,11 @@ async def website_page_update(
     updated_website_page: WebsitePage | None = await web_pages_repo.update(
         entry=website_page, schema=website_page_in
     )
-    return WebsitePageRead.from_orm(updated_website_page) if updated_website_page else WebsitePageRead.from_orm(website_page)
+    return (
+        WebsitePageRead.from_orm(updated_website_page)
+        if updated_website_page
+        else WebsitePageRead.from_orm(website_page)
+    )
 
 
 @router.delete(

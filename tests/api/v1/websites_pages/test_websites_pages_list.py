@@ -3,17 +3,16 @@ from typing import Any, Dict
 import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
+from tests.utils.website_maps import create_random_website_map
 from tests.utils.website_pages import create_random_website_page
 from tests.utils.websites import create_random_website
-from tests.utils.website_maps import create_random_website_map
 
-from app.schemas import WebsitePageRead, WebsiteRead, WebsiteMapRead
-
+from app.schemas import WebsiteMapRead, WebsitePageRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 
 
-'''
+"""
 async def test_list_website_pages_as_superuser_none_found(
     client: AsyncClient,
     db_session: AsyncSession,
@@ -24,7 +23,7 @@ async def test_list_website_pages_as_superuser_none_found(
     all_entries: Any = response.json()
     assert len(all_entries) == 0
     assert isinstance(all_entries, list)
-'''
+"""
 
 
 async def test_list_website_pages_as_superuser(
@@ -60,15 +59,31 @@ async def test_list_website_pages_as_superuser_by_website_id_and_sitemap_id(
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    sitemap_a: WebsiteMapRead = await create_random_website_map(db_session, website_id=website_a.id)
-    sitemap_b: WebsiteMapRead = await create_random_website_map(db_session, website_id=website_b.id)
+    sitemap_a: WebsiteMapRead = await create_random_website_map(
+        db_session, website_id=website_a.id
+    )
+    sitemap_b: WebsiteMapRead = await create_random_website_map(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageRead = await create_random_website_page(db_session, website_id=website_a.id, sitemap_id=sitemap_a.id)
-    entry_2: WebsitePageRead = await create_random_website_page(db_session, website_id=website_a.id, sitemap_id=sitemap_a.id)
-    entry_3: WebsitePageRead = await create_random_website_page(db_session, website_id=website_b.id, sitemap_id=sitemap_b.id)
-    entry_4: WebsitePageRead = await create_random_website_page(db_session, website_id=website_b.id, sitemap_id=sitemap_b.id)
-    entry_5: WebsitePageRead = await create_random_website_page(db_session, website_id=website_a.id, sitemap_id=sitemap_b.id)
-    entry_6: WebsitePageRead = await create_random_website_page(db_session, website_id=website_b.id, sitemap_id=sitemap_a.id)
+    entry_1: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_a.id, sitemap_id=sitemap_a.id
+    )
+    entry_2: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_a.id, sitemap_id=sitemap_a.id
+    )
+    entry_3: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_b.id, sitemap_id=sitemap_b.id
+    )
+    entry_4: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_b.id, sitemap_id=sitemap_b.id
+    )
+    entry_5: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_a.id, sitemap_id=sitemap_b.id
+    )
+    entry_6: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_b.id, sitemap_id=sitemap_a.id
+    )
     entry_6: WebsitePageRead = await create_random_website_page(db_session)
     entry_7: WebsitePageRead = await create_random_website_page(db_session)
     response: Response = await client.get(
@@ -77,7 +92,7 @@ async def test_list_website_pages_as_superuser_by_website_id_and_sitemap_id(
         params={
             "website_id": website_a.id,
             "sitemap_id": sitemap_a.id,
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
@@ -106,15 +121,31 @@ async def test_list_website_pages_as_superuser_by_website_id(
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    sitemap_a: WebsiteMapRead = await create_random_website_map(db_session, website_id=website_a.id)
-    sitemap_b: WebsiteMapRead = await create_random_website_map(db_session, website_id=website_b.id)
+    sitemap_a: WebsiteMapRead = await create_random_website_map(
+        db_session, website_id=website_a.id
+    )
+    sitemap_b: WebsiteMapRead = await create_random_website_map(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageRead = await create_random_website_page(db_session, website_id=website_a.id, sitemap_id=sitemap_a.id)
-    entry_2: WebsitePageRead = await create_random_website_page(db_session, website_id=website_a.id, sitemap_id=sitemap_a.id)
-    entry_3: WebsitePageRead = await create_random_website_page(db_session, website_id=website_b.id, sitemap_id=sitemap_b.id)
-    entry_4: WebsitePageRead = await create_random_website_page(db_session, website_id=website_b.id, sitemap_id=sitemap_b.id)
-    entry_5: WebsitePageRead = await create_random_website_page(db_session, website_id=website_a.id, sitemap_id=sitemap_b.id)
-    entry_6: WebsitePageRead = await create_random_website_page(db_session, website_id=website_b.id, sitemap_id=sitemap_a.id)
+    entry_1: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_a.id, sitemap_id=sitemap_a.id
+    )
+    entry_2: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_a.id, sitemap_id=sitemap_a.id
+    )
+    entry_3: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_b.id, sitemap_id=sitemap_b.id
+    )
+    entry_4: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_b.id, sitemap_id=sitemap_b.id
+    )
+    entry_5: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_a.id, sitemap_id=sitemap_b.id
+    )
+    entry_6: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_b.id, sitemap_id=sitemap_a.id
+    )
     entry_6: WebsitePageRead = await create_random_website_page(db_session)
     entry_7: WebsitePageRead = await create_random_website_page(db_session)
     response: Response = await client.get(
@@ -122,7 +153,7 @@ async def test_list_website_pages_as_superuser_by_website_id(
         headers=superuser_token_headers,
         params={
             "website_id": website_a.id,
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
@@ -157,15 +188,31 @@ async def test_list_website_pages_as_superuser_by_sitemap_id(
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
-    sitemap_a: WebsiteMapRead = await create_random_website_map(db_session, website_id=website_a.id)
-    sitemap_b: WebsiteMapRead = await create_random_website_map(db_session, website_id=website_b.id)
+    sitemap_a: WebsiteMapRead = await create_random_website_map(
+        db_session, website_id=website_a.id
+    )
+    sitemap_b: WebsiteMapRead = await create_random_website_map(
+        db_session, website_id=website_b.id
+    )
     # entries
-    entry_1: WebsitePageRead = await create_random_website_page(db_session, website_id=website_a.id, sitemap_id=sitemap_a.id)
-    entry_2: WebsitePageRead = await create_random_website_page(db_session, website_id=website_a.id, sitemap_id=sitemap_a.id)
-    entry_3: WebsitePageRead = await create_random_website_page(db_session, website_id=website_b.id, sitemap_id=sitemap_b.id)
-    entry_4: WebsitePageRead = await create_random_website_page(db_session, website_id=website_b.id, sitemap_id=sitemap_b.id)
-    entry_5: WebsitePageRead = await create_random_website_page(db_session, website_id=website_a.id, sitemap_id=sitemap_b.id)
-    entry_6: WebsitePageRead = await create_random_website_page(db_session, website_id=website_b.id, sitemap_id=sitemap_a.id)
+    entry_1: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_a.id, sitemap_id=sitemap_a.id
+    )
+    entry_2: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_a.id, sitemap_id=sitemap_a.id
+    )
+    entry_3: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_b.id, sitemap_id=sitemap_b.id
+    )
+    entry_4: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_b.id, sitemap_id=sitemap_b.id
+    )
+    entry_5: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_a.id, sitemap_id=sitemap_b.id
+    )
+    entry_6: WebsitePageRead = await create_random_website_page(
+        db_session, website_id=website_b.id, sitemap_id=sitemap_a.id
+    )
     entry_6: WebsitePageRead = await create_random_website_page(db_session)
     entry_7: WebsitePageRead = await create_random_website_page(db_session)
     response: Response = await client.get(
@@ -173,7 +220,7 @@ async def test_list_website_pages_as_superuser_by_sitemap_id(
         headers=superuser_token_headers,
         params={
             "sitemap_id": sitemap_a.id,
-        }
+        },
     )
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()

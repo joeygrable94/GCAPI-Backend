@@ -1,7 +1,6 @@
 import socket
 from typing import Optional, Type
 
-from app.core.config import settings
 from app.core.logger import logger
 from app.crud.base import BaseRepository
 from app.models import Website

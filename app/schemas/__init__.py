@@ -15,10 +15,10 @@ from .website_keywordcorpus import (
 )
 from .website_map import (
     WebsiteMapCreate,
-    WebsiteMapRead,
-    WebsiteMapReadRelations,
     WebsiteMapPage,
     WebsiteMapProcessing,
+    WebsiteMapRead,
+    WebsiteMapReadRelations,
     WebsiteMapUpdate,
 )
 from .website_page import (

@@ -1,7 +1,7 @@
 import asyncio
 import json
-from os import environ
 import os
+from os import environ
 from typing import Any, AsyncGenerator, Callable, Dict, Generator
 
 import pytest
@@ -110,7 +110,7 @@ def superuser_token_headers() -> Dict[str, str]:
 def mock_fetch_psi() -> Dict[str, Any]:
     mocked_response = {}
     here = os.path.dirname(os.path.abspath(__file__))
-    with open(f'{here}/utils/fetchpsi.json') as f:
+    with open(f"{here}/utils/fetchpsi.json") as f:
         mocked_response = json.load(f)
     return mocked_response
 
@@ -119,6 +119,6 @@ def mock_fetch_psi() -> Dict[str, Any]:
 def mock_fetch_sitemap() -> Dict[str, Any]:
     mocked_response = {}
     here = os.path.dirname(os.path.abspath(__file__))
-    with open(f'{here}/utils/sitemap.json') as f:
+    with open(f"{here}/utils/sitemap.json") as f:
         mocked_response = json.load(f)
     return mocked_response

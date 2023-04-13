@@ -1,9 +1,7 @@
-import os
 import json
+import os
 from typing import Any, Dict
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 from app.api.utils import fetch_pagespeedinsights
 from app.schemas import PageSpeedInsightsDevice

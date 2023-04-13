@@ -2,8 +2,9 @@ from typing import Any, Dict
 
 import pytest
 from httpx import AsyncClient, Response
-from app.api.errors import ErrorCode
 from tests.utils.utils import random_lower_string
+
+from app.api.errors import ErrorCode
 
 pytestmark = pytest.mark.asyncio
 

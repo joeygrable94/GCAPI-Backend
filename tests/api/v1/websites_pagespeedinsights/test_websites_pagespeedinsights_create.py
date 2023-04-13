@@ -1,4 +1,4 @@
-'''
+"""
 from typing import Any, Dict
 
 import pytest
@@ -69,4 +69,4 @@ async def test_read_website_pagespeedinsights_by_id_as_superuser_page_not_found(
     data: Dict[str, Any] = response.json()
     assert response.status_code == 404
     assert data["detail"] == ErrorCode.WEBSITE_PAGE_SPEED_INSIGHTS_NOT_FOUND
-'''
+"""

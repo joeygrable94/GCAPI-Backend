@@ -1,11 +1,11 @@
 import json
 from typing import Iterator
+
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
-from usp.objects.page import SitemapPage  # type: ignore
-
-from tests.utils.websites import create_random_website
 from tests.utils.utils import random_domain
+from tests.utils.websites import create_random_website
+from usp.objects.page import SitemapPage  # type: ignore
 
 from app.crud import WebsiteMapRepository
 from app.models import WebsiteMap
@@ -35,7 +35,7 @@ async def create_random_website_map(
     domain: str
     if website_id is None:
         website: WebsiteRead = await create_random_website(db_session)
-        website_id=website.id
+        website_id = website.id
         domain = website.domain
     else:
         domain = random_domain()
