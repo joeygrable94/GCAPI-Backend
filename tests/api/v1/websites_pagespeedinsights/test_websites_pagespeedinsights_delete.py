@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import pytest
 from httpx import AsyncClient, Response
@@ -7,7 +7,7 @@ from tests.utils.website_pagespeedinsights import (
     create_random_website_page_speed_insights,
 )
 
-from app.crud import WebsitePageSpeedInsightsRepository
+from app.api.errors import ErrorCode
 from app.schemas import WebsitePageSpeedInsightsRead
 
 pytestmark = pytest.mark.asyncio
@@ -26,8 +26,10 @@ async def test_delete_website_pagespeedinsights_by_id_as_superuser(
         headers=superuser_token_headers,
     )
     assert 200 <= response.status_code < 300
-    repo: WebsitePageSpeedInsightsRepository = WebsitePageSpeedInsightsRepository(
-        db_session
+    response: Response = await client.get(
+        f"psi/{entry.id}",
+        headers=superuser_token_headers,
     )
-    data_not_found: Optional[Any] = await repo.read(entry.id)
-    assert data_not_found is None
+    assert response.status_code == 404
+    data: Dict[str, Any] = response.json()
+    assert data["detail"] == ErrorCode.WEBSITE_PAGE_SPEED_INSIGHTS_NOT_FOUND

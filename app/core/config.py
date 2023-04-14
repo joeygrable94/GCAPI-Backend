@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     # APP
     PROJECT_NAME: str = environ.get("PROJECT_NAME", "FastAPI")
     PROJECT_VERSION: str = environ.get("TAG", "0.0.1")
+    APP_MODE: str = environ.get("APP_MODE", "test")
     DEBUG_MODE: bool = bool(environ.get("APP_DEBUG", True))
     LOGGING_LEVEL: str = environ.get("BACKEND_LOG_LEVEL", "DEBUG").upper()
     LOGGER_NAME: str = environ.get("PROJECT_NAME", "debug")
@@ -62,10 +63,8 @@ class Settings(BaseSettings):
 
     # Database
     DB_ECHO_LOG: bool = False if bool(environ.get("APP_DEBUG", True)) else False
-    DATABASE_URI: Union[str, URL] = environ.get("DATABASE_URI", "sqlite:///./app.db")
-    ASYNC_DATABASE_URI: Union[str, URL] = environ.get(
-        "ASYNC_DATABASE_URI", "sqlite+aiosqlite:///./app.db"
-    )
+    DATABASE_URI: Union[str, URL] = environ.get("DATABASE_URI", "")
+    ASYNC_DATABASE_URI: Union[str, URL] = environ.get("ASYNC_DATABASE_URI", "")
 
     # Redis
     REDIS_CONN_URI: str = environ.get("REDIS_CONN_URI", "redis://localhost:6379")
@@ -120,6 +119,26 @@ class Settings(BaseSettings):
     ACCEPTED_TYPES = ["png", "jpg", "jpeg", "gif", "csv", "xml", "json", "pdf"]
 
     # Validators
+    @validator("DATABASE_URI", pre=True)
+    def assemble_db_connection(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:  # pragma: no cover
+        if isinstance(v, str):
+            return v
+        if values["APP_MODE"] == "test":
+            return "sqlite:///:memory:"
+        return "sqlite:///./app.db"
+
+    @validator("ASYNC_DATABASE_URI", pre=True)
+    def assemble_async_db_connection(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:  # pragma: no cover
+        if isinstance(v, str):
+            return v
+        if values["APP_MODE"] == "test":
+            return "sqlite+aiosqlite:///:memory:"
+        return "sqlite+aiosqlite:///./app.db"
+
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(
         cls: Any, v: Union[str, List[str]]
@@ -175,5 +194,4 @@ def get_settings() -> Settings:
     return Settings()
 
 
-mode: Optional[str] = environ.get("APP_MODE")
 settings: Settings = get_settings()

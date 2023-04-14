@@ -12,6 +12,7 @@ from app.api.deps import (
 )
 from app.api.errors import ErrorCode
 from app.api.exceptions import ClientAlreadyExists
+from app.api.openapi import clients_read_responses
 from app.core.auth import auth
 from app.crud import ClientRepository
 from app.models import Client
@@ -80,6 +81,7 @@ async def clients_create(
         Depends(get_async_db),
         Depends(get_client_or_404),
     ],
+    responses=clients_read_responses,
     response_model=ClientReadRelations,
 )
 async def clients_read(

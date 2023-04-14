@@ -2,27 +2,21 @@ import asyncio
 import json
 import os
 from os import environ
-from typing import Any, AsyncGenerator, Callable, Dict, Generator
+from typing import Any, AsyncGenerator, Dict, Generator
 
 import pytest
 import requests
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_async_db
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import async_engine, async_session
 from app.main import create_app
 
 pytestmark = pytest.mark.asyncio
-
-
-# test database setup
-def test_async_session_generator() -> async_sessionmaker:
-    return async_session
 
 
 @pytest.fixture(scope="session")
@@ -37,42 +31,27 @@ def event_loop() -> Generator:
 
 @pytest.fixture(scope="session")
 def celery_config() -> Any:
-    return {"broker_url": "memory://", "result_backend": "rpc"}  # redis://
+    return {"broker_url": "memory://", "result_backend": "rpc"}
 
 
 @pytest.fixture(scope="session")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
-    # create all tables
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    # create new async session
-    async_session = test_async_session_generator()
     session: AsyncSession
     async with async_session() as session:
         yield session
         await session.flush()
         await session.rollback()
 
-    # drop all tables
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.fixture(scope="session")
-def override_get_db(db_session: AsyncSession) -> Callable:
-    async def _override_get_db() -> AsyncGenerator[AsyncSession, None]:
-        yield db_session
-
-    return _override_get_db
-
-
 @pytest.fixture(scope="module")
-async def app(
-    override_get_db: Callable,
-) -> AsyncGenerator[FastAPI, None]:
+async def app() -> AsyncGenerator[FastAPI, None]:
     _app: FastAPI = create_app()
-    _app.dependency_overrides[get_async_db] = override_get_db
     yield _app
 
 

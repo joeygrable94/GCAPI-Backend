@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, Text, func
@@ -15,6 +15,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class WebsiteMap(Base):
     __tablename__: str = "website_map"
+    __table_args__: Any = {"mysql_engine": "InnoDB"}
+    __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         primary_key=True,

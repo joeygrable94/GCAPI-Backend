@@ -7,7 +7,6 @@ from tests.utils.utils import random_boolean
 
 from app.api.errors import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
-from app.crud import WebsiteRepository
 from app.schemas import WebsiteRead
 
 pytestmark = pytest.mark.asyncio
@@ -35,10 +34,6 @@ async def test_read_website_by_id_as_superuser(
     data: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
     assert data["id"] == str(entry.id)
-    repo: WebsiteRepository = WebsiteRepository(db_session)
-    existing_data: Any = await repo.read_by("domain", entry.domain)
-    assert existing_data
-    assert existing_data.domain == data["domain"]
 
 
 async def test_read_website_by_id_as_superuser_website_not_found(

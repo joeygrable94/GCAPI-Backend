@@ -1,13 +1,11 @@
 import asyncio
 
 from app.db.commands import check_db_connected
-from app.db.init_db import build_database
 from app.core.logger import logger  # pragma: no cover
 
 
 async def main() -> None:  # pragma: no cover
     await check_db_connected()
-    await build_database()
 
 
 if __name__ == "__main__":  # pragma: no cover

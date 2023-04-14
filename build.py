@@ -8,8 +8,7 @@ from app.core.logger import logger  # pragma: no cover
 
 async def main() -> None:  # pragma: no cover
     await check_db_connected()
-    if settings.DEBUG_MODE:
-        await build_database()
+    await build_database()
     await create_init_data()
 
 

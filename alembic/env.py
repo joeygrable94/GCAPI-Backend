@@ -1,10 +1,18 @@
 from __future__ import with_statement
 
-import os
+import os, sys
+
+from dotenv import load_dotenv
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
+
+load_dotenv()
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+sys.path.append(BASE_DIR)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -39,10 +47,6 @@ def get_async_url() -> str:
     return dburi
 
 
-print( get_url() )
-print( get_async_url() )
-
-
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
 
@@ -56,6 +60,7 @@ def run_migrations_offline():
 
     """
     url = get_url()
+    print('offline', url)
     context.configure(
         url=url, target_metadata=target_metadata, literal_binds=True, compare_type=True
     )
@@ -71,8 +76,10 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
+    url = get_url()
+    print('online', url)
     configuration = config.get_section(config.config_ini_section)
-    configuration["sqlalchemy.url"] = get_url()
+    configuration["sqlalchemy.url"] = url
     connectable = engine_from_config(
         configuration, prefix="sqlalchemy.", poolclass=pool.NullPool,
     )
