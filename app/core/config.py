@@ -123,20 +123,20 @@ class Settings(BaseSettings):
     def assemble_db_connection(
         cls: Any, v: Optional[str], values: Dict[str, Any]
     ) -> Any:  # pragma: no cover
-        if isinstance(v, str):
-            return v
         if values["APP_MODE"] == "test":
             return "sqlite:///:memory:"
+        if isinstance(v, str):
+            return v
         return "sqlite:///./app.db"
 
     @validator("ASYNC_DATABASE_URI", pre=True)
     def assemble_async_db_connection(
         cls: Any, v: Optional[str], values: Dict[str, Any]
     ) -> Any:  # pragma: no cover
-        if isinstance(v, str):
-            return v
         if values["APP_MODE"] == "test":
             return "sqlite+aiosqlite:///:memory:"
+        if isinstance(v, str):
+            return v
         return "sqlite+aiosqlite:///./app.db"
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
