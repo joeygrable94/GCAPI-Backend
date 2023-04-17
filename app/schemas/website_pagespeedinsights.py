@@ -92,6 +92,12 @@ class WebsitePageSpeedInsightsBase(
     tbt_unit: str
 
 
+class WebsitePageSpeedInsightsProcessing(BaseModel):
+    website_id: UUID4
+    page_id: UUID4
+    insights: Optional[WebsitePageSpeedInsightsBase]
+
+
 class WebsitePageSpeedInsightsCreate(WebsitePageSpeedInsightsBase):
     page_id: UUID4
     website_id: UUID4

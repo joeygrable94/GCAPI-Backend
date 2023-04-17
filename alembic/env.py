@@ -60,7 +60,6 @@ def run_migrations_offline():
 
     """
     url = get_url()
-    print('offline', url)
     context.configure(
         url=url, target_metadata=target_metadata, literal_binds=True, compare_type=True
     )
@@ -77,7 +76,6 @@ def run_migrations_online():
 
     """
     url = get_url()
-    print('online', url)
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = url
     connectable = engine_from_config(

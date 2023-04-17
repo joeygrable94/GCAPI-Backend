@@ -32,6 +32,7 @@ from .website_pagespeedinsights import (
     PageSpeedInsightsDevice,
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsCreate,
+    WebsitePageSpeedInsightsProcessing,
     WebsitePageSpeedInsightsRead,
     WebsitePageSpeedInsightsUpdate,
 )

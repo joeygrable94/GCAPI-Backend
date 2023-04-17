@@ -1,5 +1,7 @@
+from typing import Any
 import unittest.mock
 from uuid import UUID
+from pydantic import UUID4
 
 import pytest
 
@@ -9,6 +11,7 @@ from app.worker import task_website_sitemap_process_pages
 
 
 @pytest.mark.celery
+@pytest.mark.asyncio
 async def test_task_website_sitemap_process_pages() -> None:
     website_id = get_uuid()
     sitemap_url = "https://getcommunity.com/"
@@ -38,13 +41,13 @@ async def test_task_website_sitemap_process_pages() -> None:
     with unittest.mock.patch(
         "app.worker.save_sitemap_pages"
     ) as mock_save_sitemap_pages:
-        mock_save_sitemap_pages.return_value = get_uuid()
+        mock_save_sitemap_pages.return_value = None
 
-        sitemap_id = await task_website_sitemap_process_pages(
+        sitemap_task = task_website_sitemap_process_pages(
             website_id, sitemap_url, sitemap_pages
         )
 
-        assert isinstance(sitemap_id, UUID)
+        assert sitemap_task is None
 
         mock_save_sitemap_pages.assert_called_once_with(
             website_id, sitemap_url, sitemap_pages

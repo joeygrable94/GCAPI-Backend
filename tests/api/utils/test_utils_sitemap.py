@@ -1,3 +1,4 @@
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -41,5 +42,5 @@ async def test_save_sitemap_pages(db_session: AsyncSession) -> None:
         "app.api.utils.create_or_update_website_page"
     ) as mock_create_or_update_website_page:
         mock_create_or_update_website_page.return_value = None
-        sitemap_id = await save_sitemap_pages(website.id, sitemap_url, sitemap_pages)
-        assert sitemap_id
+        sitemap_id: None = await save_sitemap_pages(website.id, sitemap_url, sitemap_pages)
+        assert sitemap_id is None

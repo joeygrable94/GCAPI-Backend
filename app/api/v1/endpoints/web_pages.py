@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -83,16 +83,16 @@ async def website_page_create(
         # create the website page
         website_page: WebsitePage = await web_pages_repo.create(website_page_in)
         fetch_page = a_website.get_link() + website_page.url
-        website_page_psi_mobile = task_website_page_pagespeedinsights_fetch.delay(
+        website_page_psi_mobile: Any = task_website_page_pagespeedinsights_fetch.delay(
             website_id=a_website.id,
             page_id=website_page.id,
-            fetch_psi_url=fetch_page,
+            fetch_url=fetch_page,
             device="mobile",
         )
-        website_page_psi_desktop = task_website_page_pagespeedinsights_fetch.delay(
+        website_page_psi_desktop: Any = task_website_page_pagespeedinsights_fetch.delay(
             website_id=a_website.id,
             page_id=website_page.id,
-            fetch_psi_url=fetch_page,
+            fetch_url=fetch_page,
             device="desktop",
         )
         return WebsitePageFetchPSIProcessing(

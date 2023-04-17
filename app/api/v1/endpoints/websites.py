@@ -73,8 +73,9 @@ async def website_create(
         if not await websites_repo.validate(domain=website_in.domain):
             raise WebsiteDomainInvalid()
         new_site: Website = await websites_repo.create(website_in)
+        a_sitemap_url = new_site.get_link()
         sitemap_task = task_website_sitemap_fetch_pages.delay(
-            website_id=new_site.id, sitemap_url=new_site.get_link()
+            new_site.id, a_sitemap_url
         )
         return WebsiteCreateProcessing(
             website=WebsiteRead.from_orm(new_site), task_id=sitemap_task.id

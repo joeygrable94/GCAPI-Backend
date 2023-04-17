@@ -6,9 +6,17 @@ from app.core.config import settings
 
 # init worker
 celery_app: Any = Celery("worker")
-celery_app.conf.broker_url = f"{settings.REDIS_CONN_URI}{settings.CELERY_WORKER_BROKER}"
-celery_app.conf.result_backend = (
-    f"{settings.REDIS_CONN_URI}{settings.CELERY_WORKER_BACKEND}"
+celery_app.conf.update(
+    broker_url=f"{settings.REDIS_CONN_URI}{settings.CELERY_WORKER_BROKER}",
+    result_backend=f"{settings.REDIS_CONN_URI}{settings.CELERY_WORKER_BACKEND}",
+    task_track_started=True,
+    task_serializer='pickle',
+    result_serializer='pickle',
+    accept_content=['pickle', 'json'],
+    result_expires=200,
+    result_persistent=True,
+    worker_send_task_events=False,
+    worker_prefetch_multiplier=1,
 )
 
 # load celery tasks

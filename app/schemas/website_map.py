@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
+from enum import Enum
+from typing import List, Optional, Union
 
 from pydantic import UUID4, BaseModel, validator
 from usp.objects.page import SITEMAP_PAGE_DEFAULT_PRIORITY  # type: ignore

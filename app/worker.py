@@ -1,10 +1,12 @@
-from typing import Any, Dict, List, Tuple
+import asyncio
+from typing import Any, Dict, List, Optional
 
 from asgi_correlation_id.context import correlation_id
 from pydantic import UUID4, AnyHttpUrl
 from raven import Client  # type: ignore
 from usp.tree import AbstractSitemap  # type: ignore
 from usp.tree import sitemap_tree_for_homepage
+from asgiref.sync import async_to_sync
 
 from app.api.utils import fetch_pagespeedinsights, save_sitemap_pages
 from app.core.celery import celery_app
@@ -15,6 +17,7 @@ from app.schemas import (
     WebsiteMapPage,
     WebsiteMapProcessing,
     WebsitePageSpeedInsightsBase,
+    WebsitePageSpeedInsightsProcessing,
 )
 
 if not settings.DEBUG_MODE:  # pragma: no cover
@@ -40,7 +43,7 @@ def task_speak(word: str) -> str:
 def task_website_sitemap_fetch_pages(
     website_id: UUID4,
     sitemap_url: AnyHttpUrl,
-) -> WebsiteMapProcessing:
+) -> Dict[str, Any]:
     logger.info(f"Fetching sitemap pages for website_id {website_id}")
     sitemap: AbstractSitemap = sitemap_tree_for_homepage(sitemap_url)
     # sitemap_pages: List[WebsiteMapPage] = []
@@ -56,37 +59,40 @@ def task_website_sitemap_fetch_pages(
             ).dict()
         )
     sitemap_processing = task_website_sitemap_process_pages.delay(
-        website_id=website_id,
-        sitemap_url=sitemap.url,
-        sitemap_pages=sitemap_pages,
+        website_id, sitemap.url, sitemap_pages
     )
     return WebsiteMapProcessing(
         url=sitemap.url,
         website_id=website_id,
         task_id=sitemap_processing.id,
-    )
+    ).dict()
 
 
 @celery_app.task(acks_late=True)
-async def task_website_sitemap_process_pages(
+def task_website_sitemap_process_pages(
     website_id: UUID4,
     sitemap_url: AnyHttpUrl,
     sitemap_pages: List[WebsiteMapPage],
-) -> UUID4:
-    sitemap_id = await save_sitemap_pages(website_id, sitemap_url, sitemap_pages)
-    return sitemap_id
+) -> None:
+    asyncio.run(save_sitemap_pages(website_id, sitemap_url, sitemap_pages))
 
 
 @celery_app.task(acks_late=True)
 def task_website_page_pagespeedinsights_fetch(
     website_id: UUID4,
     page_id: UUID4,
-    fetch_psi_url: AnyHttpUrl,
+    fetch_url: AnyHttpUrl,
     device: str,
-) -> Tuple[UUID4, UUID4, WebsitePageSpeedInsightsBase]:
-    logger.info(f"Fetching PageSpeedInsights for website {website_id}, page {page_id}")
-    insights: WebsitePageSpeedInsightsBase = fetch_pagespeedinsights(
-        fetch_url=fetch_psi_url,
+) -> Dict[str, Any]:
+    logger.info(
+        f"Fetching PageSpeedInsights for website {website_id}, page {page_id}, URL[{fetch_url}]"
+    )
+    insights: Optional[WebsitePageSpeedInsightsBase] = fetch_pagespeedinsights(
+        fetch_url=fetch_url,
         device=PageSpeedInsightsDevice(device=device),
     )
-    return website_id, page_id, insights
+    return WebsitePageSpeedInsightsProcessing(
+        website_id=website_id,
+        page_id=page_id,
+        insights=insights,
+    ).dict()
