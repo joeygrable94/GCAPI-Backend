@@ -23,9 +23,9 @@ async def test_celery_task_website_page_pagespeedinsights_fetch(celery_worker: A
             website_id, page_id, psi_url, "desktop"
         )
 
-    assert result["website_id"] == website_id
-    assert result["page_id"] == page_id
-    assert result["insights"] == mock_psi_insights_base
+    assert result.website_id == website_id
+    assert result.page_id == page_id
+    assert result.insights == mock_psi_insights_base
     mock_fetch.assert_called_once_with(
         fetch_url=psi_url, device=PageSpeedInsightsDevice(device="desktop")
     )

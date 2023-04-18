@@ -23,13 +23,13 @@ def test_task_website_sitemap_fetch_pages(
     ) as mock_sitemap_tree:
         mock_sitemap_tree.return_value = mock_sitemap
 
-        sitemap_task: Dict[str, Any] = task_website_sitemap_fetch_pages(
+        sitemap_task: WebsiteMapProcessing = task_website_sitemap_fetch_pages(
             website_id, sitemap_url
         )
 
-        assert sitemap_task["url"] == sitemap_url
-        assert sitemap_task["website_id"] == website_id
-        assert isinstance(sitemap_task["task_id"], UUID)
+        assert sitemap_task.url == sitemap_url
+        assert sitemap_task.website_id == website_id
+        assert isinstance(sitemap_task.task_id, UUID)
 
         # Check that the sitemap and sitemap saving functions
         # were called with the correct arguments

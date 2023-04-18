@@ -5,19 +5,17 @@ from celery import Celery  # type: ignore
 from app.core.config import settings
 
 # init worker
-celery_app: Any = Celery("worker")
-celery_app.conf.update(
-    broker_url=f"{settings.REDIS_CONN_URI}{settings.CELERY_WORKER_BROKER}",
-    result_backend=f"{settings.REDIS_CONN_URI}{settings.CELERY_WORKER_BACKEND}",
-    task_track_started=True,
-    task_serializer='pickle',
-    result_serializer='pickle',
-    accept_content=['pickle', 'json'],
-    result_expires=200,
-    result_persistent=True,
-    worker_send_task_events=False,
-    worker_prefetch_multiplier=1,
-)
+celery_app: Celery = Celery("worker")
+celery_app.conf.update(broker_url=f"{settings.REDIS_CONN_URI}{settings.CELERY_WORKER_BROKER}")
+celery_app.conf.update(result_backend=f"{settings.REDIS_CONN_URI}{settings.CELERY_WORKER_BACKEND}")
+celery_app.conf.update(task_track_started=True)
+celery_app.conf.update(task_serializer='pickle')
+celery_app.conf.update(result_serializer='pickle')
+celery_app.conf.update(accept_content=['pickle', 'json'])
+celery_app.conf.update(result_expires=200)
+celery_app.conf.update(result_persistent=True)
+celery_app.conf.update(worker_send_task_events=False)
+celery_app.conf.update(worker_prefetch_multiplier=1)
 
 # load celery tasks
 celery_app.conf.task_routes = {
