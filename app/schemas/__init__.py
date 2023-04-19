@@ -1,4 +1,4 @@
-from .celery_tasks import TaskState
+from .task import TaskState
 from .client import ClientCreate, ClientRead, ClientReadRelations, ClientUpdate
 from .client_website import ClientWebsiteCreate, ClientWebsiteRead, ClientWebsiteUpdate
 from .website import (

@@ -1,3 +1,4 @@
+from typing import Any
 from celery.result import AsyncResult  # type: ignore
 from fastapi import APIRouter, Depends
 from pydantic import UUID4
@@ -17,7 +18,7 @@ router: APIRouter = APIRouter()
 )
 def get_tasks_status(
     current_user: CurrentUser,
-    task_id: UUID4,
+    task_id: Any,
 ) -> TaskState:  # pragma: no cover
     task_result = AsyncResult(task_id)
     return TaskState(

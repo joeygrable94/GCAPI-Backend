@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from httpx import AsyncClient
 
-from app.core.utilities import get_uuid
+from app.core.utilities import get_uuid_str
 
 pytestmark = pytest.mark.asyncio
 
@@ -24,7 +24,7 @@ async def test_get_status(
     client: AsyncClient,
     superuser_token_headers: Dict[str, str],
 ) -> None:
-    task_id = get_uuid()
+    task_id = get_uuid_str()
     task_state = MockAsyncResult(id=task_id)
 
     with patch(
