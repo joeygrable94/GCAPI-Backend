@@ -6,8 +6,8 @@ from app.core.config import settings
 
 # init worker
 celery_app: Celery = Celery("worker")
-celery_app.conf.update(broker_url=f"{settings.REDIS_CONN_URI}{settings.CELERY_WORKER_BROKER}")
-celery_app.conf.update(result_backend=f"{settings.REDIS_CONN_URI}{settings.CELERY_WORKER_BACKEND}")
+celery_app.conf.update(broker_url=settings.CELERY_BROKER_URL)
+celery_app.conf.update(result_backend=settings.CELERY_RESULT_BACKEND)
 celery_app.conf.update(task_track_started=True)
 celery_app.conf.update(task_serializer='pickle')
 celery_app.conf.update(result_serializer='pickle')

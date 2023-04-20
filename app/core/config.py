@@ -71,8 +71,8 @@ class Settings(BaseSettings):
 
     # Worker
     SENTRY_DSN: Optional[str] = environ.get("SENTRY_DSN", None)
-    CELERY_WORKER_BROKER: str = environ.get("CELERY_WORKER_BROKER", "/0")
-    CELERY_WORKER_BACKEND: str = environ.get("CELERY_WORKER_BACKEND", "/0")
+    CELERY_BROKER_URL: str = environ.get("CELERY_BROKER_URL", "/0")
+    CELERY_RESULT_BACKEND: str = environ.get("CELERY_RESULT_BACKEND", "/0")
     CELERY_WORKER_TASK_QUEUE: str = environ.get(
         "CELERY_WORKER_TASK_QUEUE", "main-queue"
     )
