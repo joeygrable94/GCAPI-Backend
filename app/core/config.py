@@ -1,6 +1,6 @@
 from functools import lru_cache
 from os import environ
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, TypeVar, Union
 
 from dotenv import load_dotenv
 from pydantic import BaseSettings, validator
@@ -12,7 +12,7 @@ load_dotenv()
 class Settings(BaseSettings):
     # APP
     PROJECT_NAME: str = environ.get("PROJECT_NAME", "FastAPI")
-    PROJECT_VERSION: str = environ.get("TAG", "0.0.1")
+    PROJECT_VERSION: str = environ.get("TAG", "0.0.3")
     APP_MODE: str = environ.get("APP_MODE", "test")
     DEBUG_MODE: bool = bool(environ.get("APP_DEBUG", True))
     LOGGING_LEVEL: str = environ.get("BACKEND_LOG_LEVEL", "DEBUG").upper()
@@ -71,11 +71,6 @@ class Settings(BaseSettings):
 
     # Worker
     SENTRY_DSN: Optional[str] = environ.get("SENTRY_DSN", None)
-    CELERY_BROKER_URL: str = environ.get("CELERY_BROKER_URL", "/0")
-    CELERY_RESULT_BACKEND: str = environ.get("CELERY_RESULT_BACKEND", "/0")
-    CELERY_WORKER_TASK_QUEUE: str = environ.get(
-        "CELERY_WORKER_TASK_QUEUE", "main-queue"
-    )
 
     # Mail
     SMTP_TLS: Union[str, bool] = bool(environ.get("SMTP_TLS", True))
@@ -188,10 +183,17 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive: bool = True
 
+SETTINGS = TypeVar[Settings]
 
 @lru_cache()
 def get_settings() -> Settings:
-    return Settings()
+    config_cls_dict: Dict[str, SETTINGS] = {
+        "test": Settings,
+        "development": Settings,
+    }
+    config_name: str = environ.get("APP_MODE", "development")
+    config_cls: SETTINGS = config_cls_dict[config_name]
+    return config_cls()
 
 
 settings: Settings = get_settings()

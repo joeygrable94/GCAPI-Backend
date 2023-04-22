@@ -2,13 +2,13 @@ import asyncio
 from typing import Any, Dict, List, Optional
 
 from asgi_correlation_id.context import correlation_id
+from celery import Celery
 from pydantic import UUID4, AnyHttpUrl
 from raven import Client  # type: ignore
 from usp.tree import AbstractSitemap  # type: ignore
 from usp.tree import sitemap_tree_for_homepage  # type: ignore
 
 from app.api.utils import fetch_pagespeedinsights, save_sitemap_pages
-from app.core.celery import celery_app
 from app.core.config import settings
 from app.core.logger import logger
 from app.schemas import (
@@ -18,6 +18,10 @@ from app.schemas import (
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsProcessing,
 )
+from .celery import create_celery_worker
+
+
+celery_app: Celery = create_celery_worker()
 
 if not settings.DEBUG_MODE:  # pragma: no cover
     if settings.SENTRY_DSN:
@@ -33,12 +37,20 @@ if not settings.DEBUG_MODE:  # pragma: no cover
         correlation_id.set(id_value)
 
 
-@celery_app.task(acks_late=True)
-def task_speak(word: str) -> str:
+@celery_app.task(
+    name="tasks:task_speak",
+    acks_late=True,
+)
+def task_speak(
+    word: str,
+) -> str:
     return f"I say, {word}!"
 
 
-@celery_app.task(acks_late=True)
+@celery_app.task(
+    name="sitemaps:task_website_sitemap_fetch_pages",
+    acks_late=True,
+)
 def task_website_sitemap_fetch_pages(
     website_id: UUID4,
     sitemap_url: AnyHttpUrl,
@@ -66,7 +78,10 @@ def task_website_sitemap_fetch_pages(
     )
 
 
-@celery_app.task(acks_late=True)
+@celery_app.task(
+    name="webpages:task_website_sitemap_process_pages",
+    acks_late=True,
+)
 def task_website_sitemap_process_pages(
     website_id: UUID4,
     sitemap_url: AnyHttpUrl,
@@ -75,7 +90,10 @@ def task_website_sitemap_process_pages(
     save_sitemap_pages(website_id, sitemap_url, sitemap_pages)
 
 
-@celery_app.task(acks_late=True)
+@celery_app.task(
+    name="webpages:task_website_page_pagespeedinsights_fetch",
+    acks_late=True,
+)
 def task_website_page_pagespeedinsights_fetch(
     website_id: UUID4,
     page_id: UUID4,
