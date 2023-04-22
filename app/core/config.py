@@ -183,16 +183,14 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive: bool = True
 
-SETTINGS = TypeVar[Settings]
-
 @lru_cache()
 def get_settings() -> Settings:
-    config_cls_dict: Dict[str, SETTINGS] = {
+    config_cls_dict: Dict[str, Settings] = {
         "test": Settings,
         "development": Settings,
     }
     config_name: str = environ.get("APP_MODE", "development")
-    config_cls: SETTINGS = config_cls_dict[config_name]
+    config_cls: Settings = config_cls_dict[config_name]
     return config_cls()
 
 
