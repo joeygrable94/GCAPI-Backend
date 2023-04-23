@@ -1,6 +1,6 @@
 import pytest
 from typing import Any, Dict
-from app.worker.celery import route_task
+from app.core.celery import route_task
 
 
 def test_route_task():

@@ -18,7 +18,7 @@ from app.schemas import (
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsProcessing,
 )
-from .celery import create_celery_worker
+from app.core.celery import create_celery_worker
 
 
 celery_app: Celery = create_celery_worker()
