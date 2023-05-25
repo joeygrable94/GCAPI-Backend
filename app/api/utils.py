@@ -41,6 +41,7 @@ async def create_or_update_website_page(
             await pages_repo.update(
                 entry=website_page,
                 schema=WebsitePageUpdate(
+                    url=parsed_url.path,
                     status=status_code,
                     priority=page.priority,
                     last_modified=page.last_modified,
@@ -89,13 +90,12 @@ async def save_sitemap_pages(
 
 
 def fetch_pagespeedinsights(
-    fetch_url: AnyHttpUrl,
-    device: PageSpeedInsightsDevice,
+    fetch_url: AnyHttpUrl, device: PageSpeedInsightsDevice
 ) -> Optional[WebsitePageSpeedInsightsBase]:
-    api_key: Optional[str] = environ.get("GOOGLE_CLOUD_API_KEY", None)
-    if api_key is None:  # pragma: no cover
-        raise Exception("Google Cloud API Key not found in environment variables")
     try:
+        api_key: Optional[str] = environ.get("GOOGLE_CLOUD_API_KEY", None)
+        if api_key is None:  # pragma: no cover
+            raise Exception("Google Cloud API Key not found in environment variables")
         fetch_req = "https://%s/%s/%s?url=%s&key=%s&strategy=%s" % (
             "www.googleapis.com/pagespeedonline",
             "v5",
@@ -118,9 +118,9 @@ def fetch_pagespeedinsights(
         # set overall site performance for device
         results["performance-score"] = {}
         results["performance-score"]["weight"] = 100
-        results["performance-score"]["score"] = resp_data["lighthouseResult"]["categories"][
-            "performance"
-        ]["score"]
+        results["performance-score"]["score"] = resp_data["lighthouseResult"][
+            "categories"
+        ]["performance"]["score"]
         results["performance-score"]["value"] = "{:.0%}".format(
             resp_data["lighthouseResult"]["categories"]["performance"]["score"]
         )
@@ -133,7 +133,9 @@ def fetch_pagespeedinsights(
                 results[audit_key_value] = {}
                 results[audit_key_value]["weight"] = audit["weight"]
                 if audit["id"] in audits_index:
-                    results[audit_key_value]["score"] = audits_index[audit["id"]]["score"]
+                    results[audit_key_value]["score"] = audits_index[audit["id"]][
+                        "score"
+                    ]
                     results[audit_key_value]["value"] = audits_index[audit["id"]][
                         "numericValue"
                     ]
@@ -171,3 +173,4 @@ def fetch_pagespeedinsights(
         return psi_base
     except Exception as e:  # pragma: no cover
         logger.info("Error Fetching Page Speed Insights: %s", e)
+        return None

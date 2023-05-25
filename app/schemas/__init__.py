@@ -1,6 +1,6 @@
-from .task import TaskState
 from .client import ClientCreate, ClientRead, ClientReadRelations, ClientUpdate
 from .client_website import ClientWebsiteCreate, ClientWebsiteRead, ClientWebsiteUpdate
+from .task import TaskState
 from .website import (
     WebsiteCreate,
     WebsiteCreateProcessing,
@@ -16,7 +16,7 @@ from .website_keywordcorpus import (
 from .website_map import (
     WebsiteMapCreate,
     WebsiteMapPage,
-    WebsiteMapProcessing,
+    WebsiteMapPagesProcessing,
     WebsiteMapRead,
     WebsiteMapReadRelations,
     WebsiteMapUpdate,

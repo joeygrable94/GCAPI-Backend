@@ -11,7 +11,9 @@ from app.worker import task_website_page_pagespeedinsights_fetch
 
 @pytest.mark.celery
 @pytest.mark.asyncio
-async def test_celery_task_website_page_pagespeedinsights_fetch(celery_worker: Any) -> None:
+async def test_celery_task_website_page_pagespeedinsights_fetch(
+    celery_worker: Any,
+) -> None:
     website_id = get_uuid()
     page_id = get_uuid()
     psi_url = "https://getcommunity.com/"
@@ -19,8 +21,10 @@ async def test_celery_task_website_page_pagespeedinsights_fetch(celery_worker: A
     mock_fetch = Mock(return_value=mock_psi_insights_base)
 
     with patch("app.worker.fetch_pagespeedinsights", new=mock_fetch):
-        result: WebsitePageSpeedInsightsProcessing = task_website_page_pagespeedinsights_fetch(
-            website_id, page_id, psi_url, "desktop"
+        result: WebsitePageSpeedInsightsProcessing = (
+            task_website_page_pagespeedinsights_fetch(
+                website_id, page_id, psi_url, "desktop"
+            )
         )
 
     assert result.website_id == website_id

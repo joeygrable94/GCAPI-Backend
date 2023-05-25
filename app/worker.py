@@ -1,25 +1,23 @@
-import asyncio
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 from asgi_correlation_id.context import correlation_id
-from celery import Celery
+from celery import Celery  # type: ignore
 from pydantic import UUID4, AnyHttpUrl
 from raven import Client  # type: ignore
 from usp.tree import AbstractSitemap  # type: ignore
 from usp.tree import sitemap_tree_for_homepage  # type: ignore
 
-from app.api.utils import fetch_pagespeedinsights, save_sitemap_pages
+from app.api.utils import fetch_pagespeedinsights
+from app.core.celery import create_celery_worker
 from app.core.config import settings
 from app.core.logger import logger
 from app.schemas import (
     PageSpeedInsightsDevice,
     WebsiteMapPage,
-    WebsiteMapProcessing,
+    WebsiteMapPagesProcessing,
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsProcessing,
 )
-from app.core.celery import create_celery_worker
-
 
 celery_app: Celery = create_celery_worker()
 
@@ -54,40 +52,21 @@ def task_speak(
 def task_website_sitemap_fetch_pages(
     website_id: UUID4,
     sitemap_url: AnyHttpUrl,
-) -> WebsiteMapProcessing:
+) -> WebsiteMapPagesProcessing:
     logger.info(f"Fetching sitemap pages for website_id {website_id}")
     sitemap: AbstractSitemap = sitemap_tree_for_homepage(sitemap_url)
     sitemap_pages: List[WebsiteMapPage] = []
     for pg in sitemap.all_pages():
         sitemap_pages.append(
             WebsiteMapPage(
-                url=pg.url,
-                priority=pg.priority,
-                last_modified=pg.last_modified,
-                change_frequency=pg.change_frequency,
-                news_story=pg.news_story,
+                url=pg.url, priority=pg.priority, last_modified=pg.last_modified
             )
         )
-    sitemap_processing = task_website_sitemap_process_pages.delay(
-        website_id, sitemap.url, sitemap_pages
-    )
-    return WebsiteMapProcessing(
+    return WebsiteMapPagesProcessing(
         url=sitemap.url,
         website_id=website_id,
-        task_id=sitemap_processing.id,
+        website_map_pages=sitemap_pages,
     )
-
-
-@celery_app.task(
-    name="webpages:task_website_sitemap_process_pages",
-    acks_late=True,
-)
-def task_website_sitemap_process_pages(
-    website_id: UUID4,
-    sitemap_url: AnyHttpUrl,
-    sitemap_pages: List[WebsiteMapPage],
-) -> None:
-    save_sitemap_pages(website_id, sitemap_url, sitemap_pages)
 
 
 @celery_app.task(
@@ -101,7 +80,8 @@ def task_website_page_pagespeedinsights_fetch(
     device: str,
 ) -> WebsitePageSpeedInsightsProcessing:
     logger.info(
-        f"Fetching PageSpeedInsights for website {website_id}, page {page_id}, URL[{fetch_url}]"
+        f"Fetching PageSpeedInsights for website {website_id}, \
+            page {page_id}, URL[{fetch_url}]"
     )
     insights: Optional[WebsitePageSpeedInsightsBase] = fetch_pagespeedinsights(
         fetch_url=fetch_url,

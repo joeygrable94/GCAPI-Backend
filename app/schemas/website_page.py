@@ -52,6 +52,7 @@ class WebsitePageCreate(WebsitePageBase):
 
 
 class WebsitePageUpdate(ValidateWebsitePageUrlOptional, BaseSchema):
+    url: Optional[str]
     status: Optional[int]
     priority: Optional[Union[float, Decimal]]
     last_modified: Optional[datetime]

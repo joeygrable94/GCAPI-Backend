@@ -1,21 +1,21 @@
-import pytest
 from typing import Any, Dict
+
 from app.core.celery import route_task
 
 
-def test_route_task():
+def test_route_task() -> None:
     # Test when name has a queue specified
-    name: str = "queue1:task1"
-    args: str = "arg1"
-    kwargs: Dict[str, str] = {"key1": "value1"}
-    options: Dict[Any, Any] = {}
-    expected_result: Dict[str, str] = {"queue": "queue1"}
+    name = "queue1:task1"
+    args = "arg1"
+    kwargs = {"key1": "value1"}
+    options: Dict[str, Any] = {}
+    expected_result = {"queue": "queue1"}
     assert route_task(name, args, kwargs, options) == expected_result
 
     # Test when name has no queue specified
-    name: str = "task2"
-    args: str = "arg2"
-    kwargs: Dict[str, str] = {"key2": "value2"}
-    options: Dict[Any, Any] = {}
-    expected_result: Dict[str, str] = {"queue": "tasks"}
+    name = "task2"
+    args = "arg2"
+    kwargs = {"key2": "value2"}
+    options: Dict[str, Any] = {}
+    expected_result = {"queue": "tasks"}
     assert route_task(name, args, kwargs, options) == expected_result

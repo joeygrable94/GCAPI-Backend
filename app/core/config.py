@@ -1,6 +1,6 @@
 from functools import lru_cache
 from os import environ
-from typing import Any, Dict, List, Optional, TypeVar, Union
+from typing import Any, Dict, List, Optional, Union
 
 from dotenv import load_dotenv
 from pydantic import BaseSettings, validator
@@ -183,15 +183,12 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive: bool = True
 
+
 @lru_cache()
 def get_settings() -> Settings:
-    config_cls_dict: Dict[str, Settings] = {
-        "test": Settings,
-        "development": Settings,
-    }
     config_name: str = environ.get("APP_MODE", "development")
-    config_cls: Settings = config_cls_dict[config_name]
-    return config_cls()
+    print(config_name)
+    return Settings()
 
 
 settings: Settings = get_settings()

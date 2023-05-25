@@ -1,7 +1,7 @@
 from typing import Any
+
 from celery.result import AsyncResult  # type: ignore
 from fastapi import APIRouter, Depends
-from pydantic import UUID4
 
 from app.api.deps import CurrentUser
 from app.core.auth import auth

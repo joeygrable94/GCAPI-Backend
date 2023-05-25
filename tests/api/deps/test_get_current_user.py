@@ -22,7 +22,7 @@ class MockAuth:
         if self.user is None:
             return None
         return Auth0User(
-            sub=self.user["id"],
+            sub=self.user["id"],  # type: ignore
             permissions=self.user.get("permissions"),
             email=self.user.get("email"),
         )

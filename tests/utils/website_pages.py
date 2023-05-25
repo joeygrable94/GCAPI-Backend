@@ -27,6 +27,8 @@ async def create_random_website_page(
             url=page_path,
             status=200,
             priority=0.5,
+            last_modified=None,
+            change_frequency=None,
             website_id=website_id,
             sitemap_id=sitemap_id,
         )

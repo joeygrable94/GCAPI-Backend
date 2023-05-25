@@ -54,8 +54,8 @@ class WebsiteCreate(ValidateWebsiteDomainRequired):
 
 
 class WebsiteUpdate(ValidateWebsiteDomainOptional):
-    domain: Optional[str]
-    is_secure: Optional[bool] = False
+    domain: Optional[str] = None
+    is_secure: Optional[bool] = None
 
 
 class WebsiteRead(WebsiteACL, WebsiteBase, BaseSchemaRead):

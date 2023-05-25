@@ -1,4 +1,3 @@
-import json
 from typing import Any, Iterator
 
 from pydantic import UUID4
@@ -19,12 +18,13 @@ class MockSitemap:
 
     def all_pages(self) -> Iterator[SitemapPage]:
         for pg in self.pages:
-            yield SitemapPage(pg)
+            yield SitemapPage(
+                pg.get("url"), pg.get("priority"), pg.get("last_modified")
+            )
 
 
-def generate_mock_sitemap(sitemap_url: str, mock_sitemap_str: str) -> MockSitemap:
-    pages = json.dumps(mock_sitemap_str, indent=4)
-    return MockSitemap(sitemap_url, pages)
+def generate_mock_sitemap(sitemap_url: str, mock_sitemap_pages: list) -> MockSitemap:
+    return MockSitemap(sitemap_url, mock_sitemap_pages)
 
 
 async def create_random_website_map(

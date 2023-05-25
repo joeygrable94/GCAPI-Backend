@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from pydantic import UUID4, BaseModel, validator
 from usp.objects.page import SITEMAP_PAGE_DEFAULT_PRIORITY  # type: ignore
@@ -83,8 +82,8 @@ class WebsiteMapRead(WebsiteMapACL, WebsiteMapCreate, WebsiteMapBase, BaseSchema
 
 
 # tasks
-class WebsiteMapProcessing(WebsiteMapCreate):
-    task_id: UUID4
+class WebsiteMapPagesProcessing(WebsiteMapCreate):
+    website_map_pages: List[WebsiteMapPage]
 
 
 # relationships
