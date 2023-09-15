@@ -74,7 +74,7 @@ class AnsiColorTheme(ColorTheme):  # pragma: no cover
             val: Any, fmt: Any = None, before: Any = before, after: Any = after
         ) -> Any:
             if fmt is None:
-                if type(val) is not str:
+                if not isinstance(val, str):
                     val = str(val)
             else:
                 val = fmt % val
