@@ -1,26 +1,22 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, func
-from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .website_page import WebsitePage  # noqa: F401
+    from .client import Client  # noqa: F401
 
 
-class WebsiteMap(Base):
-    __tablename__: str = "website_map"
-    __table_args__: Any = {"mysql_engine": "InnoDB"}
-    __mapper_args__: Any = {"always_refresh": True}
+class ClientBucket(Base):
+    __tablename__: str = "client_bucket"
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
-        index=True,
-        primary_key=True,
         unique=True,
         nullable=False,
         default=get_uuid(),
@@ -36,20 +32,17 @@ class WebsiteMap(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    url: Mapped[str] = mapped_column(
-        String(2048),
+    description: Mapped[str] = mapped_column(String(255), nullable=True)
+    bucket_name: Mapped[str] = mapped_column(
+        String(100), nullable=False, primary_key=True
+    )
+    object_key: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    client_id: Mapped[UUID4] = mapped_column(
+        UUIDType(binary=False),
+        ForeignKey("client.id"),
         nullable=False,
-        default="https://getcommunity.com/sitemap_index.xml",
-    )
-
-    # relationships
-    website_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("website.id"), nullable=False
-    )
-    pages: Mapped[List["WebsitePage"]] = relationship(
-        "WebsitePage", backref=backref("website_map", lazy="noload")
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"WebsiteMap({self.url}, Site[{self.website_id}])"
+        repr_str: str = f"ClientBucket({self.bucket_name}, [C({self.client_id})])"
         return repr_str

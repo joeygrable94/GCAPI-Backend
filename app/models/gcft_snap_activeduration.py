@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, Integer, func
+from sqlalchemy import INT, DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -20,6 +20,7 @@ class GCFTSnapActiveDuration(Base):
     __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
+        index=True,
         primary_key=True,
         unique=True,
         nullable=False,
@@ -27,19 +28,18 @@ class GCFTSnapActiveDuration(Base):
     )
     created_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=func.current_timestamp(),
-        index=True,
         nullable=False,
+        default=func.current_timestamp(),
     )
     updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
-        nullable=False,
     )
     session_id: Mapped[UUID4] = mapped_column(UUIDType(binary=False), nullable=False)
-    active_seconds: Mapped[str] = mapped_column(Integer(), nullable=False)
-    view_date: Mapped[datetime] = mapped_column(DateTime(), nullable=False)
+    active_seconds: Mapped[int] = mapped_column(INT, nullable=False)
+    visit_date: Mapped[datetime] = mapped_column(DateTime(), nullable=False)
 
     # relationships
     gcft_id: Mapped[UUID4] = mapped_column(
@@ -51,5 +51,5 @@ class GCFTSnapActiveDuration(Base):
 
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"GCFTSnapActiveDuration({self.session_id} \
-            on {self.view_date}, seconds={self.active_seconds})"
+            on {self.visit_date}, seconds={self.active_seconds})"
         return repr_str

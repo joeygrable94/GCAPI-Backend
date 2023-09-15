@@ -25,33 +25,37 @@ class GCFTSnap(Base):
     __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
-        primary_key=True,
+        index=True,
         unique=True,
         nullable=False,
         default=get_uuid(),
     )
     created_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=func.current_timestamp(),
-        index=True,
         nullable=False,
+        default=func.current_timestamp(),
     )
     updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
-        nullable=False,
     )
     snap_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    snap_slug: Mapped[str] = mapped_column(String(12), nullable=False)
-    altitude: Mapped[int] = mapped_column(Integer, nullable=False)
+    snap_slug: Mapped[str] = mapped_column(
+        String(12), nullable=False, unique=True, primary_key=True
+    )
+    altitude: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     # relationships
-    geocoord_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("geocoord.id"), nullable=True
-    )
     gcft_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("gcft.id"), nullable=False
+    )
+    image_id: Mapped[UUID4] = mapped_column(
+        UUIDType(binary=False), ForeignKey("file_asset.id"), nullable=False
+    )
+    geocoord_id: Mapped[UUID4] = mapped_column(
+        UUIDType(binary=False), ForeignKey("geocoord.id"), nullable=False
     )
     snap_views: Mapped[List["GCFTSnapView"]] = relationship(
         "GCFTSnapView", backref=backref("gcft_snap", lazy="noload")

@@ -19,32 +19,30 @@ class ClientWebsite(Base):
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         primary_key=True,
+        index=True,
         unique=True,
         nullable=False,
         default=get_uuid(),
     )
     created_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=func.current_timestamp(),
-        index=True,
         nullable=False,
+        default=func.current_timestamp(),
     )
     updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
-        nullable=False,
     )
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         ForeignKey("client.id"),
-        primary_key=True,
         nullable=False,
     )
     website_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         ForeignKey("website.id"),
-        primary_key=True,
         nullable=False,
     )
 

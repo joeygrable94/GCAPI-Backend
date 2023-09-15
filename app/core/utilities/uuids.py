@@ -1,3 +1,5 @@
+import random
+import string
 import uuid
 from typing import Any
 
@@ -31,3 +33,19 @@ def get_uuid_str() -> str:
         str: stringified UUID
     """
     return str(get_uuid())
+
+
+def get_random_username() -> str:
+    """generates a random username
+
+    Returns:
+        str: string
+    """
+    USERNAME_MAX_LENGTH = 255
+    allowed_characters = string.ascii_letters + string.digits + "_"
+    max_username_length = min(USERNAME_MAX_LENGTH, len(allowed_characters))
+    username_length = random.randint(1, max_username_length)
+    username = "".join(
+        random.choice(allowed_characters) for _ in range(username_length)
+    )
+    return username

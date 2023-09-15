@@ -19,24 +19,25 @@ class GoogleCloudProperty(Base):
     __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
-        primary_key=True,
+        index=True,
         unique=True,
         nullable=False,
         default=get_uuid(),
     )
     created_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=func.current_timestamp(),
-        index=True,
         nullable=False,
+        default=func.current_timestamp(),
     )
     updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
-        nullable=False,
     )
-    project_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    project_name: Mapped[str] = mapped_column(
+        String(255), nullable=False, unique=True, primary_key=True
+    )
     hashed_api_key: Mapped[str] = mapped_column(String(64), nullable=False)
     hashed_project_id: Mapped[str] = mapped_column(String(64), nullable=False)
     hashed_project_number: Mapped[str] = mapped_column(String(64), nullable=False)

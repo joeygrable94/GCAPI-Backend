@@ -1,7 +1,10 @@
 # Import all the models, so that Base has them before import by Alembic
 from app.db.base_class import Base  # noqa: F401
+from app.models.bdx_feed import BdxFeed  # noqa: 401
 from app.models.client import Client  # noqa: F401
+from app.models.client_bucket import ClientBucket  # noqa: 401
 from app.models.client_website import ClientWebsite  # noqa: F401
+from app.models.file_asset import FileAsset  # noqa: F401
 from app.models.gcft import GCFT  # noqa: F401
 from app.models.gcft_snap import GCFTSnap  # noqa: F401
 from app.models.gcft_snap_activeduration import GCFTSnapActiveDuration  # noqa: F401
@@ -23,9 +26,12 @@ from app.models.go_sc_searchappearance import (  # noqa: F401
 )
 from app.models.go_ua import GoogleUniversalAnalyticsProperty  # noqa: F401
 from app.models.go_ua_view import GoogleUniversalAnalyticsView  # noqa: F401
-from app.models.imageupload import ImageUpload  # noqa: F401
+from app.models.ipaddress import Ipaddress  # noqa: 401
 from app.models.note import Note  # noqa: F401
 from app.models.sharpspring import SharpSpring  # noqa: F401
+from app.models.user import User  # noqa: 401
+from app.models.user_client import UserClient  # noqa: 401
+from app.models.user_ipaddress import UserIpaddress  # noqa: 401
 from app.models.website import Website  # noqa: F401
 from app.models.website_keywordcorpus import WebsiteKeywordCorpus  # noqa: F401
 from app.models.website_map import WebsiteMap  # noqa: F401

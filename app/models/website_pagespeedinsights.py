@@ -20,6 +20,7 @@ class WebsitePageSpeedInsights(Base):
     __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
+        index=True,
         primary_key=True,
         unique=True,
         nullable=False,
@@ -27,15 +28,14 @@ class WebsitePageSpeedInsights(Base):
     )
     created_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=func.current_timestamp(),
-        index=True,
         nullable=False,
+        default=func.current_timestamp(),
     )
     updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
-        nullable=False,
     )
     strategy: Mapped[str] = mapped_column(String(16), nullable=False, default="mobile")
     ps_weight: Mapped[int] = mapped_column(Integer, nullable=False, default=100)

@@ -10,11 +10,14 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
+    from .bdx_feed import BdxFeed  # noqa: F401
+    from .client_bucket import ClientBucket  # noqa: F401
     from .client_website import ClientWebsite  # noqa: F401
     from .go_a4 import GoogleAnalytics4Property  # noqa: F401
     from .go_cloud import GoogleCloudProperty  # noqa: F401
     from .go_ua import GoogleUniversalAnalyticsProperty  # noqa: F401
     from .sharpspring import SharpSpring  # noqa: F401
+    from .user import User  # noqa: F401
     from .website import Website  # noqa: F401
 
 
@@ -24,27 +27,31 @@ class Client(Base):
     __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
-        primary_key=True,
+        index=True,
         unique=True,
         nullable=False,
         default=get_uuid(),
     )
     created_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=func.current_timestamp(),
-        index=True,
         nullable=False,
+        default=func.current_timestamp(),
     )
     updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
-        nullable=False,
     )
-    title: Mapped[str] = mapped_column(String(96), nullable=False)
+    title: Mapped[str] = mapped_column(
+        String(96), nullable=False, unique=True, primary_key=True
+    )
     content: Mapped[str] = mapped_column(String(255), nullable=True)
 
     # relationships
+    users: Mapped[List["User"]] = relationship(
+        "Client", secondary="user_client", back_populates="users"
+    )
     websites: Mapped[List["Website"]] = relationship(
         "Website", secondary="client_website", back_populates="clients"
     )
@@ -59,6 +66,12 @@ class Client(Base):
     )
     sharpspring_accounts: Mapped[List["SharpSpring"]] = relationship(
         "SharpSpring", backref=backref("client", lazy="noload")
+    )
+    buckets: Mapped[List["ClientBucket"]] = relationship(
+        "ClientBucket", backref=backref("client", lazy="noload")
+    )
+    bdx_feeds: Mapped[List["BdxFeed"]] = relationship(
+        "BdxFeed", backref=backref("client", lazy="noload")
     )
 
     def __repr__(self) -> str:  # pragma: no cover

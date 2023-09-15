@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import BLOB, DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -20,6 +20,7 @@ class GCFTSnapHotspotClick(Base):
     __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
+        index=True,
         primary_key=True,
         unique=True,
         nullable=False,
@@ -27,20 +28,19 @@ class GCFTSnapHotspotClick(Base):
     )
     created_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=func.current_timestamp(),
-        index=True,
         nullable=False,
+        default=func.current_timestamp(),
     )
     updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
-        nullable=False,
     )
     session_id: Mapped[UUID4] = mapped_column(UUIDType(binary=False), nullable=False)
-    reporting_id: Mapped[str] = mapped_column(String(255), nullable=True)
+    reporting_id: Mapped[str] = mapped_column(String(32), nullable=True)
     hotspot_type_name: Mapped[str] = mapped_column(String(32), nullable=True)
-    hotspot_content: Mapped[str] = mapped_column(Text, nullable=True)
+    hotspot_content: Mapped[str] = mapped_column(BLOB, nullable=True)
     hotspot_icon_name: Mapped[str] = mapped_column(String(255), nullable=True)
     hotspot_name: Mapped[str] = mapped_column(String(255), nullable=True)
     hotspot_user_icon_name: Mapped[str] = mapped_column(String(255), nullable=True)

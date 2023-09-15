@@ -82,8 +82,8 @@ class WebsiteMapRead(WebsiteMapACL, WebsiteMapCreate, WebsiteMapBase, BaseSchema
 
 
 # tasks
-class WebsiteMapPagesProcessing(WebsiteMapCreate):
-    website_map_pages: List[WebsiteMapPage]
+class WebsiteMapProcessing(WebsiteMapCreate):
+    task_id: str
 
 
 # relationships

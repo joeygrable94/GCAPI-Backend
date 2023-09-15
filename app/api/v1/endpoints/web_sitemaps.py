@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -21,6 +21,8 @@ from app.schemas import (
     WebsiteMapReadRelations,
     WebsiteMapUpdate,
 )
+from app.schemas.website_map import WebsiteMapPagesProcessing, WebsiteMapProcessing
+from app.worker import task_website_sitemap_fetch_pages
 
 router: APIRouter = APIRouter()
 
@@ -154,3 +156,29 @@ async def sitemap_delete(
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
     await sitemap_repo.delete(entry=sitemap)
     return None
+
+
+@router.patch(
+    "/{sitemap_id}",
+    name="website_sitemaps:process_pages",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_website_map_or_404),
+    ],
+    response_model=WebsiteMapReadRelations,
+)
+async def sitemap_process_pages(
+    current_user: CurrentUser,
+    db: AsyncDatabaseSession,
+    sitemap: FetchSitemapOr404,
+) -> WebsiteMapProcessing:
+    website_map_processing_pages: Any = task_website_sitemap_fetch_pages.delay(
+        website_id=sitemap.website_id,
+        sitemap_url=sitemap.url
+    )
+    return WebsiteMapProcessing(
+        url=sitemap.url,
+        website_id=sitemap.website_id,
+        task_id=website_map_processing_pages.id,
+    )

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, func
+from sqlalchemy import BLOB, DateTime, Float, ForeignKey, Integer, func
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -19,6 +19,7 @@ class GoogleSearchConsoleDevice(Base):
     __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
+        index=True,
         primary_key=True,
         unique=True,
         nullable=False,
@@ -26,17 +27,16 @@ class GoogleSearchConsoleDevice(Base):
     )
     created_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=func.current_timestamp(),
-        index=True,
         nullable=False,
+        default=func.current_timestamp(),
     )
     updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
-        nullable=False,
     )
-    keys: Mapped[str] = mapped_column(String(100), nullable=False)
+    keys: Mapped[str] = mapped_column(BLOB, nullable=False)
     clicks: Mapped[int] = mapped_column(Integer, nullable=False)
     impressions: Mapped[int] = mapped_column(Integer, nullable=False)
     ctr: Mapped[float] = mapped_column(Float(20), nullable=False)

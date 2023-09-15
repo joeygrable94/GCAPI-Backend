@@ -2,7 +2,8 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, Text, func
+from sqlalchemy import DateTime, ForeignKey, func
+from sqlalchemy.dialects.mysql import LONGTEXT  # type: ignore
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -20,6 +21,7 @@ class WebsiteKeywordCorpus(Base):
     __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
+        index=True,
         primary_key=True,
         unique=True,
         nullable=False,
@@ -27,22 +29,23 @@ class WebsiteKeywordCorpus(Base):
     )
     created_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=func.current_timestamp(),
-        index=True,
         nullable=False,
+        default=func.current_timestamp(),
     )
     updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
-        nullable=False,
     )
-    corpus: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    rawtext: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    corpus: Mapped[str] = mapped_column(LONGTEXT, nullable=False, default="")
+    rawtext: Mapped[str] = mapped_column(LONGTEXT, nullable=False, default="")
 
     # relationships
     website_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("website.id"), nullable=False
+        UUIDType(binary=False),
+        ForeignKey("website.id"),
+        nullable=False,
     )
     page_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("website_page.id"), nullable=False

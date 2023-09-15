@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, func
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -20,6 +20,7 @@ class WebsitePage(Base):
     __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
+        index=True,
         primary_key=True,
         unique=True,
         nullable=False,
@@ -27,23 +28,24 @@ class WebsitePage(Base):
     )
     created_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=func.current_timestamp(),
-        index=True,
         nullable=False,
+        default=func.current_timestamp(),
     )
     updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
-        nullable=False,
     )
-    url: Mapped[str] = mapped_column(Text, nullable=False, default="/")
+    url: Mapped[str] = mapped_column(
+        String(2048),
+        nullable=False,
+        default="/",
+    )
     status: Mapped[int] = mapped_column(Integer, nullable=False, default=200)
     priority: Mapped[float] = mapped_column(Float, nullable=False, default=0.5)
     last_modified: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
-    change_frequency: Mapped[str] = mapped_column(
-        String(64), nullable=True, default=None
-    )
+    change_frequency: Mapped[str] = mapped_column(String(64), nullable=True)
 
     # relationships
     website_id: Mapped[UUID4] = mapped_column(

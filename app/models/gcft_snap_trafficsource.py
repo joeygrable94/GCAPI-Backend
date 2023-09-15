@@ -2,10 +2,11 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy_utils import UUIDType  # type: ignore
 
+from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
@@ -20,6 +21,7 @@ class GCFTSnapTrafficSource(Base):
     __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
+        index=True,
         primary_key=True,
         unique=True,
         nullable=False,
@@ -27,23 +29,26 @@ class GCFTSnapTrafficSource(Base):
     )
     created_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=func.current_timestamp(),
-        index=True,
         nullable=False,
+        default=func.current_timestamp(),
     )
     updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
-        nullable=False,
     )
     session_id: Mapped[UUID4] = mapped_column(UUIDType(binary=False), nullable=False)
-    referrer: Mapped[str] = mapped_column(Text, nullable=False)
-    utm_campaign: Mapped[str] = mapped_column(String(255), nullable=False)
-    utm_content: Mapped[str] = mapped_column(String(255), nullable=False)
-    utm_medium: Mapped[str] = mapped_column(String(255), nullable=False)
-    utm_source: Mapped[str] = mapped_column(String(255), nullable=False)
-    utm_term: Mapped[str] = mapped_column(String(255), nullable=False)
+    referrer: Mapped[str] = mapped_column(
+        String(2048),
+        nullable=False,
+        default=f"https://{settings.SERVER_NAME}/",
+    )
+    utm_campaign: Mapped[str] = mapped_column(String(255), nullable=True)
+    utm_content: Mapped[str] = mapped_column(String(255), nullable=True)
+    utm_medium: Mapped[str] = mapped_column(String(255), nullable=True)
+    utm_source: Mapped[str] = mapped_column(String(255), nullable=True)
+    utm_term: Mapped[str] = mapped_column(String(255), nullable=True)
     visit_date: Mapped[datetime] = mapped_column(DateTime(), nullable=False)
 
     # relationships

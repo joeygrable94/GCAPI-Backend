@@ -186,8 +186,9 @@ class Settings(BaseSettings):
 
 @lru_cache()
 def get_settings() -> Settings:
-    config_name: str = environ.get("APP_MODE", "development")
-    print(config_name)
+    config_name: str = environ.get(  # noqa: F841
+        "APP_MODE", "development"
+    )  # pragma: no cover  # noqa: E501
     return Settings()
 
 

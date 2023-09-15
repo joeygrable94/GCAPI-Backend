@@ -15,25 +15,25 @@ pytestmark = pytest.mark.asyncio
 
 async def test_save_sitemap_pages(db_session: AsyncSession) -> None:
     website: WebsiteRead = await create_random_website(db_session)
-    sitemap_url: AnyHttpUrl = "https://getcommunity.com/"  # type: ignore
+    sitemap_url: AnyHttpUrl = "https://getcommunity-3.com/"  # type: ignore
     sitemap_pages = [
         WebsiteMapPage(
-            url="https://getcommunity.com/products/",
+            url="https://getcommunity-3.com/products/",
             priority=Decimal("0.8"),
             last_modified=datetime.fromisoformat("2022-10-24 15:00:00+00:00"),
         ),
         WebsiteMapPage(
-            url="https://getcommunity.com/products/gc-video/",
+            url="https://getcommunity-3.com/products/gc-video/",
             priority=Decimal("0.8"),
             last_modified=datetime.fromisoformat("2022-10-24 15:00:00+00:00"),
         ),
         WebsiteMapPage(
-            url="https://getcommunity.com/products/media/",
+            url="https://getcommunity-3.com/products/media/",
             priority=Decimal("0.8"),
             last_modified=datetime.fromisoformat("2022-10-24 15:00:00+00:00"),
         ),
         WebsiteMapPage(
-            url="https://getcommunity.com/products/gc-text/",
+            url="https://getcommunity-3.com/products/gc-text/",
             priority=Decimal("0.8"),
             last_modified=datetime.fromisoformat("2022-10-24 15:00:00+00:00"),
         ),
