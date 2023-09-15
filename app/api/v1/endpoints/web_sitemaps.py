@@ -17,11 +17,11 @@ from app.crud import WebsiteMapRepository, WebsiteRepository
 from app.models import Website, WebsiteMap
 from app.schemas import (
     WebsiteMapCreate,
+    WebsiteMapProcessing,
     WebsiteMapRead,
     WebsiteMapReadRelations,
     WebsiteMapUpdate,
 )
-from app.schemas.website_map import WebsiteMapPagesProcessing, WebsiteMapProcessing
 from app.worker import task_website_sitemap_fetch_pages
 
 router: APIRouter = APIRouter()
@@ -174,8 +174,7 @@ async def sitemap_process_pages(
     sitemap: FetchSitemapOr404,
 ) -> WebsiteMapProcessing:
     website_map_processing_pages: Any = task_website_sitemap_fetch_pages.delay(
-        website_id=sitemap.website_id,
-        sitemap_url=sitemap.url
+        website_id=sitemap.website_id, sitemap_url=sitemap.url
     )
     return WebsiteMapProcessing(
         url=sitemap.url,

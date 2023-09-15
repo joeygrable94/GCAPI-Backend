@@ -14,6 +14,39 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class FileAsset(Base):
+    '''
+    ID (Primary Key): A unique identifier for each image record. You can use an
+        auto-incrementing integer or a UUID as the primary key.
+
+    Name: The name of the file as saved. This can be a user-provided name or a
+        generated one based on the file's properties.
+
+    Extension: The file extension (e.g., .jpg, .png) of the file. This helps in
+        determining the file type and handling it appropriately.
+
+    Size KB: The size of the file file in kilobytes.
+
+    Title: A human readable title or name for the file. This can be the same as
+        the name or a more descriptive title.
+
+    Description (Optional): A description or caption for the file, allowing you
+        to store additional metadata or information about the file.
+
+    Tags (Optional): A column to store tags or keywords associated with the file.
+        This can help with search and categorization.
+
+    Is Private: A flag indicating whether the file is public or private. This can
+        be useful if you want to control access to images.
+
+    User ID: The ID of the user who uploaded the file. This associates the file
+        with a specific user if your application has user accounts.
+
+    Bucket ID: The ID of the bucket where the file is stored. This associates the
+        file with a specific bucket if your application has multiple buckets.
+
+    Client ID: The ID of the client that the file belongs to. This associates the
+        file with a specific client if your application has multiple clients.
+    '''
     __tablename__: str = "file_asset"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}

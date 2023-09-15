@@ -14,11 +14,10 @@ from app.core.logger import logger
 from app.schemas import (
     PageSpeedInsightsDevice,
     WebsiteMapPage,
-    WebsiteMapPagesProcessing,
+    WebsiteMapProcessedResult,
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsProcessing,
 )
-from app.schemas.website_map import WebsiteMapProcessing
 
 celery_app: Celery = create_celery_worker()
 
@@ -53,7 +52,7 @@ def task_speak(
 def task_website_sitemap_fetch_pages(
     website_id: UUID4,
     sitemap_url: AnyHttpUrl,
-) -> WebsiteMapProcessing:
+) -> WebsiteMapProcessedResult:
     logger.info(f"Fetching sitemap pages for website_id {website_id}")
     sitemap: AbstractSitemap = sitemap_tree_for_homepage(sitemap_url)
     sitemap_pages: List[WebsiteMapPage] = []
@@ -63,7 +62,7 @@ def task_website_sitemap_fetch_pages(
                 url=pg.url, priority=pg.priority, last_modified=pg.last_modified
             )
         )
-    return WebsiteMapProcessing(
+    return WebsiteMapProcessedResult(
         url=sitemap.url,
         website_id=website_id,
         website_map_pages=sitemap_pages,

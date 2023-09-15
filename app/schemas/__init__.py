@@ -16,7 +16,8 @@ from .website_keywordcorpus import (
 from .website_map import (
     WebsiteMapCreate,
     WebsiteMapPage,
-    WebsiteMapPagesProcessing,
+    WebsiteMapProcessedResult,
+    WebsiteMapProcessing,
     WebsiteMapRead,
     WebsiteMapReadRelations,
     WebsiteMapUpdate,

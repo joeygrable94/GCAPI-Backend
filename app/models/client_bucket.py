@@ -14,6 +14,12 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class ClientBucket(Base):
+    '''
+    Bucket Name: The name of the AWS S3 bucket where the image is stored. This allows
+        you to identify the specific bucket for retrieval.
+    Object Key: The unique key (path) within the S3 bucket that identifies the image.
+        This should be unique for each image and can include subdirectories if needed.
+    '''
     __tablename__: str = "client_bucket"
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),

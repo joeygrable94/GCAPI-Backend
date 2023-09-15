@@ -86,6 +86,10 @@ class WebsiteMapProcessing(WebsiteMapCreate):
     task_id: str
 
 
+class WebsiteMapProcessedResult(WebsiteMapCreate):
+    website_map_pages: List[WebsiteMapPage]
+
+
 # relationships
 class WebsiteMapReadRelations(WebsiteMapRead):
     pages: Optional[List["WebsitePageRead"]] = []

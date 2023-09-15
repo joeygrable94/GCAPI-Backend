@@ -1,4 +1,3 @@
-from app.core.config import settings  # pragma: no cover
 from app.core.logger import logger  # pragma: no cover
 from app.db.base import Base  # pragma: no cover
 from app.db.session import engine  # pragma: no cover
@@ -23,7 +22,6 @@ async def create_init_data() -> None:  # pragma: no cover
 
 async def build_database() -> None:  # pragma: no cover
     logger.info("Building Database")
-    if settings.DEBUG_MODE:
-        drop_db_tables()
-        create_db_tables()
+    drop_db_tables()
+    create_db_tables()
     logger.info("Database Ready")

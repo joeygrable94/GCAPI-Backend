@@ -5,7 +5,7 @@ import pytest
 from tests.utils.website_maps import generate_mock_sitemap
 
 from app.core.utilities.uuids import get_uuid
-from app.schemas import WebsiteMapPagesProcessing
+from app.schemas import WebsiteMapProcessedResult
 from app.worker import task_website_sitemap_fetch_pages
 
 
@@ -22,7 +22,7 @@ def test_task_website_sitemap_fetch_pages(
     ) as mock_sitemap_tree:
         mock_sitemap_tree.return_value = mock_sitemap
 
-        sitemap_task: WebsiteMapPagesProcessing = task_website_sitemap_fetch_pages(
+        sitemap_task: WebsiteMapProcessedResult = task_website_sitemap_fetch_pages(
             website_id, sitemap_url
         )
         assert sitemap_task.url == sitemap_url

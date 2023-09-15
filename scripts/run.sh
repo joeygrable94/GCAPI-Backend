@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
-# prestart the server
+# Check the DB is connected.
 python prestart.py
 
-# TODO: make run.sh more robust to allow pre-starting of dev, testing, and production environments.
+# Upgrade DB
+echo "Running Backend DB Migrations..."
 alembic upgrade head
 
 # start the server
 python start.py
+
+# Create initial data in DB
+python initial_data.py
