@@ -63,8 +63,8 @@ class Settings(BaseSettings):
 
     # Database
     DB_ECHO_LOG: bool = False if bool(environ.get("APP_DEBUG", True)) else False
-    DATABASE_URI: Union[str, URL] = environ.get("DATABASE_URI", None)
-    ASYNC_DATABASE_URI: Union[str, URL] = environ.get("ASYNC_DATABASE_URI", None)
+    DATABASE_URI: Union[str, URL] = environ.get("DATABASE_URI", "")
+    ASYNC_DATABASE_URI: Union[str, URL] = environ.get("ASYNC_DATABASE_URI", "")
 
     # Redis
     REDIS_CONN_URI: str = environ.get("REDIS_CONN_URI", "redis://localhost:6379")
@@ -118,16 +118,20 @@ class Settings(BaseSettings):
     def assemble_db_connection(
         cls: Any, v: Optional[str], values: Dict[str, Any]
     ) -> Any:  # pragma: no cover
-        if not isinstance(v, str) and not len(v) > 0:
+        if not isinstance(v, str):
             raise ValueError("DATABASE_URI must be a string")  # pragma: no cover
+        if len(v) == 0:
+            raise ValueError("DATABASE_URI must not be empty")
         return v
 
     @validator("ASYNC_DATABASE_URI", pre=True)
     def assemble_async_db_connection(
         cls: Any, v: Optional[str], values: Dict[str, Any]
     ) -> Any:  # pragma: no cover
-        if not isinstance(v, str) and not len(v) > 0:
+        if not isinstance(v, str):
             raise ValueError("ASYNC_DATABASE_URI must be a string")  # pragma: no cover
+        if len(v) == 0:
+            raise ValueError("ASYNC_DATABASE_URI must not be empty")
         return v
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)

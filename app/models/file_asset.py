@@ -14,7 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class FileAsset(Base):
-    '''
+    """
     ID (Primary Key): A unique identifier for each image record. You can use an
         auto-incrementing integer or a UUID as the primary key.
 
@@ -46,7 +46,8 @@ class FileAsset(Base):
 
     Client ID: The ID of the client that the file belongs to. This associates the
         file with a specific client if your application has multiple clients.
-    '''
+    """
+
     __tablename__: str = "file_asset"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
