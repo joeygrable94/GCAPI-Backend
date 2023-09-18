@@ -10,10 +10,10 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .go_a4 import GoogleAnalytics4Property  # noqa: F401
+    from .go_a4 import GoAnalytics4Property  # noqa: F401
 
 
-class GoogleAnalytics4Stream(Base):
+class GoAnalytics4Stream(Base):
     __tablename__: str = "go_a4_stream"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -46,6 +46,6 @@ class GoogleAnalytics4Stream(Base):
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoogleAnalytics4Stream({self.title} \
+        repr_str: str = f"GoAnalytics4Stream({self.title} \
             Stream[{self.stream_id}] for GA4 Property[{self.ga4_id}])"
         return repr_str

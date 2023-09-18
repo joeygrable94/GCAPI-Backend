@@ -10,16 +10,16 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .gcft import GCFT  # noqa: F401
-    from .gcft_snap_activeduration import GCFTSnapActiveDuration  # noqa: F401
-    from .gcft_snap_browserreport import GCFTSnapBrowserReport  # noqa: F401
-    from .gcft_snap_hotspotclick import GCFTSnapHotspotClick  # noqa: F401
-    from .gcft_snap_trafficsource import GCFTSnapTrafficSource  # noqa: F401
-    from .gcft_snap_view import GCFTSnapView  # noqa: F401
-    from .geocoord import GeoCoord  # noqa: F401
+    from .gcft import Gcft  # noqa: F401
+    from .gcft_snap_activeduration import GcftSnapActiveduration  # noqa: F401
+    from .gcft_snap_browserreport import GcftSnapBrowserreport  # noqa: F401
+    from .gcft_snap_hotspotclick import GcftSnapHotspotclick  # noqa: F401
+    from .gcft_snap_trafficsource import GcftSnapTrafficsource  # noqa: F401
+    from .gcft_snap_view import GcftSnapView  # noqa: F401
+    from .geocoord import Geocoord  # noqa: F401
 
 
-class GCFTSnap(Base):
+class GcftSnap(Base):
     __tablename__: str = "gcft_snap"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -57,23 +57,23 @@ class GCFTSnap(Base):
     geocoord_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("geocoord.id"), nullable=False
     )
-    snap_views: Mapped[List["GCFTSnapView"]] = relationship(
-        "GCFTSnapView", backref=backref("gcft_snap", lazy="noload")
+    snap_views: Mapped[List["GcftSnapView"]] = relationship(
+        "GcftSnapView", backref=backref("gcft_snap", lazy="noload")
     )
-    active_durations: Mapped[List["GCFTSnapActiveDuration"]] = relationship(
-        "GCFTSnapActiveDuration", backref=backref("gcft_snap", lazy="noload")
+    active_durations: Mapped[List["GcftSnapActiveduration"]] = relationship(
+        "GcftSnapActiveduration", backref=backref("gcft_snap", lazy="noload")
     )
-    hotspot_clicks: Mapped[List["GCFTSnapHotspotClick"]] = relationship(
-        "GCFTSnapHotspotClick", backref=backref("gcft_snap", lazy="noload")
+    hotspot_clicks: Mapped[List["GcftSnapHotspotclick"]] = relationship(
+        "GcftSnapHotspotclick", backref=backref("gcft_snap", lazy="noload")
     )
-    traffic_sources: Mapped[List["GCFTSnapTrafficSource"]] = relationship(
-        "GCFTSnapTrafficSource", backref=backref("gcft_snap", lazy="noload")
+    traffic_sources: Mapped[List["GcftSnapTrafficsource"]] = relationship(
+        "GcftSnapTrafficsource", backref=backref("gcft_snap", lazy="noload")
     )
-    browser_reports: Mapped[List["GCFTSnapBrowserReport"]] = relationship(
-        "GCFTSnapBrowserReport", backref=backref("gcft_snap", lazy="noload")
+    browser_reports: Mapped[List["GcftSnapBrowserreport"]] = relationship(
+        "GcftSnapBrowserreport", backref=backref("gcft_snap", lazy="noload")
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GCFTSnap({self.snap_name}[{self.snap_slug}], \
+        repr_str: str = f"GcftSnap({self.snap_name}[{self.snap_slug}], \
             Tour[{self.gcft_id}], Coords[{self.geocoord_id}])"
         return repr_str

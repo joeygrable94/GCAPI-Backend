@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, String, func
+from sqlalchemy import DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -12,11 +12,11 @@ from app.db.base_class import Base
 if TYPE_CHECKING:  # pragma: no cover
     from .bdx_feed import BdxFeed  # noqa: F401
     from .client_bucket import ClientBucket  # noqa: F401
-    from .client_website import ClientWebsite  # noqa: F401
-    from .go_a4 import GoogleAnalytics4Property  # noqa: F401
-    from .go_cloud import GoogleCloudProperty  # noqa: F401
-    from .go_ua import GoogleUniversalAnalyticsProperty  # noqa: F401
-    from .sharpspring import SharpSpring  # noqa: F401
+    from .client_report import ClientReport  # noqa: F401
+    from .go_a4 import GoAnalytics4Property  # noqa: F401
+    from .go_cloud import GoCloudProperty  # noqa: F401
+    from .go_ua import GoUniversalAnalyticsProperty  # noqa: F401
+    from .sharpspring import Sharpspring  # noqa: F401
     from .user import User  # noqa: F401
     from .website import Website  # noqa: F401
 
@@ -46,26 +46,29 @@ class Client(Base):
     title: Mapped[str] = mapped_column(
         String(96), nullable=False, unique=True, primary_key=True
     )
-    content: Mapped[str] = mapped_column(String(255), nullable=True)
+    description: Mapped[str] = mapped_column(Text(5000), nullable=True)
 
     # relationships
     users: Mapped[List["User"]] = relationship(
-        "Client", secondary="user_client", back_populates="users"
+        "User", secondary="user_client", back_populates="clients"
     )
     websites: Mapped[List["Website"]] = relationship(
         "Website", secondary="client_website", back_populates="clients"
     )
-    gcloud_accounts: Mapped[List["GoogleCloudProperty"]] = relationship(
-        "GoogleCloudProperty", backref=backref("client", lazy="noload")
+    client_reports: Mapped[List["ClientReport"]] = relationship(
+        "ClientReport", backref=backref("client", lazy="noload")
     )
-    ga4_accounts: Mapped[List["GoogleAnalytics4Property"]] = relationship(
-        "GoogleAnalytics4Property", backref=backref("client", lazy="noload")
+    gcloud_accounts: Mapped[List["GoCloudProperty"]] = relationship(
+        "GoCloudProperty", backref=backref("client", lazy="noload")
     )
-    gua_accounts: Mapped[List["GoogleUniversalAnalyticsProperty"]] = relationship(
-        "GoogleUniversalAnalyticsProperty", backref=backref("client", lazy="noload")
+    ga4_accounts: Mapped[List["GoAnalytics4Property"]] = relationship(
+        "GoAnalytics4Property", backref=backref("client", lazy="noload")
     )
-    sharpspring_accounts: Mapped[List["SharpSpring"]] = relationship(
-        "SharpSpring", backref=backref("client", lazy="noload")
+    gua_accounts: Mapped[List["GoUniversalAnalyticsProperty"]] = relationship(
+        "GoUniversalAnalyticsProperty", backref=backref("client", lazy="noload")
+    )
+    sharpspring_accounts: Mapped[List["Sharpspring"]] = relationship(
+        "Sharpspring", backref=backref("client", lazy="noload")
     )
     buckets: Mapped[List["ClientBucket"]] = relationship(
         "ClientBucket", backref=backref("client", lazy="noload")

@@ -63,6 +63,16 @@ class Settings(BaseSettings):
 
     # Database
     DB_ECHO_LOG: bool = False if bool(environ.get("APP_DEBUG", True)) else False
+    DATABASE_CONNECTOR: str = environ.get("DATABASE_CONNECTOR", "mysql+pymysql")
+    DATABASE_ASYNC_CONNECTOR: str = environ.get(
+        "DATABASE_ASYNC_CONNECTOR", "mysql+aiomysql"
+    )
+    DATABASE_USER: str = environ.get("DATABASE_USER", "root")
+    DATABASE_PASSWORD: str = environ.get("DATABASE_PASSWORD", "root")
+    DATABASE_SERVER: str = environ.get("DATABASE_SERVER", "localhost")
+    DATABASE_PORT: str = environ.get("DATABASE_PORT", "3306")
+    DATABASE_NAME: str = environ.get("DATABASE_NAME", "database")
+    DATABASE_CHARSET: str = environ.get("DATABASE_CHARSET", "UTF8MB4")
     DATABASE_URI: Union[str, URL] = environ.get("DATABASE_URI", "")
     ASYNC_DATABASE_URI: Union[str, URL] = environ.get("ASYNC_DATABASE_URI", "")
 
@@ -104,35 +114,139 @@ class Settings(BaseSettings):
     )
 
     # Limits
-    # Request Size
-    PAYLOAD_LIMIT: int = 2000000
+    # Request Size = 2MB
+    PAYLOAD_LIMIT: int = 2048000
+    PAYLOAD_LIMIT_KB: int = 2000
     # Query
     QUERY_DEFAULT_LIMIT_OFFSET: int = int(environ.get("QUERY_DEFAULT_LIMIT_OFFSET", 0))
     QUERY_DEFAULT_LIMIT_ROWS: int = int(environ.get("QUERY_DEFAULT_LIMIT_ROWS", 100))
     QUERY_MAX_LIMIT_ROWS: int = int(environ.get("QUERY_MAX_LIMIT_ROWS", 1000))
     # Filetypes
-    ACCEPTED_TYPES = ["png", "jpg", "jpeg", "gif", "csv", "xml", "json", "pdf"]
+    ACCEPTED_TYPES = [
+        "webp",
+        "gif",
+        "jpg",
+        "jpeg",
+        "png",
+        "csv",
+        "json",
+        "xml",
+        "html",
+        "md",
+        "txt",
+        "pdf",
+    ]
 
     # Validators
+    @validator("DATABASE_CONNECTOR", pre=True)
+    def validate_database_connector(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("DATABASE_CONNECTOR not set")
+
+    @validator("DATABASE_ASYNC_CONNECTOR", pre=True)
+    def validate_database_async_connector(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("DATABASE_ASYNC_CONNECTOR not set")
+
+    @validator("DATABASE_USER", pre=True)
+    def validate_database_user(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("DATABASE_USER not set")
+
+    @validator("DATABASE_PASSWORD", pre=True)
+    def validate_database_password(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("DATABASE_PASSWORD not set")
+
+    @validator("DATABASE_SERVER", pre=True)
+    def validate_database_server(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("DATABASE_SERVER not set")
+
+    @validator("DATABASE_PORT", pre=True)
+    def validate_database_port(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("DATABASE_PORT not set")
+
+    @validator("DATABASE_NAME", pre=True)
+    def validate_database_name(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("DATABASE_NAME not set")
+
+    @validator("DATABASE_CHARSET", pre=True)
+    def validate_database_charset(
+        cls: Any, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("DATABASE_CHARSET not set")
+
     @validator("DATABASE_URI", pre=True)
     def assemble_db_connection(
         cls: Any, v: Optional[str], values: Dict[str, Any]
     ) -> Any:  # pragma: no cover
-        if not isinstance(v, str):
-            raise ValueError("DATABASE_URI must be a string")  # pragma: no cover
-        if len(v) == 0:
-            raise ValueError("DATABASE_URI must not be empty")
-        return v
+        if values.get("APP_MODE") == "test":
+            return "sqlite:///./test.db"
+        if isinstance(v, str):
+            if len(v) > 0:
+                return "{}://{}".format(values.get("DATABASE_CONNECTOR"), v)
+        return "{}://{}:{}@{}:{}/{}?charset={}".format(
+            values.get("DATABASE_CONNECTOR"),
+            values.get("DATABASE_USER"),
+            values.get("DATABASE_PASSWORD"),
+            values.get("DATABASE_SERVER"),
+            values.get("DATABASE_PORT"),
+            values.get("DATABASE_NAME"),
+            values.get("DATABASE_CHARSET"),
+        )
 
     @validator("ASYNC_DATABASE_URI", pre=True)
     def assemble_async_db_connection(
         cls: Any, v: Optional[str], values: Dict[str, Any]
     ) -> Any:  # pragma: no cover
-        if not isinstance(v, str):
-            raise ValueError("ASYNC_DATABASE_URI must be a string")  # pragma: no cover
-        if len(v) == 0:
-            raise ValueError("ASYNC_DATABASE_URI must not be empty")
-        return v
+        if values.get("APP_MODE") == "test":
+            return "sqlite+aiosqlite:///./test.db"
+        if isinstance(v, str):
+            if len(v) > 0:
+                return "{}://{}".format(values.get("DATABASE_ASYNC_CONNECTOR"), v)
+        return "{}://{}:{}@{}:{}/{}?charset={}".format(
+            values.get("DATABASE_ASYNC_CONNECTOR"),
+            values.get("DATABASE_USER"),
+            values.get("DATABASE_PASSWORD"),
+            values.get("DATABASE_SERVER"),
+            values.get("DATABASE_PORT"),
+            values.get("DATABASE_NAME"),
+            values.get("DATABASE_CHARSET"),
+        )
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(

@@ -4,40 +4,16 @@ from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional, Union
 
-from pydantic import UUID4, BaseModel, validator
+from pydantic import UUID4, BaseModel
 from usp.objects.page import SitemapPageChangeFrequency  # type: ignore
 
 from app.db.acls import WebsitePageACL
+from app.db.validators import ValidateSchemaUrlOptional, ValidateSchemaUrlRequired
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
 
-# validators
-class ValidateWebsitePageUrlRequired(BaseSchema):
-    url: str
-
-    @validator("url")
-    def limits_url(cls, v: str) -> str:  # pragma: no cover
-        if len(v) <= 0:
-            raise ValueError("url text is required")
-        if len(v) > 5000:
-            raise ValueError("url must contain less than 5000 characters")
-        return v
-
-
-class ValidateWebsitePageUrlOptional(BaseSchema):
-    url: Optional[str]
-
-    @validator("url")
-    def limits_url(cls, v: Optional[str]) -> Optional[str]:  # pragma: no cover
-        if v and len(v) <= 0:
-            raise ValueError("url text is required")
-        if v and len(v) > 5000:
-            raise ValueError("url must contain less than 5000 characters")
-        return v
-
-
 # schemas
-class WebsitePageBase(ValidateWebsitePageUrlRequired, BaseSchema):
+class WebsitePageBase(BaseSchema):
     url: str
     status: int
     priority: Union[float, Decimal]
@@ -47,11 +23,17 @@ class WebsitePageBase(ValidateWebsitePageUrlRequired, BaseSchema):
     sitemap_id: Optional[UUID4]
 
 
-class WebsitePageCreate(WebsitePageBase):
-    pass
+class WebsitePageCreate(ValidateSchemaUrlRequired, WebsitePageBase):
+    url: str
+    status: int
+    priority: Union[float, Decimal]
+    last_modified: Optional[datetime]
+    change_frequency: Optional[SitemapPageChangeFrequency]
+    website_id: UUID4
+    sitemap_id: Optional[UUID4]
 
 
-class WebsitePageUpdate(ValidateWebsitePageUrlOptional, BaseSchema):
+class WebsitePageUpdate(ValidateSchemaUrlOptional, BaseSchema):
     url: Optional[str]
     status: Optional[int]
     priority: Optional[Union[float, Decimal]]

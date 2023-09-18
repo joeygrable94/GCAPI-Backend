@@ -10,10 +10,10 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .go_ua import GoogleUniversalAnalyticsProperty  # noqa: F401
+    from .go_ua import GoUniversalAnalyticsProperty  # noqa: F401
 
 
-class GoogleUniversalAnalyticsView(Base):
+class GoUniversalAnalyticsView(Base):
     __tablename__: str = "go_ua_view"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -46,6 +46,6 @@ class GoogleUniversalAnalyticsView(Base):
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoogleUniversalAnalyticsView({self.title} \
+        repr_str: str = f"GoUniversalAnalyticsView({self.title} \
             View[{self.view_id}] for GUA Property[{self.gua_id}])"
         return repr_str

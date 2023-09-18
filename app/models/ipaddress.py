@@ -10,7 +10,7 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .geocoord import GeoCoord  # noqa: F401
+    from .geocoord import Geocoord  # noqa: F401
 
 
 class Ipaddress(Base):
@@ -35,7 +35,7 @@ class Ipaddress(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    address: Mapped[str] = mapped_column(
+    ip: Mapped[str] = mapped_column(
         String(40), nullable=False, unique=True, primary_key=True, default="::1"
     )
     isp: Mapped[str] = mapped_column(
@@ -47,9 +47,9 @@ class Ipaddress(Base):
 
     # relationships
     geocoord_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("geocoord.id"), nullable=False
+        UUIDType(binary=False), ForeignKey("geocoord.id"), nullable=True
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"Ipaddress({self.address} by ISP: {self.isp})"
+        repr_str: str = f"Ipaddress({self.ip} by ISP: {self.isp})"
         return repr_str

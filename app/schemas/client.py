@@ -2,61 +2,37 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from pydantic import UUID4, validator
+from pydantic import UUID4
 
 from app.db.acls import ClientACL
-from app.schemas.base import BaseSchema, BaseSchemaRead
-
-
-# validators
-class ValidateClientTitleRequired(BaseSchema):
-    title: str
-
-    @validator("title")
-    def limits_title(cls, v: str) -> str:
-        if len(v) < 5:
-            raise ValueError("title must contain 5 or more characters")
-        if len(v) > 96:
-            raise ValueError("title must contain less than 96 characters")
-        return v
-
-
-class ValidateClientTitleOptional(BaseSchema):
-    title: Optional[str]
-
-    @validator("title")
-    def limits_title(cls, v: Optional[str]) -> Optional[str]:
-        if v and len(v) < 5:
-            raise ValueError("title must contain 5 or more characters")
-        if v and len(v) > 96:
-            raise ValueError("title must contain less than 96 characters")
-        return v
-
-
-class ValidateClientContentOptional(BaseSchema):
-    content: Optional[str]
-
-    @validator("content")
-    def limits_content(cls, v: Optional[str]) -> Optional[str]:
-        if v and len(v) > 255:
-            raise ValueError("content must contain less than 255 characters")
-        return v
+from app.db.validators import (
+    ValidateSchemaDescriptionOptional,
+    ValidateSchemaTitleOptional,
+    ValidateSchemaTitleRequired,
+)
+from app.schemas.base import BaseSchemaRead
 
 
 # schemas
-class ClientBase(ValidateClientTitleRequired, ValidateClientContentOptional):
+class ClientBase(
+    ValidateSchemaTitleRequired,
+    ValidateSchemaDescriptionOptional,
+):
     title: str
-    content: Optional[str]
+    description: Optional[str]
 
 
 class ClientCreate(ClientBase):
     title: str
-    content: Optional[str]
+    description: Optional[str]
 
 
-class ClientUpdate(ValidateClientTitleOptional, ValidateClientContentOptional):
+class ClientUpdate(
+    ValidateSchemaTitleOptional,
+    ValidateSchemaDescriptionOptional,
+):
     title: Optional[str]
-    content: Optional[str]
+    description: Optional[str]
 
 
 class ClientRead(ClientACL, ClientBase, BaseSchemaRead):
@@ -65,14 +41,20 @@ class ClientRead(ClientACL, ClientBase, BaseSchemaRead):
 
 # relationships
 class ClientReadRelations(ClientRead):
+    users: Optional[List["UserRead"]] = []
     websites: Optional[List["WebsiteRead"]] = []
-    # gcloud_accounts: Optional[List["GoogleCloudPropertyRead"]] = []
-    # ga4_accounts: Optional[List["GoogleAnalytics4PropertyRead"]] = []
-    # gua_accounts: Optional[List["GoogleUniversalAnalyticsPropertyRead"]] = []
-    # sharpspring_accounts: Optional[List["SharpSpringRead"]] = []
+    client_reports: Optional[List["ClientReportRead"]] = []
+    sharpspring_accounts: Optional[List["SharpspringRead"]] = []
+    bdx_feed_accounts: Optional[List["BdxFeedRead"]] = []
+    # gcloud_accounts: Optional[List["GoCloudPropertyRead"]] = []
+    # ga4_accounts: Optional[List["GoAnalytics4PropertyRead"]] = []
+    # gua_accounts: Optional[List["GoUniversalAnalyticsPropertyRead"]] = []
 
 
-# import and update pydantic relationship refs
+from app.schemas.bdx_feed import BdxFeedRead  # noqa: E402
+from app.schemas.client_report import ClientReportRead  # noqa: E402
+from app.schemas.sharpspring import SharpspringRead  # noqa: E402
+from app.schemas.user import UserRead  # noqa: E402
 from app.schemas.website import WebsiteRead  # noqa: E402
 
 ClientReadRelations.update_forward_refs()

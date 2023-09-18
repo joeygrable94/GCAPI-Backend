@@ -11,11 +11,11 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
-    from .go_a4_stream import GoogleAnalytics4Stream  # noqa: F401
+    from .go_a4_stream import GoAnalytics4Stream  # noqa: F401
     from .website import Website  # noqa: F401
 
 
-class GoogleAnalytics4Property(Base):
+class GoAnalytics4Property(Base):
     __tablename__: str = "go_a4"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -50,13 +50,13 @@ class GoogleAnalytics4Property(Base):
     website_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("website.id"), nullable=False
     )
-    ga4_streams: Mapped[List["GoogleAnalytics4Stream"]] = relationship(
-        "GoogleAnalytics4Stream",
+    ga4_streams: Mapped[List["GoAnalytics4Stream"]] = relationship(
+        "GoAnalytics4Stream",
         backref=backref("go_a4", lazy="subquery"),
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoogleAnalytics4Property(\
+        repr_str: str = f"GoAnalytics4Property(\
             MeasurementID[{self.measurement_id}] for \
             Client[{self.client_id}] \
             Website[{self.website_id}])"

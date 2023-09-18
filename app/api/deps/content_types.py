@@ -7,7 +7,7 @@ async def verify_content_length(content_length: int = Header(...)) -> None:
     if content_length > settings.PAYLOAD_LIMIT:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail=f"Files must be smaller than {settings.PAYLOAD_LIMIT}",
+            detail=f"Files must be smaller than {settings.PAYLOAD_LIMIT_KB} KB.",
         )
     return None
 

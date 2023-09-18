@@ -1,16 +1,16 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    pass
+    from .client_report import ClientReport  # noqa: F401
 
 
 class Note(Base):
@@ -38,11 +38,14 @@ class Note(Base):
     title: Mapped[str] = mapped_column(
         String(96), nullable=False, unique=True, primary_key=True
     )
-    content: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(Text(5000), nullable=False)
 
     # relationships
     user_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("user.id"), nullable=False
+    )
+    client_reports: Mapped[List["ClientReport"]] = relationship(
+        "ClientReport", secondary="client_report_note", back_populates="notes"
     )
 
     def __repr__(self) -> str:  # pragma: no cover

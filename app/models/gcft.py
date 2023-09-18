@@ -11,10 +11,10 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
-    from .gcft_snap import GCFTSnap  # noqa: F401
+    from .gcft_snap import GcftSnap  # noqa: F401
 
 
-class GCFT(Base):
+class Gcft(Base):
     __tablename__: str = "gcft"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -45,12 +45,12 @@ class GCFT(Base):
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("client.id"), nullable=False
     )
-    gcft_snaps: Mapped[List["GCFTSnap"]] = relationship(
-        "GCFTSnap", backref=backref("gcft", lazy="subquery")
+    gcft_snaps: Mapped[List["GcftSnap"]] = relationship(
+        "GcftSnap", backref=backref("gcft", lazy="subquery")
     )
 
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (
-            f"GCFT({self.group_name}[{self.group_slug}], Client[{self.client_id}])"
+            f"Gcft({self.group_name}[{self.group_slug}], Client[{self.client_id}])"
         )
         return repr_str

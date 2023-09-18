@@ -30,12 +30,39 @@ from app.models import (
     WebsitePageSpeedInsights,
 )
 
+'''
+async def get_user_or_404(
+    db: AsyncDatabaseSession,
+    user_id: Any | None = None,
+) -> User | None:
+    """Parses uuid/int and fetches user by id."""
+    try:
+        if user_id is None:
+            raise EntityIdNotProvided()
+        parsed_id: UUID = parse_id(user_id)
+        user_repo: UserRepository = UserRepository(session=db)
+        user: User | None = await user_repo.read(entry_id=parsed_id)
+        if user is None:
+            raise UserNotExists()
+        return user
+    except (UserNotExists, InvalidID):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorCode.USER_NOT_FOUND,
+        )
+    except EntityIdNotProvided:
+        return None
+
+
+FetchUserOr404 = Annotated[User, Depends(get_user_or_404)]
+'''
+
 
 async def get_client_or_404(
     db: AsyncDatabaseSession,
     client_id: Any | None = None,
 ) -> Client | None:
-    """Parses uuid/int and fetches website by id."""
+    """Parses uuid/int and fetches client by id."""
     try:
         if client_id is None:
             raise EntityIdNotProvided()
@@ -83,7 +110,7 @@ async def get_website_map_or_404(
     db: AsyncDatabaseSession,
     sitemap_id: Any,
 ) -> WebsiteMap:
-    """Parses uuid/int and fetches sitemap by id."""
+    """Parses uuid/int and fetches website map by id."""
     try:
         parsed_id: UUID = parse_id(sitemap_id)
         sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
@@ -129,7 +156,7 @@ async def get_website_page_psi_or_404(
     db: AsyncDatabaseSession,
     psi_id: Any,
 ) -> WebsitePageSpeedInsights | None:
-    """Parses uuid/int and fetches website page by id."""
+    """Parses uuid/int and fetches website page speed insights by id."""
     try:
         parsed_id: UUID = parse_id(psi_id)
         website_page_psi_repo: WebsitePageSpeedInsightsRepository = (

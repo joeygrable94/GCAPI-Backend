@@ -18,7 +18,6 @@ class UserIpaddress(Base):
     __tablename__: str = "user_ipaddress"
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
-        primary_key=True,
         index=True,
         unique=True,
         nullable=False,
@@ -38,11 +37,13 @@ class UserIpaddress(Base):
     user_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         ForeignKey("user.id"),
+        primary_key=True,
         nullable=False,
     )
     ipaddress_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         ForeignKey("ipaddress.id"),
+        primary_key=True,
         nullable=False,
     )
 

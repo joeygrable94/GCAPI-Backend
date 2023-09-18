@@ -32,9 +32,9 @@ async def test_create_website_as_superuser(
         f"tasks/{task_id}",
         headers=superuser_token_headers,
     )
-    content = response.json()
+    response_json = response.json()
     assert response.status_code == 200
-    assert content == {
+    assert response_json == {
         "task_id": task_id,
         "task_status": "PENDING",
         "task_result": None,
@@ -101,7 +101,7 @@ async def test_create_website_as_superuser_domain_too_short(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "domain must contain 5 or more characters"
+    assert entry["detail"][0]["msg"] == "domain must be 5 characters or more"
 
 
 async def test_create_website_as_superuser_domain_too_long(
@@ -118,7 +118,7 @@ async def test_create_website_as_superuser_domain_too_long(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "domain must contain less than 255 characters"
+    assert entry["detail"][0]["msg"] == "domain must be 255 characters or less"
 
 
 async def test_create_website_as_superuser_domain_is_not_valid_domain(

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import BLOB, INT, Boolean, DateTime, ForeignKey, String, func
+from sqlalchemy import BLOB, Boolean, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -10,7 +10,7 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .geocoord import GeoCoord  # noqa: F401
+    from .geocoord import Geocoord  # noqa: F401
 
 
 class FileAsset(Base):
@@ -70,17 +70,13 @@ class FileAsset(Base):
         onupdate=func.current_timestamp(),
     )
     name: Mapped[str] = mapped_column(
-        String(96),
-        nullable=False,
-        unique=True,
-        primary_key=True,
-        default="default",
+        String(96), nullable=False, unique=True, primary_key=True, default="default"
     )
     extension: Mapped[str] = mapped_column(String(255), nullable=False, default="jpg")
-    size_kb: Mapped[int] = mapped_column(INT, nullable=False, default=0)
-    title: Mapped[str] = mapped_column(String(255), nullable=False)
-    description: Mapped[str] = mapped_column(String(500), nullable=True)
-    tags: Mapped[str] = mapped_column(BLOB, nullable=True)
+    size_kb: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    title: Mapped[str] = mapped_column(String(96), nullable=False)
+    caption: Mapped[str] = mapped_column(String(150), nullable=True)
+    keys: Mapped[str] = mapped_column(BLOB, nullable=True)
     is_private: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     # relationships
@@ -99,8 +95,8 @@ class FileAsset(Base):
     bdx_feed_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("bdx_feed.id"), nullable=True
     )
-    geotag: Mapped["GeoCoord"] = relationship(
-        "GeoCoord", backref=backref("file_asset", lazy="subquery")
+    geotag: Mapped["Geocoord"] = relationship(
+        "Geocoord", backref=backref("file_asset", lazy="subquery")
     )
 
     def __repr__(self) -> str:  # pragma: no cover

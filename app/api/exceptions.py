@@ -23,6 +23,19 @@ class EntityValueRequired(Exception):
     pass
 
 
+# Users
+class UserException(EntityException):
+    pass
+
+
+class UserAlreadyExists(UserException):
+    pass
+
+
+class UserNotExists(UserException):
+    pass
+
+
 # Clients
 class ClientsException(EntityException):
     pass
@@ -33,6 +46,19 @@ class ClientAlreadyExists(ClientsException):
 
 
 class ClientNotExists(ClientsException):
+    pass
+
+
+# Notes
+class NoteException(EntityException):
+    pass
+
+
+class NoteAlreadyExists(NoteException):
+    pass
+
+
+class NoteNotExists(NoteException):
     pass
 
 

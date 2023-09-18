@@ -13,7 +13,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
 
 
-class GoogleCloudProperty(Base):
+class GoCloudProperty(Base):
     __tablename__: str = "go_cloud"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -49,6 +49,6 @@ class GoogleCloudProperty(Base):
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoogleCloudProperty(Project[{self.project_name}] \
+        repr_str: str = f"GoCloudProperty(Project[{self.project_name}] \
             for Client[{self.client_id}])"
         return repr_str

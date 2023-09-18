@@ -2,8 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, func
-from sqlalchemy.dialects.mysql import LONGTEXT  # type: ignore
+from sqlalchemy import DateTime, ForeignKey, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -38,8 +37,8 @@ class WebsiteKeywordCorpus(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    corpus: Mapped[str] = mapped_column(LONGTEXT, nullable=False, default="")
-    rawtext: Mapped[str] = mapped_column(LONGTEXT, nullable=False, default="")
+    corpus: Mapped[str] = mapped_column(Text(4000000000), nullable=False, default="")
+    rawtext: Mapped[str] = mapped_column(Text(4000000000), nullable=False, default="")
 
     # relationships
     website_id: Mapped[UUID4] = mapped_column(

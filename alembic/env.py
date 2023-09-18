@@ -1,6 +1,7 @@
 from __future__ import with_statement
 
-import os, sys
+import os
+import sys
 
 from dotenv import load_dotenv
 
@@ -29,6 +30,7 @@ fileConfig(config.config_file_name)
 # target_metadata = None
 
 from app.db.base import Base  # noqa
+from app.core.config import settings  # noqa
 
 target_metadata = Base.metadata
 
@@ -39,12 +41,10 @@ target_metadata = Base.metadata
 
 # database uri
 def get_url() -> str:
-    dburi: str = os.environ.get("DATABASE_URI", "sqlite:///./app.db")
-    return dburi
+    return settings.DATABASE_URI
 
 def get_async_url() -> str:
-    dburi: str = os.environ.get("ASYNC_DATABASE_URI", "sqlite+aiosqlite:///./app.db")
-    return dburi
+    return settings.ASYNC_DATABASE_URI
 
 
 def run_migrations_offline():

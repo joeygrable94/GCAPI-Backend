@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, func
+from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -12,7 +12,6 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
-    from .geocoord import GeoCoord  # noqa: F401
     from .note import Note  # noqa: F401
 
 
@@ -53,15 +52,10 @@ class User(Base):
     is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
 
     # relationships
-    geocoord_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("geocoord.id"), nullable=False
-    )
     clients: Mapped[List["Client"]] = relationship(
-        "User", secondary="user_client", back_populates="clients"
+        "Client", secondary="user_client", back_populates="users"
     )
-    notes: Mapped[List["Note"]] = relationship(
-        "Note", backref=backref("user", lazy="subquery")
-    )
+    notes: Mapped[List["Note"]] = relationship(backref=backref("user", lazy="subquery"))
 
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"User({self.username})"

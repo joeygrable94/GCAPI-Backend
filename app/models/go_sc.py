@@ -11,17 +11,15 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
-    from .go_sc_country import GoogleSearchConsoleCountry  # noqa: F401
-    from .go_sc_device import GoogleSearchConsoleDevice  # noqa: F401
-    from .go_sc_page import GoogleSearchConsolePage  # noqa: F401
-    from .go_sc_query import GoogleSearchConsoleQuery  # noqa: F401
-    from .go_sc_searchappearance import (  # noqa: F401
-        GoogleSearchConsoleSearchAppearance,
-    )
+    from .go_sc_country import GoSearchConsoleCountry  # noqa: F401
+    from .go_sc_device import GoSearchConsoleDevice  # noqa: F401
+    from .go_sc_page import GoSearchConsolePage  # noqa: F401
+    from .go_sc_query import GoSearchConsoleQuery  # noqa: F401
+    from .go_sc_searchappearance import GoSearchConsoleSearchappearance  # noqa: F401
     from .website import Website  # noqa: F401
 
 
-class GoogleSearchConsoleProperty(Base):
+class GoSearchConsoleProperty(Base):
     __tablename__: str = "go_sc"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -53,30 +51,30 @@ class GoogleSearchConsoleProperty(Base):
     website_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("website.id"), nullable=False
     )
-    gsc_countries: Mapped[List["GoogleSearchConsoleCountry"]] = relationship(
-        "GoogleSearchConsoleCountry",
+    gsc_countries: Mapped[List["GoSearchConsoleCountry"]] = relationship(
+        "GoSearchConsoleCountry",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_devices: Mapped[List["GoogleSearchConsoleDevice"]] = relationship(
-        "GoogleSearchConsoleDevice",
+    gsc_devices: Mapped[List["GoSearchConsoleDevice"]] = relationship(
+        "GoSearchConsoleDevice",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_pages: Mapped[List["GoogleSearchConsolePage"]] = relationship(
-        "GoogleSearchConsolePage",
+    gsc_pages: Mapped[List["GoSearchConsolePage"]] = relationship(
+        "GoSearchConsolePage",
         backref=backref("go_sc", lazy="noload"),
     )
-    gsc_queries: Mapped[List["GoogleSearchConsoleQuery"]] = relationship(
-        "GoogleSearchConsoleQuery",
+    gsc_queries: Mapped[List["GoSearchConsoleQuery"]] = relationship(
+        "GoSearchConsoleQuery",
         backref=backref("go_sc", lazy="noload"),
     )
     gsc_searchappearances: Mapped[
-        List["GoogleSearchConsoleSearchAppearance"]
+        List["GoSearchConsoleSearchappearance"]
     ] = relationship(
-        "GoogleSearchConsoleSearchAppearance",
+        "GoSearchConsoleSearchappearance",
         backref=backref("go_sc", lazy="noload"),
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoogleSearchConsoleProperty({self.title}, \
+        repr_str: str = f"GoSearchConsoleProperty({self.title}, \
             Client[{self.client_id}] Website[{self.website_id}])"
         return repr_str

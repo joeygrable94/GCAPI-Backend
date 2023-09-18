@@ -158,7 +158,7 @@ async def sitemap_delete(
     return None
 
 
-@router.patch(
+@router.post(
     "/{sitemap_id}",
     name="website_sitemaps:process_pages",
     dependencies=[

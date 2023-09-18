@@ -13,7 +13,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
 
 
-class SharpSpring(Base):
+class Sharpspring(Base):
     __tablename__: str = "sharpspring"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -45,5 +45,5 @@ class SharpSpring(Base):
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"SharpSpring(Client[{self.client_id}] since {self.created_on})"
+        repr_str: str = f"Sharpspring(Client[{self.client_id}] since {self.created_on})"
         return repr_str

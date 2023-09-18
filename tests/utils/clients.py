@@ -9,6 +9,8 @@ from app.schemas import ClientCreate, ClientRead
 async def create_random_client(db_session: AsyncSession) -> ClientRead:
     repo: ClientRepository = ClientRepository(session=db_session)
     user: Client = await repo.create(
-        schema=ClientCreate(title=random_lower_string(), content=random_lower_string())
+        schema=ClientCreate(
+            title=random_lower_string(), description=random_lower_string()
+        )
     )
     return ClientRead.from_orm(user)

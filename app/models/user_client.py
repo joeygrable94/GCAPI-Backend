@@ -18,7 +18,6 @@ class UserClient(Base):
     __tablename__: str = "user_client"
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
-        primary_key=True,
         index=True,
         unique=True,
         nullable=False,
@@ -38,11 +37,13 @@ class UserClient(Base):
     user_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         ForeignKey("user.id"),
+        primary_key=True,
         nullable=False,
     )
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         ForeignKey("client.id"),
+        primary_key=True,
         nullable=False,
     )
 

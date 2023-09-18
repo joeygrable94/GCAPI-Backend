@@ -53,8 +53,8 @@ async def test_create_website_page_as_superuser(
         headers=superuser_token_headers,
     )
     assert m_response.status_code == 200
-    m_content = m_response.json()
-    assert m_content == {
+    m_response_json = m_response.json()
+    assert m_response_json == {
         "task_id": str(mobile_task_id),
         "task_status": "PENDING",
         "task_result": None,
@@ -65,8 +65,8 @@ async def test_create_website_page_as_superuser(
         headers=superuser_token_headers,
     )
     assert d_response.status_code == 200
-    d_content = d_response.json()
-    assert d_content == {
+    d_response_json = d_response.json()
+    assert d_response_json == {
         "task_id": str(desktop_task_id),
         "task_status": "PENDING",
         "task_result": None,
@@ -116,7 +116,7 @@ async def test_create_website_page_as_superuser_url_too_short(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "url text is required"
+    assert entry["detail"][0]["msg"] == "url must be 1 characters or more"
 
 
 async def test_create_website_page_as_superuser_url_too_long(
@@ -140,7 +140,7 @@ async def test_create_website_page_as_superuser_url_too_long(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "url must contain less than 5000 characters"
+    assert entry["detail"][0]["msg"] == "url must be 2048 characters or less"
 
 
 async def test_create_website_page_as_superuser_website_not_exists(

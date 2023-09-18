@@ -11,11 +11,11 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .gcft import GCFT  # noqa: F401
-    from .gcft_snap import GCFTSnap  # noqa: F401
+    from .gcft import Gcft  # noqa: F401
+    from .gcft_snap import GcftSnap  # noqa: F401
 
 
-class GCFTSnapTrafficSource(Base):
+class GcftSnapTrafficsource(Base):
     __tablename__: str = "gcft_snap_trafficsource"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -60,6 +60,6 @@ class GCFTSnapTrafficSource(Base):
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GCFTSnapTrafficSource({self.session_id} \
+        repr_str: str = f"GcftSnapTrafficsource({self.session_id} \
             on {self.visit_date}, referrer={self.referrer})"
         return repr_str

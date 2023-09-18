@@ -2,58 +2,25 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from pydantic import UUID4, BaseModel, validator
+from pydantic import UUID4, BaseModel
 
-from app.core.utilities import domain_name_regex
 from app.db.acls import WebsiteACL
-from app.schemas.base import BaseSchema, BaseSchemaRead
-
-
-# validators
-class ValidateWebsiteDomainRequired(BaseSchema):
-    domain: str
-
-    @validator("domain")
-    def limits_domain(cls, v: str) -> str:
-        if len(v) < 5:
-            raise ValueError("domain must contain 5 or more characters")
-        if len(v) > 255:
-            raise ValueError("domain must contain less than 255 characters")
-        if not domain_name_regex.search(v):
-            raise ValueError(
-                "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
-            )
-        return v
-
-
-class ValidateWebsiteDomainOptional(BaseSchema):
-    domain: Optional[str]
-
-    @validator("domain")
-    def limits_domain(cls, v: Optional[str]) -> Optional[str]:
-        if v and len(v) < 5:
-            raise ValueError("domain must contain 5 or more characters")
-        if v and len(v) > 255:
-            raise ValueError("domain must contain less than 255 characters")
-        if v and not domain_name_regex.search(v):
-            raise ValueError(
-                "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
-            )
-        return v
+from app.db.validators import ValidateSchemaDomainOptional, ValidateSchemaDomainRequired
+from app.schemas.base import BaseSchemaRead
 
 
 # schemas
-class WebsiteBase(ValidateWebsiteDomainRequired):
+class WebsiteBase(ValidateSchemaDomainRequired):
     domain: str
     is_secure: bool = False
 
 
-class WebsiteCreate(ValidateWebsiteDomainRequired):
+class WebsiteCreate(ValidateSchemaDomainRequired):
     domain: str
     is_secure: Optional[bool] = False
 
 
-class WebsiteUpdate(ValidateWebsiteDomainOptional):
+class WebsiteUpdate(ValidateSchemaDomainOptional):
     domain: Optional[str] = None
     is_secure: Optional[bool] = None
 

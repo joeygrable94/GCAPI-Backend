@@ -21,8 +21,8 @@ async def test_get_status_task_speak(
     task_id = req_data["speak_task_id"]
     assert task_id
     response = await client.get(f"tasks/{task_id}", headers=superuser_token_headers)
-    content: Dict[str, Any] = response.json()
-    assert content == {
+    response_json: Dict[str, Any] = response.json()
+    assert response_json == {
         "task_id": task_id,
         "task_status": "PENDING",
         "task_result": None,
@@ -30,13 +30,13 @@ async def test_get_status_task_speak(
     assert response.status_code == 200
 
     """
-    while content["task_status"] == "PENDING":
+    while response_json["task_status"] == "PENDING":
         response = await client.get(
             f"tasks/{task_id}",
             headers=superuser_token_headers
         )
-        content = response.json()
-    assert content == {
+        response_json = response.json()
+    assert response_json == {
         "task_id": task_id,
         "task_status": "SUCCESS",
         "task_result": f"I say, {speak_word}!"

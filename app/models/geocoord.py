@@ -13,7 +13,7 @@ if TYPE_CHECKING:  # pragma: no cover
     pass
 
 
-class GeoCoord(Base):
+class Geocoord(Base):
     __tablename__: str = "geocoord"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -42,12 +42,12 @@ class GeoCoord(Base):
             Orange County, California, 92866, United States",
     )
     latitude: Mapped[float] = mapped_column(
-        Float(20), nullable=False, default=33.7870144761984600
+        Float(20), nullable=False, default=33.78701447619846000
     )
     longitude: Mapped[float] = mapped_column(
         Float(20), nullable=False, default=-117.853817613489810
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GeoCoords({self.latitude}, {self.longitude})"
+        repr_str: str = f"Geocoords({self.latitude}, {self.longitude})"
         return repr_str

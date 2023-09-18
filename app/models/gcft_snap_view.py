@@ -10,11 +10,11 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .gcft import GCFT  # noqa: F401
-    from .gcft_snap import GCFTSnap  # noqa: F401
+    from .gcft import Gcft  # noqa: F401
+    from .gcft_snap import GcftSnap  # noqa: F401
 
 
-class GCFTSnapView(Base):
+class GcftSnapView(Base):
     __tablename__: str = "gcft_snap_view"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -49,5 +49,5 @@ class GCFTSnapView(Base):
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GCFTSnapView({self.session_id} on {self.view_date})"
+        repr_str: str = f"GcftSnapView({self.session_id} on {self.view_date})"
         return repr_str

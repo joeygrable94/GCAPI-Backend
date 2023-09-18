@@ -11,11 +11,11 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
-    from .go_ua_view import GoogleUniversalAnalyticsView  # noqa: F401
+    from .go_ua_view import GoUniversalAnalyticsView  # noqa: F401
     from .website import Website  # noqa: F401
 
 
-class GoogleUniversalAnalyticsProperty(Base):
+class GoUniversalAnalyticsProperty(Base):
     __tablename__: str = "go_ua"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -49,12 +49,12 @@ class GoogleUniversalAnalyticsProperty(Base):
     website_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("website.id"), nullable=False
     )
-    gua_views: Mapped[List["GoogleUniversalAnalyticsView"]] = relationship(
-        "GoogleUniversalAnalyticsView",
+    gua_views: Mapped[List["GoUniversalAnalyticsView"]] = relationship(
+        "GoUniversalAnalyticsView",
         backref=backref("go_ua", lazy="subquery"),
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoogleUniversalAnalytics(TrackingID[{self.tracking_id}] \
+        repr_str: str = f"GoUniversalAnalytics(TrackingID[{self.tracking_id}] \
             for Client[{self.client_id}] Website[{self.website_id}])"
         return repr_str

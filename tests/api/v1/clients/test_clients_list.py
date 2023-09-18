@@ -23,10 +23,10 @@ async def test_list_clients_as_superuser(
     assert len(all_entries) > 1
     for entry in all_entries:
         assert "title" in entry
-        assert "content" in entry
+        assert "description" in entry
         if entry["title"] == entry_1.title:
             assert entry["title"] == entry_1.title
-            assert entry["content"] == entry_1.content
+            assert entry["description"] == entry_1.description
         if entry["title"] == entry_2.title:
             assert entry["title"] == entry_2.title
-            assert entry["content"] == entry_2.content
+            assert entry["description"] == entry_2.description

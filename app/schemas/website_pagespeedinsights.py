@@ -2,67 +2,25 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import UUID4, BaseModel, validator
+from pydantic import UUID4, BaseModel
 
 from app.db.acls import WebsitePageSpeedInsightsACL
+from app.db.validators import (
+    ValidateSchemaDeviceRequired,
+    ValidateSchemaPerformanceValueRequired,
+    ValidateSchemaStrategyRequired,
+)
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
 
-class PageSpeedInsightsDevice(BaseModel):
+class PageSpeedInsightsDevice(ValidateSchemaDeviceRequired, BaseModel):
     device: str
-
-    @validator("device")
-    def limits_device(cls, v: str) -> str:
-        if len(v) <= 0:
-            raise ValueError("device value is required")
-        if v.lower() not in ["mobile", "desktop"]:
-            raise ValueError("device value must be mobile or desktop")
-        return v.lower()  # pragma: no cover
-
-
-# validators
-class ValidateWebPSIStrategyRequired(BaseSchema):
-    strategy: str
-
-    @validator("strategy")
-    def limits_strategy(cls, v: str) -> str:
-        if len(v) <= 0:
-            raise ValueError("strategy value is required")
-        if v.lower() not in ["mobile", "desktop"]:
-            raise ValueError("strategy value must be mobile or desktop")
-        return v
-
-
-class ValidateWebPSIValueRequired(BaseSchema):
-    ps_value: str
-
-    @validator("ps_value")
-    def limits_ps_value(cls, v: str) -> str:
-        if len(v) <= 0:
-            raise ValueError("performance score value is required")
-        if len(v) > 4:
-            raise ValueError(
-                "performance score value must contain less than 4 characters"
-            )
-        return v
-
-
-class ValidateWebPSIValueOptional(BaseSchema):
-    ps_value: Optional[str]
-
-    @validator("ps_value")
-    def limits_ps_value(cls, v: Optional[str]) -> Optional[str]:
-        if v and len(v) > 4:
-            raise ValueError(
-                "performance score value must contain less than 4 characters"
-            )
-        return v
 
 
 # schemas
 class WebsitePageSpeedInsightsBase(
-    ValidateWebPSIStrategyRequired,
-    ValidateWebPSIValueRequired,
+    ValidateSchemaStrategyRequired,
+    ValidateSchemaPerformanceValueRequired,
     BaseSchema,
 ):
     strategy: str

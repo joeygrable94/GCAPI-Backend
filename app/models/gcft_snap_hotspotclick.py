@@ -10,11 +10,11 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .gcft import GCFT  # noqa: F401
-    from .gcft_snap import GCFTSnap  # noqa: F401
+    from .gcft import Gcft  # noqa: F401
+    from .gcft_snap import GcftSnap  # noqa: F401
 
 
-class GCFTSnapHotspotClick(Base):
+class GcftSnapHotspotclick(Base):
     __tablename__: str = "gcft_snap_hotspotclick"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -61,6 +61,6 @@ class GCFTSnapHotspotClick(Base):
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GCFTSnapHotspotClick({self.session_id} \
+        repr_str: str = f"GcftSnapHotspotclick({self.session_id} \
             on {self.click_date}, type={self.hotspot_type_name})"
         return repr_str

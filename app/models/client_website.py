@@ -18,7 +18,6 @@ class ClientWebsite(Base):
     __tablename__: str = "client_website"
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
-        primary_key=True,
         index=True,
         unique=True,
         nullable=False,
@@ -38,11 +37,13 @@ class ClientWebsite(Base):
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         ForeignKey("client.id"),
+        primary_key=True,
         nullable=False,
     )
     website_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         ForeignKey("website.id"),
+        primary_key=True,
         nullable=False,
     )
 

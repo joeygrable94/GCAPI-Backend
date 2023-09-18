@@ -29,7 +29,7 @@ async def test_update_client_as_superuser(
     assert 200 <= response.status_code < 300
     assert updated_entry["title"] == title
     assert updated_entry["id"] == str(entry_a.id)
-    assert updated_entry["content"] == entry_a.content
+    assert updated_entry["description"] == entry_a.description
 
 
 async def test_update_client_as_superuser_title_too_short(
@@ -47,9 +47,7 @@ async def test_update_client_as_superuser_title_too_short(
     )
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 422
-    assert (
-        updated_entry["detail"][0]["msg"] == "title must contain 5 or more characters"
-    )
+    assert updated_entry["detail"][0]["msg"] == "title must be 5 characters or more"
 
 
 async def test_update_client_as_superuser_title_too_long(
@@ -67,20 +65,17 @@ async def test_update_client_as_superuser_title_too_long(
     )
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 422
-    assert (
-        updated_entry["detail"][0]["msg"]
-        == "title must contain less than 96 characters"
-    )
+    assert updated_entry["detail"][0]["msg"] == "title must be 96 characters or less"
 
 
-async def test_update_client_as_superuser_content_too_long(
+async def test_update_client_as_superuser_description_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
     superuser_token_headers: Dict[str, str],
 ) -> None:
     entry_a: ClientRead = await create_random_client(db_session)
-    content: str = random_lower_string() * 10
-    data: Dict[str, str] = {"content": content}
+    description: str = random_lower_string() * 160
+    data: Dict[str, str] = {"description": description}
     response: Response = await client.patch(
         f"clients/{entry_a.id}",
         headers=superuser_token_headers,
@@ -90,7 +85,7 @@ async def test_update_client_as_superuser_content_too_long(
     assert response.status_code == 422
     assert (
         updated_entry["detail"][0]["msg"]
-        == "content must contain less than 255 characters"
+        == "description must be 5000 characters or less"
     )
 
 
@@ -103,7 +98,7 @@ async def test_update_client_already_exists(
     entry_b: ClientRead = await create_random_client(db_session)
     update_dict = ClientUpdate(
         title=entry_b.title,
-        content="New Content",
+        description="New description",
     )
     response: Response = await client.patch(
         f"clients/{entry_a.id}",

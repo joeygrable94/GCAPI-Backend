@@ -10,10 +10,10 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .go_sc import GoogleSearchConsoleProperty  # noqa: F401
+    from .go_sc import GoSearchConsoleProperty  # noqa: F401
 
 
-class GoogleSearchConsoleSearchAppearance(Base):
+class GoSearchConsoleSearchappearance(Base):
     __tablename__: str = "go_sc_searchappearance"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -52,6 +52,6 @@ class GoogleSearchConsoleSearchAppearance(Base):
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoogleSearchConsoleSearchAppearance(GSCID[{self.gsc_id}], \
+        repr_str: str = f"GoSearchConsoleSearchappearance(GSCID[{self.gsc_id}], \
             C={self.clicks} I={self.impressions} CTR={self.ctr} Pos={self.position})"
         return repr_str

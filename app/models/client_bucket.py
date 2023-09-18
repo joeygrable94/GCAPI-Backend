@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, String, func
+from sqlalchemy import DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -39,11 +39,13 @@ class ClientBucket(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    description: Mapped[str] = mapped_column(String(255), nullable=True)
     bucket_name: Mapped[str] = mapped_column(
         String(100), nullable=False, primary_key=True
     )
-    object_key: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    object_key: Mapped[str] = mapped_column(String(2048), nullable=False)
+    description: Mapped[str] = mapped_column(Text(5000), nullable=True)
+
+    # relationships
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         ForeignKey("client.id"),
