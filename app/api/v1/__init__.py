@@ -4,6 +4,7 @@ from app.api.v1.endpoints import (
     clients,
     public,
     tasks,
+    users,
     web_pages,
     web_pagespeedinsights,
     web_sitemaps,
@@ -24,6 +25,13 @@ router_v1.include_router(
     tasks.router,
     prefix="/tasks",
     tags=["Tasks"],
+)
+
+# client routes
+router_v1.include_router(
+    users.router,
+    prefix="/users",
+    tags=["Users"],
 )
 
 # client routes

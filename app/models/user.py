@@ -40,6 +40,10 @@ class User(Base):
     auth_id: Mapped[str] = mapped_column(
         String(255), nullable=False, unique=True, primary_key=True
     )
+    email: Mapped[str] = mapped_column(
+        String(320),
+        nullable=False,
+    )
     username: Mapped[str] = mapped_column(
         String(255),
         nullable=False,

@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic import validator
 
 from app.core.config import settings
-from app.core.utilities import domain_name_regex
+from app.core.utilities import domain_name_regex, email_regex
 from app.schemas.base import BaseSchema
 
 DB_FLOAT_MAX_LEN = 20
@@ -119,6 +119,25 @@ def require_string_domain(
     if not domain_name_regex.search(v):
         raise ValueError(
             "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
+        )
+    return v
+
+
+def require_string_email(
+    v: str,
+    name: str = "email",
+    min_len: int = 5,
+    max_len: int = 255,
+) -> str:
+    if min_len == 0 and len(v) <= 0:
+        raise ValueError(f"{name} is required")
+    if len(v) < min_len:
+        raise ValueError(f"{name} must be {min_len} characters or more")
+    if len(v) > max_len:
+        raise ValueError(f"{name} must be {max_len} characters or less")
+    if not email_regex.search(v):
+        raise ValueError(
+            "invalid email provided, please make sure your email fits the following format: example@emaildomain.com"  # noqa: E501
         )
     return v
 
@@ -391,6 +410,19 @@ class ValidateSchemaAuthIdRequired(BaseSchema):
             name="auth_id",
             min_len=0,
             max_len=255,
+        )
+
+
+class ValidateSchemaEmailRequired(BaseSchema):
+    email: str
+
+    @validator("email", pre=True, allow_reuse=True)
+    def validate_email(cls, value: str) -> str:
+        return require_string_email(
+            v=value,
+            name="email",
+            min_len=5,
+            max_len=320,
         )
 
 

@@ -3,10 +3,12 @@ from .get_db import AsyncDatabaseSession, get_async_db
 from .get_db_items import (
     FetchClientOr404,
     FetchSitemapOr404,
+    FetchUserOr404,
     FetchWebPageOr404,
     FetchWebPageSpeedInsightOr404,
     FetchWebsiteOr404,
     get_client_or_404,
+    get_user_or_404,
     get_website_map_or_404,
     get_website_or_404,
     get_website_page_or_404,
@@ -25,6 +27,7 @@ from .get_query import (
     GetClientQueryParams,
     GetClientWebsiteQueryParams,
     GetQueryParams,
+    GetUserQueryParams,
     GetWebsiteMapQueryParams,
     GetWebsitePageQueryParams,
     GetWebsitePageSpeedInsightsQueryParams,
@@ -36,7 +39,7 @@ from .get_query import (
 )
 from .permissions import (
     CurrentUser,
-    Permission,
-    get_active_principals,
+    Permissions,
     get_current_user,
+    get_current_user_permissions,
 )

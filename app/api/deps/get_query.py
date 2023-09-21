@@ -20,6 +20,19 @@ class PageQueryParams:
         self.page = page
 
 
+class UserQueryParams:
+    def __init__(self, user_id: Any | None = None):
+        q_user_id: UUID4 | None
+        try:
+            q_user_id = None if not user_id else parse_id(user_id)
+        except InvalidID:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid user ID",
+            )
+        self.user_id: UUID4 | None = q_user_id
+
+
 class ClientQueryParams:
     def __init__(self, client_id: Any | None = None):
         q_client_id: UUID4 | None
@@ -96,6 +109,19 @@ class CommonQueryParams(PageQueryParams):
 
 
 GetQueryParams = Annotated[CommonQueryParams, Depends()]
+
+
+class CommonUserQueryParams(PageQueryParams, UserQueryParams):
+    def __init__(
+        self,
+        page: int = 1,
+        user_id: Any | None = Query(None),
+    ):
+        PageQueryParams.__init__(self, page)
+        UserQueryParams.__init__(self, user_id)
+
+
+GetUserQueryParams = Annotated[CommonUserQueryParams, Depends()]
 
 
 class CommonClientQueryParams(PageQueryParams, ClientQueryParams):

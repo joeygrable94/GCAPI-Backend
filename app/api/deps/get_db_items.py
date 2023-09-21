@@ -9,6 +9,7 @@ from app.api.exceptions import (
     ClientNotExists,
     EntityIdNotProvided,
     InvalidID,
+    UserNotExists,
     WebsiteMapNotExists,
     WebsiteNotExists,
     WebsitePageNotExists,
@@ -22,15 +23,17 @@ from app.crud import (
     WebsitePageSpeedInsightsRepository,
     WebsiteRepository,
 )
+from app.crud.user import UserRepository
 from app.models import (
     Client,
+    User,
     Website,
     WebsiteMap,
     WebsitePage,
     WebsitePageSpeedInsights,
 )
 
-'''
+
 async def get_user_or_404(
     db: AsyncDatabaseSession,
     user_id: Any | None = None,
@@ -55,7 +58,6 @@ async def get_user_or_404(
 
 
 FetchUserOr404 = Annotated[User, Depends(get_user_or_404)]
-'''
 
 
 async def get_client_or_404(

@@ -1,7 +1,8 @@
 from typing import Any, Optional
 
 from fastapi_mail import FastMail  # type: ignore
-from fastapi_mail import MessageSchema
+from fastapi_mail import MessageSchema, MessageType
+from pydantic import EmailStr
 
 from app.core.config import settings
 from app.core.email import email_conf
@@ -20,11 +21,11 @@ async def _send_email(
             logger.warning(e)
 
 
-async def send_test_email(email_to: str) -> None:
+async def send_test_email(email_to: EmailStr) -> None:
     project_name: str = settings.PROJECT_NAME
     subject: str = f"{project_name} - Test email"
     message: MessageSchema = MessageSchema(
-        subtype="html",
+        subtype=MessageType.html,
         subject=subject,
         recipients=[email_to],
         template_body={"project_name": project_name, "email": email_to},

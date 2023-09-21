@@ -5,9 +5,8 @@ from pydantic import BaseModel
 
 
 class GcftSnapHotspotclickACL(BaseModel):
-    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
-        return [  # pragma: no cover
-            (Allow, "access:admin", "access"),
-            (Allow, "access:client", "access"),
-            (Allow, "access:user", "access"),
-        ]
+    __acl__: List[Tuple[Any, Any, Any]] = [  # pragma: no cover
+        (Allow, "access:admin", "access"),
+        (Allow, "access:client", "access"),
+        (Allow, "access:user", "access"),
+    ]

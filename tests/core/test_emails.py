@@ -1,4 +1,5 @@
 import pytest
+from pydantic import EmailStr
 from tests.utils.email import fast_mail
 from tests.utils.utils import random_email
 
@@ -11,7 +12,7 @@ pytestmark = pytest.mark.asyncio
 async def test_send_test_email() -> None:
     fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
-        username: str = random_email()
+        username: EmailStr = random_email()
         await send_test_email(username)
         assert len(outbox) == 1
         assert outbox[0]["to"] == username

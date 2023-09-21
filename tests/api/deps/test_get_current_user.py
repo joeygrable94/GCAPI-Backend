@@ -6,7 +6,7 @@ from fastapi_auth0 import Auth0User
 from fastapi_permissions import Authenticated  # type: ignore
 from fastapi_permissions import Everyone
 
-from app.api.deps import get_active_principals, get_current_user
+from app.api.deps import get_current_user, get_current_user_permissions
 from app.api.errors import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
 
@@ -56,11 +56,11 @@ async def test_get_current_user(auth: MockAuth) -> None:
     assert exc_info.value.detail == ErrorCode.UNAUTHORIZED
 
 
-async def test_get_active_principals(auth: MockAuth) -> None:
+async def test_get_current_user_permissions(auth: MockAuth) -> None:
     # Test with a valid user
     user: Auth0User | None = await auth.get_user()
     if user:
-        principals: List[Any] = get_active_principals(user)
+        principals: List[Any] = get_current_user_permissions(user)
         assert len(principals) == 4
         assert Everyone in principals
         assert Authenticated in principals
@@ -68,6 +68,6 @@ async def test_get_active_principals(auth: MockAuth) -> None:
         assert "permission2" in principals
 
     # Test with None
-    principals_t2: List[Any] = get_active_principals(None)  # type: ignore
+    principals_t2: List[Any] = get_current_user_permissions(None)  # type: ignore
     assert len(principals_t2) == 1
     assert Everyone in principals_t2

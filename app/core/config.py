@@ -3,7 +3,7 @@ from os import environ
 from typing import Any, Dict, List, Optional, Union
 
 from dotenv import load_dotenv
-from pydantic import BaseSettings, validator
+from pydantic import BaseSettings, EmailStr, validator
 from sqlalchemy import URL
 
 load_dotenv()
@@ -55,10 +55,12 @@ class Settings(BaseSettings):
     AUTH0_DOMAIN: str = environ.get("AUTH0_DOMAIN", "")
     AUTH0_API_AUDIENCE: str = environ.get("AUTH0_API_AUDIENCE", "")
     BASE_PRINCIPALS: Dict[str, str] = {
-        "access:admin": "Administrators control administrative actions.",
-        "access:client": "User is a client with unique access to their data.",
-        "access:user": "User controls things like logging in and out and accessing the api.",  # noqa: E501
-        "access:tests": "Read test data.",
+        "access:admin": "admins have unrestricted access to api actions",
+        "access:manager": "manager have access to most actions administrators have and broaded access to clients' and users' data",  # noqa: E501
+        "access:client": "clients have unique access to client scoped data",
+        "access:employee": "employees may have access to only to specific clients they are granted permission to access",  # noqa: E501
+        "access:user": "users have access to logging in and out and accessing their own data",  # noqa: E501
+        "access:tests": "read test data",
     }
 
     # Database
@@ -83,15 +85,15 @@ class Settings(BaseSettings):
     SENTRY_DSN: Optional[str] = environ.get("SENTRY_DSN", None)
 
     # Mail
-    SMTP_TLS: Union[str, bool] = bool(environ.get("SMTP_TLS", True))
-    SMTP_SSL: Union[str, bool] = bool(environ.get("SMTP_SSL", False))
-    SMTP_PORT: Optional[Union[str, int, None]] = environ.get("SMTP_PORT", 587)
-    SMTP_HOST: Optional[str] = environ.get("SMTP_HOST", "smtp.gmail.com")
+    SMTP_TLS: bool = bool(environ.get("SMTP_TLS", True))
+    SMTP_SSL: bool = bool(environ.get("SMTP_SSL", False))
+    SMTP_PORT: int = int(environ.get("SMTP_PORT", 587))
+    SMTP_HOST: str = environ.get("SMTP_HOST", "smtp.gmail.com")
     SMTP_USER: str = environ.get("SMTP_USER", "")
     SMTP_PASSWORD: str = environ.get("SMTP_PASSWORD", "")
-    EMAILS_ENABLED: Optional[Union[str, bool]] = environ.get("EMAILS_ENABLED", None)
-    EMAILS_FROM_EMAIL: Optional[str] = environ.get(
-        "SMTP_EMAILS_FROM_EMAIL", "noreply@example.com"
+    EMAILS_ENABLED: bool = bool(environ.get("EMAILS_ENABLED", False))
+    EMAILS_FROM_EMAIL: EmailStr = EmailStr(
+        environ.get("SMTP_EMAILS_FROM_EMAIL", "noreply@example.com")
     )
     EMAILS_FROM_NAME: Optional[str] = environ.get("SMTP_EMAILS_FROM_NAME", None)
     EMAIL_TEMPLATES_DIR: str = "./app/templates/email/build"

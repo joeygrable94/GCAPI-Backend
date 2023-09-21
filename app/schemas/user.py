@@ -7,6 +7,7 @@ from pydantic import UUID4
 from app.db.acls import UserACL
 from app.db.validators import (
     ValidateSchemaAuthIdRequired,
+    ValidateSchemaEmailRequired,
     ValidateSchemaUsernameOptional,
     ValidateSchemaUsernameRequired,
 )
@@ -14,19 +15,21 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 
 
 # schemas
-class UserBase(BaseSchema):
+class UserBase(
+    ValidateSchemaAuthIdRequired,
+    ValidateSchemaEmailRequired,
+    ValidateSchemaUsernameRequired,
+    BaseSchema,
+):
+    auth_id: str
+    email: str
+    username: str
+
+
+class UserCreate(UserBase):
     is_active: bool = True
     is_verified: bool = False
     is_superuser: bool = False
-
-
-class UserCreate(
-    ValidateSchemaAuthIdRequired,
-    ValidateSchemaUsernameRequired,
-    UserBase,
-):
-    auth_id: str
-    username: str
 
 
 class UserUpdate(
@@ -41,6 +44,9 @@ class UserUpdate(
 
 class UserRead(UserACL, UserBase, BaseSchemaRead):
     id: UUID4
+
+    def principals(self) -> List[str]:
+        return [f"user:{self.auth_id}"]
 
 
 # relationships
