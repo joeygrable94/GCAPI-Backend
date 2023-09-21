@@ -28,7 +28,7 @@ asgi-correlation-id = "^4.1.0"
 asgi-lifespan = "^2.0.0"
 anyio = {version = "3.6.2", extras = ["trio"]}
 asyncio = "3.4.3"
-aiohttp = "3.8.3"
+aiohttp = "3.8.5"
 aiosqlite = "0.18.0"
 aiomysql = "0.1.1"
 aiofiles = "23.1.0"
