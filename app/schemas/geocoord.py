@@ -34,9 +34,9 @@ class GeocoordUpdate(
     ValidateSchemaLatitudeOptional,
     ValidateSchemaLongitudeOptional,
 ):
-    address: Optional[str]
-    latitude: Optional[float]
-    longitude: Optional[float]
+    address: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 
 class GeocoordRead(GeocoordACL, GeocoordBase, BaseSchemaRead):

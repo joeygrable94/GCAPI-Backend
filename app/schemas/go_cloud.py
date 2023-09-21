@@ -44,11 +44,11 @@ class GoCloudPropertyUpdate(
     ValidateSchemaHashedProjectNumberOptional,
     ValidateSchemaHashedServiceAccountOptional,
 ):
-    project_name: Optional[str]
-    hashed_api_key: Optional[str]
-    hashed_project_id: Optional[str]
-    hashed_project_number: Optional[str]
-    hashed_service_account: Optional[str]
+    project_name: Optional[str] = None
+    hashed_api_key: Optional[str] = None
+    hashed_project_id: Optional[str] = None
+    hashed_project_number: Optional[str] = None
+    hashed_service_account: Optional[str] = None
 
 
 class GoCloudPropertyRead(GoCloudPropertyACL, GoCloudPropertyBase, BaseSchemaRead):

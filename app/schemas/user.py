@@ -36,10 +36,10 @@ class UserUpdate(
     ValidateSchemaUsernameOptional,
     BaseSchema,
 ):
-    username: Optional[str]
-    is_active: Optional[bool]
-    is_verified: Optional[bool]
-    is_superuser: Optional[bool]
+    username: Optional[str] = None
+    is_active: Optional[bool] = None
+    is_verified: Optional[bool] = None
+    is_superuser: Optional[bool] = None
 
 
 class UserRead(UserACL, UserBase, BaseSchemaRead):
@@ -58,4 +58,4 @@ class UserReadRelations(UserRead):
 from app.schemas.client import ClientRead  # noqa: E402
 from app.schemas.note import NoteRead  # noqa: E402
 
-UserReadRelations.update_forward_refs()
+UserReadRelations.model_rebuild()

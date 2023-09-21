@@ -47,7 +47,7 @@ async def website_page_list(
         website_id=query.website_id,
         sitemap_id=query.sitemap_id,
     )
-    return [WebsitePageRead.from_orm(w) for w in website_list] if website_list else []
+    return [WebsitePageRead.model_validate(w) for w in website_list] if website_list else []
 
 
 @router.post(
@@ -96,7 +96,7 @@ async def website_page_create(
             device="desktop",
         )
         return WebsitePageFetchPSIProcessing(
-            page=WebsitePageRead.from_orm(website_page),
+            page=WebsitePageRead.model_validate(website_page),
             mobile_task_id=website_page_psi_mobile.id,
             desktop_task_id=website_page_psi_desktop.id,
         )
@@ -126,7 +126,7 @@ async def website_page_read(
     current_user: CurrentUser,
     website_page: FetchWebPageOr404,
 ) -> WebsitePageRead:
-    return WebsitePageRead.from_orm(website_page)
+    return WebsitePageRead.model_validate(website_page)
 
 
 @router.patch(
@@ -150,9 +150,9 @@ async def website_page_update(
         entry=website_page, schema=website_page_in
     )
     return (
-        WebsitePageRead.from_orm(updated_website_page)
+        WebsitePageRead.model_validate(updated_website_page)
         if updated_website_page
-        else WebsitePageRead.from_orm(website_page)
+        else WebsitePageRead.model_validate(website_page)
     )
 
 

@@ -29,17 +29,17 @@ class GcftSnapBrowserreportBase(
     ValidateSchemaLanguageOptional,
 ):
     session_id: UUID4
-    browser: Optional[str]
-    browser_version: Optional[str]
-    platform: Optional[str]
-    platform_version: Optional[str]
-    desktop: Optional[bool]
-    tablet: Optional[bool]
-    mobile: Optional[bool]
-    city: Optional[str]
-    country: Optional[str]
-    state: Optional[str]
-    language: Optional[str]
+    browser: Optional[str] = None
+    browser_version: Optional[str] = None
+    platform: Optional[str] = None
+    platform_version: Optional[str] = None
+    desktop: Optional[bool] = None
+    tablet: Optional[bool] = None
+    mobile: Optional[bool] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    state: Optional[str] = None
+    language: Optional[str] = None
     visit_date: datetime
     gcft_id: UUID4
     snap_id: UUID4

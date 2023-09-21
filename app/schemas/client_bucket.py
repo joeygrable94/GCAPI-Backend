@@ -21,7 +21,7 @@ class ClientBucketBase(
 ):
     bucket_name: str
     object_key: str
-    description: Optional[str]
+    description: Optional[str] = None
     client_id: UUID4
 
 
@@ -34,10 +34,10 @@ class ClientBucketUpdate(
     ValidateSchemaObjectKeyOptional,
     ValidateSchemaDescriptionOptional,
 ):
-    bucket_name: Optional[str]
-    object_key: Optional[str]
-    description: Optional[str]
-    client_id: Optional[UUID4]
+    bucket_name: Optional[str] = None
+    object_key: Optional[str] = None
+    description: Optional[str] = None
+    client_id: Optional[UUID4] = None
 
 
 class ClientBucketRead(ClientBucketACL, ClientBucketBase, BaseSchemaRead):

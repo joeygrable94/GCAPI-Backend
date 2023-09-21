@@ -53,7 +53,7 @@ class WebsitePageSpeedInsightsBase(
 class WebsitePageSpeedInsightsProcessing(BaseModel):
     website_id: UUID4
     page_id: UUID4
-    insights: Optional[WebsitePageSpeedInsightsBase]
+    insights: Optional[WebsitePageSpeedInsightsBase] = None
 
 
 class WebsitePageSpeedInsightsCreate(WebsitePageSpeedInsightsBase):
@@ -62,8 +62,8 @@ class WebsitePageSpeedInsightsCreate(WebsitePageSpeedInsightsBase):
 
 
 class WebsitePageSpeedInsightsUpdate(BaseSchema):
-    page_id: Optional[UUID4]
-    website_id: Optional[UUID4]
+    page_id: Optional[UUID4] = None
+    website_id: Optional[UUID4] = None
 
 
 class WebsitePageSpeedInsightsRead(

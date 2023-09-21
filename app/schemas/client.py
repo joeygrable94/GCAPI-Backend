@@ -19,20 +19,20 @@ class ClientBase(
     ValidateSchemaDescriptionOptional,
 ):
     title: str
-    description: Optional[str]
+    description: Optional[str] = None
 
 
 class ClientCreate(ClientBase):
     title: str
-    description: Optional[str]
+    description: Optional[str] = None
 
 
 class ClientUpdate(
     ValidateSchemaTitleOptional,
     ValidateSchemaDescriptionOptional,
 ):
-    title: Optional[str]
-    description: Optional[str]
+    title: Optional[str] = None
+    description: Optional[str] = None
 
 
 class ClientRead(ClientACL, ClientBase, BaseSchemaRead):
@@ -57,4 +57,4 @@ from app.schemas.sharpspring import SharpspringRead  # noqa: E402
 from app.schemas.user import UserRead  # noqa: E402
 from app.schemas.website import WebsiteRead  # noqa: E402
 
-ClientReadRelations.update_forward_refs()
+ClientReadRelations.model_rebuild()

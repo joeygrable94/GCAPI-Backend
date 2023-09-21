@@ -16,17 +16,17 @@ from app.schemas.base import BaseSchemaRead
 # schemas
 class NoteBase(ValidateSchemaTitleRequired, ValidateSchemaDescriptionOptional):
     title: str
-    description: Optional[str]
+    description: Optional[str] = None
 
 
 class NoteCreate(NoteBase):
     title: str
-    description: Optional[str]
+    description: Optional[str] = None
 
 
 class NoteUpdate(ValidateSchemaTitleOptional, ValidateSchemaDescriptionOptional):
-    title: Optional[str]
-    description: Optional[str]
+    title: Optional[str] = None
+    description: Optional[str] = None
 
 
 class NoteRead(NoteACL, NoteBase, BaseSchemaRead):
@@ -40,4 +40,4 @@ class NoteReadRelations(NoteRead):
 
 from app.schemas.client_report import ClientReportRead  # noqa: E402
 
-NoteReadRelations.update_forward_refs()
+NoteReadRelations.model_rebuild()

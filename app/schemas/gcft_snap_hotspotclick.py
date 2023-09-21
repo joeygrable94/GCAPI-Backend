@@ -36,16 +36,16 @@ class GcftSnapHotspotclickBase(
 ):
     session_id: UUID4
     reporting_id: str
-    hotspot_type_name: Optional[str]
-    hotspot_content: Optional[str]
-    hotspot_icon_name: Optional[str]
-    hotspot_name: Optional[str]
-    hotspot_user_icon_name: Optional[str]
-    linked_snap_name: Optional[str]
-    snap_file_name: Optional[str]
-    icon_color: Optional[str]
-    bg_color: Optional[str]
-    text_color: Optional[str]
+    hotspot_type_name: Optional[str] = None
+    hotspot_content: Optional[str] = None
+    hotspot_icon_name: Optional[str] = None
+    hotspot_name: Optional[str] = None
+    hotspot_user_icon_name: Optional[str] = None
+    linked_snap_name: Optional[str] = None
+    snap_file_name: Optional[str] = None
+    icon_color: Optional[str] = None
+    bg_color: Optional[str] = None
+    text_color: Optional[str] = None
     hotspot_update_date: datetime
     click_date: datetime
     gcft_id: UUID4

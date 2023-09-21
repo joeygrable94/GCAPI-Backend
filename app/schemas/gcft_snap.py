@@ -37,11 +37,11 @@ class GcftSnapUpdate(
     ValidateSchemaSnapNameOptional,
     ValidateSchemaAltitudeOptional,
 ):
-    snap_name: Optional[str]
-    altitude: Optional[int]
-    gcft_id: Optional[UUID4]
-    image_id: Optional[UUID4]
-    geocoord_id: Optional[UUID4]
+    snap_name: Optional[str] = None
+    altitude: Optional[int] = None
+    gcft_id: Optional[UUID4] = None
+    image_id: Optional[UUID4] = None
+    geocoord_id: Optional[UUID4] = None
 
 
 class GcftSnapRead(GcftSnapACL, GcftSnapBase, BaseSchemaRead):
@@ -50,11 +50,11 @@ class GcftSnapRead(GcftSnapACL, GcftSnapBase, BaseSchemaRead):
 
 # relationships
 class GcftSnapReadRelations(GcftSnapRead):
-    snap_views: Optional[List["GcftSnapViewRead"]]
-    active_durations: Optional[List["GcftSnapActivedurationRead"]]
-    hotspot_clicks: Optional[List["GcftSnapHotspotclickRead"]]
-    traffic_sources: Optional[List["GcftSnapTrafficsourceRead"]]
-    browser_reports: Optional[List["GcftSnapBrowserreportRead"]]
+    snap_views: Optional[List["GcftSnapViewRead"]] = None
+    active_durations: Optional[List["GcftSnapActivedurationRead"]] = None
+    hotspot_clicks: Optional[List["GcftSnapHotspotclickRead"]] = None
+    traffic_sources: Optional[List["GcftSnapTrafficsourceRead"]] = None
+    browser_reports: Optional[List["GcftSnapBrowserreportRead"]] = None
 
 
 from app.schemas.gcft_snap_activeduration import (  # noqa: E402, E501
@@ -69,4 +69,4 @@ from app.schemas.gcft_snap_trafficsource import (  # noqa: E402, E501
 )
 from app.schemas.gcft_snap_view import GcftSnapViewRead  # noqa: E402
 
-GcftSnapReadRelations.update_forward_refs()
+GcftSnapReadRelations.model_rebuild()

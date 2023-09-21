@@ -1,13 +1,14 @@
 from datetime import datetime
 
-from pydantic import UUID4, BaseConfig, BaseModel
+from pydantic import UUID4, BaseModel, ConfigDict
 
 
 class BaseSchema(BaseModel):
-    class Config(BaseConfig):
-        allow_population_by_field_name: bool = True
-        orm_mode: bool = True
-        use_enum_values: bool = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        from_attributes=True,
+        use_enum_values=True,
+    )
 
 
 class BaseSchemaRead(BaseSchema):

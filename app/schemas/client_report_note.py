@@ -17,8 +17,8 @@ class ClientReportNoteCreate(ClientReportNoteBase):
 
 
 class ClientReportNoteUpdate(ClientReportNoteBase):
-    client_report_id: Optional[UUID4]
-    note_id: Optional[UUID4]
+    client_report_id: Optional[UUID4] = None
+    note_id: Optional[UUID4] = None
 
 
 class ClientReportNoteRead(ClientReportNoteACL, ClientReportNoteBase, BaseSchemaRead):

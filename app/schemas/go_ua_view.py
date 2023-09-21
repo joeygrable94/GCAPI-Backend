@@ -30,7 +30,7 @@ class GoUniversalAnalyticsViewCreate(GoAnalytics4ViewBase):
 class GoUniversalAnalyticsViewUpdate(
     ValidateSchemaTitleOptional,
 ):
-    title: Optional[str]
+    title: Optional[str] = None
 
 
 class GoUniversalAnalyticsViewRead(

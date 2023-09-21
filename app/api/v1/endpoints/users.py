@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.deps import AsyncDatabaseSession, CurrentUser, get_async_db
-from app.api.deps.permissions import get_current_user, get_current_user_authorization
+from app.api.deps.permissions import get_current_user
 
 # from app.api.openapi import users_read_responses
 from app.core.auth import auth
@@ -29,12 +29,11 @@ async def users_current(
 ) -> UserRead | None:
     users_repo: UserRepository = UserRepository(session=db)
     user: User | None = await users_repo.read_by(
-        field_name="auth_id",
-        field_value=current_user.id
+        field_name="auth_id", field_value=current_user.id
     )
     if not user:
         is_admin: bool = False
-        if "access:admin" in current_user.permissions:
+        if current_user.permissions and "access:admin" in current_user.permissions:
             is_admin = True
         user = await users_repo.create(
             UserCreate(
@@ -43,10 +42,10 @@ async def users_current(
                 username=current_user.email,
                 is_superuser=is_admin,
                 is_verified=False,
-                is_active=True
+                is_active=True,
             )
         )
-    return UserRead.from_orm(user)
+    return UserRead.model_validate(user)
 
 
 """
@@ -67,7 +66,7 @@ async def users_list(
     # can_access = get_current_user_authorization(current_user, "access", UserRead)
     users_repo: UserRepository = UserRepository(session=db)
     users: List[User] | List[None] | None = await users_repo.list(page=query.page)
-    return [UserRead.from_orm(c) for c in users] if users else []
+    return [UserRead.model_validate(c) for c in users] if users else []
 
 
 @router.post(
@@ -86,7 +85,7 @@ async def users_create(
 ) -> UserRead:
     try:
         users_repo: UserRepository = UserRepository(session=db)
-        data: Dict = user_in.dict()
+        data: Dict = user_in.model_dump()
         check_title: str | None = data.get("title")
         if check_title:
             a_user: User | None = await users_repo.read_by(
@@ -96,7 +95,7 @@ async def users_create(
             if a_user:
                 raise UserAlreadyExists()
         new_user: User = await users_repo.create(user_in)
-        return UserRead.from_orm(new_user)
+        return UserRead.model_validate(new_user)
     except UserAlreadyExists:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=ErrorCode.CLIENT_EXISTS
@@ -119,7 +118,7 @@ async def users_read(
     db: AsyncDatabaseSession,
     user: FetchUserOr404,
 ) -> UserRead:
-    return UserRead.from_orm(user)
+    return UserRead.model_validate(user)
 
 
 @router.patch(
@@ -150,9 +149,9 @@ async def users_update(
             entry=user, schema=user_in
         )
         return (
-            UserRead.from_orm(updated_user)
+            UserRead.model_validate(updated_user)
             if updated_user
-            else UserRead.from_orm(user)
+            else UserRead.model_validate(user)
         )
     except UserAlreadyExists:
         raise HTTPException(

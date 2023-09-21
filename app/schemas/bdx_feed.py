@@ -37,9 +37,9 @@ class BdxFeedUpdate(
     ValidateSchemaPasswordOptional,
     ValidateSchemaServerhostOptional,
 ):
-    username: Optional[str]
-    password: Optional[str]
-    serverhost: Optional[str]
+    username: Optional[str] = None
+    password: Optional[str] = None
+    serverhost: Optional[str] = None
 
 
 class BdxFeedRead(BdxFeedACL, BdxFeedBase, BaseSchemaRead):

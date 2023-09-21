@@ -28,7 +28,7 @@ class GoAnalytics4StreamCreate(GoAnalytics4StreamBase):
 class GoAnalytics4StreamUpdate(
     ValidateSchemaTitleOptional,
 ):
-    title: Optional[str]
+    title: Optional[str] = None
 
 
 class GoAnalytics4StreamRead(

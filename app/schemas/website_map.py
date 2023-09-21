@@ -50,7 +50,7 @@ class WebsiteMapUpdate(
     ValidateSchemaUrlOptional,
     WebsiteMapBase,
 ):
-    url: Optional[str]
+    url: Optional[str] = None
 
 
 class WebsiteMapRead(WebsiteMapACL, WebsiteMapCreate, WebsiteMapBase, BaseSchemaRead):
@@ -74,4 +74,4 @@ class WebsiteMapReadRelations(WebsiteMapRead):
 # import and update pydantic relationship refs
 from app.schemas.website_page import WebsitePageRead  # noqa: E402
 
-WebsiteMapReadRelations.update_forward_refs()
+WebsiteMapReadRelations.model_rebuild()

@@ -25,9 +25,9 @@ class GoSearchConsolePropertyCreate(GoSearchConsolePropertyBase):
 class GoSearchConsolePropertyUpdate(
     ValidateSchemaTitleOptional,
 ):
-    title: Optional[str]
-    client_id: Optional[UUID4]
-    website_id: Optional[UUID4]
+    title: Optional[str] = None
+    client_id: Optional[UUID4] = None
+    website_id: Optional[UUID4] = None
 
 
 class GoSearchConsolePropertyRead(
@@ -55,4 +55,4 @@ from app.schemas.go_sc_searchappearance import (  # noqa: E402
     GoSearchConsoleSearchappearanceRead,
 )
 
-GoSearchConsolePropertyReadRelations.update_forward_refs()
+GoSearchConsolePropertyReadRelations.model_rebuild()

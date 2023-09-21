@@ -25,8 +25,8 @@ class ClientReportBase(
 ):
     title: str
     url: str
-    description: Optional[str]
-    keys: Optional[str]
+    description: Optional[str] = None
+    keys: Optional[str] = None
     client_id: UUID4
 
 
@@ -40,11 +40,11 @@ class ClientReportUpdate(
     ValidateSchemaDescriptionOptional,
     ValidateSchemaKeysOptional,
 ):
-    title: Optional[str]
-    url: Optional[str]
-    description: Optional[str]
-    keys: Optional[str]
-    client_id: Optional[UUID4]
+    title: Optional[str] = None
+    url: Optional[str] = None
+    description: Optional[str] = None
+    keys: Optional[str] = None
+    client_id: Optional[UUID4] = None
 
 
 class ClientReportRead(ClientReportACL, ClientReportBase, BaseSchemaRead):
@@ -58,4 +58,4 @@ class ClientReportReadRelations(ClientReportRead):
 
 from app.schemas.note import NoteRead  # noqa: E402
 
-ClientReportReadRelations.update_forward_refs()
+ClientReportReadRelations.model_rebuild()

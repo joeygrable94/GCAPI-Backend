@@ -47,7 +47,7 @@ async def test_update_client_as_superuser_title_too_short(
     )
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 422
-    assert updated_entry["detail"][0]["msg"] == "title must be 5 characters or more"
+    assert updated_entry["detail"][0]["msg"] == "Value error, title must be 5 characters or more"
 
 
 async def test_update_client_as_superuser_title_too_long(
@@ -65,7 +65,7 @@ async def test_update_client_as_superuser_title_too_long(
     )
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 422
-    assert updated_entry["detail"][0]["msg"] == "title must be 96 characters or less"
+    assert updated_entry["detail"][0]["msg"] == "Value error, title must be 96 characters or less"
 
 
 async def test_update_client_as_superuser_description_too_long(
@@ -85,7 +85,7 @@ async def test_update_client_as_superuser_description_too_long(
     assert response.status_code == 422
     assert (
         updated_entry["detail"][0]["msg"]
-        == "description must be 5000 characters or less"
+        == "Value error, description must be 5000 characters or less"
     )
 
 
@@ -103,7 +103,7 @@ async def test_update_client_already_exists(
     response: Response = await client.patch(
         f"clients/{entry_a.id}",
         headers=superuser_token_headers,
-        json=update_dict.dict(),
+        json=update_dict.model_dump(),
     )
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 400

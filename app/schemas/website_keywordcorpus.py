@@ -31,10 +31,10 @@ class WebsiteKeywordCorpusCreate(WebsiteKeywordCorpusBase):
 class WebsiteKeywordCorpusUpdate(
     ValidateSchemaCorpusOptional, ValidateSchemaRawTextOptional, BaseSchema
 ):
-    corpus: Optional[str]
-    rawtext: Optional[str]
-    website_id: Optional[UUID4]
-    page_id: Optional[UUID4]
+    corpus: Optional[str] = None
+    rawtext: Optional[str] = None
+    website_id: Optional[UUID4] = None
+    page_id: Optional[UUID4] = None
 
 
 class WebsiteKeywordCorpusRead(

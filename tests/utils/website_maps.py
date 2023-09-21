@@ -42,4 +42,4 @@ async def create_random_website_map(
     website_map: WebsiteMap = await repo.create(
         schema=WebsiteMapCreate(url=domain, website_id=website_id)
     )
-    return WebsiteMapRead.from_orm(website_map)
+    return WebsiteMapRead.model_validate(website_map)

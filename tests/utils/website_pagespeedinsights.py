@@ -89,4 +89,4 @@ async def create_random_website_page_speed_insights(
             tbt_unit="milliseconds",
         )
     )
-    return WebsitePageSpeedInsightsRead.from_orm(web_page_psi)
+    return WebsitePageSpeedInsightsRead.model_validate(web_page_psi)

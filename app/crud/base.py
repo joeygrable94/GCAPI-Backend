@@ -59,7 +59,7 @@ class BaseRepository(
         return await self._list(skip=skip, limit=limit)
 
     async def create(self, schema: Union[SCHEMA_CREATE, Any]) -> TABLE:
-        entry: Any = self._table(id=self.gen_uuid(), **schema.dict())  # type: ignore
+        entry: Any = self._table(id=self.gen_uuid(), **schema.model_dump())  # type: ignore
         self._db.add(entry)
         await self._db.commit()
         await self._db.refresh(entry)
@@ -85,7 +85,7 @@ class BaseRepository(
         entry: TABLE,
         schema: Union[SCHEMA_UPDATE, Any],
     ) -> Optional[TABLE]:
-        for k, v in schema.dict(exclude_unset=True, exclude_none=True).items():
+        for k, v in schema.model_dump(exclude_unset=True, exclude_none=True).items():
             setattr(entry, k, v)
         await self._db.commit()
         await self._db.refresh(entry)  # pragma: no cover

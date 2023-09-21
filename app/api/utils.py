@@ -71,7 +71,7 @@ async def save_sitemap_pages(
     session: AsyncSession
     sitemap: WebsiteMap | None
     async with get_db_session() as session:
-        parsed_url = urlparse(sitemap_url)
+        parsed_url = urlparse(url=str(sitemap_url))
         sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session)
         sitemap = await sitemap_repo.exists_by_two(
             field_name_a="url",

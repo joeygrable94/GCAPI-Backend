@@ -31,8 +31,8 @@ class SharpspringUpdate(
     ValidateSchemaHashedApiKeyOptional,
     ValidateSchemaHashedSecretKeyOptional,
 ):
-    hashed_api_key: Optional[str]
-    hashed_secret_key: Optional[str]
+    hashed_api_key: Optional[str] = None
+    hashed_secret_key: Optional[str] = None
 
 
 class SharpspringRead(SharpspringACL, SharpspringBase, BaseSchemaRead):

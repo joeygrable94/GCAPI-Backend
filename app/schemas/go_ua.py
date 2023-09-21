@@ -31,9 +31,9 @@ class GoUniversalAnalyticsPropertyCreate(GoUniversalAnalytics4PropertyBase):
 class GoUniversalAnalyticsPropertyUpdate(
     ValidateSchemaTitleOptional,
 ):
-    title: Optional[str]
-    client_id: Optional[UUID4]
-    website_id: Optional[UUID4]
+    title: Optional[str] = None
+    client_id: Optional[UUID4] = None
+    website_id: Optional[UUID4] = None
 
 
 class GoUniversalAnalyticsPropertyRead(
@@ -51,4 +51,4 @@ class GoUniversalAnalyticsPropertyReadRelations(GoUniversalAnalyticsPropertyRead
 
 from app.schemas.go_ua_view import GoUniversalAnalyticsViewRead  # noqa: E402
 
-GoUniversalAnalyticsPropertyReadRelations.update_forward_refs()
+GoUniversalAnalyticsPropertyReadRelations.model_rebuild()

@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import validator
+from pydantic import field_validator
 
 from app.core.config import settings
 from app.core.utilities import domain_name_regex, email_regex
@@ -211,13 +211,14 @@ class ValidateSchemaExtensionRequired(BaseSchema):
 
 
 class ValidateSchemaExtensionOptional(BaseSchema):
-    extension: Optional[ValidFileExtensionEnum]
+    extension: Optional[ValidFileExtensionEnum] = None
 
 
 class ValidateSchemaTitleRequired(BaseSchema):
     title: str
 
-    @validator("title", pre=True, allow_reuse=True)
+    @field_validator("title", mode="before")
+    @classmethod
     def validate_title(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -228,9 +229,10 @@ class ValidateSchemaTitleRequired(BaseSchema):
 
 
 class ValidateSchemaTitleOptional(BaseSchema):
-    title: Optional[str]
+    title: Optional[str] = None
 
-    @validator("title", pre=True, allow_reuse=True)
+    @field_validator("title", mode="before")
+    @classmethod
     def validate_title(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -241,9 +243,10 @@ class ValidateSchemaTitleOptional(BaseSchema):
 
 
 class ValidateSchemaDescriptionOptional(BaseSchema):
-    description: Optional[str]
+    description: Optional[str] = None
 
-    @validator("description", pre=True, allow_reuse=True)
+    @field_validator("description", mode="before")
+    @classmethod
     def validate_description(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -255,7 +258,8 @@ class ValidateSchemaDescriptionOptional(BaseSchema):
 class ValidateSchemaDomainRequired(BaseSchema):
     domain: str
 
-    @validator("domain", pre=True, allow_reuse=True)
+    @field_validator("domain", mode="before")
+    @classmethod
     def validate_domain(cls, value: str) -> str:
         return require_string_domain(
             v=value,
@@ -263,9 +267,10 @@ class ValidateSchemaDomainRequired(BaseSchema):
 
 
 class ValidateSchemaDomainOptional(BaseSchema):
-    domain: Optional[str]
+    domain: Optional[str] = None
 
-    @validator("domain", pre=True, allow_reuse=True)
+    @field_validator("domain", mode="before")
+    @classmethod
     def validate_domain(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_domain(
             v=value,
@@ -275,7 +280,8 @@ class ValidateSchemaDomainOptional(BaseSchema):
 class ValidateSchemaCorpusRequired(BaseSchema):
     corpus: str
 
-    @validator("corpus", pre=True, allow_reuse=True)
+    @field_validator("corpus", mode="before")
+    @classmethod
     def validate_corpus(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -286,9 +292,10 @@ class ValidateSchemaCorpusRequired(BaseSchema):
 
 
 class ValidateSchemaCorpusOptional(BaseSchema):
-    corpus: Optional[str]
+    corpus: Optional[str] = None
 
-    @validator("corpus", pre=True, allow_reuse=True)
+    @field_validator("corpus", mode="before")
+    @classmethod
     def validate_corpus(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -301,7 +308,8 @@ class ValidateSchemaCorpusOptional(BaseSchema):
 class ValidateSchemaRawTextRequired(BaseSchema):
     rawtext: str
 
-    @validator("rawtext", pre=True, allow_reuse=True)
+    @field_validator("rawtext", mode="before")
+    @classmethod
     def validate_rawtext(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -312,9 +320,10 @@ class ValidateSchemaRawTextRequired(BaseSchema):
 
 
 class ValidateSchemaRawTextOptional(BaseSchema):
-    rawtext: Optional[str]
+    rawtext: Optional[str] = None
 
-    @validator("rawtext", pre=True, allow_reuse=True)
+    @field_validator("rawtext", mode="before")
+    @classmethod
     def validate_rawtext(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -327,7 +336,8 @@ class ValidateSchemaRawTextOptional(BaseSchema):
 class ValidateSchemaUrlRequired(BaseSchema):
     url: str
 
-    @validator("url", pre=True, allow_reuse=True)
+    @field_validator("url", mode="before")
+    @classmethod
     def validate_url(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -338,9 +348,10 @@ class ValidateSchemaUrlRequired(BaseSchema):
 
 
 class ValidateSchemaUrlOptional(BaseSchema):
-    url: Optional[str]
+    url: Optional[str] = None
 
-    @validator("url", pre=True, allow_reuse=True)
+    @field_validator("url", mode="before")
+    @classmethod
     def validate_url(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -353,7 +364,8 @@ class ValidateSchemaUrlOptional(BaseSchema):
 class ValidateSchemaDeviceRequired(BaseSchema):
     device: str
 
-    @validator("device", pre=True, allow_reuse=True)
+    @field_validator("device", mode="before")
+    @classmethod
     def validate_device(cls, value: str) -> str:
         return required_string_in_list(
             v=value,
@@ -365,7 +377,8 @@ class ValidateSchemaDeviceRequired(BaseSchema):
 class ValidateSchemaStrategyRequired(BaseSchema):
     strategy: str
 
-    @validator("strategy", pre=True, allow_reuse=True)
+    @field_validator("strategy", mode="before")
+    @classmethod
     def validate_strategy(cls, value: str) -> str:
         return required_string_in_list(
             v=value,
@@ -377,7 +390,8 @@ class ValidateSchemaStrategyRequired(BaseSchema):
 class ValidateSchemaPerformanceValueRequired(BaseSchema):
     ps_value: str
 
-    @validator("ps_value", pre=True, allow_reuse=True)
+    @field_validator("ps_value", mode="before")
+    @classmethod
     def validate_ps_value(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -388,9 +402,10 @@ class ValidateSchemaPerformanceValueRequired(BaseSchema):
 
 
 class ValidateSchemaPerformanceValueOptional(BaseSchema):
-    ps_value: Optional[str]
+    ps_value: Optional[str] = None
 
-    @validator("ps_value", pre=True, allow_reuse=True)
+    @field_validator("ps_value", mode="before")
+    @classmethod
     def validate_ps_value(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -403,7 +418,8 @@ class ValidateSchemaPerformanceValueOptional(BaseSchema):
 class ValidateSchemaAuthIdRequired(BaseSchema):
     auth_id: str
 
-    @validator("auth_id", pre=True, allow_reuse=True)
+    @field_validator("auth_id", mode="before")
+    @classmethod
     def validate_auth_id(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -416,7 +432,8 @@ class ValidateSchemaAuthIdRequired(BaseSchema):
 class ValidateSchemaEmailRequired(BaseSchema):
     email: str
 
-    @validator("email", pre=True, allow_reuse=True)
+    @field_validator("email", mode="before")
+    @classmethod
     def validate_email(cls, value: str) -> str:
         return require_string_email(
             v=value,
@@ -429,7 +446,8 @@ class ValidateSchemaEmailRequired(BaseSchema):
 class ValidateSchemaUsernameRequired(BaseSchema):
     username: str
 
-    @validator("username", pre=True, allow_reuse=True)
+    @field_validator("username", mode="before")
+    @classmethod
     def validate_username(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -442,7 +460,8 @@ class ValidateSchemaUsernameRequired(BaseSchema):
 class ValidateSchemaPasswordRequired(BaseSchema):
     password: str
 
-    @validator("password", pre=True, allow_reuse=True)
+    @field_validator("password", mode="before")
+    @classmethod
     def validate_password(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -453,9 +472,10 @@ class ValidateSchemaPasswordRequired(BaseSchema):
 
 
 class ValidateSchemaUsernameOptional(BaseSchema):
-    username: Optional[str]
+    username: Optional[str] = None
 
-    @validator("username", pre=True, allow_reuse=True)
+    @field_validator("username", mode="before")
+    @classmethod
     def validate_username(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -466,9 +486,10 @@ class ValidateSchemaUsernameOptional(BaseSchema):
 
 
 class ValidateSchemaPasswordOptional(BaseSchema):
-    password: Optional[str]
+    password: Optional[str] = None
 
-    @validator("password", pre=True, allow_reuse=True)
+    @field_validator("password", mode="before")
+    @classmethod
     def validate_password(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -481,7 +502,8 @@ class ValidateSchemaPasswordOptional(BaseSchema):
 class ValidateSchemaHashedApiKeyRequired(BaseSchema):
     hashed_api_key: str
 
-    @validator("hashed_api_key", pre=True, allow_reuse=True)
+    @field_validator("hashed_api_key", mode="before")
+    @classmethod
     def validate_hashed_api_key(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -494,7 +516,8 @@ class ValidateSchemaHashedApiKeyRequired(BaseSchema):
 class ValidateSchemaHashedSecretKeyRequired(BaseSchema):
     hashed_secret_key: str
 
-    @validator("hashed_secret_key", pre=True, allow_reuse=True)
+    @field_validator("hashed_secret_key", mode="before")
+    @classmethod
     def validate_hashed_secret_key(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -505,9 +528,10 @@ class ValidateSchemaHashedSecretKeyRequired(BaseSchema):
 
 
 class ValidateSchemaHashedApiKeyOptional(BaseSchema):
-    hashed_api_key: Optional[str]
+    hashed_api_key: Optional[str] = None
 
-    @validator("hashed_api_key", pre=True, allow_reuse=True)
+    @field_validator("hashed_api_key", mode="before")
+    @classmethod
     def validate_hashed_api_key(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -518,9 +542,10 @@ class ValidateSchemaHashedApiKeyOptional(BaseSchema):
 
 
 class ValidateSchemaHashedSecretKeyOptional(BaseSchema):
-    hashed_secret_key: Optional[str]
+    hashed_secret_key: Optional[str] = None
 
-    @validator("hashed_secret_key", pre=True, allow_reuse=True)
+    @field_validator("hashed_secret_key", mode="before")
+    @classmethod
     def validate_hashed_secret_key(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -533,7 +558,8 @@ class ValidateSchemaHashedSecretKeyOptional(BaseSchema):
 class ValidateSchemaServerhostRequired(BaseSchema):
     serverhost: str
 
-    @validator("serverhost", pre=True, allow_reuse=True)
+    @field_validator("serverhost", mode="before")
+    @classmethod
     def validate_serverhost(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -544,9 +570,10 @@ class ValidateSchemaServerhostRequired(BaseSchema):
 
 
 class ValidateSchemaServerhostOptional(BaseSchema):
-    serverhost: Optional[str]
+    serverhost: Optional[str] = None
 
-    @validator("serverhost", pre=True, allow_reuse=True)
+    @field_validator("serverhost", mode="before")
+    @classmethod
     def validate_serverhost(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -557,9 +584,10 @@ class ValidateSchemaServerhostOptional(BaseSchema):
 
 
 class ValidateSchemaKeysOptional(BaseSchema):
-    keys: Optional[str]
+    keys: Optional[str] = None
 
-    @validator("keys", pre=True, allow_reuse=True)
+    @field_validator("keys", mode="before")
+    @classmethod
     def validate_keys(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -571,7 +599,8 @@ class ValidateSchemaKeysOptional(BaseSchema):
 class ValidateSchemaObjectKeyRequired(BaseSchema):
     object_key: str
 
-    @validator("object_key", pre=True, allow_reuse=True)
+    @field_validator("object_key", mode="before")
+    @classmethod
     def validate_object_key(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -582,9 +611,10 @@ class ValidateSchemaObjectKeyRequired(BaseSchema):
 
 
 class ValidateSchemaObjectKeyOptional(BaseSchema):
-    object_key: Optional[str]
+    object_key: Optional[str] = None
 
-    @validator("object_key", pre=True, allow_reuse=True)
+    @field_validator("object_key", mode="before")
+    @classmethod
     def validate_object_key(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -597,7 +627,8 @@ class ValidateSchemaObjectKeyOptional(BaseSchema):
 class ValidateSchemaBucketNameRequired(BaseSchema):
     bucket_name: str
 
-    @validator("bucket_name", pre=True, allow_reuse=True)
+    @field_validator("bucket_name", mode="before")
+    @classmethod
     def validate_bucket_name(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -608,9 +639,10 @@ class ValidateSchemaBucketNameRequired(BaseSchema):
 
 
 class ValidateSchemaBucketNameOptional(BaseSchema):
-    bucket_name: Optional[str]
+    bucket_name: Optional[str] = None
 
-    @validator("bucket_name", pre=True, allow_reuse=True)
+    @field_validator("bucket_name", mode="before")
+    @classmethod
     def validate_bucket_name(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -621,9 +653,10 @@ class ValidateSchemaBucketNameOptional(BaseSchema):
 
 
 class ValidateSchemaCaptionOptional(BaseSchema):
-    caption: Optional[str]
+    caption: Optional[str] = None
 
-    @validator("caption", pre=True, allow_reuse=True)
+    @field_validator("caption", mode="before")
+    @classmethod
     def validate_caption(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -635,7 +668,8 @@ class ValidateSchemaCaptionOptional(BaseSchema):
 class ValidateSchemaNameRequired(BaseSchema):
     name: str
 
-    @validator("name", pre=True, allow_reuse=True)
+    @field_validator("name", mode="before")
+    @classmethod
     def validate_name(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -646,9 +680,10 @@ class ValidateSchemaNameRequired(BaseSchema):
 
 
 class ValidateSchemaNameOptional(BaseSchema):
-    name: Optional[str]
+    name: Optional[str] = None
 
-    @validator("name", pre=True, allow_reuse=True)
+    @field_validator("name", mode="before")
+    @classmethod
     def validate_name(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -661,7 +696,8 @@ class ValidateSchemaNameOptional(BaseSchema):
 class ValidateSchemaSizeKbRequired(BaseSchema):
     size_kb: int
 
-    @validator("size_kb", pre=True, allow_reuse=True)
+    @field_validator("size_kb", mode="before")
+    @classmethod
     def validate_size_kb(cls, value: int) -> int:
         return require_int_name_min_max_len(
             v=value,
@@ -672,9 +708,10 @@ class ValidateSchemaSizeKbRequired(BaseSchema):
 
 
 class ValidateSchemaSizeKbOptional(BaseSchema):
-    size_kb: Optional[int]
+    size_kb: Optional[int] = None
 
-    @validator("size_kb", pre=True, allow_reuse=True)
+    @field_validator("size_kb", mode="before")
+    @classmethod
     def validate_size_kb(cls, value: Optional[int]) -> Optional[int]:
         return optional_int_name_min_max_len(
             v=value,
@@ -687,7 +724,8 @@ class ValidateSchemaSizeKbOptional(BaseSchema):
 class ValidateSchemaLatitudeRequired(BaseSchema):
     latitude: float
 
-    @validator("latitude", pre=True, allow_reuse=True)
+    @field_validator("latitude", mode="before")
+    @classmethod
     def validate_latitude(cls, value: float) -> float:
         return require_float_rounded_to_max_len(
             v=value,
@@ -696,9 +734,10 @@ class ValidateSchemaLatitudeRequired(BaseSchema):
 
 
 class ValidateSchemaLatitudeOptional(BaseSchema):
-    latitude: Optional[float]
+    latitude: Optional[float] = None
 
-    @validator("latitude", pre=True, allow_reuse=True)
+    @field_validator("latitude", mode="before")
+    @classmethod
     def validate_latitude(cls, value: Optional[float]) -> Optional[float]:
         return optional_float_rounded_to_max_len(
             v=value,
@@ -709,7 +748,8 @@ class ValidateSchemaLatitudeOptional(BaseSchema):
 class ValidateSchemaLongitudeRequired(BaseSchema):
     longitude: float
 
-    @validator("longitude", pre=True, allow_reuse=True)
+    @field_validator("longitude", mode="before")
+    @classmethod
     def validate_longitude(cls, value: float) -> float:
         return require_float_rounded_to_max_len(
             v=value,
@@ -718,9 +758,10 @@ class ValidateSchemaLongitudeRequired(BaseSchema):
 
 
 class ValidateSchemaLongitudeOptional(BaseSchema):
-    longitude: Optional[float]
+    longitude: Optional[float] = None
 
-    @validator("longitude", pre=True, allow_reuse=True)
+    @field_validator("longitude", mode="before")
+    @classmethod
     def validate_longitude(cls, value: Optional[float]) -> Optional[float]:
         return optional_float_rounded_to_max_len(
             v=value,
@@ -731,7 +772,8 @@ class ValidateSchemaLongitudeOptional(BaseSchema):
 class ValidateSchemaAddressRequired(BaseSchema):
     address: str
 
-    @validator("address", pre=True, allow_reuse=True)
+    @field_validator("address", mode="before")
+    @classmethod
     def validate_address(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -742,9 +784,10 @@ class ValidateSchemaAddressRequired(BaseSchema):
 
 
 class ValidateSchemaAddressOptional(BaseSchema):
-    address: Optional[str]
+    address: Optional[str] = None
 
-    @validator("address", pre=True, allow_reuse=True)
+    @field_validator("address", mode="before")
+    @classmethod
     def validate_address(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -757,7 +800,8 @@ class ValidateSchemaAddressOptional(BaseSchema):
 class ValidateSchemaIpRequired(BaseSchema):
     ip: str
 
-    @validator("ip", pre=True, allow_reuse=True)
+    @field_validator("ip", mode="before")
+    @classmethod
     def validate_ip(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -768,9 +812,10 @@ class ValidateSchemaIpRequired(BaseSchema):
 
 
 class ValidateSchemaIpOptional(BaseSchema):
-    ip: Optional[str]
+    ip: Optional[str] = None
 
-    @validator("ip", pre=True, allow_reuse=True)
+    @field_validator("ip", mode="before")
+    @classmethod
     def validate_ip(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -783,7 +828,8 @@ class ValidateSchemaIpOptional(BaseSchema):
 class ValidateSchemaIspRequired(BaseSchema):
     isp: str
 
-    @validator("isp", pre=True, allow_reuse=True)
+    @field_validator("isp", mode="before")
+    @classmethod
     def validate_isp(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -794,9 +840,10 @@ class ValidateSchemaIspRequired(BaseSchema):
 
 
 class ValidateSchemaIspOptional(BaseSchema):
-    isp: Optional[str]
+    isp: Optional[str] = None
 
-    @validator("isp", pre=True, allow_reuse=True)
+    @field_validator("isp", mode="before")
+    @classmethod
     def validate_isp(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -809,7 +856,8 @@ class ValidateSchemaIspOptional(BaseSchema):
 class ValidateSchemaIpLocationRequired(BaseSchema):
     location: str
 
-    @validator("location", pre=True, allow_reuse=True)
+    @field_validator("location", mode="before")
+    @classmethod
     def validate_location(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -820,9 +868,10 @@ class ValidateSchemaIpLocationRequired(BaseSchema):
 
 
 class ValidateSchemaIpLocationOptional(BaseSchema):
-    location: Optional[str]
+    location: Optional[str] = None
 
-    @validator("location", pre=True, allow_reuse=True)
+    @field_validator("location", mode="before")
+    @classmethod
     def validate_location(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -835,7 +884,8 @@ class ValidateSchemaIpLocationOptional(BaseSchema):
 class ValidateGroupNameRequired(BaseSchema):
     group_name: str
 
-    @validator("group_name", pre=True, allow_reuse=True)
+    @field_validator("group_name", mode="before")
+    @classmethod
     def validate_group_name(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -846,9 +896,10 @@ class ValidateGroupNameRequired(BaseSchema):
 
 
 class ValidateGroupNameOptional(BaseSchema):
-    group_name: Optional[str]
+    group_name: Optional[str] = None
 
-    @validator("group_name", pre=True, allow_reuse=True)
+    @field_validator("group_name", mode="before")
+    @classmethod
     def validate_group_name(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -861,7 +912,8 @@ class ValidateGroupNameOptional(BaseSchema):
 class ValidateGroupSlugRequired(BaseSchema):
     group_slug: str
 
-    @validator("group_slug", pre=True, allow_reuse=True)
+    @field_validator("group_slug", mode="before")
+    @classmethod
     def validate_group_slug(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -874,7 +926,8 @@ class ValidateGroupSlugRequired(BaseSchema):
 class ValidateSchemaSnapNameRequired(BaseSchema):
     snap_name: str
 
-    @validator("snap_name", pre=True, allow_reuse=True)
+    @field_validator("snap_name", mode="before")
+    @classmethod
     def validate_snap_name(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -885,9 +938,10 @@ class ValidateSchemaSnapNameRequired(BaseSchema):
 
 
 class ValidateSchemaSnapNameOptional(BaseSchema):
-    snap_name: Optional[str]
+    snap_name: Optional[str] = None
 
-    @validator("snap_name", pre=True, allow_reuse=True)
+    @field_validator("snap_name", mode="before")
+    @classmethod
     def validate_snap_name(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -900,7 +954,8 @@ class ValidateSchemaSnapNameOptional(BaseSchema):
 class ValidateSchemaSnapSlugRequired(BaseSchema):
     snap_slug: str
 
-    @validator("snap_slug", pre=True, allow_reuse=True)
+    @field_validator("snap_slug", mode="before")
+    @classmethod
     def validate_snap_slug(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -913,7 +968,8 @@ class ValidateSchemaSnapSlugRequired(BaseSchema):
 class ValidateSchemaAltitudeRequired(BaseSchema):
     altitude: int
 
-    @validator("altitude", pre=True, allow_reuse=True)
+    @field_validator("altitude", mode="before")
+    @classmethod
     def validate_altitude(cls, value: int) -> int:
         return require_int_name_min_max_len(
             v=value,
@@ -924,9 +980,10 @@ class ValidateSchemaAltitudeRequired(BaseSchema):
 
 
 class ValidateSchemaAltitudeOptional(BaseSchema):
-    altitude: Optional[int]
+    altitude: Optional[int] = None
 
-    @validator("altitude", pre=True, allow_reuse=True)
+    @field_validator("altitude", mode="before")
+    @classmethod
     def validate_altitude(cls, value: Optional[int]) -> Optional[int]:
         return optional_int_name_min_max_len(
             v=value,
@@ -939,7 +996,8 @@ class ValidateSchemaAltitudeOptional(BaseSchema):
 class ValidateSchemaReferrerRequired(BaseSchema):
     referrer: str
 
-    @validator("referrer", pre=True, allow_reuse=True)
+    @field_validator("referrer", mode="before")
+    @classmethod
     def validate_referrer(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -950,9 +1008,10 @@ class ValidateSchemaReferrerRequired(BaseSchema):
 
 
 class ValidateSchemaUtmCampaignOptional(BaseSchema):
-    utm_campaign: Optional[str]
+    utm_campaign: Optional[str] = None
 
-    @validator("utm_campaign", pre=True, allow_reuse=True)
+    @field_validator("utm_campaign", mode="before")
+    @classmethod
     def validate_utm_campaign(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -963,9 +1022,10 @@ class ValidateSchemaUtmCampaignOptional(BaseSchema):
 
 
 class ValidateSchemaUtmContentOptional(BaseSchema):
-    utm_content: Optional[str]
+    utm_content: Optional[str] = None
 
-    @validator("utm_content", pre=True, allow_reuse=True)
+    @field_validator("utm_content", mode="before")
+    @classmethod
     def validate_utm_content(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -976,9 +1036,10 @@ class ValidateSchemaUtmContentOptional(BaseSchema):
 
 
 class ValidateSchemaUtmMediumOptional(BaseSchema):
-    utm_medium: Optional[str]
+    utm_medium: Optional[str] = None
 
-    @validator("utm_medium", pre=True, allow_reuse=True)
+    @field_validator("utm_medium", mode="before")
+    @classmethod
     def validate_utm_medium(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -989,9 +1050,10 @@ class ValidateSchemaUtmMediumOptional(BaseSchema):
 
 
 class ValidateSchemaUtmSourceOptional(BaseSchema):
-    utm_source: Optional[str]
+    utm_source: Optional[str] = None
 
-    @validator("utm_source", pre=True, allow_reuse=True)
+    @field_validator("utm_source", mode="before")
+    @classmethod
     def validate_utm_source(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1002,9 +1064,10 @@ class ValidateSchemaUtmSourceOptional(BaseSchema):
 
 
 class ValidateSchemaUtmTermOptional(BaseSchema):
-    utm_term: Optional[str]
+    utm_term: Optional[str] = None
 
-    @validator("utm_term", pre=True, allow_reuse=True)
+    @field_validator("utm_term", mode="before")
+    @classmethod
     def validate_utm_term(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1017,7 +1080,8 @@ class ValidateSchemaUtmTermOptional(BaseSchema):
 class ValidateSchemaReportingIdRequired(BaseSchema):
     reporting_id: str
 
-    @validator("reporting_id", pre=True, allow_reuse=True)
+    @field_validator("reporting_id", mode="before")
+    @classmethod
     def validate_reporting_id(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -1028,9 +1092,10 @@ class ValidateSchemaReportingIdRequired(BaseSchema):
 
 
 class ValidateSchemaHotspotTypeNameOptional(BaseSchema):
-    hotspot_type_name: Optional[str]
+    hotspot_type_name: Optional[str] = None
 
-    @validator("hotspot_type_name", pre=True, allow_reuse=True)
+    @field_validator("hotspot_type_name", mode="before")
+    @classmethod
     def validate_hotspot_type_name(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1040,9 +1105,10 @@ class ValidateSchemaHotspotTypeNameOptional(BaseSchema):
 
 
 class ValidateSchemaHotspotContentOptional(BaseSchema):
-    hotspot_content: Optional[str]
+    hotspot_content: Optional[str] = None
 
-    @validator("hotspot_content", pre=True, allow_reuse=True)
+    @field_validator("hotspot_content", mode="before")
+    @classmethod
     def validate_hotspot_content(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1052,9 +1118,10 @@ class ValidateSchemaHotspotContentOptional(BaseSchema):
 
 
 class ValidateSchemaHotspotIconNameOptional(BaseSchema):
-    hotspot_icon_name: Optional[str]
+    hotspot_icon_name: Optional[str] = None
 
-    @validator("hotspot_icon_name", pre=True, allow_reuse=True)
+    @field_validator("hotspot_icon_name", mode="before")
+    @classmethod
     def validate_hotspot_icon_name(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1064,9 +1131,10 @@ class ValidateSchemaHotspotIconNameOptional(BaseSchema):
 
 
 class ValidateSchemaHotspotNameOptional(BaseSchema):
-    hotspot_name: Optional[str]
+    hotspot_name: Optional[str] = None
 
-    @validator("hotspot_name", pre=True, allow_reuse=True)
+    @field_validator("hotspot_name", mode="before")
+    @classmethod
     def validate_hotspot_name(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1076,9 +1144,10 @@ class ValidateSchemaHotspotNameOptional(BaseSchema):
 
 
 class ValidateSchemaHotspotUserIconNameOptional(BaseSchema):
-    hotspot_user_icon_name: Optional[str]
+    hotspot_user_icon_name: Optional[str] = None
 
-    @validator("hotspot_user_icon_name", pre=True, allow_reuse=True)
+    @field_validator("hotspot_user_icon_name", mode="before")
+    @classmethod
     def validate_hotspot_user_icon_name(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1088,9 +1157,10 @@ class ValidateSchemaHotspotUserIconNameOptional(BaseSchema):
 
 
 class ValidateSchemaLinkedSnapNameOptional(BaseSchema):
-    linked_snap_name: Optional[str]
+    linked_snap_name: Optional[str] = None
 
-    @validator("linked_snap_name", pre=True, allow_reuse=True)
+    @field_validator("linked_snap_name", mode="before")
+    @classmethod
     def validate_linked_snap_name(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1100,9 +1170,10 @@ class ValidateSchemaLinkedSnapNameOptional(BaseSchema):
 
 
 class ValidateSchemaSnapFileNameOptional(BaseSchema):
-    snap_file_name: Optional[str]
+    snap_file_name: Optional[str] = None
 
-    @validator("snap_file_name", pre=True, allow_reuse=True)
+    @field_validator("snap_file_name", mode="before")
+    @classmethod
     def validate_snap_file_name(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1112,9 +1183,10 @@ class ValidateSchemaSnapFileNameOptional(BaseSchema):
 
 
 class ValidateSchemaIconColorOptional(BaseSchema):
-    icon_color: Optional[str]
+    icon_color: Optional[str] = None
 
-    @validator("icon_color", pre=True, allow_reuse=True)
+    @field_validator("icon_color", mode="before")
+    @classmethod
     def validate_icon_color(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1124,9 +1196,10 @@ class ValidateSchemaIconColorOptional(BaseSchema):
 
 
 class ValidateSchemaBgColorOptional(BaseSchema):
-    bg_color: Optional[str]
+    bg_color: Optional[str] = None
 
-    @validator("bg_color", pre=True, allow_reuse=True)
+    @field_validator("bg_color", mode="before")
+    @classmethod
     def validate_bg_color(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1136,9 +1209,10 @@ class ValidateSchemaBgColorOptional(BaseSchema):
 
 
 class ValidateSchemaTextColorOptional(BaseSchema):
-    text_color: Optional[str]
+    text_color: Optional[str] = None
 
-    @validator("text_color", pre=True, allow_reuse=True)
+    @field_validator("text_color", mode="before")
+    @classmethod
     def validate_text_color(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1148,9 +1222,10 @@ class ValidateSchemaTextColorOptional(BaseSchema):
 
 
 class ValidateSchemaBrowserOptional(BaseSchema):
-    browser: Optional[str]
+    browser: Optional[str] = None
 
-    @validator("browser", pre=True, allow_reuse=True)
+    @field_validator("browser", mode="before")
+    @classmethod
     def validate_browser(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1160,9 +1235,10 @@ class ValidateSchemaBrowserOptional(BaseSchema):
 
 
 class ValidateSchemaBrowserVersionOptional(BaseSchema):
-    browser_version: Optional[str]
+    browser_version: Optional[str] = None
 
-    @validator("browser_version", pre=True, allow_reuse=True)
+    @field_validator("browser_version", mode="before")
+    @classmethod
     def validate_browser_version(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1172,9 +1248,10 @@ class ValidateSchemaBrowserVersionOptional(BaseSchema):
 
 
 class ValidateSchemaPlatformOptional(BaseSchema):
-    platform: Optional[str]
+    platform: Optional[str] = None
 
-    @validator("platform", pre=True, allow_reuse=True)
+    @field_validator("platform", mode="before")
+    @classmethod
     def validate_platform(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1184,9 +1261,10 @@ class ValidateSchemaPlatformOptional(BaseSchema):
 
 
 class ValidateSchemaPlatformVersionOptional(BaseSchema):
-    platform_version: Optional[str]
+    platform_version: Optional[str] = None
 
-    @validator("platform_version", pre=True, allow_reuse=True)
+    @field_validator("platform_version", mode="before")
+    @classmethod
     def validate_platform_version(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1196,9 +1274,10 @@ class ValidateSchemaPlatformVersionOptional(BaseSchema):
 
 
 class ValidateSchemaCityOptional(BaseSchema):
-    city: Optional[str]
+    city: Optional[str] = None
 
-    @validator("city", pre=True, allow_reuse=True)
+    @field_validator("city", mode="before")
+    @classmethod
     def validate_city(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1208,9 +1287,10 @@ class ValidateSchemaCityOptional(BaseSchema):
 
 
 class ValidateSchemaCountryOptional(BaseSchema):
-    country: Optional[str]
+    country: Optional[str] = None
 
-    @validator("country", pre=True, allow_reuse=True)
+    @field_validator("country", mode="before")
+    @classmethod
     def validate_country(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1220,9 +1300,10 @@ class ValidateSchemaCountryOptional(BaseSchema):
 
 
 class ValidateSchemaStateOptional(BaseSchema):
-    state: Optional[str]
+    state: Optional[str] = None
 
-    @validator("state", pre=True, allow_reuse=True)
+    @field_validator("state", mode="before")
+    @classmethod
     def validate_state(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1232,9 +1313,10 @@ class ValidateSchemaStateOptional(BaseSchema):
 
 
 class ValidateSchemaLanguageOptional(BaseSchema):
-    language: Optional[str]
+    language: Optional[str] = None
 
-    @validator("language", pre=True, allow_reuse=True)
+    @field_validator("language", mode="before")
+    @classmethod
     def validate_language(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1246,7 +1328,8 @@ class ValidateSchemaLanguageOptional(BaseSchema):
 class ValidateSchemaActiveSecondsRequired(BaseSchema):
     active_seconds: int
 
-    @validator("active_seconds", pre=True, allow_reuse=True)
+    @field_validator("active_seconds", mode="before")
+    @classmethod
     def validate_active_seconds(cls, value: int) -> int:
         return require_int_name_min_max_len(
             v=value,
@@ -1259,7 +1342,8 @@ class ValidateSchemaActiveSecondsRequired(BaseSchema):
 class ValidateSchemaProjectNameRequired(BaseSchema):
     project_name: str
 
-    @validator("project_name", pre=True, allow_reuse=True)
+    @field_validator("project_name", mode="before")
+    @classmethod
     def validate_project_name(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -1272,7 +1356,8 @@ class ValidateSchemaProjectNameRequired(BaseSchema):
 class ValidateSchemaHashedProjectIdRequired(BaseSchema):
     hashed_project_id: str
 
-    @validator("hashed_project_id", pre=True, allow_reuse=True)
+    @field_validator("hashed_project_id", mode="before")
+    @classmethod
     def validate_hashed_project_id(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -1285,7 +1370,8 @@ class ValidateSchemaHashedProjectIdRequired(BaseSchema):
 class ValidateSchemaHashedProjectNumberRequired(BaseSchema):
     hashed_project_number: str
 
-    @validator("hashed_project_number", pre=True, allow_reuse=True)
+    @field_validator("hashed_project_number", mode="before")
+    @classmethod
     def validate_hashed_project_number(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -1298,7 +1384,8 @@ class ValidateSchemaHashedProjectNumberRequired(BaseSchema):
 class ValidateSchemaHashedServiceAccountRequired(BaseSchema):
     hashed_service_account: str
 
-    @validator("hashed_service_account", pre=True, allow_reuse=True)
+    @field_validator("hashed_service_account", mode="before")
+    @classmethod
     def validate_hashed_service_account(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -1309,9 +1396,10 @@ class ValidateSchemaHashedServiceAccountRequired(BaseSchema):
 
 
 class ValidateSchemaHashedProjectIdOptional(BaseSchema):
-    hashed_project_id: Optional[str]
+    hashed_project_id: Optional[str] = None
 
-    @validator("hashed_project_id", pre=True, allow_reuse=True)
+    @field_validator("hashed_project_id", mode="before")
+    @classmethod
     def validate_hashed_project_id(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1322,9 +1410,10 @@ class ValidateSchemaHashedProjectIdOptional(BaseSchema):
 
 
 class ValidateSchemaHashedProjectNumberOptional(BaseSchema):
-    hashed_project_number: Optional[str]
+    hashed_project_number: Optional[str] = None
 
-    @validator("hashed_project_number", pre=True, allow_reuse=True)
+    @field_validator("hashed_project_number", mode="before")
+    @classmethod
     def validate_hashed_project_number(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1335,9 +1424,10 @@ class ValidateSchemaHashedProjectNumberOptional(BaseSchema):
 
 
 class ValidateSchemaHashedServiceAccountOptional(BaseSchema):
-    hashed_service_account: Optional[str]
+    hashed_service_account: Optional[str] = None
 
-    @validator("hashed_service_account", pre=True, allow_reuse=True)
+    @field_validator("hashed_service_account", mode="before")
+    @classmethod
     def validate_hashed_service_account(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
@@ -1350,7 +1440,8 @@ class ValidateSchemaHashedServiceAccountOptional(BaseSchema):
 class ValidateSchemaMeasurementIdRequired(BaseSchema):
     measurement_id: str
 
-    @validator("measurement_id", pre=True, allow_reuse=True)
+    @field_validator("measurement_id", mode="before")
+    @classmethod
     def validate_measurement_id(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -1363,7 +1454,8 @@ class ValidateSchemaMeasurementIdRequired(BaseSchema):
 class ValidateSchemaPropertyIdRequired(BaseSchema):
     property_id: str
 
-    @validator("property_id", pre=True, allow_reuse=True)
+    @field_validator("property_id", mode="before")
+    @classmethod
     def validate_property_id(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -1376,7 +1468,8 @@ class ValidateSchemaPropertyIdRequired(BaseSchema):
 class ValidateSchemaStreamIdRequired(BaseSchema):
     stream_id: str
 
-    @validator("stream_id", pre=True, allow_reuse=True)
+    @field_validator("stream_id", mode="before")
+    @classmethod
     def validate_stream_id(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -1389,7 +1482,8 @@ class ValidateSchemaStreamIdRequired(BaseSchema):
 class ValidateSchemaKeysRequired(BaseSchema):
     keys: str
 
-    @validator("keys", pre=True, allow_reuse=True)
+    @field_validator("keys", mode="before")
+    @classmethod
     def validate_keys(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -1402,7 +1496,8 @@ class ValidateSchemaKeysRequired(BaseSchema):
 class ValidateSchemaClicksRequired(BaseSchema):
     clicks: int
 
-    @validator("clicks", pre=True, allow_reuse=True)
+    @field_validator("clicks", mode="before")
+    @classmethod
     def validate_clicks(cls, value: int) -> int:
         return require_int_name_min_max_len(
             v=value,
@@ -1415,7 +1510,8 @@ class ValidateSchemaClicksRequired(BaseSchema):
 class ValidateSchemaImpressionsRequired(BaseSchema):
     impressions: int
 
-    @validator("impressions", pre=True, allow_reuse=True)
+    @field_validator("impressions", mode="before")
+    @classmethod
     def validate_impressions(cls, value: int) -> int:
         return require_int_name_min_max_len(
             v=value,
@@ -1428,7 +1524,8 @@ class ValidateSchemaImpressionsRequired(BaseSchema):
 class ValidateSchemaCtrRequired(BaseSchema):
     ctr: float
 
-    @validator("ctr", pre=True, allow_reuse=True)
+    @field_validator("ctr", mode="before")
+    @classmethod
     def validate_ctr(cls, value: float) -> float:
         return require_float_rounded_to_max_len(
             v=value,
@@ -1439,7 +1536,8 @@ class ValidateSchemaCtrRequired(BaseSchema):
 class ValidateSchemaPositionRequired(BaseSchema):
     position: float
 
-    @validator("position", pre=True, allow_reuse=True)
+    @field_validator("position", mode="before")
+    @classmethod
     def validate_position(cls, value: float) -> float:
         return require_float_rounded_to_max_len(
             v=value,
@@ -1450,7 +1548,8 @@ class ValidateSchemaPositionRequired(BaseSchema):
 class ValidateSchemaTrackingIdRequired(BaseSchema):
     tracking_id: str
 
-    @validator("tracking_id", pre=True, allow_reuse=True)
+    @field_validator("tracking_id", mode="before")
+    @classmethod
     def validate_tracking_id(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
@@ -1463,7 +1562,8 @@ class ValidateSchemaTrackingIdRequired(BaseSchema):
 class ValidateSchemaViewIdRequired(BaseSchema):
     view_id: str
 
-    @validator("view_id", pre=True, allow_reuse=True)
+    @field_validator("view_id", mode="before")
+    @classmethod
     def validate_view_id(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,

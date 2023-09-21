@@ -116,7 +116,7 @@ async def test_create_website_page_as_superuser_url_too_short(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "url must be 1 characters or more"
+    assert entry["detail"][0]["msg"] == "Value error, url must be 1 characters or more"
 
 
 async def test_create_website_page_as_superuser_url_too_long(
@@ -140,7 +140,7 @@ async def test_create_website_page_as_superuser_url_too_long(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "url must be 2048 characters or less"
+    assert entry["detail"][0]["msg"] == "Value error, url must be 2048 characters or less"
 
 
 async def test_create_website_page_as_superuser_website_not_exists(

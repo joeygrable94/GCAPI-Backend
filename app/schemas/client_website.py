@@ -17,8 +17,8 @@ class ClientWebsiteCreate(ClientWebsiteBase):
 
 
 class ClientWebsiteUpdate(ClientWebsiteBase):
-    client_id: Optional[UUID4]
-    website_id: Optional[UUID4]
+    client_id: Optional[UUID4] = None
+    website_id: Optional[UUID4] = None
 
 
 class ClientWebsiteRead(ClientWebsiteACL, ClientWebsiteBase, BaseSchemaRead):

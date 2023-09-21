@@ -35,8 +35,8 @@ class FileAssetBase(
     extension: ValidFileExtensionEnum
     size_kb: int
     title: str
-    caption: Optional[str]
-    keys: Optional[str]
+    caption: Optional[str] = None
+    keys: Optional[str] = None
     is_private: bool
     user_id: UUID4
     bucket_id: UUID4
@@ -58,16 +58,16 @@ class FileAssetUpdate(
     ValidateSchemaKeysOptional,
     BaseSchemaRead,
 ):
-    name: Optional[str]
-    extension: Optional[ValidFileExtensionEnum]
-    size_kb: Optional[int]
-    title: Optional[str]
-    caption: Optional[str]
-    keys: Optional[str]
-    is_private: Optional[bool]
-    user_id: Optional[UUID4]
-    bucket_id: Optional[UUID4]
-    client_id: Optional[UUID4]
+    name: Optional[str] = None
+    extension: Optional[ValidFileExtensionEnum] = None
+    size_kb: Optional[int] = None
+    title: Optional[str] = None
+    caption: Optional[str] = None
+    keys: Optional[str] = None
+    is_private: Optional[bool] = None
+    user_id: Optional[UUID4] = None
+    bucket_id: Optional[UUID4] = None
+    client_id: Optional[UUID4] = None
     geocoord_id: Optional[UUID4] = None
     bdx_feed_id: Optional[UUID4] = None
 
@@ -83,4 +83,4 @@ class FileAssetReadRelations(FileAssetRead):
 
 from app.schemas.geocoord import GeocoordRead  # noqa: E402
 
-FileAssetReadRelations.update_forward_refs()
+FileAssetReadRelations.model_rebuild()

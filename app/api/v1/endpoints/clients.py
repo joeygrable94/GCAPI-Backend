@@ -37,7 +37,7 @@ async def clients_list(
 ) -> List[ClientRead] | List:
     clients_repo: ClientRepository = ClientRepository(session=db)
     clients: List[Client] | List[None] | None = await clients_repo.list(page=query.page)
-    return [ClientRead.from_orm(c) for c in clients] if clients else []
+    return [ClientRead.model_validate(c) for c in clients] if clients else []
 
 
 @router.post(
@@ -56,7 +56,7 @@ async def clients_create(
 ) -> ClientRead:
     try:
         clients_repo: ClientRepository = ClientRepository(session=db)
-        data: Dict = client_in.dict()
+        data: Dict = client_in.model_dump()
         check_title: str | None = data.get("title")
         if check_title:
             a_client: Client | None = await clients_repo.read_by(
@@ -66,7 +66,7 @@ async def clients_create(
             if a_client:
                 raise ClientAlreadyExists()
         new_client: Client = await clients_repo.create(client_in)
-        return ClientRead.from_orm(new_client)
+        return ClientRead.model_validate(new_client)
     except ClientAlreadyExists:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=ErrorCode.CLIENT_EXISTS
@@ -89,7 +89,7 @@ async def clients_read(
     db: AsyncDatabaseSession,
     client: FetchClientOr404,
 ) -> ClientRead:
-    return ClientRead.from_orm(client)
+    return ClientRead.model_validate(client)
 
 
 @router.patch(
@@ -120,9 +120,9 @@ async def clients_update(
             entry=client, schema=client_in
         )
         return (
-            ClientRead.from_orm(updated_client)
+            ClientRead.model_validate(updated_client)
             if updated_client
-            else ClientRead.from_orm(client)
+            else ClientRead.model_validate(client)
         )
     except ClientAlreadyExists:
         raise HTTPException(

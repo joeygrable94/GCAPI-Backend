@@ -26,11 +26,11 @@ class GcftSnapTrafficsourceBase(
 ):
     session_id: UUID4
     referrer: str
-    utm_campaign: Optional[str]
-    utm_content: Optional[str]
-    utm_medium: Optional[str]
-    utm_source: Optional[str]
-    utm_term: Optional[str]
+    utm_campaign: Optional[str] = None
+    utm_content: Optional[str] = None
+    utm_medium: Optional[str] = None
+    utm_source: Optional[str] = None
+    utm_term: Optional[str] = None
     visit_date: datetime
     gcft_id: UUID4
     snap_id: UUID4

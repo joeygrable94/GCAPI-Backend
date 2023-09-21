@@ -33,4 +33,4 @@ async def create_random_website_page(
             sitemap_id=sitemap_id,
         )
     )
-    return WebsitePageRead.from_orm(website_page)
+    return WebsitePageRead.model_validate(website_page)

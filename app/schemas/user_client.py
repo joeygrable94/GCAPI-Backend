@@ -17,8 +17,8 @@ class UserClientCreate(UserClientBase):
 
 
 class UserClientUpdate(UserClientBase):
-    user_id: Optional[UUID4]
-    client_id: Optional[UUID4]
+    user_id: Optional[UUID4] = None
+    client_id: Optional[UUID4] = None
 
 
 class UserClientRead(UserClientACL, UserClientBase, BaseSchemaRead):

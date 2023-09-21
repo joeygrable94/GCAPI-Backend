@@ -70,7 +70,7 @@ async def test_create_website_pagespeedinsights_as_superuser(
         "psi/",
         params={"website_id": str(a_website.id), "page_id": str(a_webpage.id)},
         headers=superuser_token_headers,
-        json=psi_base.dict(),
+        json=psi_base.model_dump(),
     )
     data: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
@@ -93,7 +93,7 @@ async def test_create_website_pagespeedinsights_as_superuser_query_website_not_e
         "psi/",
         params={"page_id": str(webpage_id)},
         headers=superuser_token_headers,
-        json=psi_base.dict(),
+        json=psi_base.model_dump(),
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 404
@@ -114,7 +114,7 @@ async def test_create_website_pagespeedinsights_as_superuser_website_not_exists(
         "psi/",
         params={"website_id": str(website_id), "page_id": str(webpage_id)},
         headers=superuser_token_headers,
-        json=psi_base.dict(),
+        json=psi_base.model_dump(),
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 404
@@ -145,7 +145,7 @@ async def test_create_website_pagespeedinsights_as_superuser_webaite_page_not_ex
         "psi/",
         params={"website_id": str(a_website.id), "page_id": str(webpage_id)},
         headers=superuser_token_headers,
-        json=psi_base.dict(),
+        json=psi_base.model_dump(),
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 404
@@ -175,7 +175,7 @@ async def test_create_website_pagespeedinsights_as_superuser_query_website_page_
         "psi/",
         params={"website_id": str(a_website.id)},
         headers=superuser_token_headers,
-        json=psi_base.dict(),
+        json=psi_base.model_dump(),
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 404

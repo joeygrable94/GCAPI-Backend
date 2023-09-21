@@ -47,4 +47,4 @@ from app.schemas.client import ClientRead  # noqa: E402
 from app.schemas.website_map import WebsiteMapRead  # noqa: E402
 from app.schemas.website_page import WebsitePageRead  # noqa: E402
 
-WebsiteReadRelations.update_forward_refs()
+WebsiteReadRelations.model_rebuild()

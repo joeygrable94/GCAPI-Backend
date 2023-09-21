@@ -23,7 +23,7 @@ async def test_update_website_as_superuser(
     response: Response = await client.patch(
         f"websites/{entry_a.id}",
         headers=superuser_token_headers,
-        json=update_dict.dict(),
+        json=update_dict.model_dump(),
     )
     assert 200 <= response.status_code < 300
     entry: Dict[str, Any] = response.json()
@@ -43,7 +43,7 @@ async def test_update_website_already_exists(
     response: Response = await client.patch(
         f"websites/{entry_a.id}",
         headers=superuser_token_headers,
-        json=update_dict.dict(),
+        json=update_dict.model_dump(),
     )
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 400
@@ -65,7 +65,7 @@ async def test_update_website_as_superuser_domain_too_short(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "domain must be 5 characters or more"
+    assert entry["detail"][0]["msg"] == "Value error, domain must be 5 characters or more"
 
 
 async def test_update_website_as_superuser_domain_too_long(
@@ -83,7 +83,7 @@ async def test_update_website_as_superuser_domain_too_long(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "domain must be 255 characters or less"
+    assert entry["detail"][0]["msg"] == "Value error, domain must be 255 characters or less"
 
 
 async def test_update_website_as_superuser_domain_invalid(
@@ -103,5 +103,5 @@ async def test_update_website_as_superuser_domain_invalid(
     entry: Dict[str, Any] = response.json()
     assert (
         entry["detail"][0]["msg"]
-        == "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
+        == "Value error, invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
     )

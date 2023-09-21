@@ -17,29 +17,29 @@ class WebsitePageBase(BaseSchema):
     url: str
     status: int
     priority: Union[float, Decimal]
-    last_modified: Optional[datetime]
-    change_frequency: Optional[SitemapPageChangeFrequency]
+    last_modified: Optional[datetime] = None
+    change_frequency: Optional[SitemapPageChangeFrequency] = None
     website_id: UUID4
-    sitemap_id: Optional[UUID4]
+    sitemap_id: Optional[UUID4] = None
 
 
 class WebsitePageCreate(ValidateSchemaUrlRequired, WebsitePageBase):
     url: str
     status: int
     priority: Union[float, Decimal]
-    last_modified: Optional[datetime]
-    change_frequency: Optional[SitemapPageChangeFrequency]
+    last_modified: Optional[datetime] = None
+    change_frequency: Optional[SitemapPageChangeFrequency] = None
     website_id: UUID4
-    sitemap_id: Optional[UUID4]
+    sitemap_id: Optional[UUID4] = None
 
 
 class WebsitePageUpdate(ValidateSchemaUrlOptional, BaseSchema):
-    url: Optional[str]
-    status: Optional[int]
-    priority: Optional[Union[float, Decimal]]
-    last_modified: Optional[datetime]
-    change_frequency: Optional[SitemapPageChangeFrequency]
-    sitemap_id: Optional[UUID4]
+    url: Optional[str] = None
+    status: Optional[int] = None
+    priority: Optional[Union[float, Decimal]] = None
+    last_modified: Optional[datetime] = None
+    change_frequency: Optional[SitemapPageChangeFrequency] = None
+    sitemap_id: Optional[UUID4] = None
 
 
 class WebsitePageRead(WebsitePageACL, WebsitePageBase, BaseSchemaRead):
@@ -65,4 +65,4 @@ from app.schemas.website_pagespeedinsights import (  # noqa: E402
     WebsitePageSpeedInsightsRead,
 )
 
-WebsitePageReadRelations.update_forward_refs()
+WebsitePageReadRelations.model_rebuild()

@@ -17,8 +17,8 @@ class UserIpaddressCreate(UserIpaddressBase):
 
 
 class UserIpaddressUpdate(UserIpaddressBase):
-    user_id: Optional[UUID4]
-    ipaddress_id: Optional[UUID4]
+    user_id: Optional[UUID4] = None
+    ipaddress_id: Optional[UUID4] = None
 
 
 class UserIpaddressRead(UserIpaddressACL, UserIpaddressBase, BaseSchemaRead):

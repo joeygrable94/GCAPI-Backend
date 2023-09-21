@@ -30,8 +30,8 @@ class GcftCreate(GcftBase):
 class GcftUpdate(
     ValidateGroupNameOptional,
 ):
-    group_name: Optional[str]
-    client_id: Optional[UUID4]
+    group_name: Optional[str] = None
+    client_id: Optional[UUID4] = None
 
 
 class GcftRead(GcftACL, GcftBase, BaseSchemaRead):
@@ -45,4 +45,4 @@ class GcftReadRelations(GcftRead):
 
 from app.schemas.gcft_snap import GcftSnapRead  # noqa: E402
 
-GcftReadRelations.update_forward_refs()
+GcftReadRelations.model_rebuild()

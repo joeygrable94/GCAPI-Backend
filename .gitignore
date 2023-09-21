@@ -30,6 +30,7 @@ _ref
 
 # logs
 *.log
+log.*
 
 # vscode
 .vscode

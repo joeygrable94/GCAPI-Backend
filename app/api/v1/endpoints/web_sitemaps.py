@@ -46,7 +46,7 @@ async def sitemap_list(
         page=query.page,
         website_id=query.website_id,
     )
-    return [WebsiteMapRead.from_orm(w) for w in sitemaps] if sitemaps else []
+    return [WebsiteMapRead.model_validate(w) for w in sitemaps] if sitemaps else []
 
 
 @router.post(
@@ -81,7 +81,7 @@ async def sitemap_create(
             raise WebsiteNotExists()
         # create website map
         sitemap: WebsiteMap = await sitemap_repo.create(sitemap_in)
-        return WebsiteMapRead.from_orm(sitemap)
+        return WebsiteMapRead.model_validate(sitemap)
     except WebsiteNotExists:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -108,7 +108,7 @@ async def sitemap_read(
     current_user: CurrentUser,
     sitemap: FetchSitemapOr404,
 ) -> WebsiteMapRead:
-    return WebsiteMapRead.from_orm(sitemap)
+    return WebsiteMapRead.model_validate(sitemap)
 
 
 @router.patch(
@@ -132,9 +132,9 @@ async def sitemap_update(
         entry=sitemap, schema=sitemap_in
     )
     return (
-        WebsiteMapRead.from_orm(updated_sitemap)
+        WebsiteMapRead.model_validate(updated_sitemap)
         if updated_sitemap
-        else WebsiteMapRead.from_orm(sitemap)
+        else WebsiteMapRead.model_validate(sitemap)
     )
 
 

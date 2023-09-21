@@ -13,4 +13,4 @@ async def create_random_client(db_session: AsyncSession) -> ClientRead:
             title=random_lower_string(), description=random_lower_string()
         )
     )
-    return ClientRead.from_orm(user)
+    return ClientRead.model_validate(user)

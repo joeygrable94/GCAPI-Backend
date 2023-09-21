@@ -45,7 +45,7 @@ async def website_list(
     websites: List[Website] | List[None] | None = await websites_repo.list(
         page=query.page
     )
-    return [WebsiteRead.from_orm(w) for w in websites] if websites else []
+    return [WebsiteRead.model_validate(w) for w in websites] if websites else []
 
 
 @router.post(
@@ -78,7 +78,7 @@ async def website_create(
             new_site.id, a_sitemap_url
         )
         return WebsiteCreateProcessing(
-            website=WebsiteRead.from_orm(new_site), task_id=sitemap_task.id
+            website=WebsiteRead.model_validate(new_site), task_id=sitemap_task.id
         )
     except WebsiteDomainInvalid:
         raise HTTPException(
@@ -106,7 +106,7 @@ async def website_read(
     current_user: CurrentUser,
     website: FetchWebsiteOr404,
 ) -> WebsiteRead:
-    return WebsiteRead.from_orm(website)
+    return WebsiteRead.model_validate(website)
 
 
 @router.patch(
@@ -138,9 +138,9 @@ async def website_update(
             entry=website, schema=website_in
         )
         return (
-            WebsiteRead.from_orm(updated_website)
+            WebsiteRead.model_validate(updated_website)
             if updated_website
-            else WebsiteRead.from_orm(website)
+            else WebsiteRead.model_validate(website)
         )
     except WebsiteAlreadyExists:
         raise HTTPException(

@@ -54,7 +54,7 @@ async def website_pagespeedinsights_list(
         devices=query.devices,
     )
     return (
-        [WebsitePageSpeedInsightsRead.from_orm(wpsi) for wpsi in web_psi_list]
+        [WebsitePageSpeedInsightsRead.model_validate(wpsi) for wpsi in web_psi_list]
         if web_psi_list
         else []
     )
@@ -96,7 +96,7 @@ async def website_pagespeedinsights_create(
         web_psi_repo: WebsitePageSpeedInsightsRepository
         web_psi_repo = WebsitePageSpeedInsightsRepository(db)
         psi_create: WebsitePageSpeedInsightsCreate = WebsitePageSpeedInsightsCreate(
-            **psi_in.dict(),
+            **psi_in.model_dump(),
             page_id=query.page_id,
             website_id=query.website_id,
         )
@@ -108,7 +108,7 @@ async def website_pagespeedinsights_create(
             psi_in_db.id,
             psi_in_db.created_on,
         )
-        return WebsitePageSpeedInsightsRead.from_orm(psi_in_db)
+        return WebsitePageSpeedInsightsRead.model_validate(psi_in_db)
     except WebsiteNotExists:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -135,7 +135,7 @@ async def website_pagespeedinsights_read(
     current_user: CurrentUser,
     web_page_psi: FetchWebPageSpeedInsightOr404,
 ) -> WebsitePageSpeedInsightsRead:
-    return WebsitePageSpeedInsightsRead.from_orm(web_page_psi)
+    return WebsitePageSpeedInsightsRead.model_validate(web_page_psi)
 
 
 @router.delete(

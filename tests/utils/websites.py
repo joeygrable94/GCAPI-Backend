@@ -11,4 +11,4 @@ async def create_random_website(db_session: AsyncSession) -> WebsiteRead:
     website: Website = await repo.create(
         schema=WebsiteCreate(domain=random_domain(), is_secure=random_boolean())
     )
-    return WebsiteRead.from_orm(website)
+    return WebsiteRead.model_validate(website)

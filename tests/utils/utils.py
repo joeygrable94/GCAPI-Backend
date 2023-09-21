@@ -17,7 +17,7 @@ def random_lower_string(chars: int = 32) -> str:
 
 
 def random_email() -> EmailStr:
-    return EmailStr(f"{random_lower_string()}@getcommunity.com")
+    return f"{random_lower_string()}@getcommunity.com"
 
 
 def random_domain(chars: int = 16, top_level: str = "com") -> str:

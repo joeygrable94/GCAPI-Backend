@@ -53,4 +53,4 @@ async def test_update_website_page_as_superuser_url_too_long(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "url must be 2048 characters or less"
+    assert entry["detail"][0]["msg"] == "Value error, url must be 2048 characters or less"
