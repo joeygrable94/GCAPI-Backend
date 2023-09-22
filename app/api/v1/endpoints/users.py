@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends
 
 from app.api.deps import AsyncDatabaseSession, CurrentUser, get_async_db
@@ -9,6 +11,7 @@ from app.crud.user import UserRepository
 from app.models.user import User
 from app.schemas import UserRead
 from app.schemas.user import UserCreate
+from app.schemas.user_roles import UserRole
 
 router: APIRouter = APIRouter()
 
@@ -32,17 +35,16 @@ async def users_current(
         field_name="auth_id", field_value=current_user.id
     )
     if not user:
-        is_admin: bool = False
-        if current_user.permissions and "access:admin" in current_user.permissions:
-            is_admin = True
+        user_roles: List[UserRole] = current_user.roles \
+            if current_user.roles else [UserRole.USER]
         user = await users_repo.create(
             UserCreate(
                 auth_id=current_user.id,
                 email=current_user.email,
-                username=current_user.email,
-                is_superuser=is_admin,
+                is_superuser=False,
                 is_verified=False,
                 is_active=True,
+                roles=user_roles,
             )
         )
     return UserRead.model_validate(user)

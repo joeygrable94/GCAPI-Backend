@@ -12,6 +12,7 @@ from app.db.validators import (
     ValidateSchemaUsernameRequired,
 )
 from app.schemas.base import BaseSchema, BaseSchemaRead
+from app.schemas.user_roles import UserRole
 
 
 # schemas
@@ -23,7 +24,7 @@ class UserBase(
 ):
     auth_id: str
     email: str
-    username: str
+    roles: List[UserRole] = [UserRole.USER]
 
 
 class UserCreate(UserBase):
@@ -36,10 +37,10 @@ class UserUpdate(
     ValidateSchemaUsernameOptional,
     BaseSchema,
 ):
-    username: Optional[str] = None
     is_active: Optional[bool] = None
     is_verified: Optional[bool] = None
     is_superuser: Optional[bool] = None
+    roles: Optional[List[UserRole]] = None
 
 
 class UserRead(UserACL, UserBase, BaseSchemaRead):

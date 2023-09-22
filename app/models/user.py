@@ -2,13 +2,14 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
-from sqlalchemy import Boolean, DateTime, String, func
+from sqlalchemy import JSON, Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_random_username  # type: ignore
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
+from app.schemas import UserRole
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
@@ -44,16 +45,14 @@ class User(Base):
         String(320),
         nullable=False,
     )
-    username: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False,
-        unique=True,
-        index=True,
-        default=get_random_username(),
-    )
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
+    roles: Mapped[List[UserRole]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=[UserRole.USER.value],
+    )
 
     # relationships
     clients: Mapped[List["Client"]] = relationship(

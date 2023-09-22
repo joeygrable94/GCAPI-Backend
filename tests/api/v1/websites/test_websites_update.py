@@ -65,7 +65,9 @@ async def test_update_website_as_superuser_domain_too_short(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "Value error, domain must be 5 characters or more"
+    assert (
+        entry["detail"][0]["msg"] == "Value error, domain must be 5 characters or more"
+    )
 
 
 async def test_update_website_as_superuser_domain_too_long(
@@ -83,7 +85,10 @@ async def test_update_website_as_superuser_domain_too_long(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "Value error, domain must be 255 characters or less"
+    assert (
+        entry["detail"][0]["msg"]
+        == "Value error, domain must be 255 characters or less"
+    )
 
 
 async def test_update_website_as_superuser_domain_invalid(

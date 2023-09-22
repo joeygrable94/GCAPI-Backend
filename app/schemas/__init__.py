@@ -96,6 +96,7 @@ from .task import TaskState
 from .user import UserCreate, UserRead, UserReadRelations, UserUpdate
 from .user_client import UserClientCreate, UserClientRead, UserClientUpdate
 from .user_ipaddress import UserIpaddressCreate, UserIpaddressRead, UserIpaddressUpdate
+from .user_roles import UserRole
 from .website import (
     WebsiteCreate,
     WebsiteCreateProcessing,

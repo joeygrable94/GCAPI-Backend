@@ -36,8 +36,9 @@ class Geocoord(Base):
     )
     address: Mapped[str] = mapped_column(
         String(255),
-        nullable=False,
+        unique=True,
         primary_key=True,
+        nullable=False,
         default="135-145, South Olive Street, Orange, \
             Orange County, California, 92866, United States",
     )

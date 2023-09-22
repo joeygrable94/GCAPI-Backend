@@ -69,7 +69,9 @@ async def test_create_client_as_superuser_client_title_too_short(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "Value error, title must be 5 characters or more"
+    assert (
+        entry["detail"][0]["msg"] == "Value error, title must be 5 characters or more"
+    )
 
 
 async def test_create_client_as_superuser_client_title_too_long(
@@ -86,7 +88,9 @@ async def test_create_client_as_superuser_client_title_too_long(
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
-    assert entry["detail"][0]["msg"] == "Value error, title must be 96 characters or less"
+    assert (
+        entry["detail"][0]["msg"] == "Value error, title must be 96 characters or less"
+    )
 
 
 async def test_create_client_as_superuser_client_description_too_long(
@@ -104,5 +108,6 @@ async def test_create_client_as_superuser_client_description_too_long(
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
     assert (
-        entry["detail"][0]["msg"] == "Value error, description must be 5000 characters or less"
+        entry["detail"][0]["msg"]
+        == "Value error, description must be 5000 characters or less"
     )  # noqa: E501

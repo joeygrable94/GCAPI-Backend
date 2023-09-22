@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Optional
 
 from fastapi_mail import FastMail  # type: ignore
 from fastapi_mail import MessageSchema, MessageType

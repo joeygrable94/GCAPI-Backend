@@ -47,7 +47,11 @@ async def website_page_list(
         website_id=query.website_id,
         sitemap_id=query.sitemap_id,
     )
-    return [WebsitePageRead.model_validate(w) for w in website_list] if website_list else []
+    return (
+        [WebsitePageRead.model_validate(w) for w in website_list]
+        if website_list
+        else []
+    )
 
 
 @router.post(

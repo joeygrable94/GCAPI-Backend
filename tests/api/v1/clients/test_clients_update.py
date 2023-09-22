@@ -47,7 +47,10 @@ async def test_update_client_as_superuser_title_too_short(
     )
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 422
-    assert updated_entry["detail"][0]["msg"] == "Value error, title must be 5 characters or more"
+    assert (
+        updated_entry["detail"][0]["msg"]
+        == "Value error, title must be 5 characters or more"
+    )
 
 
 async def test_update_client_as_superuser_title_too_long(
@@ -65,7 +68,10 @@ async def test_update_client_as_superuser_title_too_long(
     )
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 422
-    assert updated_entry["detail"][0]["msg"] == "Value error, title must be 96 characters or less"
+    assert (
+        updated_entry["detail"][0]["msg"]
+        == "Value error, title must be 96 characters or less"
+    )
 
 
 async def test_update_client_as_superuser_description_too_long(
