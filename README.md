@@ -2,24 +2,17 @@
 
 [![CodeQL](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql.yml) [![GitHub CI](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/joeygrable94/GCAPI-Backend/branch/main/graph/badge.svg?token=8FCB50574D)](https://codecov.io/gh/joeygrable94/GCAPI-Backend)
 
-
-## Table of Contents
-
 - [GCAPI Backend](#gcapi-backend)
-  - [Table of Contents](#table-of-contents)
   - [Getting Started](#getting-started)
-- [Backend Tool Chest](#backend-tool-chest)
   - [Alembic](#alembic)
     - [Configuration](#configuration)
     - [Commands](#commands)
     - [Resources](#resources)
   - [SQLAlchemy ORM](#sqlalchemy-orm)
-    - [Resources](#resources-1)
+    - [SQLAlchemy Resources](#sqlalchemy-resources)
   - [PyTest](#pytest)
-    - [Commands](#commands-1)
-    - [Resources](#resources-2)
-- [Backend Data Model](#backend-data-model)
-  - [Model Architecture](#model-architecture)
+    - [PyTest Commands](#pytest-commands)
+    - [PyTest Resources](#pytest-resources)
 
 ---
 
@@ -41,10 +34,6 @@ Create a virtual environment, activate it, then install the backend python pip `
     > ... App Running at 0.0.0.0:8888
     > :q
     source venv/bin/deactivate
-
-<br/><br/>
-
-# Backend Tool Chest
 
 ## Alembic
 
@@ -84,7 +73,7 @@ Always add a message about what changed in the db models/tables.
 
 ## SQLAlchemy ORM
 
-### Resources
+### SQLAlchemy Resources
 
 - [SQLAlchemy Relationship Loading Techniques](https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html)
 
@@ -92,58 +81,13 @@ Always add a message about what changed in the db models/tables.
 
 ## PyTest
 
-### Commands
+### PyTest Commands
 
     pytest
     pytest tests/crud
     pytest tests/api/api_v1/test_websites.py
 
-### Resources
+### PyTest Resources
 
 - [FastAPI PyTest Coverage WalkThrough](https://www.azepug.az/posts/fastapi/ecommerce-fastapi-nuxtjs/ecommerce-pytest-user-auth-part1.html)
 - [PyTest Raising Exceptions](https://docs.pytest.org/en/6.2.x/assert.html)
-
-<br/><br/>
-
-# Backend Data Model
-
-## Model Architecture
-
-```mermaid
-classDiagram
-    User --|> Client
-    Website <|-- Client
-    Website <|-- WebsitePage
-    WebsiteMap --|> WebsitePage
-    WebsiteMap --|> Website
-    class User{
-        +UUID id
-        +str email
-        +str hashed_password
-        +list scopes
-        has_permission()
-    }
-    class Client{
-        +str name
-    }
-    class Website{
-        +str domain
-        +bool is_secure
-        getUrl()
-        fetchSiteMap()
-        fetchPages()
-    }
-    class WebsiteMap{
-        +str domain
-        +bool is_secure
-        getUrl()
-        fetchSiteMap()
-        fetchPages()
-    }
-    class WebsitePage{
-        +int status
-        fetch_core_web_vitals()
-        fetch_keyword_corpus()
-        fetch_keywords()
-    }
-```
