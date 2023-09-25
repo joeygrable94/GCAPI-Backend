@@ -29,7 +29,7 @@ anyio = {version = "3.7.1", extras = ["trio"]}
 asyncio = "3.4.3"
 aiohttp = "3.8.5"
 aiosqlite = "0.18.0"
-aiomysql = "0.1.1"
+aiomysql = "0.2.0"
 aiofiles = "23.1.0"
 email-validator = "2.0.0.post2"
 Jinja2 = "3.1.2"
