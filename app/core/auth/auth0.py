@@ -52,7 +52,7 @@ security_responses: Dict = {**unauthenticated_response, **unauthorized_response}
 
 
 class Auth0User(BaseModel):
-    id: str = Field(..., alias="sub")
+    auth_id: str = Field(..., alias="sub")
     permissions: Optional[List[str]]
     email: Optional[str] = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/email"

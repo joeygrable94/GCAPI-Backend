@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, String, Text, func
+from sqlalchemy import Boolean, DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -47,6 +47,7 @@ class Client(Base):
         String(96), nullable=False, unique=True, primary_key=True
     )
     description: Mapped[str] = mapped_column(Text(5000), nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
 
     # relationships
     users: Mapped[List["User"]] = relationship(

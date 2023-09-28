@@ -38,11 +38,29 @@ router: APIRouter = APIRouter()
     ],
     response_model=List[WebsitePageSpeedInsightsRead],
 )
-async def website_pagespeedinsights_list(
+async def website_page_speed_insights_list(
     current_user: CurrentUser,
     db: AsyncDatabaseSession,
     query: GetWebsitePageSpeedInsightsQueryParams,
 ) -> List[WebsitePageSpeedInsightsRead] | List:
+    """Retrieve a list of website page speed insights.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all website page speed insights
+
+    `role=client` : only website page speed insights with a website_id associated with
+        the client via `client_website` table
+
+    `role=employee` : only website page speed insights with a website_id associated
+        with a client's website via `client_website` table, associated with the user
+        via `user_client`
+
+    Returns:
+    --------
+    `List[WebsitePageSpeedInsightsRead] | List[None]` : a list of website page speed
+        insights, optionally filtered, or returns an empty list
+    """
     web_psi_repo: WebsitePageSpeedInsightsRepository
     web_psi_repo = WebsitePageSpeedInsightsRepository(session=db)
     web_psi_list: List[WebsitePageSpeedInsights] | List[
@@ -69,12 +87,30 @@ async def website_pagespeedinsights_list(
     ],
     response_model=WebsitePageSpeedInsightsRead,
 )
-async def website_pagespeedinsights_create(
+async def website_page_speed_insights_create(
     current_user: CurrentUser,
     db: AsyncDatabaseSession,
     query: GetWebsitePageSpeedInsightsQueryParams,
     psi_in: WebsitePageSpeedInsightsBase,
 ) -> WebsitePageSpeedInsightsRead:
+    """Create a new website page speed insights.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : create a new website page speed insights
+
+    `role=client` : create a new website page speed insights that belongs to a website
+        associated with the client via `client_website` table
+
+    `role=employee` : create a new website page speed insights that belongs to a website
+        associated with a client via `client_website` table, associated with the user
+        via the `user_client` table
+
+    Returns:
+    --------
+    `WebsitePageSpeedInsightsRead` : the newly created website page speed insights
+
+    """
     try:
         # check if website exists
         if query.website_id is None:
@@ -92,7 +128,6 @@ async def website_pagespeedinsights_create(
         )
         if a_web_page is None:
             raise WebsitePageNotExists()
-        # create website page speed insights
         web_psi_repo: WebsitePageSpeedInsightsRepository
         web_psi_repo = WebsitePageSpeedInsightsRepository(db)
         psi_create: WebsitePageSpeedInsightsCreate = WebsitePageSpeedInsightsCreate(
@@ -131,10 +166,28 @@ async def website_pagespeedinsights_create(
     ],
     response_model=WebsitePageSpeedInsightsRead,
 )
-async def website_pagespeedinsights_read(
+async def website_page_speed_insights_read(
     current_user: CurrentUser,
     web_page_psi: FetchWebPageSpeedInsightOr404,
 ) -> WebsitePageSpeedInsightsRead:
+    """Retrieve a single website page speed insights by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : read any website page speed insight
+
+    `role=client` : read any website page speed insight that belongs to a website
+        associated with the client via `client_website` table
+
+    `role=employee` : read any website page speed insight that belongs to a website
+        associated with a client via `client_website` table, associated with the user
+        via the `user_client` table
+
+    Returns:
+    --------
+    `WebsitePageSpeedInsightsRead` : the website page speed insights requested by psi_id
+
+    """
     return WebsitePageSpeedInsightsRead.model_validate(web_page_psi)
 
 
@@ -148,11 +201,29 @@ async def website_pagespeedinsights_read(
     ],
     response_model=None,
 )
-async def website_pagespeedinsights_delete(
+async def website_page_speed_insights_delete(
     current_user: CurrentUser,
     db: AsyncDatabaseSession,
     web_page_psi: FetchWebPageSpeedInsightOr404,
 ) -> None:
+    """Delete a single website page speed insights by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : delete any website page speed insight
+
+    `role=client` : delete any website page speed insight that belongs to a website
+        associated with the client via `client_website` table
+
+    `role=employee` : delete any website page speed insight that belongs to a website
+        associated with a client via `client_website` table, associated with the user
+        via the `user_client` table
+
+    Returns:
+    --------
+    `None`
+
+    """
     web_psi_repo: WebsitePageSpeedInsightsRepository
     web_psi_repo = WebsitePageSpeedInsightsRepository(session=db)
     await web_psi_repo.delete(entry=web_page_psi)

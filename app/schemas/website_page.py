@@ -19,6 +19,7 @@ class WebsitePageBase(BaseSchema):
     priority: Union[float, Decimal]
     last_modified: Optional[datetime] = None
     change_frequency: Optional[SitemapPageChangeFrequency] = None
+    is_active: bool
     website_id: UUID4
     sitemap_id: Optional[UUID4] = None
 
@@ -29,6 +30,7 @@ class WebsitePageCreate(ValidateSchemaUrlRequired, WebsitePageBase):
     priority: Union[float, Decimal]
     last_modified: Optional[datetime] = None
     change_frequency: Optional[SitemapPageChangeFrequency] = None
+    is_active: bool = True
     website_id: UUID4
     sitemap_id: Optional[UUID4] = None
 
@@ -39,6 +41,7 @@ class WebsitePageUpdate(ValidateSchemaUrlOptional, BaseSchema):
     priority: Optional[Union[float, Decimal]] = None
     last_modified: Optional[datetime] = None
     change_frequency: Optional[SitemapPageChangeFrequency] = None
+    is_active: Optional[bool] = True
     sitemap_id: Optional[UUID4] = None
 
 
@@ -46,11 +49,16 @@ class WebsitePageRead(WebsitePageACL, WebsitePageBase, BaseSchemaRead):
     id: UUID4
 
 
-# task
-class WebsitePageFetchPSIProcessing(BaseModel):
+# tasks
+class WebsitePagePSIProcessing(BaseModel):
     page: WebsitePageRead
-    mobile_task_id: UUID4
-    desktop_task_id: UUID4
+    psi_mobile_task_id: UUID4
+    psi_desktop_task_id: UUID4
+
+
+class WebsitePageKWCProcessing(BaseModel):
+    page: WebsitePageRead
+    kwc_task_id: UUID4
 
 
 # relationships

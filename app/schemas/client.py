@@ -20,6 +20,7 @@ class ClientBase(
 ):
     title: str
     description: Optional[str] = None
+    is_active: Optional[bool] = True
 
 
 class ClientCreate(ClientBase):
@@ -33,6 +34,7 @@ class ClientUpdate(
 ):
     title: Optional[str] = None
     description: Optional[str] = None
+    is_active: Optional[bool] = None
 
 
 class ClientRead(ClientACL, ClientBase, BaseSchemaRead):

@@ -20,6 +20,9 @@ class PageQueryParams:
         self.page = page
 
 
+GetPageQueryParams = Annotated[PageQueryParams, Depends()]
+
+
 class UserQueryParams:
     def __init__(self, user_id: Any | None = None):
         q_user_id: UUID4 | None
@@ -218,4 +221,25 @@ class CommonWebsitePageSpeedInsightsQueryParams(
 
 GetWebsitePageSpeedInsightsQueryParams = Annotated[
     CommonWebsitePageSpeedInsightsQueryParams, Depends()
+]
+
+
+class CommonWebsiteKeywordCorpusQueryParams(
+    PageQueryParams,
+    WebsiteQueryParams,
+    WebsitePageQueryParams,
+):
+    def __init__(
+        self,
+        page: int = 1,
+        website_id: Any | None = Query(None),
+        page_id: Any | None = Query(None),
+    ):
+        PageQueryParams.__init__(self, page)
+        WebsiteQueryParams.__init__(self, website_id)
+        WebsitePageQueryParams.__init__(self, page_id)
+
+
+GetWebsiteKeywordCorpusQueryParams = Annotated[
+    CommonWebsiteKeywordCorpusQueryParams, Depends()
 ]

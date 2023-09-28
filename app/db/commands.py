@@ -1,7 +1,7 @@
 import logging
 from typing import Any  # pragma: no cover
 
-from sqlalchemy.sql import text  # pragma: no cover
+from sqlalchemy import text  # pragma: no cover
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
 from app.core.config import settings  # pragma: no cover

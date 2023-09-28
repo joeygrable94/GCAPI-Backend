@@ -60,7 +60,7 @@ async def test_create_website_pagespeedinsights_as_superuser(
     )
     assert 200 <= response.status_code < 300
     p_entry: Dict[str, Any] = response.json()
-    a_webpage: WebsitePageRead = WebsitePageRead(**p_entry["page"])
+    a_webpage: WebsitePageRead = WebsitePageRead(**p_entry)
     # create page speed insights
     d_strategy: str = "mobile"
     psi_base: WebsitePageSpeedInsightsBase = generate_psi_base(

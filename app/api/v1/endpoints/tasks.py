@@ -20,6 +20,20 @@ def get_tasks_status(
     current_user: CurrentUser,
     task_id: Any,
 ) -> TaskState:  # pragma: no cover
+    """Retrieve the status of a task by task_id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all tasks
+
+    `role=user` : only tasks associated with the user via other models
+
+    Returns:
+    --------
+    `TaskState` : a dictionary containing the worker task id, status,
+        and maybe the result
+
+    """
     task_result = AsyncResult(task_id)
     return TaskState(
         task_id=task_id, task_status=task_result.status, task_result=task_result.result

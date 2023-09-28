@@ -77,7 +77,7 @@ class FileAsset(Base):
     title: Mapped[str] = mapped_column(String(96), nullable=False)
     caption: Mapped[str] = mapped_column(String(150), nullable=True)
     keys: Mapped[str] = mapped_column(BLOB, nullable=True)
-    is_private: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_private: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
 
     # relationships
     user_id: Mapped[UUID4] = mapped_column(

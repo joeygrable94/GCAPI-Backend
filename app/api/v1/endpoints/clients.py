@@ -6,7 +6,7 @@ from app.api.deps import (
     AsyncDatabaseSession,
     CurrentUser,
     FetchClientOr404,
-    GetClientWebsiteQueryParams,
+    GetPageQueryParams,
     get_async_db,
     get_client_or_404,
 )
@@ -33,8 +33,23 @@ router: APIRouter = APIRouter()
 async def clients_list(
     current_user: CurrentUser,
     db: AsyncDatabaseSession,
-    query: GetClientWebsiteQueryParams,
+    query: GetPageQueryParams,
 ) -> List[ClientRead] | List:
+    """Retrieve a list of clients.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all clients
+
+    `role=client|employee` : only clients associated with the user via `user_client`
+        table
+
+    Returns:
+    --------
+    `List[ClientRead] | List[None]` : a list of clients, optionally filtered,
+        or returns an empty list
+
+    """
     clients_repo: ClientRepository = ClientRepository(session=db)
     clients: List[Client] | List[None] | None = await clients_repo.list(page=query.page)
     return [ClientRead.model_validate(c) for c in clients] if clients else []
@@ -54,6 +69,17 @@ async def clients_create(
     db: AsyncDatabaseSession,
     client_in: ClientCreate,
 ) -> ClientRead:
+    """Create a new client.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : create a new client
+
+    Returns:
+    --------
+    `ClientRead` : the newly created client
+
+    """
     try:
         clients_repo: ClientRepository = ClientRepository(session=db)
         data: Dict = client_in.model_dump()
@@ -89,6 +115,19 @@ async def clients_read(
     db: AsyncDatabaseSession,
     client: FetchClientOr404,
 ) -> ClientRead:
+    """Retrieve a single client by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all clients
+
+    `role=user` : only clients associated with the user via `user_client`
+
+    Returns:
+    --------
+    `ClientRead` : a client matching the client_id
+
+    """
     return ClientRead.model_validate(client)
 
 
@@ -108,6 +147,17 @@ async def clients_update(
     client: FetchClientOr404,
     client_in: ClientUpdate,
 ) -> ClientRead:
+    """Update a client by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all clients
+
+    Returns:
+    --------
+    `ClientRead` : the updated client
+
+    """
     try:
         clients_repo: ClientRepository = ClientRepository(session=db)
         if client_in.title is not None:
@@ -145,6 +195,17 @@ async def clients_delete(
     db: AsyncDatabaseSession,
     client: FetchClientOr404,
 ) -> None:
+    """Delete a client by id.
+
+    Permissions:
+    ------------
+    `role=admin` : all clients
+
+    Returns:
+    --------
+    `None`
+
+    """
     clients_repo: ClientRepository = ClientRepository(session=db)
     await clients_repo.delete(entry=client)
     return None

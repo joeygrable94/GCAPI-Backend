@@ -19,7 +19,6 @@ from app.schemas.user_roles import UserRole
 class UserBase(
     ValidateSchemaAuthIdRequired,
     ValidateSchemaEmailRequired,
-    ValidateSchemaUsernameRequired,
     BaseSchema,
 ):
     auth_id: str
@@ -27,7 +26,11 @@ class UserBase(
     roles: List[UserRole] = [UserRole.USER]
 
 
-class UserCreate(UserBase):
+class UserCreate(
+    ValidateSchemaUsernameRequired,
+    UserBase,
+):
+    username: str
     is_active: bool = True
     is_verified: bool = False
     is_superuser: bool = False
@@ -37,6 +40,7 @@ class UserUpdate(
     ValidateSchemaUsernameOptional,
     BaseSchema,
 ):
+    username: Optional[str] = None
     is_active: Optional[bool] = None
     is_verified: Optional[bool] = None
     is_superuser: Optional[bool] = None

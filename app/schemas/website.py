@@ -13,16 +13,19 @@ from app.schemas.base import BaseSchemaRead
 class WebsiteBase(ValidateSchemaDomainRequired):
     domain: str
     is_secure: bool = False
+    is_active: bool = True
 
 
 class WebsiteCreate(ValidateSchemaDomainRequired):
     domain: str
-    is_secure: Optional[bool] = False
+    is_secure: bool = False
+    is_active: bool = True
 
 
 class WebsiteUpdate(ValidateSchemaDomainOptional):
     domain: Optional[str] = None
     is_secure: Optional[bool] = None
+    is_active: Optional[bool] = None
 
 
 class WebsiteRead(WebsiteACL, WebsiteBase, BaseSchemaRead):

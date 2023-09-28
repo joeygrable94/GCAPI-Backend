@@ -1,4 +1,6 @@
 # Generics
+
+
 class EntityException(Exception):
     pass
 
@@ -19,7 +21,7 @@ class EntityIdNotProvided(EntityException):
     pass
 
 
-class EntityValueRequired(Exception):
+class EntityValueRequired(EntityException):
     pass
 
 
@@ -103,4 +105,13 @@ class WebsitePageSpeedInsightsAlreadyExists(WebsitesException):
 
 
 class WebsitePageSpeedInsightsNotExists(WebsitesException):
+    pass
+
+
+# Website Keyword Corpus
+class WebsiteKeywordCorpusAlreadyExists(WebsitesException):
+    pass
+
+
+class WebsitePageKeywordCorpusNotExists(WebsitesException):
     pass

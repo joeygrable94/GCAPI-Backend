@@ -17,7 +17,7 @@ from app.crud import WebsitePageRepository, WebsiteRepository
 from app.models import Website, WebsitePage
 from app.schemas import (
     WebsitePageCreate,
-    WebsitePageFetchPSIProcessing,
+    WebsitePagePSIProcessing,
     WebsitePageRead,
     WebsitePageReadRelations,
     WebsitePageUpdate,
@@ -41,6 +41,24 @@ async def website_page_list(
     db: AsyncDatabaseSession,
     query: GetWebsitePageQueryParams,
 ) -> List[WebsitePageRead] | List:
+    """Retrieve a list of website pages.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all website pages
+
+    `role=client` : only website pages with a website_id associated with the client
+        via `client_website` table
+
+    `role=employee` : only website pages with a website_id associated with a client's
+        website via `client_website` table, associated with the user via `user_client`
+
+    Returns:
+    --------
+    `List[WebsitePageRead] | List[None]` : a list of website pages, optionally filtered,
+        or returns an empty list
+
+    """
     web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
     website_list: List[WebsitePage] | List[None] | None = await web_pages_repo.list(
         page=query.page,
@@ -61,13 +79,31 @@ async def website_page_list(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=WebsitePageFetchPSIProcessing,
+    response_model=WebsitePageRead,
 )
 async def website_page_create(
     current_user: CurrentUser,
     db: AsyncDatabaseSession,
     website_page_in: WebsitePageCreate,
-) -> WebsitePageFetchPSIProcessing:
+) -> WebsitePageRead:
+    """Create a new website page.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : create a new website page
+
+    `role=client` : create a new website page that belongs to a website associated with
+        the client via `client_website` table
+
+    `role=employee` : create a new website page that belongs to a website associated
+        with the client via `client_website` table, associated with the user via the
+        `user_client` table
+
+    Returns:
+    --------
+    `WebsitePageRead` : the newly created website page
+
+    """
     try:
         website_repo: WebsiteRepository = WebsiteRepository(session=db)
         web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
@@ -86,24 +122,7 @@ async def website_page_create(
             raise WebsiteNotExists()
         # create the website page
         website_page: WebsitePage = await web_pages_repo.create(website_page_in)
-        fetch_page = a_website.get_link() + website_page.url
-        website_page_psi_mobile: Any = task_website_page_pagespeedinsights_fetch.delay(
-            website_id=a_website.id,
-            page_id=website_page.id,
-            fetch_url=fetch_page,
-            device="mobile",
-        )
-        website_page_psi_desktop: Any = task_website_page_pagespeedinsights_fetch.delay(
-            website_id=a_website.id,
-            page_id=website_page.id,
-            fetch_url=fetch_page,
-            device="desktop",
-        )
-        return WebsitePageFetchPSIProcessing(
-            page=WebsitePageRead.model_validate(website_page),
-            mobile_task_id=website_page_psi_mobile.id,
-            desktop_task_id=website_page_psi_desktop.id,
-        )
+        return WebsitePageRead.model_validate(website_page)
     except WebsiteNotExists:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -130,6 +149,23 @@ async def website_page_read(
     current_user: CurrentUser,
     website_page: FetchWebPageOr404,
 ) -> WebsitePageRead:
+    """Retrieve a single website page by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all website pages
+
+    `role=client` : only website pages with a website_id associated with the client
+        via `client_website` table
+
+    `role=employee` : only website pages with a website_id associated with a client's
+        website via `client_website` table, associated with the user via `user_client`
+
+    Returns:
+    --------
+    `WebsitePageRead` : the website page requested by page_id
+
+    """
     return WebsitePageRead.model_validate(website_page)
 
 
@@ -149,6 +185,23 @@ async def website_page_update(
     website_page: FetchWebPageOr404,
     website_page_in: WebsitePageUpdate,
 ) -> WebsitePageRead:
+    """Update a website page by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all website pages
+
+    `role=client` : only website pages with a website_id associated with the client
+        via `client_website` table
+
+    `role=employee` : only website pages with a website_id associated with a client's
+        website via `client_website` table, associated with the user via `user_client`
+
+    Returns:
+    --------
+    `WebsitePageRead` : the updated website page
+
+    """
     web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
     updated_website_page: WebsitePage | None = await web_pages_repo.update(
         entry=website_page, schema=website_page_in
@@ -175,6 +228,87 @@ async def website_page_delete(
     db: AsyncDatabaseSession,
     website_page: FetchWebPageOr404,
 ) -> None:
+    """Delete a website page by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all website pages
+
+    `role=client` : only website pages with a website_id associated with the client
+        via `client_website` table
+
+    `role=employee` : only website pages with a website_id associated with a client's
+        website via `client_website` table, associated with the user via `user_client`
+
+    Returns:
+    --------
+    `None`
+
+    """
     web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
     await web_pages_repo.delete(entry=website_page)
     return None
+
+
+@router.get(
+    "/{page_id}/process-psi",
+    name="website_pages:process_website_page_speed_insights",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_website_page_or_404),
+    ],
+    response_model=WebsitePageReadRelations,
+)
+async def website_page_process_website_page_speed_insights(
+    current_user: CurrentUser,
+    db: AsyncDatabaseSession,
+    website_page: FetchWebPageOr404,
+) -> WebsitePagePSIProcessing:
+    """A webhook to initiate processing a website page's page speed insights.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all website pages
+
+    `role=client` : only website pages with a website_id associated with the client
+        via `client_website` table
+
+    `role=employee` : only website pages with a website_id associated with a client's
+        website via `client_website` table, associated with the user via `user_client`
+
+    Returns:
+    --------
+    `WebsitePagePSIProcessing` : a website page PSI processing object containing the
+        task_id's for the mobile and desktop page speed insights tasks
+
+    """
+    try:
+        # check website page is assigned to a website
+        website_repo: WebsiteRepository = WebsiteRepository(session=db)
+        a_website: Website | None = await website_repo.read(website_page.website_id)
+        if a_website is None:
+            raise WebsiteNotExists()
+        fetch_page = a_website.get_link() + website_page.url
+        website_page_psi_mobile: Any = task_website_page_pagespeedinsights_fetch.delay(
+            website_id=a_website.id,
+            page_id=website_page.id,
+            fetch_url=fetch_page,
+            device="mobile",
+        )
+        website_page_psi_desktop: Any = task_website_page_pagespeedinsights_fetch.delay(
+            website_id=a_website.id,
+            page_id=website_page.id,
+            fetch_url=fetch_page,
+            device="desktop",
+        )
+        return WebsitePagePSIProcessing(
+            page=WebsitePageRead.model_validate(website_page),
+            psi_mobile_task_id=website_page_psi_mobile.id,
+            psi_desktop_task_id=website_page_psi_desktop.id,
+        )
+    except WebsiteNotExists:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorCode.WEBSITE_PAGE_UNASSIGNED_WEBSITE_ID,
+        )

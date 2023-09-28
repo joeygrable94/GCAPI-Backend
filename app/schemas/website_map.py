@@ -35,7 +35,9 @@ class WebsiteMapPage(BaseModel):
 
 # schemas
 class WebsiteMapBase(BaseSchema):
-    pass
+    url: str
+    is_active: bool
+    website_id: UUID4
 
 
 class WebsiteMapCreate(
@@ -43,22 +45,26 @@ class WebsiteMapCreate(
     WebsiteMapBase,
 ):
     url: str
+    is_active: bool = True
     website_id: UUID4
 
 
 class WebsiteMapUpdate(
     ValidateSchemaUrlOptional,
-    WebsiteMapBase,
+    BaseSchema,
 ):
     url: Optional[str] = None
+    is_active: Optional[bool] = None
 
 
-class WebsiteMapRead(WebsiteMapACL, WebsiteMapCreate, WebsiteMapBase, BaseSchemaRead):
+class WebsiteMapRead(WebsiteMapACL, WebsiteMapBase, BaseSchemaRead):
     id: UUID4
 
 
 # tasks
-class WebsiteMapProcessing(WebsiteMapCreate):
+class WebsiteMapProcessing(BaseSchema):
+    url: str
+    website_id: UUID4
     task_id: str
 
 

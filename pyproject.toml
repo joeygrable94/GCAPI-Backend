@@ -6,7 +6,7 @@ authors = ["Joey Grable <hello@joeygrable.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-uvicorn = {version = "0.21.1", extras = ["standard"]}
+uvicorn = {version = "0.23.2", extras = ["standard"]}
 gunicorn = "^20.1.0"
 greenlet = "2.0.2"
 requests = "^2.31.0"
@@ -29,19 +29,19 @@ anyio = {version = "3.7.1", extras = ["trio"]}
 asyncio = "3.4.3"
 aiohttp = "3.8.5"
 aiosqlite = "0.18.0"
-aiomysql = "0.1.1"
+aiomysql = "0.2.0"
 aiofiles = "23.1.0"
 email-validator = "2.0.0.post2"
 Jinja2 = "3.1.2"
 types-passlib = "^1.7.7"
 fastapi-permissions = "^0.2.7"
-celery = "^5.2.2"
-redis = "^4.5.4"
+celery = "^5.2.7"
+redis = "^5.0.0"
 raven = "^6.10.0"
 types-redis = "^4.4.0.6"
 aioredis = "^2.0.1"
 ultimate-sitemap-parser = "^0.5"
-types-requests = "^2.28.11.16"
+types-requests = "^2.31.0.4"
 tenacity = "^8.2.2"
 python-jose = "^3.3.0"
 

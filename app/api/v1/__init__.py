@@ -2,9 +2,11 @@ from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
     clients,
+    notes,
     public,
     tasks,
     users,
+    web_keywordcorpus,
     web_pages,
     web_pagespeedinsights,
     web_sitemaps,
@@ -41,6 +43,13 @@ router_v1.include_router(
     tags=["Clients"],
 )
 
+# note routes
+router_v1.include_router(
+    notes.router,
+    prefix="/notes",
+    tags=["Notes"],
+)
+
 # website routes
 router_v1.include_router(
     websites.router,
@@ -67,4 +76,11 @@ router_v1.include_router(
     web_pagespeedinsights.router,
     prefix="/psi",
     tags=["Website Page Speed Insights"],
+)
+
+# website page keyword corpus routes
+router_v1.include_router(
+    web_keywordcorpus.router,
+    prefix="/kwc",
+    tags=["Website Page Keyword Corpus"],
 )

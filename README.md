@@ -4,9 +4,12 @@
 
 - [GCAPI Backend](#gcapi-backend)
   - [Getting Started](#getting-started)
+  - [FastAPI](#fastapi)
+    - [FastAPI Resources](#fastapi-resources)
   - [Alembic](#alembic)
     - [Configuration](#configuration)
     - [Commands](#commands)
+  - [Hashing and Encrypting Data](#hashing-and-encrypting-data)
     - [Resources](#resources)
   - [SQLAlchemy ORM](#sqlalchemy-orm)
     - [SQLAlchemy Resources](#sqlalchemy-resources)
@@ -34,6 +37,12 @@ Create a virtual environment, activate it, then install the backend python pip `
     > ... App Running at 0.0.0.0:8888
     > :q
     source venv/bin/deactivate
+
+## FastAPI
+
+### FastAPI Resources
+
+- [FastAPI Middleware](https://fastapi.tiangolo.com/tutorial/middleware/)
 
 ## Alembic
 
@@ -64,6 +73,15 @@ Always add a message about what changed in the db models/tables.
     alembic upgrade +1
     alembic downgrade -1
     alembic downgrade base
+
+## Hashing and Encrypting Data
+
+- [Password Encryption in Python: Securing Your Data](https://pagorun.medium.com/password-encryption-in-python-securing-your-data-9e0045e039e1)
+- [Asymmetric Encryption and Decryption in Python](https://nitratine.net/blog/post/asymmetric-encryption-and-decryption-in-python/)
+- [Asymmetric Cryptography with Python](https://medium.com/@ashiqgiga07/asymmetric-cryptography-with-python-5eed86772731)
+- [Exploring approaches to field-level encryption in Python for Django applications](https://www.piiano.com/blog/field-level-encryption-in-python-for-django-applications)
+- [Example RSA_example.py](https://gist.github.com/syedrakib/241b68f5aeaefd7ef8e2)
+- [Example rsa.py](https://gist.github.com/edmhs/6afc542af8a20a619946c2c3b36df8f4)
 
 ### Resources
 

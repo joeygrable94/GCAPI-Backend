@@ -17,16 +17,19 @@ from app.schemas.base import BaseSchemaRead
 class NoteBase(ValidateSchemaTitleRequired, ValidateSchemaDescriptionOptional):
     title: str
     description: Optional[str] = None
+    is_active: bool = True
 
 
 class NoteCreate(NoteBase):
     title: str
     description: Optional[str] = None
+    is_active: bool = True
 
 
 class NoteUpdate(ValidateSchemaTitleOptional, ValidateSchemaDescriptionOptional):
     title: Optional[str] = None
     description: Optional[str] = None
+    is_active: Optional[bool] = None
 
 
 class NoteRead(NoteACL, NoteBase, BaseSchemaRead):

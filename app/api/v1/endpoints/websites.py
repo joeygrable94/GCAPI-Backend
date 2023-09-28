@@ -41,6 +41,23 @@ async def website_list(
     db: AsyncDatabaseSession,
     query: GetClientWebsiteQueryParams,
 ) -> List[WebsiteRead] | List:
+    """List websites.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all websites
+
+    `role=client` : only websites associated with the client via `client_website` table
+
+    `role=employee` : only websites associated with the clients via `client_website`
+        that belong to the user via `user_client` table
+
+    Returns:
+    --------
+    `List[WebsiteRead] | List[None]` : a list of websites, optionally filtered,
+        or returns an empty list
+
+    """
     websites_repo: WebsiteRepository = WebsiteRepository(session=db)
     websites: List[Website] | List[None] | None = await websites_repo.list(
         page=query.page
@@ -62,6 +79,23 @@ async def website_create(
     db: AsyncDatabaseSession,
     website_in: WebsiteCreate,
 ) -> WebsiteCreateProcessing:
+    """Create a new website.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : create a new website
+
+    `role=client` : create a new website associated with the client via `client_website`
+
+    `role=employee` : create a new website only for clients associated with the user via
+        `user_client` table, and associated with the client via `client_website` table
+
+    Returns:
+    --------
+    `WebsiteCreateProcessing` : the newly created website and the task id for the
+        background task that will fetch the sitemap pages
+
+    """
     try:
         websites_repo: WebsiteRepository = WebsiteRepository(session=db)
         a_site: Website | None = await websites_repo.read_by(
@@ -106,6 +140,22 @@ async def website_read(
     current_user: CurrentUser,
     website: FetchWebsiteOr404,
 ) -> WebsiteRead:
+    """Retrieve a single website by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all websites
+
+    `role=client` : only websites associated with the client via `client_website` table
+
+    `role=employee` : only websites associated with clients they are associated with via
+        `user_client` table, and associated with the client via `client_website` table
+
+    Returns:
+    --------
+    `WebsiteRead` : the website matching the website_id
+
+    """
     return WebsiteRead.model_validate(website)
 
 
@@ -125,6 +175,22 @@ async def website_update(
     website: FetchWebsiteOr404,
     website_in: WebsiteUpdate,
 ) -> WebsiteRead:
+    """Update a website by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all websites
+
+    `role=client` : only websites associated with the client via `client_website` table
+
+    `role=employee` : only websites associated with clients they are associated with via
+        `user_client` table, and associated with the client via `client_website` table
+
+    Returns:
+    --------
+    `WebsiteRead` : the updated website
+
+    """
     try:
         websites_repo: WebsiteRepository = WebsiteRepository(session=db)
         if website_in.domain is not None:
@@ -164,6 +230,17 @@ async def website_delete(
     db: AsyncDatabaseSession,
     website: FetchWebsiteOr404,
 ) -> None:
+    """Delete a website by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all websites
+
+    Returns:
+    --------
+    `None`
+
+    """
     websites_repo: WebsiteRepository = WebsiteRepository(session=db)
     await websites_repo.delete(entry=website)
     return None

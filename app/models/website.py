@@ -40,7 +40,8 @@ class Website(Base):
     domain: Mapped[str] = mapped_column(
         String(255), nullable=False, unique=True, primary_key=True
     )
-    is_secure: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_secure: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
 
     # relationships
     clients: Mapped[List["Client"]] = relationship(

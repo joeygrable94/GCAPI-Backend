@@ -112,10 +112,6 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: Optional[str] = environ.get(
         "FIRST_SUPERUSER_PASSWORD", None
     )
-    TEST_NORMAL_USER: str = environ.get("TEST_NORMAL_USER", "admin@getcommunity.com")
-    TEST_NORMAL_USER_PASSWORD: Optional[str] = environ.get(
-        "TEST_NORMAL_USER_PASSWORD", None
-    )
 
     # Limits
     # Request Size = 2MB
@@ -292,14 +288,6 @@ class Settings(BaseSettings):
     ) -> str:
         if not v:
             raise ValueError("FIRST_SUPERUSER_PASSWORD not set")  # pragma: no cover
-        return v
-
-    @field_validator("TEST_NORMAL_USER_PASSWORD", mode="before")
-    def assemble_test_normal_user_password(
-        cls: Any, v: Optional[str], info: FieldValidationInfo
-    ) -> str:
-        if not v:
-            raise ValueError("TEST_NORMAL_USER_PASSWORD not set")  # pragma: no cover
         return v
 
     model_config = SettingsConfigDict()

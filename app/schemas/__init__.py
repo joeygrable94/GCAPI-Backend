@@ -120,7 +120,8 @@ from .website_map import (
 )
 from .website_page import (
     WebsitePageCreate,
-    WebsitePageFetchPSIProcessing,
+    WebsitePageKWCProcessing,
+    WebsitePagePSIProcessing,
     WebsitePageRead,
     WebsitePageReadRelations,
     WebsitePageUpdate,

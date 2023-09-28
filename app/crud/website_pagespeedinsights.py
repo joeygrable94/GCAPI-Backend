@@ -35,9 +35,7 @@ class WebsitePageSpeedInsightsRepository(
         devices: List[str] | None = None,
     ) -> Union[List[WebsitePageSpeedInsights], List[None]]:
         query: Any | None = None
-        # check_tuple = (bool(website_id), bool(page_id), bool(devices))
         # website_id, page_id and device strategy
-        # if check_tuple == (True, True, True):
         if website_id and page_id and devices:
             query = (
                 sql_select(self._table)
@@ -50,7 +48,6 @@ class WebsitePageSpeedInsightsRepository(
                 .limit(limit)
             )
         # website_id and page_id only
-        # if check_tuple == (True, True, False):
         if website_id and page_id and devices is None:
             query = (
                 sql_select(self._table)
@@ -62,7 +59,6 @@ class WebsitePageSpeedInsightsRepository(
                 .limit(limit)
             )
         # website_id and strategy only
-        # if check_tuple == (True, False, True):
         if website_id and page_id is None and devices:
             query = (
                 sql_select(self._table)
@@ -74,7 +70,6 @@ class WebsitePageSpeedInsightsRepository(
                 .limit(limit)
             )
         # page_id and strategy only
-        # if check_tuple == (False, True, True):
         if website_id is None and page_id and devices:
             query = (
                 sql_select(self._table)
@@ -86,7 +81,6 @@ class WebsitePageSpeedInsightsRepository(
                 .limit(limit)
             )
         # website_id only
-        # if check_tuple == (True, False, False):
         if website_id and page_id is None and devices is None:
             query = (
                 sql_select(self._table)
@@ -95,7 +89,6 @@ class WebsitePageSpeedInsightsRepository(
                 .limit(limit)
             )
         # page_id only
-        # if check_tuple == (False, True, False):
         if website_id is None and page_id and devices is None:
             query = (
                 sql_select(self._table)
@@ -104,7 +97,6 @@ class WebsitePageSpeedInsightsRepository(
                 .limit(limit)
             )
         # strategy only
-        # if check_tuple == (False, False, True):
         if website_id is None and page_id is None and devices:
             query = (
                 sql_select(self._table)

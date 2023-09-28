@@ -9,25 +9,31 @@ from app.api.exceptions import (
     ClientNotExists,
     EntityIdNotProvided,
     InvalidID,
+    NoteNotExists,
     UserNotExists,
     WebsiteMapNotExists,
     WebsiteNotExists,
+    WebsitePageKeywordCorpusNotExists,
     WebsitePageNotExists,
     WebsitePageSpeedInsightsNotExists,
 )
 from app.core.utilities.uuids import parse_id
 from app.crud import (
     ClientRepository,
+    NoteRepository,
+    UserRepository,
+    WebsiteKeywordCorpusRepository,
     WebsiteMapRepository,
     WebsitePageRepository,
     WebsitePageSpeedInsightsRepository,
     WebsiteRepository,
 )
-from app.crud.user import UserRepository
 from app.models import (
     Client,
+    Note,
     User,
     Website,
+    WebsiteKeywordCorpus,
     WebsiteMap,
     WebsitePage,
     WebsitePageSpeedInsights,
@@ -84,6 +90,32 @@ async def get_client_or_404(
 
 
 FetchClientOr404 = Annotated[Client, Depends(get_client_or_404)]
+
+
+async def get_note_or_404(
+    db: AsyncDatabaseSession,
+    note_id: Any | None = None,
+) -> Note | None:
+    """Parses uuid/int and fetches note by id."""
+    try:
+        if note_id is None:
+            raise EntityIdNotProvided()
+        parsed_id: UUID = parse_id(note_id)
+        note_repo: NoteRepository = NoteRepository(session=db)
+        note: Note | None = await note_repo.read(entry_id=parsed_id)
+        if note is None:
+            raise NoteNotExists()
+        return note
+    except (NoteNotExists, InvalidID):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorCode.NOTE_NOT_FOUND,
+        )
+    except EntityIdNotProvided:
+        return None
+
+
+FetchNoteOr404 = Annotated[Note, Depends(get_note_or_404)]
 
 
 async def get_website_or_404(
@@ -179,4 +211,32 @@ async def get_website_page_psi_or_404(
 
 FetchWebPageSpeedInsightOr404 = Annotated[
     WebsitePageSpeedInsights, Depends(get_website_page_psi_or_404)
+]
+
+
+async def get_website_page_kwc_or_404(
+    db: AsyncDatabaseSession,
+    kwc_id: Any,
+) -> WebsiteKeywordCorpus | None:
+    """Parses uuid/int and fetches website keyword corpus by id."""
+    try:
+        parsed_id: UUID = parse_id(kwc_id)
+        website_page_kwc_repo: WebsiteKeywordCorpusRepository = (
+            WebsiteKeywordCorpusRepository(session=db)
+        )
+        website_keyword_corpus: WebsiteKeywordCorpus | None = (
+            await website_page_kwc_repo.read(parsed_id)
+        )
+        if website_keyword_corpus is None:
+            raise WebsitePageKeywordCorpusNotExists()
+        return website_keyword_corpus
+    except (WebsitePageKeywordCorpusNotExists, InvalidID):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorCode.WEBSITE_PAGE_SPEED_INSIGHTS_NOT_FOUND,
+        )
+
+
+FetchWebsiteKeywordCorpusOr404 = Annotated[
+    WebsiteKeywordCorpus, Depends(get_website_page_kwc_or_404)
 ]

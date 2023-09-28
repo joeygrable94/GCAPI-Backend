@@ -39,11 +39,14 @@ class User(Base):
         onupdate=func.current_timestamp(),
     )
     auth_id: Mapped[str] = mapped_column(
-        String(255), nullable=False, unique=True, primary_key=True
+        String(255), unique=True, primary_key=True, nullable=False
     )
     email: Mapped[str] = mapped_column(
         String(320),
         nullable=False,
+    )
+    username: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=False, default=get_random_username()
     )
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
@@ -56,9 +59,9 @@ class User(Base):
 
     # relationships
     clients: Mapped[List["Client"]] = relationship(
-        "Client", secondary="user_client", back_populates="users"
+        "Client", secondary="user_client", back_populates="users", lazy="noload"
     )
-    notes: Mapped[List["Note"]] = relationship(backref=backref("user", lazy="subquery"))
+    notes: Mapped[List["Note"]] = relationship(backref=backref("user", lazy="noload"))
 
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"User({self.username})"

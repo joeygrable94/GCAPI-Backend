@@ -41,6 +41,24 @@ async def sitemap_list(
     db: AsyncDatabaseSession,
     query: GetWebsiteMapQueryParams,
 ) -> List[WebsiteMapRead] | List:
+    """Retrieve a list of website maps.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all website maps
+
+    `role=client` : only website maps with a website_id associated with the client
+        via `client_website` table
+
+    `role=employee` : only website maps with a website_id associated with the clients
+        via `client_website` table, associated with the user via `user_client` table
+
+    Returns:
+    --------
+    `List[WebsiteMapRead] | List[None]` : a list of website maps, optionally filtered
+        or returns an empty list
+
+    """
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
     sitemaps: List[WebsiteMap] | List[None] | None = await sitemap_repo.list(
         page=query.page,
@@ -63,6 +81,23 @@ async def sitemap_create(
     db: AsyncDatabaseSession,
     sitemap_in: WebsiteMapCreate,
 ) -> WebsiteMapRead:
+    """Create a new website map.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : create a new website map
+
+    `role=client` : create a new website map that belongs to a website associated with
+        the client via `client_website` table
+
+    `role=employee` : create a new website map associated with a website that belongs to
+        a client the user belongs to via `user_client` table
+
+    Returns:
+    --------
+    `WebsiteMapRead` : the newly created website map
+
+    """
     try:
         sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
         # check website map url is unique to website_id
@@ -108,6 +143,22 @@ async def sitemap_read(
     current_user: CurrentUser,
     sitemap: FetchSitemapOr404,
 ) -> WebsiteMapRead:
+    """Retrieve a single website map by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all website maps
+
+    `role=client` : only website maps belonging to a website associated with the client
+
+    `role=employee` : only website maps belonging to a website that belongs to a client
+        the user is associated with to via `user_client` table
+
+    Returns:
+    --------
+    `WebsiteMapRead` : the website map
+
+    """
     return WebsiteMapRead.model_validate(sitemap)
 
 
@@ -127,6 +178,22 @@ async def sitemap_update(
     sitemap: FetchSitemapOr404,
     sitemap_in: WebsiteMapUpdate,
 ) -> WebsiteMapRead:
+    """Update a website map by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all website maps
+
+    `role=client` : only website maps belonging to a website associated with the client
+
+    `role=employee` : only website maps belonging to a website that belongs to a client
+        the user is associated with to via `user_client` table
+
+    Returns:
+    --------
+    `WebsiteMapRead` : the updated website map
+
+    """
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
     updated_sitemap: WebsiteMap | None = await sitemap_repo.update(
         entry=sitemap, schema=sitemap_in
@@ -153,14 +220,30 @@ async def sitemap_delete(
     db: AsyncDatabaseSession,
     sitemap: FetchSitemapOr404,
 ) -> None:
+    """Delete a website map by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all website maps
+
+    `role=client` : only website maps belonging to a website associated with the client
+
+    `role=employee` : only website maps belonging to a website that belongs to a client
+        the user is associated with to via `user_client` table
+
+    Returns:
+    --------
+    `None`
+
+    """
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
     await sitemap_repo.delete(entry=sitemap)
     return None
 
 
-@router.post(
-    "/{sitemap_id}",
-    name="website_sitemaps:process_pages",
+@router.get(
+    "/{sitemap_id}/process-pages",
+    name="website_sitemaps:process_sitemap_pages",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -168,11 +251,27 @@ async def sitemap_delete(
     ],
     response_model=WebsiteMapReadRelations,
 )
-async def sitemap_process_pages(
+async def sitemap_process_sitemap_pages(
     current_user: CurrentUser,
     db: AsyncDatabaseSession,
     sitemap: FetchSitemapOr404,
 ) -> WebsiteMapProcessing:
+    """A webhook to initiate processing a sitemap's pages.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all website maps
+
+    `role=client` : only website maps belonging to a website associated with the client
+
+    `role=employee` : only website maps belonging to a website that belongs to a client
+        the user is associated with to via `user_client` table
+
+    Returns:
+    --------
+    `WebsiteMapProcessing` : the task_id of the worker task
+
+    """
     website_map_processing_pages: Any = task_website_sitemap_fetch_pages.delay(
         website_id=sitemap.website_id, sitemap_url=sitemap.url
     )

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, func
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -46,6 +46,7 @@ class WebsitePage(Base):
     priority: Mapped[float] = mapped_column(Float, nullable=False, default=0.5)
     last_modified: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
     change_frequency: Mapped[str] = mapped_column(String(64), nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
 
     # relationships
     website_id: Mapped[UUID4] = mapped_column(

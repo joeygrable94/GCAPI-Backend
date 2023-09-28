@@ -2,11 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "prod" ]
   pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
-    branches: [ "main" ]
+    branches: [ "prod" ]
 
 jobs:
   test:
@@ -24,8 +22,6 @@ jobs:
       AUTH0_SPA_CLIENT_SECRET: ${{ secrets.AUTH0_SPA_CLIENT_SECRET }}
       FIRST_SUPERUSER: ${{ secrets.FIRST_SUPERUSER }}
       FIRST_SUPERUSER_PASSWORD: ${{ secrets.FIRST_SUPERUSER_PASSWORD }}
-      TEST_NORMAL_USER: ${{ secrets.TEST_NORMAL_USER }}
-      TEST_NORMAL_USER_PASSWORD: ${{ secrets.TEST_NORMAL_USER_PASSWORD }}
       GOOGLE_CLOUD_API_KEY: ${{ secrets.GOOGLE_CLOUD_API_KEY }}
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
       SMTP_USER: ${{ secrets.SMTP_USER }}
