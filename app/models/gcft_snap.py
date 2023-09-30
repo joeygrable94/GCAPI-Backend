@@ -51,8 +51,8 @@ class GcftSnap(Base):
     gcft_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("gcft.id"), nullable=False
     )
-    image_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("file_asset.id"), nullable=False
+    file_asset_id: Mapped[UUID4] = mapped_column(
+        UUIDType(binary=False), ForeignKey("file_asset.id"), nullable=True, default=None
     )
     geocoord_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("geocoord.id"), nullable=False

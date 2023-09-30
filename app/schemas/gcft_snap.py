@@ -25,8 +25,8 @@ class GcftSnapBase(
     snap_slug: str
     altitude: int
     gcft_id: UUID4
-    image_id: UUID4
     geocoord_id: UUID4
+    file_asset_id: Optional[UUID4] = None
 
 
 class GcftSnapCreate(GcftSnapBase):
@@ -40,8 +40,8 @@ class GcftSnapUpdate(
     snap_name: Optional[str] = None
     altitude: Optional[int] = None
     gcft_id: Optional[UUID4] = None
-    image_id: Optional[UUID4] = None
     geocoord_id: Optional[UUID4] = None
+    file_asset_id: Optional[UUID4] = None
 
 
 class GcftSnapRead(GcftSnapACL, GcftSnapBase, BaseSchemaRead):
