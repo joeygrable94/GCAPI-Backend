@@ -16,4 +16,5 @@ email_conf: ConnectionConfig = ConnectionConfig(
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=False,
     TEMPLATE_FOLDER=Path(settings.EMAIL_TEMPLATES_DIR),
+    SUPPRESS_SEND=1 if settings.APP_MODE == "test" else 0,
 )

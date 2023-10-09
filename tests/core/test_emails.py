@@ -10,7 +10,6 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_send_test_email() -> None:
-    fast_mail.config.SUPPRESS_SEND = 1
     with fast_mail.record_messages() as outbox:
         user_email: EmailStr = random_email()
         msg_sent: bool = await send_test_email(user_email)

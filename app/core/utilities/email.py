@@ -13,15 +13,13 @@ async def _send_email(
     message: MessageSchema, template_name: Optional[str] = None
 ) -> bool:
     msg_sent: bool = False
-    if (settings.EMAILS_ENABLED and template_name is not None):
+    if settings.EMAILS_ENABLED and template_name is not None:
         try:
             fast_mail = FastMail(email_conf)
             await fast_mail.send_message(message, template_name=template_name)
             msg_sent = True
         except Exception as e:  # pragma: no cover
             logger.warning(e)
-    if settings.APP_MODE == "test":
-        msg_sent = True
     return msg_sent
 
 
