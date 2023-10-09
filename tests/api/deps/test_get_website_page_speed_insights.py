@@ -1,11 +1,11 @@
 import pytest
-from fastapi.exceptions import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.website_pagespeedinsights import (
     create_random_website_page_speed_insights,
 )
 
 from app.api.deps import get_website_page_psi_or_404
+from app.api.exceptions.exceptions import InvalidID, WebsitePageSpeedInsightsNotExists
 from app.models.website_pagespeedinsights import WebsitePageSpeedInsights
 from app.schemas import WebsitePageSpeedInsightsRead
 
@@ -24,10 +24,10 @@ async def test_get_website_page_psi_or_404(db_session: AsyncSession) -> None:
 
     # Test with invalid website_page_id
     fake_clid: str = "1"
-    with pytest.raises(HTTPException):
+    with pytest.raises(InvalidID):
         await get_website_page_psi_or_404(db_session, fake_clid)
 
     # Test with invalid website_page_id that looks like a valid uuid
     fake_clid_uuid: str = "00000000-0000-0000-0000-000000000000"
-    with pytest.raises(HTTPException):
+    with pytest.raises(WebsitePageSpeedInsightsNotExists):
         await get_website_page_psi_or_404(db_session, fake_clid_uuid)

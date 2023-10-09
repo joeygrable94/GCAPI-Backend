@@ -5,7 +5,7 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.websites import create_random_website
 
-from app.api.errors import ErrorCode
+from app.api.exceptions import ErrorCode
 from app.schemas import WebsiteRead
 
 pytestmark = pytest.mark.asyncio

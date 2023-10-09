@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_boolean, random_lower_string
 from tests.utils.websites import create_random_website
 
-from app.api.errors import ErrorCode
+from app.api.exceptions import ErrorCode
 from app.schemas import WebsiteRead, WebsiteUpdate
 
 pytestmark = pytest.mark.asyncio

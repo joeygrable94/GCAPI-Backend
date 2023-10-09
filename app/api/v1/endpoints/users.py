@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Request
 
 from app.api.deps import (
     AsyncDatabaseSession,
@@ -11,11 +11,11 @@ from app.api.deps import (
     get_current_user,
     get_user_or_404,
 )
-from app.api.errors import ErrorCode
 from app.api.exceptions import UserAlreadyExists
+from app.api.middleware import get_request_client_ip
 
 # from app.api.openapi import users_read_responses
-from app.core.auth import auth
+from app.core.security import auth
 from app.crud.user import UserRepository
 from app.models.user import User
 from app.schemas import UserCreate, UserRead, UserReadRelations, UserRole, UserUpdate
@@ -34,8 +34,10 @@ router: APIRouter = APIRouter()
     response_model=UserRead | None,
 )
 async def users_current(
+    request: Request,
     db: AsyncDatabaseSession,
     current_user: CurrentUser,
+    request_ip: str = Depends(get_request_client_ip),
 ) -> UserRead | None:
     """Retrieve the profile information about the currently active, verified user.
 
@@ -67,6 +69,11 @@ async def users_current(
                 roles=user_roles,
             )
         )
+    # set session vars
+    request.session["user_id"] = str(user.id)
+    req_sess_ip = request.session.get("ip_address", False)
+    if not req_sess_ip:
+        request.session["ip_address"] = str(request_ip)
     return UserRead.model_validate(user)
 
 
@@ -182,25 +189,19 @@ async def users_update(
     - `role=user` : can only update non-sensitive profile information like: `username`
 
     """
-    try:
-        users_repo: UserRepository = UserRepository(session=db)
-        if user_in.username is not None:
-            a_user: User | None = await users_repo.read_by(
-                field_name="username", field_value=user_in.username
-            )
-            if a_user:
-                raise UserAlreadyExists()
-        updated_user: User | None = await users_repo.update(entry=user, schema=user_in)
-        return (
-            UserRead.model_validate(updated_user)
-            if updated_user
-            else UserRead.model_validate(user)
+    users_repo: UserRepository = UserRepository(session=db)
+    if user_in.username is not None:
+        a_user: User | None = await users_repo.read_by(
+            field_name="username", field_value=user_in.username
         )
-    except UserAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ErrorCode.USERNAME_EXISTS,
-        )
+        if a_user:
+            raise UserAlreadyExists()
+    updated_user: User | None = await users_repo.update(entry=user, schema=user_in)
+    return (
+        UserRead.model_validate(updated_user)
+        if updated_user
+        else UserRead.model_validate(user)
+    )
 
 
 @router.delete(

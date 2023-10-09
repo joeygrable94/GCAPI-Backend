@@ -5,7 +5,7 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_boolean
 
-from app.api.errors import ErrorCode
+from app.api.exceptions import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
 from app.schemas import WebsiteRead
 

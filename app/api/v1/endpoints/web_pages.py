@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
@@ -10,9 +10,8 @@ from app.api.deps import (
     get_async_db,
     get_website_page_or_404,
 )
-from app.api.errors import ErrorCode
 from app.api.exceptions import WebsiteNotExists, WebsitePageAlreadyExists
-from app.core.auth import auth
+from app.core.security import auth
 from app.crud import WebsitePageRepository, WebsiteRepository
 from app.models import Website, WebsitePage
 from app.schemas import (
@@ -22,6 +21,7 @@ from app.schemas import (
     WebsitePageReadRelations,
     WebsitePageUpdate,
 )
+from app.schemas.website_pagespeedinsights import PSIDevice
 from app.worker import task_website_page_pagespeedinsights_fetch
 
 router: APIRouter = APIRouter()
@@ -104,35 +104,24 @@ async def website_page_create(
     `WebsitePageRead` : the newly created website page
 
     """
-    try:
-        website_repo: WebsiteRepository = WebsiteRepository(session=db)
-        web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
-        # check website page url is unique to website_id
-        a_page: WebsitePage | None = await web_pages_repo.exists_by_two(
-            field_name_a="url",
-            field_value_a=website_page_in.url,
-            field_name_b="website_id",
-            field_value_b=website_page_in.website_id,
-        )
-        if a_page is not None:
-            raise WebsitePageAlreadyExists()
-        # check website page is assigned to a website
-        a_website: Website | None = await website_repo.read(website_page_in.website_id)
-        if a_website is None:
-            raise WebsiteNotExists()
-        # create the website page
-        website_page: WebsitePage = await web_pages_repo.create(website_page_in)
-        return WebsitePageRead.model_validate(website_page)
-    except WebsiteNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ErrorCode.WEBSITE_PAGE_UNASSIGNED_WEBSITE_ID,
-        )
-    except WebsitePageAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ErrorCode.WEBSITE_PAGE_URL_EXISTS,
-        )
+    website_repo: WebsiteRepository = WebsiteRepository(session=db)
+    web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
+    # check website page url is unique to website_id
+    a_page: WebsitePage | None = await web_pages_repo.exists_by_two(
+        field_name_a="url",
+        field_value_a=website_page_in.url,
+        field_name_b="website_id",
+        field_value_b=website_page_in.website_id,
+    )
+    if a_page is not None:
+        raise WebsitePageAlreadyExists()
+    # check website page is assigned to a website
+    a_website: Website | None = await website_repo.read(website_page_in.website_id)
+    if a_website is None:
+        raise WebsiteNotExists()
+    # create the website page
+    website_page: WebsitePage = await web_pages_repo.create(website_page_in)
+    return WebsitePageRead.model_validate(website_page)
 
 
 @router.get(
@@ -283,32 +272,26 @@ async def website_page_process_website_page_speed_insights(
         task_id's for the mobile and desktop page speed insights tasks
 
     """
-    try:
-        # check website page is assigned to a website
-        website_repo: WebsiteRepository = WebsiteRepository(session=db)
-        a_website: Website | None = await website_repo.read(website_page.website_id)
-        if a_website is None:
-            raise WebsiteNotExists()
-        fetch_page = a_website.get_link() + website_page.url
-        website_page_psi_mobile: Any = task_website_page_pagespeedinsights_fetch.delay(
-            website_id=a_website.id,
-            page_id=website_page.id,
-            fetch_url=fetch_page,
-            device="mobile",
-        )
-        website_page_psi_desktop: Any = task_website_page_pagespeedinsights_fetch.delay(
-            website_id=a_website.id,
-            page_id=website_page.id,
-            fetch_url=fetch_page,
-            device="desktop",
-        )
-        return WebsitePagePSIProcessing(
-            page=WebsitePageRead.model_validate(website_page),
-            psi_mobile_task_id=website_page_psi_mobile.id,
-            psi_desktop_task_id=website_page_psi_desktop.id,
-        )
-    except WebsiteNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ErrorCode.WEBSITE_PAGE_UNASSIGNED_WEBSITE_ID,
-        )
+    # check website page is assigned to a website
+    website_repo: WebsiteRepository = WebsiteRepository(session=db)
+    a_website: Website | None = await website_repo.read(website_page.website_id)
+    if a_website is None:
+        raise WebsiteNotExists()
+    fetch_page = a_website.get_link() + website_page.url
+    website_page_psi_mobile: Any = task_website_page_pagespeedinsights_fetch.delay(
+        website_id=a_website.id,
+        page_id=website_page.id,
+        fetch_url=fetch_page,
+        device=PSIDevice.mobile,
+    )
+    website_page_psi_desktop: Any = task_website_page_pagespeedinsights_fetch.delay(
+        website_id=a_website.id,
+        page_id=website_page.id,
+        fetch_url=fetch_page,
+        device=PSIDevice.desktop,
+    )
+    return WebsitePagePSIProcessing(
+        page=WebsitePageRead.model_validate(website_page),
+        psi_mobile_task_id=website_page_psi_mobile.id,
+        psi_desktop_task_id=website_page_psi_desktop.id,
+    )

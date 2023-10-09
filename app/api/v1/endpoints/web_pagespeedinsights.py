@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
@@ -10,10 +10,9 @@ from app.api.deps import (
     get_async_db,
     get_website_page_psi_or_404,
 )
-from app.api.errors import ErrorCode
 from app.api.exceptions import WebsiteNotExists, WebsitePageNotExists
-from app.core.auth import auth
 from app.core.logger import logger
+from app.core.security import auth
 from app.crud import (
     WebsitePageRepository,
     WebsitePageSpeedInsightsRepository,
@@ -111,49 +110,34 @@ async def website_page_speed_insights_create(
     `WebsitePageSpeedInsightsRead` : the newly created website page speed insights
 
     """
-    try:
-        # check if website exists
-        if query.website_id is None:
-            raise WebsiteNotExists()
-        website_repo: WebsiteRepository = WebsiteRepository(db)
-        a_website: Website | None = await website_repo.read(entry_id=query.website_id)
-        if a_website is None:
-            raise WebsiteNotExists()
-        # check if page exists
-        if query.page_id is None:
-            raise WebsitePageNotExists()
-        web_page_repo: WebsitePageRepository = WebsitePageRepository(db)
-        a_web_page: WebsitePage | None = await web_page_repo.read(
-            entry_id=query.page_id
-        )
-        if a_web_page is None:
-            raise WebsitePageNotExists()
-        web_psi_repo: WebsitePageSpeedInsightsRepository
-        web_psi_repo = WebsitePageSpeedInsightsRepository(db)
-        psi_create: WebsitePageSpeedInsightsCreate = WebsitePageSpeedInsightsCreate(
-            **psi_in.model_dump(),
-            page_id=query.page_id,
-            website_id=query.website_id,
-        )
-        psi_in_db: WebsitePageSpeedInsights = await web_psi_repo.create(
-            schema=psi_create
-        )
-        logger.info(
-            "Created Website Page Speed Insights:",
-            psi_in_db.id,
-            psi_in_db.created_on,
-        )
-        return WebsitePageSpeedInsightsRead.model_validate(psi_in_db)
-    except WebsiteNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_NOT_FOUND,
-        )
-    except WebsitePageNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_PAGE_NOT_FOUND,
-        )
+    # check if website exists
+    if query.website_id is None:
+        raise WebsiteNotExists()
+    website_repo: WebsiteRepository = WebsiteRepository(db)
+    a_website: Website | None = await website_repo.read(entry_id=query.website_id)
+    if a_website is None:
+        raise WebsiteNotExists()
+    # check if page exists
+    if query.page_id is None:
+        raise WebsitePageNotExists()
+    web_page_repo: WebsitePageRepository = WebsitePageRepository(db)
+    a_web_page: WebsitePage | None = await web_page_repo.read(entry_id=query.page_id)
+    if a_web_page is None:
+        raise WebsitePageNotExists()
+    web_psi_repo: WebsitePageSpeedInsightsRepository
+    web_psi_repo = WebsitePageSpeedInsightsRepository(db)
+    psi_create: WebsitePageSpeedInsightsCreate = WebsitePageSpeedInsightsCreate(
+        **psi_in.model_dump(),
+        page_id=query.page_id,
+        website_id=query.website_id,
+    )
+    psi_in_db: WebsitePageSpeedInsights = await web_psi_repo.create(schema=psi_create)
+    logger.info(
+        "Created Website Page Speed Insights:",
+        psi_in_db.id,
+        psi_in_db.created_on,
+    )
+    return WebsitePageSpeedInsightsRead.model_validate(psi_in_db)
 
 
 @router.get(

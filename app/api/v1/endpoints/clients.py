@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
@@ -10,10 +10,9 @@ from app.api.deps import (
     get_async_db,
     get_client_or_404,
 )
-from app.api.errors import ErrorCode
 from app.api.exceptions import ClientAlreadyExists
 from app.api.openapi import clients_read_responses
-from app.core.auth import auth
+from app.core.security import auth
 from app.crud import ClientRepository
 from app.models import Client
 from app.schemas import ClientCreate, ClientRead, ClientReadRelations, ClientUpdate
@@ -80,23 +79,18 @@ async def clients_create(
     `ClientRead` : the newly created client
 
     """
-    try:
-        clients_repo: ClientRepository = ClientRepository(session=db)
-        data: Dict = client_in.model_dump()
-        check_title: str | None = data.get("title")
-        if check_title:
-            a_client: Client | None = await clients_repo.read_by(
-                field_name="title",
-                field_value=check_title,
-            )
-            if a_client:
-                raise ClientAlreadyExists()
-        new_client: Client = await clients_repo.create(client_in)
-        return ClientRead.model_validate(new_client)
-    except ClientAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=ErrorCode.CLIENT_EXISTS
+    clients_repo: ClientRepository = ClientRepository(session=db)
+    data: Dict = client_in.model_dump()
+    check_title: str | None = data.get("title")
+    if check_title:
+        a_client: Client | None = await clients_repo.read_by(
+            field_name="title",
+            field_value=check_title,
         )
+        if a_client:
+            raise ClientAlreadyExists()
+    new_client: Client = await clients_repo.create(client_in)
+    return ClientRead.model_validate(new_client)
 
 
 @router.get(
@@ -158,26 +152,21 @@ async def clients_update(
     `ClientRead` : the updated client
 
     """
-    try:
-        clients_repo: ClientRepository = ClientRepository(session=db)
-        if client_in.title is not None:
-            a_client: Client | None = await clients_repo.read_by(
-                field_name="title", field_value=client_in.title
-            )
-            if a_client:
-                raise ClientAlreadyExists()
-        updated_client: Client | None = await clients_repo.update(
-            entry=client, schema=client_in
+    clients_repo: ClientRepository = ClientRepository(session=db)
+    if client_in.title is not None:
+        a_client: Client | None = await clients_repo.read_by(
+            field_name="title", field_value=client_in.title
         )
-        return (
-            ClientRead.model_validate(updated_client)
-            if updated_client
-            else ClientRead.model_validate(client)
-        )
-    except ClientAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=ErrorCode.CLIENT_EXISTS
-        )
+        if a_client:
+            raise ClientAlreadyExists()
+    updated_client: Client | None = await clients_repo.update(
+        entry=client, schema=client_in
+    )
+    return (
+        ClientRead.model_validate(updated_client)
+        if updated_client
+        else ClientRead.model_validate(client)
+    )
 
 
 @router.delete(

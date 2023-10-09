@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
@@ -10,10 +10,9 @@ from app.api.deps import (
     get_async_db,
     get_website_page_kwc_or_404,
 )
-from app.api.errors import ErrorCode
 from app.api.exceptions import WebsiteNotExists, WebsitePageNotExists
-from app.core.auth import auth
 from app.core.logger import logger
+from app.core.security import auth
 from app.crud import (
     WebsiteKeywordCorpusRepository,
     WebsitePageRepository,
@@ -108,48 +107,35 @@ async def website_page_keyword_corpus_create(
     `WebsiteKeywordCorpusRead` : the newly created website keyword corpus
 
     """
-    try:
-        # check if website exists
-        if query.website_id is None:
-            raise WebsiteNotExists()
-        website_repo: WebsiteRepository = WebsiteRepository(db)
-        a_website: Website | None = await website_repo.read(entry_id=query.website_id)
-        if a_website is None:
-            raise WebsiteNotExists()
-        # check if page exists
-        if query.page_id is None:
-            raise WebsitePageNotExists()
-        web_page_repo: WebsitePageRepository = WebsitePageRepository(db)
-        a_web_page: WebsitePage | None = await web_page_repo.read(
-            entry_id=query.page_id
-        )
-        if a_web_page is None:
-            raise WebsitePageNotExists()
-        # create website keyword corpus
-        web_kwc_repo: WebsiteKeywordCorpusRepository
-        web_kwc_repo = WebsiteKeywordCorpusRepository(db)
-        kwc_create: WebsiteKeywordCorpusCreate = WebsiteKeywordCorpusCreate(
-            **kwc_in.model_dump(),
-            page_id=query.page_id,
-            website_id=query.website_id,
-        )
-        kwc_in_db: WebsiteKeywordCorpus = await web_kwc_repo.create(schema=kwc_create)
-        logger.info(
-            "Created Website Keyword Corpus:",
-            kwc_in_db.id,
-            kwc_in_db.created_on,
-        )
-        return WebsiteKeywordCorpusRead.model_validate(kwc_in_db)
-    except WebsiteNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_NOT_FOUND,
-        )
-    except WebsitePageNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=ErrorCode.WEBSITE_PAGE_NOT_FOUND,
-        )
+    # check if website exists
+    if query.website_id is None:
+        raise WebsiteNotExists()
+    website_repo: WebsiteRepository = WebsiteRepository(db)
+    a_website: Website | None = await website_repo.read(entry_id=query.website_id)
+    if a_website is None:
+        raise WebsiteNotExists()
+    # check if page exists
+    if query.page_id is None:
+        raise WebsitePageNotExists()
+    web_page_repo: WebsitePageRepository = WebsitePageRepository(db)
+    a_web_page: WebsitePage | None = await web_page_repo.read(entry_id=query.page_id)
+    if a_web_page is None:
+        raise WebsitePageNotExists()
+    # create website keyword corpus
+    web_kwc_repo: WebsiteKeywordCorpusRepository
+    web_kwc_repo = WebsiteKeywordCorpusRepository(db)
+    kwc_create: WebsiteKeywordCorpusCreate = WebsiteKeywordCorpusCreate(
+        **kwc_in.model_dump(),
+        page_id=query.page_id,
+        website_id=query.website_id,
+    )
+    kwc_in_db: WebsiteKeywordCorpus = await web_kwc_repo.create(schema=kwc_create)
+    logger.info(
+        "Created Website Keyword Corpus:",
+        kwc_in_db.id,
+        kwc_in_db.created_on,
+    )
+    return WebsiteKeywordCorpusRead.model_validate(kwc_in_db)
 
 
 @router.get(

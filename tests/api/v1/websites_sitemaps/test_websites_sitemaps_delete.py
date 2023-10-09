@@ -5,7 +5,7 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.website_maps import create_random_website_map
 
-from app.api.errors import ErrorCode
+from app.api.exceptions import ErrorCode
 from app.schemas import WebsiteMapRead
 
 pytestmark = pytest.mark.asyncio

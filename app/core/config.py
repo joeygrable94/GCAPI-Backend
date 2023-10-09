@@ -28,7 +28,12 @@ class Settings(BaseSettings):
     # Security
     ASGI_ID_HEADER_KEY: str = "x-request-id"
     SECRET_KEY: str = environ.get(
-        "SECRET_KEY", "54295fb3ad6577bf6ec55fc8a4e2ce86b4a490b5f1666f1e871e94855f6dc0a7"
+        "SECRET_KEY",
+        "54295fb3ad6577bf6ec55fc8a4e2ce86b4a490b5f1666f1e871e94855f6dc0a7",  # noqa: E501
+    )
+    CSRF_SECRET_KEY: str = environ.get(
+        "CSRF_SECRET_KEY",
+        "fb4cd9547245b656a5a44441eebd5960432c95d9c45970be0d7442f91bf64366",  # noqa: E501
     )
     BACKEND_CORS_ORIGINS: Union[str, List[str]] = [
         f"http://{SERVER_NAME}",
@@ -37,20 +42,7 @@ class Settings(BaseSettings):
         f"http://{SERVER_NAME}:8080",
         f"http://{SERVER_NAME}:4200",
         f"http://{SERVER_NAME}:3000",
-        f"https://{SERVER_NAME}",
-        f"https://{SERVER_NAME}:8888",
-        f"https://{SERVER_NAME}:80",
-        f"https://{SERVER_NAME}:8080",
-        f"https://{SERVER_NAME}:4200",
-        f"https://{SERVER_NAME}:3000",
         f"http://{SERVER_NAME_STAGING}",
-        f"https://{SERVER_NAME_STAGING}",
-        f"http://whoami.{SERVER_NAME_STAGING}",
-        f"https://whoami.{SERVER_NAME_STAGING}",
-        f"http://dbadmin.{SERVER_NAME_STAGING}",
-        f"https://dbadmin.{SERVER_NAME_STAGING}",
-        f"http://flower.{SERVER_NAME_STAGING}",
-        f"https://flower.{SERVER_NAME_STAGING}",
     ]
 
     # Auth0

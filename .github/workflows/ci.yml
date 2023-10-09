@@ -13,7 +13,7 @@ jobs:
       fail-fast: true
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.11", "3.10"]
+        python-version: ["3.11"]
         redis-version: ["7"]
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}

@@ -7,7 +7,7 @@ from tests.utils.website_pagespeedinsights import (
     create_random_website_page_speed_insights,
 )
 
-from app.api.errors import ErrorCode
+from app.api.exceptions import ErrorCode
 from app.schemas import WebsitePageSpeedInsightsRead
 
 pytestmark = pytest.mark.asyncio

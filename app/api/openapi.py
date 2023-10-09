@@ -2,7 +2,7 @@ from typing import Any, Dict, Union
 
 from fastapi import status
 
-from app.api.errors import ErrorCode, ErrorModel
+from app.api.exceptions import ErrorCode, ErrorModel
 
 OpenAPIResponseType: Any = Dict[Union[int, str], Dict[str, Any]]
 

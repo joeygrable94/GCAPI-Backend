@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
@@ -10,9 +10,8 @@ from app.api.deps import (
     get_async_db,
     get_note_or_404,
 )
-from app.api.errors import ErrorCode
 from app.api.exceptions import NoteAlreadyExists
-from app.core.auth import auth
+from app.core.security import auth
 from app.crud import NoteRepository
 from app.models import Note
 from app.schemas import NoteCreate, NoteRead, NoteReadRelations, NoteUpdate
@@ -81,23 +80,18 @@ async def notes_create(
     `NoteRead` : the newly created note
 
     """
-    try:
-        notes_repo: NoteRepository = NoteRepository(session=db)
-        data: Dict = note_in.model_dump()
-        check_title: str | None = data.get("title")
-        if check_title:
-            a_note: Note | None = await notes_repo.read_by(
-                field_name="title",
-                field_value=check_title,
-            )
-            if a_note:
-                raise NoteAlreadyExists()
-        new_note: Note = await notes_repo.create(note_in)
-        return NoteRead.model_validate(new_note)
-    except NoteAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=ErrorCode.NOTE_EXISTS
+    notes_repo: NoteRepository = NoteRepository(session=db)
+    data: Dict = note_in.model_dump()
+    check_title: str | None = data.get("title")
+    if check_title:
+        a_note: Note | None = await notes_repo.read_by(
+            field_name="title",
+            field_value=check_title,
         )
+        if a_note:
+            raise NoteAlreadyExists()
+    new_note: Note = await notes_repo.create(note_in)
+    return NoteRead.model_validate(new_note)
 
 
 @router.get(
@@ -164,24 +158,19 @@ async def notes_update(
     `NoteRead` : the updated note
 
     """
-    try:
-        notes_repo: NoteRepository = NoteRepository(session=db)
-        if note_in.title is not None:
-            a_note: Note | None = await notes_repo.read_by(
-                field_name="title", field_value=note_in.title
-            )
-            if a_note:
-                raise NoteAlreadyExists()
-        updated_note: Note | None = await notes_repo.update(entry=note, schema=note_in)
-        return (
-            NoteRead.model_validate(updated_note)
-            if updated_note
-            else NoteRead.model_validate(note)
+    notes_repo: NoteRepository = NoteRepository(session=db)
+    if note_in.title is not None:
+        a_note: Note | None = await notes_repo.read_by(
+            field_name="title", field_value=note_in.title
         )
-    except NoteAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=ErrorCode.NOTE_EXISTS
-        )
+        if a_note:
+            raise NoteAlreadyExists()
+    updated_note: Note | None = await notes_repo.update(entry=note, schema=note_in)
+    return (
+        NoteRead.model_validate(updated_note)
+        if updated_note
+        else NoteRead.model_validate(note)
+    )
 
 
 @router.delete(

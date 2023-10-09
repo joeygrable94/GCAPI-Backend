@@ -6,8 +6,8 @@ from fastapi_permissions import Authenticated  # type: ignore
 from fastapi_permissions import Everyone
 
 from app.api.deps import get_current_user, get_current_user_permissions
-from app.api.errors import ErrorCode
-from app.core.auth import Auth0User
+from app.api.exceptions import ErrorCode
+from app.core.security import Auth0User
 from app.core.utilities.uuids import get_uuid_str
 
 

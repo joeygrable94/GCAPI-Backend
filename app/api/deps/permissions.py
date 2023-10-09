@@ -4,8 +4,8 @@ from fastapi import Depends, HTTPException, Security, status
 from fastapi_permissions import Authenticated  # type: ignore  # noqa: E501
 from fastapi_permissions import Everyone, configure_permissions, has_permission
 
-from app.api.errors import ErrorCode
-from app.core.auth import Auth0User, auth
+from app.api.exceptions import ErrorCode
+from app.core.security import Auth0User, auth
 
 
 def get_current_user(user: Auth0User | None = Security(auth.get_user)) -> Auth0User:

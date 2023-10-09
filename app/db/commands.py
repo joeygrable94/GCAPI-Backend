@@ -41,7 +41,7 @@ async def check_db_disconnected() -> None:  # pragma: no cover
             with engine.connect() as connection:
                 result: Any = connection.execute(stmt)
                 if result is not None:
-                    logger.info("+ ASYCN F(X) --> MYSQL CONNECTED!")
+                    logger.info("+ ASYCN F(X) --> Disconnecting MYSQL...")
             logger.info("+ ASYNC F(X) --> MYSQL DISCONNECTED!")
         logger.info("+ ASYNC F(X) --> Database Disconnected. (-_-) Zzz")
     except Exception as e:

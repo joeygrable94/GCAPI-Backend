@@ -7,7 +7,7 @@ from tests.utils.website_pagespeedinsights import (
     create_random_website_page_speed_insights,
 )
 
-from app.api.errors import ErrorCode
+from app.api.exceptions import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
 from app.crud import WebsitePageSpeedInsightsRepository
 from app.models.website_pagespeedinsights import WebsitePageSpeedInsights

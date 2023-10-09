@@ -147,18 +147,15 @@ class Logger:
             name="celery_tracing",
             uuid_length=8 if not settings.DEBUG_MODE else 32,
         )
+        # exception
         self.file_frmt: logging.Formatter = logging.Formatter(
-            "%(levelname)s:\t\b%(asctime)s [%(correlation_id)s] \
-%(name)s:%(lineno)d %(message)s"
+            "%(levelname)-11s\b%(asctime)s [%(correlation_id)s] %(name)s:%(lineno)d %(message)s"  # noqa: E501
         )
         self.stream_frmt: logging.Formatter = logging.Formatter(
-            "%(levelname)s:\t\b%(asctime)s [%(correlation_id)s] \
-%(name)s:%(lineno)d %(message)s"
+            "%(levelname)-11s\b%(asctime)-6s [%(correlation_id)s] %(name)s:%(lineno)d %(message)s"  # noqa: E501
         )
         self.worker_frmt: logging.Formatter = logging.Formatter(
-            "%(levelname)s:\t\b%(asctime)s [%(correlation_id)s] \
-[%(celery_parent_id)s-%(celery_current_id)s] \
-%(name)s:%(lineno)d %(name)s %(message)s"
+            "%(levelname)-11s\b%(asctime)-6s [%(correlation_id)s] [%(celery_parent_id)s-%(celery_current_id)s] %(name)s:%(lineno)d %(name)s %(message)s"  # noqa: E501
         )
         self.logger: logging.Logger = logging.getLogger(name)
         self.logger.setLevel(logging.getLevelName(level))

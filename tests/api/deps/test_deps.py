@@ -8,7 +8,6 @@ from app.api.deps import (
     ClientQueryParams,
     CommonClientQueryParams,
     CommonClientWebsiteQueryParams,
-    CommonQueryParams,
     CommonWebsiteMapQueryParams,
     CommonWebsitePageQueryParams,
     CommonWebsitePageSpeedInsightsQueryParams,
@@ -104,12 +103,6 @@ def test_query_devices_param_validation() -> None:
         DeviceStrategyQueryParams(strategy=["invalid_strategy"])
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "Invalid strategy"
-
-
-def test_query_common_valid_params() -> None:
-    params = CommonQueryParams(page=1)
-
-    assert params.page == 1
 
 
 def test_query_common_client_valid_params() -> None:

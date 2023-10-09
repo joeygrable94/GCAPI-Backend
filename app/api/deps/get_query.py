@@ -106,8 +106,7 @@ class DeviceStrategyQueryParams:
 
 
 class CommonQueryParams(PageQueryParams):
-    def __init__(self, page: int = Query(1), speak: str | None = Query(None)):
-        PageQueryParams.__init__(self, page)
+    def __init__(self, speak: str | None = Query(None)):
         self.speak = speak
 
 

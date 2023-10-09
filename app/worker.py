@@ -18,6 +18,7 @@ from app.schemas import (
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsProcessing,
 )
+from app.schemas.website_pagespeedinsights import PSIDevice
 
 celery_app: Celery = create_celery_worker()
 
@@ -77,7 +78,7 @@ def task_website_page_pagespeedinsights_fetch(
     website_id: UUID4,
     page_id: UUID4,
     fetch_url: AnyHttpUrl,
-    device: str,
+    device: PSIDevice,
 ) -> WebsitePageSpeedInsightsProcessing:
     logger.info(
         f"Fetching PageSpeedInsights for website {website_id}, \

@@ -1,2 +1,2 @@
-uvicorn[standard]==0.21.1
+uvicorn[standard]==0.23.2
 poetry==1.6.1

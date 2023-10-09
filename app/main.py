@@ -1,30 +1,10 @@
-import time
-from typing import Any
-
-from asgi_correlation_id import CorrelationIdMiddleware
-from asgi_correlation_id.context import correlation_id
-from fastapi import FastAPI, HTTPException, Request, Response, status
-from fastapi.exception_handlers import http_exception_handler
+from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from app.api.exceptions import configure_exceptions
+from app.api.middleware import configure_middleware
 from app.core.config import settings
 from app.core.templates import static_files
-
-
-def configure_exceptions(app: FastAPI) -> None:
-    @app.exception_handler(Exception)
-    async def unhandled_exception_handler(request: Request, exc: Exception) -> Response:
-        return await http_exception_handler(  # pragma: no cover
-            request,
-            HTTPException(
-                status.HTTP_500_INTERNAL_SERVER_ERROR,
-                "Internal server error",
-                headers={
-                    "x-request-id": correlation_id.get() or "",
-                    "Access-Control-Expose-Headers": "x-request-id",
-                },
-            ),
-        )
 
 
 def configure_routers(app: FastAPI) -> None:
@@ -45,15 +25,6 @@ def configure_events(app: FastAPI) -> None:
     async def on_startup() -> None:
         await check_db_connected()
 
-    # middlewares
-    @app.middleware("http")
-    async def add_process_time_header(request: Request, call_next: Any) -> None:
-        start_time: Any = time.perf_counter()
-        response: Any = await call_next(request)
-        process_time: Any = time.perf_counter() - start_time
-        response.headers["x-process-time"] = str(process_time)
-        return response
-
     # shutdown actions
     @app.on_event("shutdown")
     async def on_shutdown() -> None:
@@ -69,9 +40,7 @@ def create_app() -> FastAPI:
         docs_url="/api/v1/docs",
         redoc_url="/api/v1/redoc",
     )
-    # MW: logger request process id correlation
-    app.add_middleware(CorrelationIdMiddleware)
-    # MW: Cross-Origin Resource Sharing protection
+    # Cross-Origin Resource Sharing protection
     if settings.BACKEND_CORS_ORIGINS:
         app.add_middleware(  # pragma: no cover
             CORSMiddleware,
@@ -81,6 +50,7 @@ def create_app() -> FastAPI:
             allow_headers=["*"],
             expose_headers=["*"],
         )
+    configure_middleware(app)
     configure_exceptions(app)
     configure_routers(app)
     configure_static(app)

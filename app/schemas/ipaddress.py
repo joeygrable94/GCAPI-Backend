@@ -20,7 +20,7 @@ class IpaddressBase(
     ValidateSchemaIspRequired,
     ValidateSchemaIpLocationRequired,
 ):
-    ip: str
+    address: str
     isp: str
     location: str
     geocoord_id: Optional[UUID4] = None
@@ -35,7 +35,7 @@ class IpaddressUpdate(
     ValidateSchemaIspOptional,
     ValidateSchemaIpLocationOptional,
 ):
-    ip: Optional[str] = None
+    address: Optional[str] = None
     isp: Optional[str] = None
     location: Optional[str] = None
     geocoord_id: Optional[UUID4] = None

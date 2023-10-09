@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
@@ -10,9 +10,8 @@ from app.api.deps import (
     get_async_db,
     get_website_map_or_404,
 )
-from app.api.errors import ErrorCode
 from app.api.exceptions import WebsiteMapAlreadyExists, WebsiteNotExists
-from app.core.auth import auth
+from app.core.security import auth
 from app.crud import WebsiteMapRepository, WebsiteRepository
 from app.models import Website, WebsiteMap
 from app.schemas import (
@@ -98,35 +97,24 @@ async def sitemap_create(
     `WebsiteMapRead` : the newly created website map
 
     """
-    try:
-        sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
-        # check website map url is unique to website_id
-        a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_two(
-            field_name_a="url",
-            field_value_a=sitemap_in.url,
-            field_name_b="website_id",
-            field_value_b=sitemap_in.website_id,
-        )
-        if a_sitemap is not None:
-            raise WebsiteMapAlreadyExists()
-        # check website map is assigned to a website
-        website_repo: WebsiteRepository = WebsiteRepository(session=db)
-        a_website: Website | None = await website_repo.read(sitemap_in.website_id)
-        if a_website is None:
-            raise WebsiteNotExists()
-        # create website map
-        sitemap: WebsiteMap = await sitemap_repo.create(sitemap_in)
-        return WebsiteMapRead.model_validate(sitemap)
-    except WebsiteNotExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ErrorCode.WEBSITE_MAP_UNASSIGNED_WEBSITE_ID,
-        )
-    except WebsiteMapAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ErrorCode.WEBSITE_MAP_EXISTS,
-        )
+    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
+    # check website map url is unique to website_id
+    a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_two(
+        field_name_a="url",
+        field_value_a=sitemap_in.url,
+        field_name_b="website_id",
+        field_value_b=sitemap_in.website_id,
+    )
+    if a_sitemap is not None:
+        raise WebsiteMapAlreadyExists()
+    # check website map is assigned to a website
+    website_repo: WebsiteRepository = WebsiteRepository(session=db)
+    a_website: Website | None = await website_repo.read(sitemap_in.website_id)
+    if a_website is None:
+        raise WebsiteNotExists()
+    # create website map
+    sitemap: WebsiteMap = await sitemap_repo.create(sitemap_in)
+    return WebsiteMapRead.model_validate(sitemap)
 
 
 @router.get(

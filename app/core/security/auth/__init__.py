@@ -17,3 +17,17 @@ auth = Auth0(
     api_audience=settings.AUTH0_API_AUDIENCE,
     scopes=settings.BASE_PRINCIPALS,
 )
+
+
+__all__ = [
+    "Auth0",
+    "Auth0HTTPBearer",
+    "Auth0UnauthenticatedException",
+    "Auth0UnauthorizedException",
+    "Auth0User",
+    "HTTPAuth0Error",
+    "JwksDict",
+    "JwksKeyDict",
+    "OAuth2ImplicitBearer",
+    "auth",
+]

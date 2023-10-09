@@ -1,9 +1,9 @@
 import pytest
-from fastapi.exceptions import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.clients import create_random_client
 
 from app.api.deps import get_client_or_404
+from app.api.exceptions.exceptions import ClientNotExists, InvalidID
 from app.core.utilities.uuids import get_uuid_str
 from app.models.client import Client
 from app.schemas.client import ClientRead
@@ -17,10 +17,11 @@ async def test_get_client_or_404(db_session: AsyncSession) -> None:
     assert result.id == test_client.id
 
     # Test with invalid client_id
-    fake_clid: str = get_uuid_str()
-    with pytest.raises(HTTPException):
+    fake_clid: str = "1"
+    with pytest.raises(InvalidID):
         await get_client_or_404(db_session, fake_clid)
 
-    # Test with no client_id
-    result = await get_client_or_404(db_session)
-    assert result is None
+    # Test with invalid client_id
+    fake_clid = get_uuid_str()
+    with pytest.raises(ClientNotExists):
+        await get_client_or_404(db_session, fake_clid)

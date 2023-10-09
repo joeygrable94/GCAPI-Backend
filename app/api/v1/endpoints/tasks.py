@@ -4,7 +4,7 @@ from celery.result import AsyncResult  # type: ignore
 from fastapi import APIRouter, Depends
 
 from app.api.deps import CurrentUser
-from app.core.auth import auth
+from app.core.security import auth
 from app.schemas import TaskState
 
 router: APIRouter = APIRouter()

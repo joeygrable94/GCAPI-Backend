@@ -35,14 +35,14 @@ class Ipaddress(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    ip: Mapped[str] = mapped_column(
+    address: Mapped[str] = mapped_column(
         String(40), nullable=False, unique=True, primary_key=True, default="::1"
     )
     isp: Mapped[str] = mapped_column(
-        String(255), nullable=False, index=True, default="unknown"
+        String(255), nullable=True, index=True, default="unknown"
     )
     location: Mapped[str] = mapped_column(
-        String(255), nullable=False, index=True, default="unknown"
+        String(255), nullable=True, index=True, default="unknown"
     )
 
     # relationships
@@ -51,5 +51,5 @@ class Ipaddress(Base):
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"Ipaddress({self.ip} by ISP: {self.isp})"
+        repr_str: str = f"Ipaddress({self.address} by ISP: {self.isp})"
         return repr_str

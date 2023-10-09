@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum
 from typing import Optional
 
 from pydantic import UUID4, BaseModel
@@ -13,8 +14,13 @@ from app.db.validators import (
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
 
+class PSIDevice(str, Enum):
+    desktop = "desktop"
+    mobile = "mobile"
+
+
 class PageSpeedInsightsDevice(ValidateSchemaDeviceRequired, BaseModel):
-    device: str
+    device: PSIDevice
 
 
 # schemas

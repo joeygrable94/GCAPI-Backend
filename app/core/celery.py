@@ -32,6 +32,7 @@ def create_celery_worker(name: str = "worker") -> Celery:
     worker.conf.update(result_persistent=True)
     worker.conf.update(worker_send_task_events=False)
     worker.conf.update(worker_prefetch_multiplier=1)
+    worker.conf.update(broker_connection_retry_on_startup=True)
     worker.conf.update(
         task_queues=(
             Queue("tasks"),

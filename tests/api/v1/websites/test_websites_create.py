@@ -4,7 +4,7 @@ import pytest
 from httpx import AsyncClient, Response
 from tests.utils.utils import random_boolean, random_domain
 
-from app.api.errors import ErrorCode
+from app.api.exceptions import ErrorCode
 
 pytestmark = pytest.mark.asyncio
 

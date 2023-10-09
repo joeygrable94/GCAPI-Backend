@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
@@ -10,9 +10,8 @@ from app.api.deps import (
     get_async_db,
     get_website_or_404,
 )
-from app.api.errors import ErrorCode
 from app.api.exceptions import WebsiteAlreadyExists, WebsiteDomainInvalid
-from app.core.auth import auth
+from app.core.security import auth
 from app.crud import WebsiteRepository
 from app.models import Website
 from app.schemas import (
@@ -96,34 +95,21 @@ async def website_create(
         background task that will fetch the sitemap pages
 
     """
-    try:
-        websites_repo: WebsiteRepository = WebsiteRepository(session=db)
-        a_site: Website | None = await websites_repo.read_by(
-            field_name="domain",
-            field_value=website_in.domain,
-        )
-        if a_site:
-            raise WebsiteAlreadyExists()
-        if not await websites_repo.validate(domain=website_in.domain):
-            raise WebsiteDomainInvalid()
-        new_site: Website = await websites_repo.create(website_in)
-        a_sitemap_url = new_site.get_link()
-        sitemap_task = task_website_sitemap_fetch_pages.delay(
-            new_site.id, a_sitemap_url
-        )
-        return WebsiteCreateProcessing(
-            website=WebsiteRead.model_validate(new_site), task_id=sitemap_task.id
-        )
-    except WebsiteDomainInvalid:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ErrorCode.WEBSITE_DOMAIN_INVALID,
-        )
-    except WebsiteAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ErrorCode.WEBSITE_DOMAIN_EXISTS,
-        )
+    websites_repo: WebsiteRepository = WebsiteRepository(session=db)
+    a_site: Website | None = await websites_repo.read_by(
+        field_name="domain",
+        field_value=website_in.domain,
+    )
+    if a_site:
+        raise WebsiteAlreadyExists()
+    if not await websites_repo.validate(domain=website_in.domain):
+        raise WebsiteDomainInvalid()
+    new_site: Website = await websites_repo.create(website_in)
+    a_sitemap_url = new_site.get_link()
+    sitemap_task = task_website_sitemap_fetch_pages.delay(new_site.id, a_sitemap_url)
+    return WebsiteCreateProcessing(
+        website=WebsiteRead.model_validate(new_site), task_id=sitemap_task.id
+    )
 
 
 @router.get(
@@ -191,28 +177,22 @@ async def website_update(
     `WebsiteRead` : the updated website
 
     """
-    try:
-        websites_repo: WebsiteRepository = WebsiteRepository(session=db)
-        if website_in.domain is not None:
-            domain_found: Website | None = await websites_repo.read_by(
-                field_name="domain",
-                field_value=website_in.domain,
-            )
-            if domain_found:
-                raise WebsiteAlreadyExists()
-        updated_website: Website | None = await websites_repo.update(
-            entry=website, schema=website_in
+    websites_repo: WebsiteRepository = WebsiteRepository(session=db)
+    if website_in.domain is not None:
+        domain_found: Website | None = await websites_repo.read_by(
+            field_name="domain",
+            field_value=website_in.domain,
         )
-        return (
-            WebsiteRead.model_validate(updated_website)
-            if updated_website
-            else WebsiteRead.model_validate(website)
-        )
-    except WebsiteAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ErrorCode.WEBSITE_DOMAIN_EXISTS,
-        )
+        if domain_found:
+            raise WebsiteAlreadyExists()
+    updated_website: Website | None = await websites_repo.update(
+        entry=website, schema=website_in
+    )
+    return (
+        WebsiteRead.model_validate(updated_website)
+        if updated_website
+        else WebsiteRead.model_validate(website)
+    )
 
 
 @router.delete(
