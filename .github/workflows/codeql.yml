@@ -15,10 +15,10 @@ on:
   push:
     branches: [ "prod" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "prod" ]
+  workflow_dispatch:
   schedule:
-    - cron: '19 7 * * 2'
+    - cron: '0 8 * * 2'
 
 jobs:
   analyze:
