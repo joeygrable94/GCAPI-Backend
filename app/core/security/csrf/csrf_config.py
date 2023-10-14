@@ -1,13 +1,3 @@
-#!/usr/bin/env python3
-# Copyright (C) 2021-2023 All rights reserved.
-# FILENAME:  fastapi_csrf_config.py
-# VERSION: 	 0.3.2
-# CREATED: 	 2020-11-25 14:35
-# AUTHOR: 	 Sitt Guruvanich <aekazitt+github@gmail.com>
-# DESCRIPTION:
-#
-# HISTORY:
-# *************************************************************
 from typing import Callable, List, Optional, Set
 
 from pydantic import ValidationError

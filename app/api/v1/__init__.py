@@ -4,6 +4,7 @@ from app.api.v1.endpoints import (
     clients,
     notes,
     public,
+    security,
     tasks,
     users,
     web_keywordcorpus,
@@ -20,6 +21,11 @@ router_v1 = APIRouter()
 router_v1.include_router(
     public.router,
     tags=["Public"],
+)
+
+router_v1.include_router(
+    security.router,
+    tags=["Security"],
 )
 
 # task routes

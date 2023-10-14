@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from pydantic import UUID4
 
+from app.core.security import UserRole
 from app.db.acls import UserACL
 from app.db.validators import (
     ValidateSchemaAuthIdRequired,
@@ -12,7 +13,6 @@ from app.db.validators import (
     ValidateSchemaUsernameRequired,
 )
 from app.schemas.base import BaseSchema, BaseSchemaRead
-from app.schemas.user_roles import UserRole
 
 
 # schemas

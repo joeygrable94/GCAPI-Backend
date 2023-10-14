@@ -4,7 +4,7 @@ import os
 import urllib.parse
 import urllib.request
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Type
+from typing import Dict, List, Optional, Type
 
 from fastapi import Depends, HTTPException, Request
 from fastapi.openapi.models import OAuthFlowImplicit, OAuthFlows
@@ -21,30 +21,18 @@ from jose import jwt  # type: ignore
 from pydantic import BaseModel, Field, ValidationError
 from typing_extensions import TypedDict
 
-from app.schemas import UserRole
+from .exceptions import (
+    Auth0UnauthenticatedException,
+    Auth0UnauthorizedException,
+    HTTPAuth0Error,
+)
+from .roles import UserRole
 
 logger = logging.getLogger("fastapi_auth0")
 
 auth0_rule_namespace: str = os.getenv(
     "AUTH0_RULE_NAMESPACE", "https://github.com/dorinclisu/fastapi-auth0"
 )
-
-
-class Auth0UnauthenticatedException(HTTPException):
-    def __init__(self, detail: str, **kwargs: Any) -> None:
-        """Returns HTTP 401"""
-        super().__init__(401, detail, **kwargs)
-
-
-class Auth0UnauthorizedException(HTTPException):
-    def __init__(self, detail: str, **kwargs: Any) -> None:
-        """Returns HTTP 403"""
-        super().__init__(403, detail, **kwargs)
-
-
-class HTTPAuth0Error(BaseModel):
-    detail: str
-
 
 unauthenticated_response: Dict = {401: {"model": HTTPAuth0Error}}
 unauthorized_response: Dict = {403: {"model": HTTPAuth0Error}}

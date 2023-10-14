@@ -7,7 +7,7 @@ from raven import Client  # type: ignore
 from usp.tree import AbstractSitemap  # type: ignore
 from usp.tree import sitemap_tree_for_homepage  # type: ignore
 
-from app.api.utils import fetch_pagespeedinsights
+from app.api.utilities import fetch_pagespeedinsights
 from app.core.celery import create_celery_worker
 from app.core.config import settings
 from app.core.logger import logger

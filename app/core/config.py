@@ -1,5 +1,5 @@
 from functools import lru_cache
-from os import environ
+from os import environ, path
 from typing import Any, Dict, List, Optional, Union
 
 from dotenv import load_dotenv
@@ -11,14 +11,21 @@ from sqlalchemy import URL
 load_dotenv()
 
 
+def get_root_directory(current_directory: str) -> str:
+    while not path.isfile(path.join(current_directory, "main.py")):
+        current_directory = path.dirname(current_directory)
+    return current_directory
+
+
 class Settings(BaseSettings):
     # APP
+    ROOT_DIR: str = get_root_directory(__file__)
     PROJECT_NAME: str = environ.get("PROJECT_NAME", "FastAPI")
     PROJECT_VERSION: str = environ.get("TAG", "0.0.3")
     APP_MODE: str = environ.get("APP_MODE", "test")
     DEBUG_MODE: bool = bool(environ.get("APP_DEBUG", True))
     LOGGING_LEVEL: str = environ.get("BACKEND_LOG_LEVEL", "DEBUG").upper()
-    LOGGER_NAME: str = environ.get("PROJECT_NAME", "debug")
+    LOGGER_NAME: str = environ.get("PROJECT_NAME", "debug").lower()
 
     # API
     API_PREFIX_V1: str = "/api/v1"
@@ -294,3 +301,5 @@ def get_settings() -> Settings:
 
 
 settings: Settings = get_settings()
+
+PROJ_KEY = settings.PROJECT_NAME.lower()

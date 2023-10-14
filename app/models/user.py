@@ -6,10 +6,10 @@ from sqlalchemy import JSON, Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
+from app.core.security import UserRole
 from app.core.utilities.uuids import get_random_username  # type: ignore
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
-from app.schemas import UserRole
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401

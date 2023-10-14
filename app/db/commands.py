@@ -6,6 +6,7 @@ from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixe
 
 from app.core.config import settings  # pragma: no cover
 from app.core.logger import logger  # pragma: no cover
+from app.db.base import Base  # pragma: no cover
 from app.db.session import engine  # pragma: no cover
 
 max_tries = 60 * 5  # 5 minutes
@@ -47,3 +48,27 @@ async def check_db_disconnected() -> None:  # pragma: no cover
     except Exception as e:
         logger.info("+ ASYNC F(X) --> Failed to Disconnect Database! (@_@)")
         raise e
+
+
+def create_db_tables() -> None:  # pragma: no cover
+    logger.info("Creating Database Tables")
+    Base.metadata.create_all(engine)
+    logger.info("Database Tables Created")
+
+
+def drop_db_tables() -> None:  # pragma: no cover
+    logger.info("Dropping Database Tables")
+    Base.metadata.drop_all(engine)
+    logger.info("Database Tables Dropped")
+
+
+async def create_init_data() -> None:  # pragma: no cover
+    logger.info("Inserting Initial Data")
+    logger.info("Data Inserted")
+
+
+async def build_database() -> None:  # pragma: no cover
+    logger.info("Building Database")
+    drop_db_tables()
+    create_db_tables()
+    logger.info("Database Ready")

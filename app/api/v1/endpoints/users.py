@@ -15,10 +15,10 @@ from app.api.exceptions import UserAlreadyExists
 from app.api.middleware import get_request_client_ip
 
 # from app.api.openapi import users_read_responses
-from app.core.security import auth
+from app.core.security import UserRole, auth
 from app.crud.user import UserRepository
 from app.models.user import User
-from app.schemas import UserCreate, UserRead, UserReadRelations, UserRole, UserUpdate
+from app.schemas import UserCreate, UserRead, UserReadRelations, UserUpdate
 
 router: APIRouter = APIRouter()
 

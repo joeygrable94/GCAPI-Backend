@@ -1,7 +1,6 @@
 import asyncio
 
-from app.db.commands import check_db_connected
-from app.db.init_db import create_init_data
+from app.db.commands import check_db_connected, create_init_data
 from app.core.logger import logger  # pragma: no cover
 
 

@@ -1,10 +1,11 @@
 from functools import lru_cache
+from typing import List
 
 from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
 
-from app.core.security import CsrfProtectError
+from app.core.security import CipherError, CsrfProtectError
 
 from .errors import ErrorCode, ErrorCodeReasonModel, ErrorModel
 from .exceptions import (
@@ -53,6 +54,19 @@ def configure_exceptions(app: FastAPI) -> None:
 
     @app.exception_handler(CsrfProtectError)
     async def csrf_protect_exception_handler(
+        request: Request, exc: CsrfProtectError
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(CipherError)
+    async def rsa_security_exception_handler(
         request: Request, exc: CsrfProtectError
     ) -> Response:  # noqa: E501
         return await http_exception_handler(
@@ -325,7 +339,7 @@ def configure_exceptions(app: FastAPI) -> None:
         )
 
 
-__all__ = [
+__all__: List[str] = [
     "ApiException",
     "ClientAlreadyExists",
     "ClientNotExists",

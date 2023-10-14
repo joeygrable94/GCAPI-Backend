@@ -14,7 +14,7 @@ async def test_get_status_task_speak(
 ) -> None:
     speak_word: str = random_lower_string()
     request = await client.get(
-        f"/status?speak={speak_word}", headers=superuser_token_headers
+        f"/status?message={speak_word}", headers=superuser_token_headers
     )
     req_data = request.json()
     assert req_data["status"] == "ok"

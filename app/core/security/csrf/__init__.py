@@ -14,10 +14,12 @@ FastAPI extension that provides Csrf Protection Token support
 
 __version__ = "0.3.2"
 
+from typing import List
+
 from .core import CsrfProtect
 from .exceptions import CsrfProtectError
 
-__all__ = [
+__all__: List[str] = [
     "CsrfProtect",
     "CsrfProtectError",
 ]

@@ -4,13 +4,13 @@
 
 - [GCAPI Backend](#gcapi-backend)
   - [Getting Started](#getting-started)
-  - [FastAPI](#fastapi)
-    - [FastAPI Resources](#fastapi-resources)
+  - [Application Structure](#application-structure)
+  - [Security Resources](#security-resources)
+    - [Hashing and Encrypting Data](#hashing-and-encrypting-data)
+  - [FastAPI Resources](#fastapi-resources)
   - [Alembic](#alembic)
     - [Configuration](#configuration)
     - [Commands](#commands)
-  - [Hashing and Encrypting Data](#hashing-and-encrypting-data)
-    - [Resources](#resources)
   - [SQLAlchemy ORM](#sqlalchemy-orm)
     - [SQLAlchemy Resources](#sqlalchemy-resources)
   - [PyTest](#pytest)
@@ -38,11 +38,64 @@ Create a virtual environment, activate it, then install the backend python pip `
     > :q
     source venv/bin/deactivate
 
-## FastAPI
+---
 
-### FastAPI Resources
+## Application Structure
 
+```bash
+main.py                 # Main entry point for the application
+worker.py               # Celery worker entry point
+core/                   # Core application code shared
+    logger/                 # Logger configuration
+    security/               # Security protocols and utilities
+        auth/                   # Authentication protocols (Auth0)
+        csrf/                   # Cross Site Request Forgery protection
+        encryption/             # Encryption protocols (RSA, AES)
+    utilities/              # Core service layer utilities
+    config.py               # Configuration settings
+    celery.py               # Celery worker setting
+    email.py                # FastAPI email service
+    redis.py                # Redis connection settings
+    templates.py            # Jinja2 templates
+db/                     # Database operations layer
+crud/                   # CRUD Layer for data models
+models/                 # Database models
+schemas/                # Pydantic models for data validation
+api/                    # API Layer
+    v1/endpoints/           # Version controlled endpoints
+    deps/                   # Dependencies injected into endpoints
+    exceptions/             # Error and exception handling
+    middleware/             # API Middleware
+    openapi.py              # OpenAPI schema
+    utilities.py            # API layer utilities
+public/static/          # Public static assets: images, styles, scripts
+templates/email/        # Jinja2 email templates
+```
+
+---
+
+## Security Resources
+
+### Hashing and Encrypting Data
+
+Examples:
+- [Password Encryption in Python: Securing Your Data](https://pagorun.medium.com/password-encryption-in-python-securing-your-data-9e0045e039e1)
+- [Asymmetric Encryption and Decryption in Python](https://nitratine.net/blog/post/asymmetric-encryption-and-decryption-in-python/)
+- [Asymmetric Cryptography with Python](https://medium.com/@ashiqgiga07/asymmetric-cryptography-with-python-5eed86772731)
+- [Exploring approaches to field-level encryption in Python for Django applications](https://www.piiano.com/blog/field-level-encryption-in-python-for-django-applications)
+- [Example RSA_example.py](https://gist.github.com/syedrakib/241b68f5aeaefd7ef8e2)
+- [Example rsa.py](https://gist.github.com/edmhs/6afc542af8a20a619946c2c3b36df8f4)
+- [Advanced Encryption Standard (AES) Methods](https://onboardbase.com/blog/aes-encryption-decryption/)
+- [A Guide to Advanced Encryption Standard (AES)](https://medium.com/quick-code/understanding-the-advanced-encryption-standard-7d7884277e7)
+
+---
+
+## FastAPI Resources
+
+- [FastAPI, SQL, and Alembic](https://ahmed-nafies.medium.com/fastapi-with-sqlalchemy-postgresql-and-alembic-and-of-course-docker-f2b7411ee396)
 - [FastAPI Middleware](https://fastapi.tiangolo.com/tutorial/middleware/)
+
+---
 
 ## Alembic
 
@@ -73,19 +126,6 @@ Always add a message about what changed in the db models/tables.
     alembic upgrade +1
     alembic downgrade -1
     alembic downgrade base
-
-## Hashing and Encrypting Data
-
-- [Password Encryption in Python: Securing Your Data](https://pagorun.medium.com/password-encryption-in-python-securing-your-data-9e0045e039e1)
-- [Asymmetric Encryption and Decryption in Python](https://nitratine.net/blog/post/asymmetric-encryption-and-decryption-in-python/)
-- [Asymmetric Cryptography with Python](https://medium.com/@ashiqgiga07/asymmetric-cryptography-with-python-5eed86772731)
-- [Exploring approaches to field-level encryption in Python for Django applications](https://www.piiano.com/blog/field-level-encryption-in-python-for-django-applications)
-- [Example RSA_example.py](https://gist.github.com/syedrakib/241b68f5aeaefd7ef8e2)
-- [Example rsa.py](https://gist.github.com/edmhs/6afc542af8a20a619946c2c3b36df8f4)
-
-### Resources
-
-- [FastAPI, SQL, and Alembic](https://ahmed-nafies.medium.com/fastapi-with-sqlalchemy-postgresql-and-alembic-and-of-course-docker-f2b7411ee396)
 
 ---
 

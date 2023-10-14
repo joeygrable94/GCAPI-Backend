@@ -13,6 +13,9 @@ venv
 *.db
 *.db-*
 
+# Security
+*.pem
+
 # PyTest
 htmlcov
 coverage.xml

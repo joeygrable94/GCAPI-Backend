@@ -45,6 +45,8 @@ types-requests = "^2.31.0.4"
 tenacity = "^8.2.2"
 python-jose = "^3.3.0"
 itsdangerous = "^2.1.2"
+rsa = "^4.9"
+pycryptodome = "^3.19.0"
 
 [tool.poetry.group.dev.dependencies]
 httpx = "0.23.3"

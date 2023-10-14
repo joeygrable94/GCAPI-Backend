@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 from pydantic import AnyHttpUrl
 
-from app.api.utils import fetch_pagespeedinsights
+from app.api.utilities import fetch_pagespeedinsights
 from app.schemas import PageSpeedInsightsDevice
 
 
@@ -16,7 +16,7 @@ def test_fetch_pagespeedinsights(mock_fetch_psi: Dict[str, Any]) -> None:
     if api_key is None:
         raise Exception("Google Cloud API Key not found in environment variables")
 
-    with patch("app.api.utils.request.urlopen") as mock_urlopen:
+    with patch("app.api.utilities.request.urlopen") as mock_urlopen:
         mock_response = MagicMock()
         mock_response.read.return_value = json.dumps(mock_fetch_psi).encode("utf-8")
         mock_urlopen.return_value = mock_response
