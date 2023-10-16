@@ -22,17 +22,17 @@ from app.schemas.website_pagespeedinsights import PSIDevice
 
 celery_app: Celery = create_celery_worker()
 
-if not settings.DEBUG_MODE:  # pragma: no cover
-    if settings.SENTRY_DSN:
-        client_sentry: Client = Client(settings.SENTRY_DSN)
+if not settings.api.debug:  # pragma: no cover
+    if settings.celery.sentry_dsn:
+        client_sentry: Client = Client(settings.celery.sentry_dsn)
 
     @celery_app.before_task_publish.connect()
     def transfer_correlation_id(headers: Any) -> None:
-        headers[settings.ASGI_ID_HEADER_KEY] = correlation_id.get()
+        headers[settings.api.asgi_header_key] = correlation_id.get()
 
     @celery_app.task_prerun.connect()
     def load_correlation_id(task: Any) -> None:
-        id_value: Any = task.request.get(settings.ASGI_ID_HEADER_KEY)
+        id_value: Any = task.request.get(settings.api.asgi_header_key)
         correlation_id.set(id_value)
 
 

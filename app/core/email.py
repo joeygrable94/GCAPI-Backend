@@ -5,16 +5,16 @@ from fastapi_mail import ConnectionConfig  # type: ignore
 from app.core.config import settings
 
 email_conf: ConnectionConfig = ConnectionConfig(
-    MAIL_USERNAME=settings.SMTP_USER,
-    MAIL_PASSWORD=settings.SMTP_PASSWORD,
-    MAIL_FROM=settings.EMAILS_FROM_EMAIL,
-    MAIL_PORT=settings.SMTP_PORT,
-    MAIL_SERVER=settings.SMTP_HOST,
-    MAIL_FROM_NAME=settings.EMAILS_FROM_NAME,
-    MAIL_STARTTLS=settings.SMTP_TLS,
-    MAIL_SSL_TLS=settings.SMTP_SSL,
+    MAIL_USERNAME=settings.email.smtp_user,
+    MAIL_PASSWORD=settings.email.smtp_password,
+    MAIL_FROM=settings.email.from_email,
+    MAIL_PORT=settings.email.smtp_port,
+    MAIL_SERVER=settings.email.smtp_host,
+    MAIL_FROM_NAME=settings.email.from_name,
+    MAIL_STARTTLS=settings.email.smtp_tls,
+    MAIL_SSL_TLS=settings.email.smtp_ssl,
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=False,
-    TEMPLATE_FOLDER=Path(settings.EMAIL_TEMPLATES_DIR),
-    SUPPRESS_SEND=1 if settings.APP_MODE == "test" else 0,
+    TEMPLATE_FOLDER=Path(settings.email.templates_dir),
+    SUPPRESS_SEND=1 if settings.api.mode == "test" else 0,
 )

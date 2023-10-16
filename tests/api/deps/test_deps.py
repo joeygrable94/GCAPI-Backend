@@ -27,7 +27,7 @@ from app.core.utilities.uuids import get_uuid_str
 
 @pytest.mark.asyncio
 async def test_dep_verify_content_length_okay() -> None:
-    underload_limit: int = settings.PAYLOAD_LIMIT - 10
+    underload_limit: int = settings.api.payload_limit - 10
     await verify_content_length(content_length=underload_limit)
     assert True
 
@@ -35,7 +35,7 @@ async def test_dep_verify_content_length_okay() -> None:
 @pytest.mark.asyncio
 async def test_dep_verify_content_length_too_large() -> None:
     with pytest.raises(HTTPException):
-        overload_limit: int = settings.PAYLOAD_LIMIT + 10
+        overload_limit: int = settings.api.payload_limit + 10
         await verify_content_length(content_length=overload_limit)
 
 

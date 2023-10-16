@@ -2,7 +2,7 @@ from app.core.config import settings
 
 
 def paginate(
-    page: int = 1, limit: int = settings.QUERY_DEFAULT_LIMIT_ROWS
+    page: int = 1, limit: int = settings.api.query_limit_rows_default
 ) -> tuple[int, int]:
     """A simple pagination utility.
 
@@ -25,6 +25,12 @@ def paginate(
             3     3       200     100     200-300
             4     4       300     100     300-400
     """
+    if page < 1:
+        page = 1
+    if limit < 1:
+        limit = settings.api.query_limit_rows_default
+    if limit > settings.api.query_limit_rows_max:
+        limit = settings.api.query_limit_rows_max
     page = 1 if page < 1 else page
     skip: int = 0 if page == 1 else (page - 1) * limit
     return skip, limit

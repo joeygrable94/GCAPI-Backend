@@ -6,7 +6,6 @@ from sqlalchemy import DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy_utils import UUIDType  # type: ignore
 
-from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
@@ -42,7 +41,7 @@ class GcftSnapTrafficsource(Base):
     referrer: Mapped[str] = mapped_column(
         String(2048),
         nullable=False,
-        default=f"https://{settings.SERVER_NAME}/",
+        default="/",
     )
     utm_campaign: Mapped[str] = mapped_column(String(255), nullable=True)
     utm_content: Mapped[str] = mapped_column(String(255), nullable=True)

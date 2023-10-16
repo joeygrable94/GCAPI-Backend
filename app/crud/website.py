@@ -18,8 +18,6 @@ class WebsiteRepository(
         self,
         domain: Optional[str],
     ) -> bool:
-        # if settings.DEBUG_MODE:
-        #     return True
         try:
             if not domain:
                 raise Exception("Domain name is required to validate")

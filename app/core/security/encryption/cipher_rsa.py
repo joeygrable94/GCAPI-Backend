@@ -1,13 +1,13 @@
 import rsa
 
-from app.core.config import PROJ_KEY
+from app.core.config import settings
 
 from .exceptions import RSADecryptionError, RSAEncryptionError
 from .keys import load_api_keys
 
 
 class RSACipher(object):
-    def __init__(self, file_key: str = PROJ_KEY):
+    def __init__(self, file_key: str = settings.api.key):
         self.file_key: str = file_key
         self.pvt_key: rsa.PrivateKey
         self.pub_key: rsa.PublicKey

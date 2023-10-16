@@ -16,7 +16,7 @@ from .utilities import get_request_client_ip
 
 def configure_middleware(app: FastAPI) -> None:
     app.add_middleware(CorrelationIdMiddleware)
-    app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
+    app.add_middleware(SessionMiddleware, secret_key=settings.api.secret_key)
 
     @app.middleware("http")
     async def add_process_time_header(request: Request, call_next: Any) -> Any:

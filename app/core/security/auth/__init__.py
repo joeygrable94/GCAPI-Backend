@@ -18,9 +18,9 @@ from .exceptions import (
 from .roles import UserRole
 
 auth = Auth0(
-    domain=settings.AUTH0_DOMAIN,
-    api_audience=settings.AUTH0_API_AUDIENCE,
-    scopes=settings.BASE_PRINCIPALS,
+    domain=settings.auth.domain,
+    api_audience=settings.auth.audience,
+    scopes=settings.auth.scopes,
 )
 
 

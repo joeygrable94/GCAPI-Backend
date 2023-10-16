@@ -16,17 +16,20 @@ from app.core.config import settings
 
 # Session
 engine: Engine = create_engine(
-    url=str(settings.DATABASE_URI),
+    url=settings.db.uri if settings.api.mode != "test" else settings.db.test_uri,
     pool_pre_ping=True,
     poolclass=SingletonThreadPool,
-    echo=settings.DB_ECHO_LOG,
+    echo=settings.api.debug,
 )
 
 session: Any = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Async Session
 async_engine: AsyncEngine = create_async_engine(
-    url=settings.ASYNC_DATABASE_URI, echo=settings.DB_ECHO_LOG
+    url=settings.db.uri_async
+    if settings.api.mode != "test"
+    else settings.db.test_uri_async,
+    echo=settings.api.debug,
 )
 
 async_session: Any = async_sessionmaker(async_engine, expire_on_commit=False)

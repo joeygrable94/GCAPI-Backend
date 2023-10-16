@@ -13,7 +13,7 @@ async def _send_email(
     message: MessageSchema, template_name: Optional[str] = None
 ) -> bool:
     msg_sent: bool = False
-    if settings.EMAILS_ENABLED and template_name is not None:
+    if settings.email.enabled and template_name is not None:
         try:
             fast_mail = FastMail(email_conf)
             await fast_mail.send_message(message, template_name=template_name)
@@ -24,7 +24,7 @@ async def _send_email(
 
 
 async def send_test_email(email_to: EmailStr) -> bool:
-    project_name: str = settings.PROJECT_NAME
+    project_name: str = settings.api.name
     subject: str = f"{project_name} - Test email"
     message: MessageSchema = MessageSchema(
         subtype=MessageType.html,

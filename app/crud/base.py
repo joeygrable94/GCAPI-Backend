@@ -44,7 +44,7 @@ class BaseRepository(
         return data[0]
 
     async def _list(
-        self, skip: int = 0, limit: int = settings.QUERY_DEFAULT_LIMIT_ROWS
+        self, skip: int = 0, limit: int = settings.api.query_limit_rows_default
     ) -> Union[List[TABLE], List[None]]:
         query: Any = sql_select(self._table).offset(skip).limit(limit)  # type: ignore
         result: Any = await self._db.execute(query)

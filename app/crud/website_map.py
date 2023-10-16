@@ -20,7 +20,7 @@ class WebsiteMapRepository(
     async def _list(
         self,
         skip: int = 0,
-        limit: int = settings.QUERY_DEFAULT_LIMIT_ROWS,
+        limit: int = settings.api.query_limit_rows_default,
         website_id: UUID | None = None,
     ) -> Union[List[WebsiteMap], List[None]]:
         query: Any | None = None

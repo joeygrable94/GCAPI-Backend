@@ -138,14 +138,16 @@ default_theme: DefaultTheme = DefaultTheme()
 
 
 class Logger:
-    def __init__(self, name: str = settings.PROJECT_NAME, level: str = "INFO") -> None:
+    def __init__(
+        self, name: str = settings.api.logger_name, level: str = "INFO"
+    ) -> None:
         self.process_id_filter: CorrelationIdFilter = CorrelationIdFilter(
             name="correlation_id",
-            uuid_length=8 if not settings.DEBUG_MODE else 32,
+            uuid_length=8 if not settings.api.debug else 32,
         )
         self.worker_process_id_filter: CeleryTracingIdsFilter = CeleryTracingIdsFilter(
             name="celery_tracing",
-            uuid_length=8 if not settings.DEBUG_MODE else 32,
+            uuid_length=8 if not settings.api.debug else 32,
         )
         # exception
         self.file_frmt: logging.Formatter = logging.Formatter(

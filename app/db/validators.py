@@ -703,7 +703,7 @@ class ValidateSchemaSizeKbRequired(BaseSchema):
             v=value,
             name="size_kb",
             min_len=0,
-            max_len=settings.PAYLOAD_LIMIT_KB,
+            max_len=settings.api.payload_limit_kb,
         )
 
 
@@ -717,7 +717,7 @@ class ValidateSchemaSizeKbOptional(BaseSchema):
             v=value,
             name="size_kb",
             min_len=0,
-            max_len=settings.PAYLOAD_LIMIT_KB,
+            max_len=settings.api.payload_limit_kb,
         )
 
 

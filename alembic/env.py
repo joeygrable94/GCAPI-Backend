@@ -41,10 +41,10 @@ target_metadata = Base.metadata
 
 # database uri
 def get_url() -> str:
-    return settings.DATABASE_URI
+    return settings.db.uri
 
 def get_async_url() -> str:
-    return settings.ASYNC_DATABASE_URI
+    return settings.db.uri_async
 
 
 def run_migrations_offline():

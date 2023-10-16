@@ -10,7 +10,7 @@ from app.core.templates import static_files
 def configure_routers(app: FastAPI) -> None:
     from app.api.v1 import router_v1
 
-    app.include_router(router_v1, prefix=f"{settings.API_PREFIX_V1}")
+    app.include_router(router_v1, prefix=settings.api.prefix)
 
 
 def configure_static(app: FastAPI) -> None:
@@ -34,17 +34,17 @@ def configure_events(app: FastAPI) -> None:
 def create_app() -> FastAPI:
     # INIT APP
     app: FastAPI = FastAPI(
-        title=settings.PROJECT_NAME,
-        version=settings.PROJECT_VERSION,
+        title=settings.api.name,
+        version=settings.api.version,
         openapi_url="/api/v1/docs/openapi.json",
         docs_url="/api/v1/docs",
         redoc_url="/api/v1/redoc",
     )
     # Cross-Origin Resource Sharing protection
-    if settings.BACKEND_CORS_ORIGINS:
+    if settings.api.allowed_cors:
         app.add_middleware(  # pragma: no cover
             CORSMiddleware,
-            allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
+            allow_origins=[str(origin) for origin in settings.api.allowed_cors],
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],

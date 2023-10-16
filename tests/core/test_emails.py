@@ -18,5 +18,5 @@ async def test_send_test_email() -> None:
         assert outbox[0]["to"] == user_email
         assert (
             outbox[0]["from"]
-            == f"{settings.EMAILS_FROM_NAME} <{settings.EMAILS_FROM_EMAIL}>"
+            == f"{settings.email.from_name} <{settings.email.from_email}>"
         )

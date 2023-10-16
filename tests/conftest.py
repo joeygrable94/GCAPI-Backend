@@ -59,7 +59,7 @@ async def client(app: FastAPI) -> AsyncGenerator:
     async with LifespanManager(app):
         async with AsyncClient(
             app=app,
-            base_url=f"http://0.0.0.0:8888{settings.API_PREFIX_V1}/",
+            base_url=f"http://0.0.0.0:8888{settings.api.prefix}",
             headers={"Content-Type": "application/json"},
         ) as client:
             yield client
@@ -67,16 +67,20 @@ async def client(app: FastAPI) -> AsyncGenerator:
 
 @pytest.fixture(scope="session")
 def superuser_token_headers() -> Dict[str, str]:
-    url = f"https://{settings.AUTH0_DOMAIN}/oauth/token"
+    url = f"https://{settings.auth.domain}/oauth/token"
     data = {
         "grant_type": "password",
-        "username": settings.FIRST_SUPERUSER,
-        "password": settings.FIRST_SUPERUSER_PASSWORD,
-        "audience": settings.AUTH0_API_AUDIENCE,
+        "username": settings.auth.first_superuser,
+        "password": settings.auth.first_superuser_password,
+        "audience": settings.auth.audience,
         "scope": "openid profile email",
     }
-    clid: str = environ.get("AUTH0_SPA_CLIENT_ID", "")
-    clsh: str = environ.get("AUTH0_SPA_CLIENT_SECRET", "")
+    clid: str | None = environ.get("AUTH0_SPA_CLIENT_ID", None)
+    clsh: str | None = environ.get("AUTH0_SPA_CLIENT_SECRET", None)
+    if clid is None:
+        raise ValueError("AUTH0_SPA_CLIENT_ID is not set")
+    if clsh is None:
+        raise ValueError("AUTH0_SPA_CLIENT_SECRET is not set")
     headers = {"content-type": "application/json"}
     response = requests.post(url, json=data, headers=headers, auth=(clid, clsh))
     data = response.json()

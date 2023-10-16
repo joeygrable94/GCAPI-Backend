@@ -46,13 +46,13 @@ Create a virtual environment, activate it, then install the backend python pip `
 main.py                 # Main entry point for the application
 worker.py               # Celery worker entry point
 core/                   # Core application code shared
+    config/                 # Configuration settings
     logger/                 # Logger configuration
     security/               # Security protocols and utilities
         auth/                   # Authentication protocols (Auth0)
         csrf/                   # Cross Site Request Forgery protection
         encryption/             # Encryption protocols (RSA, AES)
     utilities/              # Core service layer utilities
-    config.py               # Configuration settings
     celery.py               # Celery worker setting
     email.py                # FastAPI email service
     redis.py                # Redis connection settings

@@ -1,8 +1,9 @@
-from os import environ
 from typing import Any, Dict
 
 from celery import Celery  # type: ignore
 from kombu import Queue  # type: ignore
+
+from app.core.config import settings
 
 
 # dynamic routing
@@ -19,11 +20,9 @@ def route_task(
 def create_celery_worker(name: str = "worker") -> Celery:
     worker: Celery = Celery(name)
     worker.conf.update(
-        broker_url=environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+        broker_url=settings.celery.broker_url,
     )
-    worker.conf.update(
-        result_backend=environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
-    )
+    worker.conf.update(result_backend=settings.celery.result_backend)
     worker.conf.update(task_track_started=True)
     worker.conf.update(task_serializer="pickle")
     worker.conf.update(result_serializer="pickle")

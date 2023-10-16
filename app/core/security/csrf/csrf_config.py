@@ -2,6 +2,8 @@ from typing import Callable, List, Optional, Set
 
 from pydantic import ValidationError
 
+from app.core import logger
+
 from .load_config import CookieSamesite, LoadConfig
 
 
@@ -40,7 +42,7 @@ class CsrfConfig(object):  # type: ignore
         except ValidationError:
             raise
         except Exception as err:
-            print(err)
+            logger.warning(err)
             raise TypeError(
                 'CsrfConfig must be pydantic "BaseSettings" or list of tuple'
             )

@@ -16,7 +16,7 @@ RSAEncrypt = Annotated[RSACipher, Depends(get_rsa_encryption)]
 def get_aes_cbc_encryption(
     settings: Settings = Depends(get_settings),
 ) -> AESCipherCBC:
-    return AESCipherCBC(key=settings.SECRET_KEY)
+    return AESCipherCBC(key=settings.api.secret_key)
 
 
 AESCBCEncrypt = Annotated[AESCipherCBC, Depends(get_aes_cbc_encryption)]

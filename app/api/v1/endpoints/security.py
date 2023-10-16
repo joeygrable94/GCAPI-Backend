@@ -33,7 +33,7 @@ router: APIRouter = APIRouter()
 async def get_csrf(
     response: Response,
     csrf_protect: CsrfProtect = Depends(),
-    setting: Settings = Depends(get_settings),
+    settings: Settings = Depends(get_settings),
 ) -> CsrfToken:
     """Generates an secure CSRF token for the API.
 
@@ -46,9 +46,7 @@ async def get_csrf(
     `Dict[str, Any]` : a dictionary containing the CSRF token for the API
 
     """
-    csrf_token, signed_token = csrf_protect.generate_csrf_tokens(
-        setting.CSRF_SECRET_KEY
-    )
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens(settings.api.csrf_key)
 
     csrf_protect.set_csrf_cookie(signed_token, response)
 
