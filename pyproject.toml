@@ -38,7 +38,6 @@ celery = "^5.2.7"
 redis = "^5.0.0"
 types-redis = "^4.4.0.6"
 aioredis = "^2.0.1"
-raven = "^6.10.0"
 Jinja2 = "3.1.2"
 anyio = {version = "3.7.1", extras = ["trio"]}
 asyncio = "3.4.3"
@@ -48,6 +47,7 @@ aiomysql = "0.2.0"
 aiofiles = "23.1.0"
 ultimate-sitemap-parser = "^0.5"
 tenacity = "^8.2.2"
+sentry-sdk = {version = "^1.32.0", extras = ["fastapi"]}
 
 [tool.poetry.group.dev.dependencies]
 httpx = "0.23.3"

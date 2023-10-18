@@ -1,11 +1,15 @@
 from fastapi import FastAPI
+from sentry_sdk import Client
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api.exceptions import configure_exceptions
 from app.api.middleware import configure_middleware
+from app.api.monitoring import configure_monitoring
 from app.core.config import settings
 from app.core.templates import static_files
 
+
+sentry_client: Client | None = configure_monitoring()
 
 def configure_routers(app: FastAPI) -> None:
     from app.api.v1 import router_v1
@@ -32,7 +36,6 @@ def configure_events(app: FastAPI) -> None:
 
 
 def create_app() -> FastAPI:
-    # INIT APP
     app: FastAPI = FastAPI(
         title=settings.api.name,
         version=settings.api.version,
@@ -40,7 +43,6 @@ def create_app() -> FastAPI:
         docs_url="/api/v1/docs",
         redoc_url="/api/v1/redoc",
     )
-    # Cross-Origin Resource Sharing protection
     if settings.api.allowed_cors:
         app.add_middleware(  # pragma: no cover
             CORSMiddleware,

@@ -3,10 +3,11 @@ from typing import Any, List, Optional
 from asgi_correlation_id.context import correlation_id
 from celery import Celery  # type: ignore
 from pydantic import UUID4, AnyHttpUrl
-from raven import Client  # type: ignore
+from sentry_sdk import Client
 from usp.tree import AbstractSitemap  # type: ignore
 from usp.tree import sitemap_tree_for_homepage  # type: ignore
 
+from app.api.monitoring import configure_monitoring
 from app.api.utilities import fetch_pagespeedinsights
 from app.core.celery import create_celery_worker
 from app.core.config import settings
@@ -20,11 +21,11 @@ from app.schemas import (
 )
 from app.schemas.website_pagespeedinsights import PSIDevice
 
-celery_app: Celery = create_celery_worker()
 
-if not settings.api.debug:  # pragma: no cover
-    if settings.celery.sentry_dsn:
-        client_sentry: Client = Client(settings.celery.sentry_dsn)
+celery_app: Celery = create_celery_worker()
+sentry_client: Client | None = configure_monitoring()
+
+if not settings.api.debug:
 
     @celery_app.before_task_publish.connect()
     def transfer_correlation_id(headers: Any) -> None:
