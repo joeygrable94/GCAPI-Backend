@@ -4,7 +4,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import GoCloudPropertyACL
 from app.db.validators import (
     ValidateSchemaHashedApiKeyOptional,
     ValidateSchemaHashedApiKeyRequired,
@@ -51,5 +50,5 @@ class GoCloudPropertyUpdate(
     hashed_service_account: Optional[str] = None
 
 
-class GoCloudPropertyRead(GoCloudPropertyACL, GoCloudPropertyBase, BaseSchemaRead):
+class GoCloudPropertyRead(GoCloudPropertyBase, BaseSchemaRead):
     id: UUID4

@@ -15,10 +15,10 @@ from app.api.exceptions import UserAlreadyExists
 from app.api.middleware import get_request_client_ip
 
 # from app.api.openapi import users_read_responses
-from app.core.security import UserRole, auth
+from app.core.security import auth
 from app.crud.user import UserRepository
 from app.models.user import User
-from app.schemas import UserCreate, UserRead, UserReadRelations, UserUpdate
+from app.schemas import UserRead, UserReadRelations, UserUpdate
 
 router: APIRouter = APIRouter()
 
@@ -50,31 +50,12 @@ async def users_current(
     `UserRead | None` : a dictionary containing the user profile information
 
     """
-    users_repo: UserRepository = UserRepository(session=db)
-    user: User | None = await users_repo.read_by(
-        field_name="auth_id", field_value=current_user.auth_id
-    )
-    if not user:
-        user_roles: List[UserRole] = (
-            current_user.roles if current_user.roles else [UserRole.USER]
-        )
-        user = await users_repo.create(
-            UserCreate(
-                auth_id=current_user.auth_id,
-                email=current_user.email,
-                username=current_user.email,
-                is_superuser=False,
-                is_verified=False,
-                is_active=True,
-                roles=user_roles,
-            )
-        )
     # set session vars
-    request.session["user_id"] = str(user.id)
+    request.session["user_id"] = str(current_user.id)
     req_sess_ip = request.session.get("ip_address", False)
     if not req_sess_ip:
         request.session["ip_address"] = str(request_ip)
-    return UserRead.model_validate(user)
+    return current_user
 
 
 @router.get(

@@ -2,7 +2,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import UserIpaddressACL
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
 
@@ -21,5 +20,5 @@ class UserIpaddressUpdate(UserIpaddressBase):
     ipaddress_id: Optional[UUID4] = None
 
 
-class UserIpaddressRead(UserIpaddressACL, UserIpaddressBase, BaseSchemaRead):
+class UserIpaddressRead(UserIpaddressBase, BaseSchemaRead):
     id: UUID4

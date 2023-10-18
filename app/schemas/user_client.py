@@ -2,7 +2,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import UserClientACL
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
 
@@ -21,5 +20,5 @@ class UserClientUpdate(UserClientBase):
     client_id: Optional[UUID4] = None
 
 
-class UserClientRead(UserClientACL, UserClientBase, BaseSchemaRead):
+class UserClientRead(UserClientBase, BaseSchemaRead):
     id: UUID4

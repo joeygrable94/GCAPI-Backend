@@ -2,7 +2,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import GoAnalytics4StreamACL
 from app.db.validators import (
     ValidateSchemaStreamIdRequired,
     ValidateSchemaTitleOptional,
@@ -32,7 +31,6 @@ class GoAnalytics4StreamUpdate(
 
 
 class GoAnalytics4StreamRead(
-    GoAnalytics4StreamACL,
     GoAnalytics4StreamBase,
     BaseSchemaRead,
 ):

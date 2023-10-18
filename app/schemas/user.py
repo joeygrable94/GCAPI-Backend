@@ -5,7 +5,6 @@ from typing import List, Optional
 from pydantic import UUID4
 
 from app.core.security import UserRole
-from app.db.acls import UserACL
 from app.db.validators import (
     ValidateSchemaAuthIdRequired,
     ValidateSchemaEmailRequired,
@@ -23,7 +22,7 @@ class UserBase(
 ):
     auth_id: str
     email: str
-    roles: List[UserRole] = [UserRole.USER]
+    roles: List[UserRole] = [UserRole.user]
 
 
 class UserCreate(
@@ -47,11 +46,8 @@ class UserUpdate(
     roles: Optional[List[UserRole]] = None
 
 
-class UserRead(UserACL, UserBase, BaseSchemaRead):
+class UserRead(UserBase, BaseSchemaRead):
     id: UUID4
-
-    def principals(self) -> List[str]:
-        return [f"user:{self.auth_id}"]
 
 
 # relationships

@@ -4,7 +4,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import FileAssetACL
 from app.db.validators import (
     ValidateSchemaCaptionOptional,
     ValidateSchemaExtensionOptional,
@@ -72,7 +71,7 @@ class FileAssetUpdate(
     bdx_feed_id: Optional[UUID4] = None
 
 
-class FileAssetRead(FileAssetACL, FileAssetBase, BaseSchemaRead):
+class FileAssetRead(FileAssetBase, BaseSchemaRead):
     id: UUID4
 
 

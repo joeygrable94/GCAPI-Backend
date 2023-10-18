@@ -7,7 +7,6 @@ from typing import List, Optional, Union
 from pydantic import UUID4, BaseModel
 from usp.objects.page import SitemapPageChangeFrequency  # type: ignore
 
-from app.db.acls import WebsitePageACL
 from app.db.validators import ValidateSchemaUrlOptional, ValidateSchemaUrlRequired
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
@@ -45,7 +44,7 @@ class WebsitePageUpdate(ValidateSchemaUrlOptional, BaseSchema):
     sitemap_id: Optional[UUID4] = None
 
 
-class WebsitePageRead(WebsitePageACL, WebsitePageBase, BaseSchemaRead):
+class WebsitePageRead(WebsitePageBase, BaseSchemaRead):
     id: UUID4
 
 

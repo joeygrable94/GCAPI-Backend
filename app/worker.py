@@ -21,7 +21,6 @@ from app.schemas import (
 )
 from app.schemas.website_pagespeedinsights import PSIDevice
 
-
 celery_app: Celery = create_celery_worker()
 sentry_client: Client | None = configure_monitoring()
 

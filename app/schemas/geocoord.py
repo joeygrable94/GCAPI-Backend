@@ -2,7 +2,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import GeocoordACL
 from app.db.validators import (
     ValidateSchemaAddressOptional,
     ValidateSchemaAddressRequired,
@@ -39,5 +38,5 @@ class GeocoordUpdate(
     longitude: Optional[float] = None
 
 
-class GeocoordRead(GeocoordACL, GeocoordBase, BaseSchemaRead):
+class GeocoordRead(GeocoordBase, BaseSchemaRead):
     id: UUID4

@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from pydantic import UUID4
 
-from app.db.acls import GcftACL
 from app.db.validators import (
     ValidateGroupNameOptional,
     ValidateGroupNameRequired,
@@ -34,7 +33,7 @@ class GcftUpdate(
     client_id: Optional[UUID4] = None
 
 
-class GcftRead(GcftACL, GcftBase, BaseSchemaRead):
+class GcftRead(GcftBase, BaseSchemaRead):
     id: UUID4
 
 

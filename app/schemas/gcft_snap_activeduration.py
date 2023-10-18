@@ -2,7 +2,6 @@ from datetime import datetime
 
 from pydantic import UUID4
 
-from app.db.acls import GcftSnapActivedurationACL
 from app.db.validators import ValidateSchemaActiveSecondsRequired
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
@@ -24,7 +23,5 @@ class GcftSnapActivedurationUpdate(BaseSchema):
     pass
 
 
-class GcftSnapActivedurationRead(
-    GcftSnapActivedurationACL, GcftSnapActivedurationBase, BaseSchemaRead
-):
+class GcftSnapActivedurationRead(GcftSnapActivedurationBase, BaseSchemaRead):
     id: UUID4

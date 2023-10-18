@@ -4,7 +4,6 @@ from datetime import datetime
 
 from pydantic import UUID4
 
-from app.db.acls import GoSearchConsoleQueryACL
 from app.db.validators import (
     ValidateSchemaClicksRequired,
     ValidateSchemaCtrRequired,
@@ -42,7 +41,6 @@ class GoSearchConsoleQueryUpdate(BaseSchema):
 
 
 class GoSearchConsoleQueryRead(
-    GoSearchConsoleQueryACL,
     GoSearchConsoleQueryBase,
     BaseSchemaRead,
 ):

@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from pydantic import UUID4
 
-from app.db.acls import GcftSnapACL
 from app.db.validators import (
     ValidateSchemaAltitudeOptional,
     ValidateSchemaAltitudeRequired,
@@ -44,7 +43,7 @@ class GcftSnapUpdate(
     file_asset_id: Optional[UUID4] = None
 
 
-class GcftSnapRead(GcftSnapACL, GcftSnapBase, BaseSchemaRead):
+class GcftSnapRead(GcftSnapBase, BaseSchemaRead):
     id: UUID4
 
 

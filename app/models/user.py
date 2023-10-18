@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING, Any, List, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import JSON, Boolean, DateTime, String, func
@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.security import UserRole
+from app.core.security.permissions import AclAction, AclPermission, Authenticated
 from app.core.utilities.uuids import get_random_username  # type: ignore
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
@@ -54,7 +55,7 @@ class User(Base):
     roles: Mapped[List[UserRole]] = mapped_column(
         JSON,
         nullable=False,
-        default=[UserRole.USER.value],
+        default=[UserRole.user.value],
     )
 
     # relationships
@@ -63,6 +64,23 @@ class User(Base):
     )
     notes: Mapped[List["Note"]] = relationship(backref=backref("user", lazy="noload"))
 
+    # ACL Permissions
+    def privileges(self) -> List[str]:
+        user_privileges: List[str] = [f"user:{self.id}"]
+        for role in self.roles:
+            user_privileges.append(f"role:{role.value}")
+        return user_privileges
+
+    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
+        return [
+            (AclAction.allow, "role:admin", AclPermission.create),
+            (AclAction.allow, Authenticated, AclPermission.read),
+            (AclAction.allow, "role:admin", AclPermission.update),
+            (AclAction.allow, f"user:{self.id}", AclPermission.update),
+            (AclAction.allow, "role:admin", AclPermission.delete),
+        ]
+
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"User({self.username})"
         return repr_str

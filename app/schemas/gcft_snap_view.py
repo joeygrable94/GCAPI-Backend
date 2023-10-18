@@ -2,7 +2,6 @@ from datetime import datetime
 
 from pydantic import UUID4
 
-from app.db.acls import GcftSnapViewACL
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
 
@@ -22,5 +21,5 @@ class GcftSnapViewUpdate(BaseSchema):
     pass
 
 
-class GcftSnapViewRead(GcftSnapViewACL, GcftSnapViewBase, BaseSchemaRead):
+class GcftSnapViewRead(GcftSnapViewBase, BaseSchemaRead):
     id: UUID4

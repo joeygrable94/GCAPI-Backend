@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from pydantic import UUID4
 
-from app.db.acls import GoSearchConsolePropertyACL
 from app.db.validators import ValidateSchemaTitleOptional, ValidateSchemaTitleRequired
 from app.schemas.base import BaseSchemaRead
 
@@ -31,7 +30,6 @@ class GoSearchConsolePropertyUpdate(
 
 
 class GoSearchConsolePropertyRead(
-    GoSearchConsolePropertyACL,
     GoSearchConsolePropertyBase,
     BaseSchemaRead,
 ):

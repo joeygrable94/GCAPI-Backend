@@ -2,7 +2,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import ClientReportNoteACL
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
 
@@ -21,5 +20,5 @@ class ClientReportNoteUpdate(ClientReportNoteBase):
     note_id: Optional[UUID4] = None
 
 
-class ClientReportNoteRead(ClientReportNoteACL, ClientReportNoteBase, BaseSchemaRead):
+class ClientReportNoteRead(ClientReportNoteBase, BaseSchemaRead):
     id: UUID4

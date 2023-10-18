@@ -3,7 +3,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import GcftSnapBrowserreportACL
 from app.db.validators import (
     ValidateSchemaBrowserOptional,
     ValidateSchemaBrowserVersionOptional,
@@ -53,7 +52,5 @@ class GcftSnapBrowserreportUpdate(BaseSchema):
     pass
 
 
-class GcftSnapBrowserreportRead(
-    GcftSnapBrowserreportACL, GcftSnapBrowserreportBase, BaseSchemaRead
-):
+class GcftSnapBrowserreportRead(GcftSnapBrowserreportBase, BaseSchemaRead):
     id: UUID4

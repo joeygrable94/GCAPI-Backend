@@ -2,7 +2,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import IpaddressACL
 from app.db.validators import (
     ValidateSchemaIpLocationOptional,
     ValidateSchemaIpLocationRequired,
@@ -41,5 +40,5 @@ class IpaddressUpdate(
     geocoord_id: Optional[UUID4] = None
 
 
-class IpaddressRead(IpaddressACL, IpaddressBase, BaseSchemaRead):
+class IpaddressRead(IpaddressBase, BaseSchemaRead):
     id: UUID4

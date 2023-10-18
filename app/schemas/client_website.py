@@ -2,7 +2,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import ClientWebsiteACL
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
 
@@ -21,5 +20,5 @@ class ClientWebsiteUpdate(ClientWebsiteBase):
     website_id: Optional[UUID4] = None
 
 
-class ClientWebsiteRead(ClientWebsiteACL, ClientWebsiteBase, BaseSchemaRead):
+class ClientWebsiteRead(ClientWebsiteBase, BaseSchemaRead):
     id: UUID4

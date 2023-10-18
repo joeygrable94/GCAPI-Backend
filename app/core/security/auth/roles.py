@@ -1,10 +1,10 @@
-from enum import Enum
+from enum import StrEnum
 
 
 # schemas
-class UserRole(Enum):
-    USER = "user"  # default
-    EMPLOYEE = "employee"
-    MANAGER = "manager"
-    CLIENT = "client"
-    ADMIN = "admin"
+class UserRole(StrEnum):
+    user = "role:user"
+    employee = "role:employee"
+    manager = "role:manager"
+    client = "role:client"
+    admin = "role:admin"

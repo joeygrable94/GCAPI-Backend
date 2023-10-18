@@ -24,6 +24,12 @@ from .encryption import (
     RSAEncryptionError,
     load_api_keys,
 )
+from .permissions import (
+    configure_permissions,
+    has_permission,
+    list_permissions,
+    permission_exception,
+)
 
 __all__: List[str] = [
     "AESCipherCBC",
@@ -48,4 +54,8 @@ __all__: List[str] = [
     "RSACipherError",
     "RSAEncryptionError",
     "RSADecryptionError",
+    "permission_exception",
+    "configure_permissions",
+    "has_permission",
+    "list_permissions",
 ]

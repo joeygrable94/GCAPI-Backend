@@ -28,9 +28,9 @@ from .get_encryption import (
 )
 from .get_permissions import (
     CurrentUser,
-    Permissions,
+    Permission,
     get_current_user,
-    get_current_user_permissions,
+    get_current_user_privileges,
 )
 from .get_query import (
     ClientQueryParams,
@@ -105,9 +105,9 @@ __all__: List[str] = [
     "WebsitePageQueryParams",
     "WebsiteQueryParams",
     "CurrentUser",
-    "Permissions",
+    "Permission",
     "get_current_user",
-    "get_current_user_permissions",
+    "get_current_user_privileges",
     "get_rsa_encryption",
     "get_aes_cbc_encryption",
     "RSAEncrypt",

@@ -5,7 +5,6 @@ from typing import Optional
 
 from pydantic import UUID4, BaseModel
 
-from app.db.acls import WebsitePageSpeedInsightsACL
 from app.db.validators import (
     ValidateSchemaDeviceRequired,
     ValidateSchemaPerformanceValueRequired,
@@ -73,7 +72,6 @@ class WebsitePageSpeedInsightsUpdate(BaseSchema):
 
 
 class WebsitePageSpeedInsightsRead(
-    WebsitePageSpeedInsightsACL,
     WebsitePageSpeedInsightsBase,
     BaseSchemaRead,
 ):

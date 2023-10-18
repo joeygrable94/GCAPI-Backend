@@ -26,7 +26,6 @@ from .exceptions import (
     Auth0UnauthorizedException,
     HTTPAuth0Error,
 )
-from .roles import UserRole
 
 logger = logging.getLogger("fastapi_auth0")
 
@@ -54,7 +53,7 @@ class Auth0User(BaseModel):
     updated_on: Optional[datetime] = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/updated_on"
     )
-    roles: Optional[List[UserRole]] = Field(  # type: ignore [literal-required]
+    roles: Optional[List[str]] = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/roles"
     )
 

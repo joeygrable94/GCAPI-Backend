@@ -8,7 +8,6 @@ from pydantic import UUID4, BaseModel
 from usp.objects.page import SITEMAP_PAGE_DEFAULT_PRIORITY  # type: ignore
 from usp.objects.page import SitemapPageChangeFrequency
 
-from app.db.acls import WebsiteMapACL
 from app.db.validators import ValidateSchemaUrlOptional, ValidateSchemaUrlRequired
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
@@ -57,7 +56,7 @@ class WebsiteMapUpdate(
     is_active: Optional[bool] = None
 
 
-class WebsiteMapRead(WebsiteMapACL, WebsiteMapBase, BaseSchemaRead):
+class WebsiteMapRead(WebsiteMapBase, BaseSchemaRead):
     id: UUID4
 
 

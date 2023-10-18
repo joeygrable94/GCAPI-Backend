@@ -3,7 +3,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import GcftSnapHotspotclickACL
 from app.db.validators import (
     ValidateSchemaBgColorOptional,
     ValidateSchemaHotspotContentOptional,
@@ -60,7 +59,5 @@ class GcftSnapHotspotclickUpdate(BaseSchema):
     pass
 
 
-class GcftSnapHotspotclickRead(
-    GcftSnapHotspotclickACL, GcftSnapHotspotclickBase, BaseSchemaRead
-):
+class GcftSnapHotspotclickRead(GcftSnapHotspotclickBase, BaseSchemaRead):
     id: UUID4

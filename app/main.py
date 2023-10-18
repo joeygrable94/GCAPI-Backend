@@ -8,8 +8,8 @@ from app.api.monitoring import configure_monitoring
 from app.core.config import settings
 from app.core.templates import static_files
 
-
 sentry_client: Client | None = configure_monitoring()
+
 
 def configure_routers(app: FastAPI) -> None:
     from app.api.v1 import router_v1

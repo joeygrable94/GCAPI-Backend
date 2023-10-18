@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from pydantic import UUID4
 
-from app.db.acls import ClientReportACL
 from app.db.validators import (
     ValidateSchemaDescriptionOptional,
     ValidateSchemaKeysOptional,
@@ -47,7 +46,7 @@ class ClientReportUpdate(
     client_id: Optional[UUID4] = None
 
 
-class ClientReportRead(ClientReportACL, ClientReportBase, BaseSchemaRead):
+class ClientReportRead(ClientReportBase, BaseSchemaRead):
     id: UUID4
 
 

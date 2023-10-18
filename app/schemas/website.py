@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from pydantic import UUID4, BaseModel
 
-from app.db.acls import WebsiteACL
 from app.db.validators import ValidateSchemaDomainOptional, ValidateSchemaDomainRequired
 from app.schemas.base import BaseSchemaRead
 
@@ -28,7 +27,7 @@ class WebsiteUpdate(ValidateSchemaDomainOptional):
     is_active: Optional[bool] = None
 
 
-class WebsiteRead(WebsiteACL, WebsiteBase, BaseSchemaRead):
+class WebsiteRead(WebsiteBase, BaseSchemaRead):
     id: UUID4
 
 

@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from pydantic import UUID4
 
-from app.db.acls import GoUniversalAnalytics4PropertyACL
 from app.db.validators import (
     ValidateSchemaTitleOptional,
     ValidateSchemaTitleRequired,
@@ -37,7 +36,6 @@ class GoUniversalAnalyticsPropertyUpdate(
 
 
 class GoUniversalAnalyticsPropertyRead(
-    GoUniversalAnalytics4PropertyACL,
     GoUniversalAnalytics4PropertyBase,
     BaseSchemaRead,
 ):

@@ -3,7 +3,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import GcftSnapTrafficsourceACL
 from app.db.validators import (
     ValidateSchemaReferrerRequired,
     ValidateSchemaUtmCampaignOptional,
@@ -44,7 +43,5 @@ class GcftSnapTrafficsourceUpdate(BaseSchema):
     pass
 
 
-class GcftSnapTrafficsourceRead(
-    GcftSnapTrafficsourceACL, GcftSnapTrafficsourceBase, BaseSchemaRead
-):
+class GcftSnapTrafficsourceRead(GcftSnapTrafficsourceBase, BaseSchemaRead):
     id: UUID4

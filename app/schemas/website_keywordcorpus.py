@@ -4,7 +4,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import WebsiteKeywordCorpusACL
 from app.db.validators import (
     ValidateSchemaCorpusOptional,
     ValidateSchemaCorpusRequired,
@@ -37,7 +36,5 @@ class WebsiteKeywordCorpusUpdate(
     page_id: Optional[UUID4] = None
 
 
-class WebsiteKeywordCorpusRead(
-    WebsiteKeywordCorpusACL, WebsiteKeywordCorpusBase, BaseSchemaRead
-):
+class WebsiteKeywordCorpusRead(WebsiteKeywordCorpusBase, BaseSchemaRead):
     id: UUID4

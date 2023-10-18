@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from pydantic import UUID4
 
-from app.db.acls import NoteACL
 from app.db.validators import (
     ValidateSchemaDescriptionOptional,
     ValidateSchemaTitleOptional,
@@ -32,7 +31,7 @@ class NoteUpdate(ValidateSchemaTitleOptional, ValidateSchemaDescriptionOptional)
     is_active: Optional[bool] = None
 
 
-class NoteRead(NoteACL, NoteBase, BaseSchemaRead):
+class NoteRead(NoteBase, BaseSchemaRead):
     id: UUID4
 
 

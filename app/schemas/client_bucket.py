@@ -2,7 +2,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import ClientBucketACL
 from app.db.validators import (
     ValidateSchemaBucketNameOptional,
     ValidateSchemaBucketNameRequired,
@@ -40,5 +39,5 @@ class ClientBucketUpdate(
     client_id: Optional[UUID4] = None
 
 
-class ClientBucketRead(ClientBucketACL, ClientBucketBase, BaseSchemaRead):
+class ClientBucketRead(ClientBucketBase, BaseSchemaRead):
     id: UUID4

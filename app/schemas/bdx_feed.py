@@ -4,7 +4,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import BdxFeedACL
 from app.db.validators import (
     ValidateSchemaPasswordOptional,
     ValidateSchemaPasswordRequired,
@@ -42,5 +41,5 @@ class BdxFeedUpdate(
     serverhost: Optional[str] = None
 
 
-class BdxFeedRead(BdxFeedACL, BdxFeedBase, BaseSchemaRead):
+class BdxFeedRead(BdxFeedBase, BaseSchemaRead):
     id: UUID4

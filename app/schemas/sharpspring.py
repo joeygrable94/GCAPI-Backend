@@ -4,7 +4,6 @@ from typing import Optional
 
 from pydantic import UUID4
 
-from app.db.acls import SharpspringACL
 from app.db.validators import (
     ValidateSchemaHashedApiKeyOptional,
     ValidateSchemaHashedApiKeyRequired,
@@ -35,5 +34,5 @@ class SharpspringUpdate(
     hashed_secret_key: Optional[str] = None
 
 
-class SharpspringRead(SharpspringACL, SharpspringBase, BaseSchemaRead):
+class SharpspringRead(SharpspringBase, BaseSchemaRead):
     id: UUID4
