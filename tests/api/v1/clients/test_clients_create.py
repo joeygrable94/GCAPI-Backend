@@ -22,7 +22,6 @@ async def test_create_client_as_superuser(
         json=data,
     )
     entry: Dict[str, Any] = response.json()
-    print(entry)
     assert 200 <= response.status_code < 300
     assert entry["title"] == title
     assert entry["description"] == description

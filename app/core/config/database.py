@@ -8,6 +8,9 @@ from sqlalchemy import URL
 
 load_dotenv()
 
+TEST_URI: str = "sqlite:///./test.db"
+TEST_URI_ASYNC: str = "sqlite+aiosqlite:///./test.db"
+
 
 class DatabaseSettings(BaseSettings):
     connector: str = environ.get("DATABASE_CONNECTOR", "mysql+pymysql")
@@ -20,8 +23,6 @@ class DatabaseSettings(BaseSettings):
     charset: str = environ.get("DATABASE_CHARSET", "UTF8MB4")
     uri: Union[str, URL] = environ.get("DATABASE_URI", "")
     uri_async: Union[str, URL] = environ.get("DATABASE_URI_ASYNC", "")
-    test_uri: str = "sqlite:///./test.db"
-    test_uri_async: str = "sqlite+aiosqlite:///./test.db"
 
     # pydantic settings config
     model_config = SettingsConfigDict(
@@ -99,6 +100,8 @@ class DatabaseSettings(BaseSettings):
 
     @field_validator("uri", mode="before")
     def assemble_db_connection(cls, v: Optional[str], info: FieldValidationInfo) -> str:
+        if environ.get('API_MODE', 'development') == 'test':
+            return TEST_URI
         if isinstance(v, str):
             if len(v) > 0:
                 return "{}://{}".format(info.data.get("connector"), v)
@@ -116,6 +119,8 @@ class DatabaseSettings(BaseSettings):
     def assemble_async_db_connection(
         cls, v: Optional[str], info: FieldValidationInfo
     ) -> str:
+        if environ.get('API_MODE', 'development') == 'test':
+            return TEST_URI_ASYNC
         if isinstance(v, str):
             if len(v) > 0:
                 return "{}://{}".format(info.data.get("connector_async"), v)

@@ -16,7 +16,7 @@ from app.core.config import settings
 
 # Session
 engine: Engine = create_engine(
-    url=settings.db.uri if settings.api.mode != "test" else settings.db.test_uri,
+    url=settings.db.uri,
     pool_pre_ping=True,
     poolclass=SingletonThreadPool,
     echo=settings.api.mode == "development",
@@ -26,9 +26,7 @@ session: Any = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Async Session
 async_engine: AsyncEngine = create_async_engine(
-    url=settings.db.uri_async
-    if settings.api.mode != "test"
-    else settings.db.test_uri_async,
+    url=settings.db.uri_async,
     echo=settings.api.mode == "development",
 )
 
