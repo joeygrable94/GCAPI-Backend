@@ -7,6 +7,7 @@
   - [Application Structure](#application-structure)
   - [Security Resources](#security-resources)
     - [Hashing and Encrypting Data](#hashing-and-encrypting-data)
+    - [Session Management](#session-management)
   - [FastAPI Resources](#fastapi-resources)
   - [Alembic](#alembic)
     - [Configuration](#configuration)
@@ -79,6 +80,7 @@ templates/email/        # Jinja2 email templates
 ### Hashing and Encrypting Data
 
 Examples:
+
 - [Password Encryption in Python: Securing Your Data](https://pagorun.medium.com/password-encryption-in-python-securing-your-data-9e0045e039e1)
 - [Asymmetric Encryption and Decryption in Python](https://nitratine.net/blog/post/asymmetric-encryption-and-decryption-in-python/)
 - [Asymmetric Cryptography with Python](https://medium.com/@ashiqgiga07/asymmetric-cryptography-with-python-5eed86772731)
@@ -87,6 +89,10 @@ Examples:
 - [Example rsa.py](https://gist.github.com/edmhs/6afc542af8a20a619946c2c3b36df8f4)
 - [Advanced Encryption Standard (AES) Methods](https://onboardbase.com/blog/aes-encryption-decryption/)
 - [A Guide to Advanced Encryption Standard (AES)](https://medium.com/quick-code/understanding-the-advanced-encryption-standard-7d7884277e7)
+
+### Session Management
+
+- [Starlette Session Middleware](https://www.appsloveworld.com//python/1357/fastapi-starlettes-sessionmiddleware-creates-new-session-for-every-request)
 
 ---
 
