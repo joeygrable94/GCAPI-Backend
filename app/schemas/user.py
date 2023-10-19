@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from pydantic import UUID4
 
-from app.core.security.permissions import AclScope
 from app.db.validators import (
     ValidateSchemaAuthIdRequired,
     ValidateSchemaEmailRequired,

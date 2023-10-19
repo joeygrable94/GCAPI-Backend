@@ -11,7 +11,7 @@ class AuthSettings(BaseSettings):
     domain: str = environ.get("AUTH0_DOMAIN", "")
     audience: str = environ.get("AUTH0_API_AUDIENCE", "")
     scopes: Dict[str, str] = {
-        "permission:test": "Grant GCAPI Permission to test the API using your email credentials.",
+        "permission:test": "Grant GCAPI Permission to test the API using your email credentials.",  # noqa: E501
     }
 
     first_superuser: str = environ.get("AUTH0_FIRST_SUPERUSER", "joey@getcommunity.com")
