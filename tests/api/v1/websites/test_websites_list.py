@@ -25,4 +25,4 @@ async def test_list_websites_as_superuser(
         assert "is_secure" in entry
         if entry["domain"] == entry_1.domain:
             assert entry["domain"] == entry_1.domain
-            assert type(entry["is_secure"]) is bool
+            assert isinstance(entry["is_secure"], bool)

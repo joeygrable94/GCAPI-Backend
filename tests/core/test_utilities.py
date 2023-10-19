@@ -26,7 +26,7 @@ def test_get_date() -> None:
 def test_get_int_from_timestamp() -> None:
     now: datetime = datetime.now()
     now_int: Any = get_int_from_datetime(now)
-    assert type(now_int) is int
+    assert isinstance(now_int, int)
 
 
 def test_get_datetime_from_int() -> None:
@@ -37,7 +37,7 @@ def test_get_datetime_from_int() -> None:
 
 def test_get_uuid_str() -> None:
     uidstr: str = get_uuid_str()
-    assert type(uidstr) is str
+    assert isinstance(uidstr, str)
 
 
 def test_parse_id_uuid() -> None:
