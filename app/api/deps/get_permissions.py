@@ -31,16 +31,14 @@ async def get_current_user(
         field_name="auth_id", field_value=auth0_user.auth_id
     )
     if not user:
-        user_roles: List[AclScope] = []
+        user_roles: List[str] = ["role:user"]
         if auth0_user.roles:
             for auth0_role in auth0_user.roles:
-                user_roles.append(AclScope(scope=f"role:{auth0_role}"))
-        else:
-            user_roles.append(AclScope(scope="role:user"))
-        user_scopes: List[AclScope] = []
+                user_roles.append(f"role:{auth0_role}")
+        user_scopes: List[str] = []
         if auth0_user.permissions:
             for user_perm in auth0_user.permissions:
-                user_scopes.append(AclScope(scope=user_perm))
+                user_scopes.append(user_perm)
         user = await users_repo.create(
             UserCreate(
                 auth_id=auth0_user.auth_id,

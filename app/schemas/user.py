@@ -22,15 +22,15 @@ class UserBase(
 ):
     auth_id: str
     email: str
+    roles: List[str] = ["role:user"]
+    scopes: List[str] = []
+    username: str
 
 
 class UserCreate(
     ValidateSchemaUsernameRequired,
     UserBase,
 ):
-    roles: List[AclScope] = [AclScope(scope="role:user")]
-    scopes: List[AclScope] = []
-    username: str
     is_active: bool = True
     is_verified: bool = False
     is_superuser: bool = False
@@ -44,8 +44,8 @@ class UserUpdate(
     is_active: Optional[bool] = None
     is_verified: Optional[bool] = None
     is_superuser: Optional[bool] = None
-    roles: Optional[List[AclScope]] = None
-    scopes: Optional[List[AclScope]] = None
+    roles: Optional[List[str]] = None
+    scopes: Optional[List[str]] = None
 
 
 class UserRead(UserBase, BaseSchemaRead):

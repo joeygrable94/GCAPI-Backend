@@ -56,12 +56,12 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
-    roles: Mapped[Dict[Any, Any]] = mapped_column(
+    roles: Mapped[List[str]] = mapped_column(
         JSON,
         nullable=False,
         default=["role:user"],
     )
-    scopes: Mapped[Dict[Any, Any]] = mapped_column(
+    scopes: Mapped[List[str]] = mapped_column(
         JSON,
         nullable=False,
         default=[],
@@ -77,8 +77,8 @@ class User(Base):
     def privileges(self) -> List[AclScope]:
         principals: List[AclScope]
         principals = [AclScope(scope=f"user:{self.id}")]
-        principals.extend([AclScope(scope=role["scope"]) for role in self.roles])
-        principals.extend([AclScope(scope=sco["scope"]) for sco in self.scopes])
+        principals.extend([AclScope(scope=role) for role in self.roles])
+        principals.extend([AclScope(scope=sco) for sco in self.scopes])
         return principals
 
     def __acl__(self) -> List[Tuple[Any, Any, Any]]:

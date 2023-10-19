@@ -11,12 +11,7 @@ class AuthSettings(BaseSettings):
     domain: str = environ.get("AUTH0_DOMAIN", "")
     audience: str = environ.get("AUTH0_API_AUDIENCE", "")
     scopes: Dict[str, str] = {
-        "access:admin": "admins have unrestricted access to api actions",
-        "access:manager": "manager have access to most actions administrators have and broaded access to clients' and users' data",  # noqa: E501
-        "access:client": "clients have unique access to client scoped data",
-        "access:employee": "employees may have access to only to specific clients they are granted permission to access",  # noqa: E501
-        "access:user": "users have access to logging in and out and accessing their own data",  # noqa: E501
-        "access:tests": "read test data",
+        "permission:test": "Grant GCAPI Permission to test the API using your email credentials.",
     }
 
     first_superuser: str = environ.get("AUTH0_FIRST_SUPERUSER", "joey@getcommunity.com")

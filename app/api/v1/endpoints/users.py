@@ -55,6 +55,7 @@ async def users_current(
     req_sess_ip = request.session.get("ip_address", False)
     if not req_sess_ip:
         request.session["ip_address"] = str(request_ip)
+    print(current_user.privileges())
     return UserRead.model_validate(current_user)
 
 

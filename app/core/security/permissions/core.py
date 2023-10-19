@@ -2,53 +2,6 @@
 
 Based on [FastAPI Permissions by @holgi](https://github.com/holgi/fastapi-permissions)
 
-This module provides an implementation for row level permissions for the
-FastAPI framework. This is heavily inspired / ripped off the Pyramids Web
-Framework, so all cudos to them!
-
-extremely simple and incomplete example:
-
-    from fastapi import Depends, FastAPI
-    from fastapi.security import OAuth2PasswordBearer
-    from pydantic import BaseModel
-
-    from permissions import import configure_permissions, AclAction, AclPermission
-
-    app = FastAPI()
-    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
-
-    class Item(BaseModel):
-        name: str
-        owner: str
-
-        def __acl__(self):
-            return [
-                (AclAction.allow, Authenticated, AclPermission.read),
-                (AclAction.allow, "role:admin", AclPermission.update),
-                (AclAction.allow, f"user:{self.owner}", AclPermission.delete),
-            ]
-
-    class User(BaseModel):
-        name: str
-
-        def privileges(self):
-            return [f"user:{self.name}"]
-
-    def get_current_user(token: str = Depends(oauth2_scheme)):
-        ...
-
-    def get_active_user_privileges(user:User = Depends(get_current_user)):
-        ...
-
-    def get_item(item_identifier):
-        ...
-
-    # Permission is already wrapped in Depends()
-    Permissions = configure_permissions(get_active_user_privileges)
-
-    @app.get("/item/{item_identifier}")
-    async def show_item(item:Item = Permission("view", get_item)):
-        return [{"item": item}]
 """
 
 __version__ = "0.2.7"
