@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import UUID4
 
@@ -48,13 +48,3 @@ class ClientReportUpdate(
 
 class ClientReportRead(ClientReportBase, BaseSchemaRead):
     id: UUID4
-
-
-# relationships
-class ClientReportReadRelations(ClientReportRead):
-    notes: Optional[List["NoteRead"]] = []
-
-
-from app.schemas.note import NoteRead  # noqa: E402
-
-ClientReportReadRelations.model_rebuild()

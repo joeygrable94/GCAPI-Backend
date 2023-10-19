@@ -73,13 +73,3 @@ class FileAssetUpdate(
 
 class FileAssetRead(FileAssetBase, BaseSchemaRead):
     id: UUID4
-
-
-# relationships
-class FileAssetReadRelations(FileAssetRead):
-    geotag: Optional["GeocoordRead"] = None
-
-
-from app.schemas.geocoord import GeocoordRead  # noqa: E402
-
-FileAssetReadRelations.model_rebuild()

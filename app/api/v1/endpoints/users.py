@@ -18,7 +18,7 @@ from app.api.middleware import get_request_client_ip
 from app.core.security import auth
 from app.crud.user import UserRepository
 from app.models.user import User
-from app.schemas import UserRead, UserReadRelations, UserUpdate
+from app.schemas import UserRead, UserUpdate
 
 router: APIRouter = APIRouter()
 
@@ -55,7 +55,7 @@ async def users_current(
     req_sess_ip = request.session.get("ip_address", False)
     if not req_sess_ip:
         request.session["ip_address"] = str(request_ip)
-    return current_user
+    return UserRead.model_validate(current_user)
 
 
 @router.get(
@@ -65,7 +65,7 @@ async def users_current(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=List[UserReadRelations],
+    response_model=List[UserRead],
 )
 async def users_list(
     current_user: CurrentUser,
@@ -104,7 +104,7 @@ async def users_list(
         Depends(get_user_or_404),
     ],
     # responses=users_read_responses,
-    response_model=UserReadRelations,
+    response_model=UserRead,
 )
 async def users_read(
     current_user: CurrentUser,
@@ -144,7 +144,7 @@ async def users_read(
         Depends(get_async_db),
         Depends(get_user_or_404),
     ],
-    response_model=UserReadRelations,
+    response_model=UserRead,
 )
 async def users_update(
     current_user: CurrentUser,

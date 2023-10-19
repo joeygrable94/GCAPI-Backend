@@ -1,14 +1,9 @@
 from typing import List
 
 from .bdx_feed import BdxFeedCreate, BdxFeedRead, BdxFeedUpdate
-from .client import ClientCreate, ClientRead, ClientReadRelations, ClientUpdate
+from .client import ClientCreate, ClientRead, ClientUpdate
 from .client_bucket import ClientBucketCreate, ClientBucketRead, ClientBucketUpdate
-from .client_report import (
-    ClientReportCreate,
-    ClientReportRead,
-    ClientReportReadRelations,
-    ClientReportUpdate,
-)
+from .client_report import ClientReportCreate, ClientReportRead, ClientReportUpdate
 from .client_report_note import (
     ClientReportNoteCreate,
     ClientReportNoteRead,
@@ -92,7 +87,7 @@ from .go_ua_view import (
     GoUniversalAnalyticsViewUpdate,
 )
 from .ipaddress import IpaddressCreate, IpaddressRead, IpaddressUpdate
-from .note import NoteCreate, NoteRead, NoteReadRelations, NoteUpdate
+from .note import NoteCreate, NoteRead, NoteUpdate
 from .security import (
     CsrfToken,
     EncryptedMessage,
@@ -103,16 +98,10 @@ from .security import (
 )
 from .sharpspring import SharpspringCreate, SharpspringRead, SharpspringUpdate
 from .task import TaskState
-from .user import UserCreate, UserRead, UserReadRelations, UserUpdate
+from .user import UserCreate, UserRead, UserUpdate
 from .user_client import UserClientCreate, UserClientRead, UserClientUpdate
 from .user_ipaddress import UserIpaddressCreate, UserIpaddressRead, UserIpaddressUpdate
-from .website import (
-    WebsiteCreate,
-    WebsiteCreateProcessing,
-    WebsiteRead,
-    WebsiteReadRelations,
-    WebsiteUpdate,
-)
+from .website import WebsiteCreate, WebsiteCreateProcessing, WebsiteRead, WebsiteUpdate
 from .website_keywordcorpus import (
     WebsiteKeywordCorpusCreate,
     WebsiteKeywordCorpusRead,
@@ -124,7 +113,6 @@ from .website_map import (
     WebsiteMapProcessedResult,
     WebsiteMapProcessing,
     WebsiteMapRead,
-    WebsiteMapReadRelations,
     WebsiteMapUpdate,
 )
 from .website_page import (
@@ -132,7 +120,6 @@ from .website_page import (
     WebsitePageKWCProcessing,
     WebsitePagePSIProcessing,
     WebsitePageRead,
-    WebsitePageReadRelations,
     WebsitePageUpdate,
 )
 from .website_pagespeedinsights import (
@@ -151,14 +138,12 @@ __all__: List[str] = [
     "BdxFeedUpdate",
     "ClientCreate",
     "ClientRead",
-    "ClientReadRelations",
     "ClientUpdate",
     "ClientBucketCreate",
     "ClientBucketRead",
     "ClientBucketUpdate",
     "ClientReportCreate",
     "ClientReportRead",
-    "ClientReportReadRelations",
     "ClientReportUpdate",
     "ClientReportNoteCreate",
     "ClientReportNoteRead",
@@ -231,7 +216,6 @@ __all__: List[str] = [
     "IpaddressUpdate",
     "NoteCreate",
     "NoteRead",
-    "NoteReadRelations",
     "NoteUpdate",
     "CsrfToken",
     "RateLimitedToken",
@@ -243,7 +227,6 @@ __all__: List[str] = [
     "TaskState",
     "UserCreate",
     "UserRead",
-    "UserReadRelations",
     "UserUpdate",
     "UserClientCreate",
     "UserClientRead",
@@ -254,7 +237,6 @@ __all__: List[str] = [
     "WebsiteCreate",
     "WebsiteCreateProcessing",
     "WebsiteRead",
-    "WebsiteReadRelations",
     "WebsiteUpdate",
     "WebsiteKeywordCorpusCreate",
     "WebsiteKeywordCorpusRead",
@@ -264,13 +246,11 @@ __all__: List[str] = [
     "WebsiteMapProcessedResult",
     "WebsiteMapProcessing",
     "WebsiteMapRead",
-    "WebsiteMapReadRelations",
     "WebsiteMapUpdate",
     "WebsitePageCreate",
     "WebsitePageKWCProcessing",
     "WebsitePagePSIProcessing",
     "WebsitePageRead",
-    "WebsitePageReadRelations",
     "WebsitePageUpdate",
     "PageSpeedInsightsDevice",
     "PSIDevice",

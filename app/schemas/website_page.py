@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 from pydantic import UUID4, BaseModel
 from usp.objects.page import SitemapPageChangeFrequency  # type: ignore
@@ -58,18 +58,3 @@ class WebsitePagePSIProcessing(BaseModel):
 class WebsitePageKWCProcessing(BaseModel):
     page: WebsitePageRead
     kwc_task_id: UUID4
-
-
-# relationships
-class WebsitePageReadRelations(WebsitePageRead):
-    keywordcorpus: Optional[List["WebsiteKeywordCorpusRead"]] = []
-    pagespeedinsights: Optional[List["WebsitePageSpeedInsightsRead"]] = []
-
-
-# import and update pydantic relationship refs
-from app.schemas.website_keywordcorpus import WebsiteKeywordCorpusRead  # noqa: E402
-from app.schemas.website_pagespeedinsights import (  # noqa: E402
-    WebsitePageSpeedInsightsRead,
-)
-
-WebsitePageReadRelations.model_rebuild()

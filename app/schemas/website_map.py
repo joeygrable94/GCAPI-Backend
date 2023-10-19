@@ -69,14 +69,3 @@ class WebsiteMapProcessing(BaseSchema):
 
 class WebsiteMapProcessedResult(WebsiteMapCreate):
     website_map_pages: List[WebsiteMapPage]
-
-
-# relationships
-class WebsiteMapReadRelations(WebsiteMapRead):
-    pages: Optional[List["WebsitePageRead"]] = []
-
-
-# import and update pydantic relationship refs
-from app.schemas.website_page import WebsitePageRead  # noqa: E402
-
-WebsiteMapReadRelations.model_rebuild()

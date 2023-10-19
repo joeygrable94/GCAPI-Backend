@@ -18,7 +18,6 @@ from app.schemas import (
     WebsitePageCreate,
     WebsitePagePSIProcessing,
     WebsitePageRead,
-    WebsitePageReadRelations,
     WebsitePageUpdate,
 )
 from app.schemas.website_pagespeedinsights import PSIDevice
@@ -34,7 +33,7 @@ router: APIRouter = APIRouter()
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=List[WebsitePageReadRelations],
+    response_model=List[WebsitePageRead],
 )
 async def website_page_list(
     current_user: CurrentUser,
@@ -132,7 +131,7 @@ async def website_page_create(
         Depends(get_async_db),
         Depends(get_website_page_or_404),
     ],
-    response_model=WebsitePageReadRelations,
+    response_model=WebsitePageRead,
 )
 async def website_page_read(
     current_user: CurrentUser,
@@ -166,7 +165,7 @@ async def website_page_read(
         Depends(get_async_db),
         Depends(get_website_page_or_404),
     ],
-    response_model=WebsitePageReadRelations,
+    response_model=WebsitePageRead,
 )
 async def website_page_update(
     current_user: CurrentUser,
@@ -247,7 +246,7 @@ async def website_page_delete(
         Depends(get_async_db),
         Depends(get_website_page_or_404),
     ],
-    response_model=WebsitePageReadRelations,
+    response_model=WebsitePageRead,
 )
 async def website_page_process_website_page_speed_insights(
     current_user: CurrentUser,

@@ -15,7 +15,6 @@ from .exceptions import (
     Auth0UnauthorizedException,
     HTTPAuth0Error,
 )
-from .roles import UserRole
 
 auth = Auth0(
     domain=settings.auth.domain,
@@ -35,5 +34,4 @@ __all__: List[str] = [
     "JwksKeyDict",
     "OAuth2ImplicitBearer",
     "auth",
-    "UserRole",
 ]

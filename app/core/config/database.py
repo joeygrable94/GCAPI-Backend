@@ -100,7 +100,7 @@ class DatabaseSettings(BaseSettings):
 
     @field_validator("uri", mode="before")
     def assemble_db_connection(cls, v: Optional[str], info: FieldValidationInfo) -> str:
-        if environ.get('API_MODE', 'development') == 'test':
+        if environ.get("API_MODE", "development") == "test":
             return TEST_URI
         if isinstance(v, str):
             if len(v) > 0:
@@ -119,7 +119,7 @@ class DatabaseSettings(BaseSettings):
     def assemble_async_db_connection(
         cls, v: Optional[str], info: FieldValidationInfo
     ) -> str:
-        if environ.get('API_MODE', 'development') == 'test':
+        if environ.get("API_MODE", "development") == "test":
             return TEST_URI_ASYNC
         if isinstance(v, str):
             if len(v) > 0:

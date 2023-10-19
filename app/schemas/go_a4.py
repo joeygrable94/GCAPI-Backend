@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import UUID4
 
@@ -43,13 +43,3 @@ class GoAnalytics4PropertyRead(
     BaseSchemaRead,
 ):
     id: UUID4
-
-
-# relationships
-class GoAnalytics4PropertyReadRelations(GoAnalytics4PropertyRead):
-    ga4_streams: Optional[List["GoAnalytics4StreamRead"]] = []
-
-
-from app.schemas.go_a4_stream import GoAnalytics4StreamRead  # noqa: E402
-
-GoAnalytics4PropertyReadRelations.model_rebuild()

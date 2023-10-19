@@ -14,7 +14,7 @@ from app.api.exceptions import NoteAlreadyExists
 from app.core.security import auth
 from app.crud import NoteRepository
 from app.models import Note
-from app.schemas import NoteCreate, NoteRead, NoteReadRelations, NoteUpdate
+from app.schemas import NoteCreate, NoteRead, NoteUpdate
 
 router: APIRouter = APIRouter()
 
@@ -26,7 +26,7 @@ router: APIRouter = APIRouter()
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=List[NoteReadRelations],
+    response_model=List[NoteRead],
 )
 async def notes_list(
     current_user: CurrentUser,
@@ -62,7 +62,7 @@ async def notes_list(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=NoteReadRelations,
+    response_model=NoteRead,
 )
 async def notes_create(
     current_user: CurrentUser,
@@ -102,7 +102,7 @@ async def notes_create(
         Depends(get_async_db),
         Depends(get_note_or_404),
     ],
-    response_model=NoteReadRelations,
+    response_model=NoteRead,
 )
 async def notes_read(
     current_user: CurrentUser,
@@ -135,7 +135,7 @@ async def notes_read(
         Depends(get_async_db),
         Depends(get_note_or_404),
     ],
-    response_model=NoteReadRelations,
+    response_model=NoteRead,
 )
 async def notes_update(
     current_user: CurrentUser,

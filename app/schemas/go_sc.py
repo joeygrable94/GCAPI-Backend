@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import UUID4
 
@@ -34,23 +34,3 @@ class GoSearchConsolePropertyRead(
     BaseSchemaRead,
 ):
     id: UUID4
-
-
-# relationships
-class GoSearchConsolePropertyReadRelations(GoSearchConsolePropertyRead):
-    gsc_countries: Optional[List["GoSearchConsoleCountryRead"]] = []
-    gsc_devices: Optional[List["GoSearchConsoleDeviceRead"]] = []
-    gsc_pages: Optional[List["GoSearchConsolePageRead"]] = []
-    gsc_queries: Optional[List["GoSearchConsoleQueryRead"]] = []
-    gsc_searchappearances: Optional[List["GoSearchConsoleSearchappearanceRead"]] = []
-
-
-from app.schemas.go_sc_country import GoSearchConsoleCountryRead  # noqa: E402
-from app.schemas.go_sc_device import GoSearchConsoleDeviceRead  # noqa: E402
-from app.schemas.go_sc_page import GoSearchConsolePageRead  # noqa: E402
-from app.schemas.go_sc_query import GoSearchConsoleQueryRead  # noqa: E402
-from app.schemas.go_sc_searchappearance import (  # noqa: E402
-    GoSearchConsoleSearchappearanceRead,
-)
-
-GoSearchConsolePropertyReadRelations.model_rebuild()

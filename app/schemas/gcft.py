@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import UUID4
 
@@ -35,13 +35,3 @@ class GcftUpdate(
 
 class GcftRead(GcftBase, BaseSchemaRead):
     id: UUID4
-
-
-# relationships
-class GcftReadRelations(GcftRead):
-    snaps: Optional[List["GcftSnapRead"]] = []
-
-
-from app.schemas.gcft_snap import GcftSnapRead  # noqa: E402
-
-GcftReadRelations.model_rebuild()

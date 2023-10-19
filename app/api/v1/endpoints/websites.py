@@ -18,7 +18,6 @@ from app.schemas import (
     WebsiteCreate,
     WebsiteCreateProcessing,
     WebsiteRead,
-    WebsiteReadRelations,
     WebsiteUpdate,
 )
 from app.worker import task_website_sitemap_fetch_pages
@@ -33,7 +32,7 @@ router: APIRouter = APIRouter()
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=List[WebsiteReadRelations],
+    response_model=List[WebsiteRead],
 )
 async def website_list(
     current_user: CurrentUser,
@@ -120,7 +119,7 @@ async def website_create(
         Depends(get_async_db),
         Depends(get_website_or_404),
     ],
-    response_model=WebsiteReadRelations,
+    response_model=WebsiteRead,
 )
 async def website_read(
     current_user: CurrentUser,
@@ -153,7 +152,7 @@ async def website_read(
         Depends(get_async_db),
         Depends(get_website_or_404),
     ],
-    response_model=WebsiteReadRelations,
+    response_model=WebsiteRead,
 )
 async def website_update(
     current_user: CurrentUser,

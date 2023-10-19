@@ -8,7 +8,6 @@ from .regex import (
     domain_name_regex,
     email_regex,
     pw_req_regex,
-    scope_regex,
 )
 from .uuids import get_uuid, get_uuid_str, parse_id
 
@@ -22,7 +21,6 @@ __all__: List[str] = [
     "domain_name_regex",
     "email_regex",
     "pw_req_regex",
-    "scope_regex",
     "get_uuid",
     "get_uuid_str",
     "parse_id",

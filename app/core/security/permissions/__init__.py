@@ -3,7 +3,6 @@ from typing import List
 from .core import (
     AclAction,
     AclPermission,
-    AclPrivilege,
     Authenticated,
     Everyone,
     configure_permissions,
@@ -11,11 +10,12 @@ from .core import (
     list_permissions,
 )
 from .exceptions import permission_exception
+from .scope import AclScope
 
 __all__: List[str] = [
+    "AclScope",
     "AclAction",
     "AclPermission",
-    "AclPrivilege",
     "Everyone",
     "Authenticated",
     "permission_exception",

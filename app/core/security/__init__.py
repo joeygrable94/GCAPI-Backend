@@ -10,7 +10,6 @@ from .auth import (
     JwksDict,
     JwksKeyDict,
     OAuth2ImplicitBearer,
-    UserRole,
     auth,
 )
 from .csrf import CsrfProtect, CsrfProtectError
@@ -25,6 +24,9 @@ from .encryption import (
     load_api_keys,
 )
 from .permissions import (
+    AclAction,
+    AclPermission,
+    AclScope,
     configure_permissions,
     has_permission,
     list_permissions,
@@ -32,6 +34,9 @@ from .permissions import (
 )
 
 __all__: List[str] = [
+    "AclScope",
+    "AclAction",
+    "AclPermission",
     "AESCipherCBC",
     "AESEncryptionError",
     "AESDecryptionError",
@@ -48,7 +53,6 @@ __all__: List[str] = [
     "JwksDict",
     "JwksKeyDict",
     "OAuth2ImplicitBearer",
-    "UserRole",
     "RSACipher",
     "load_api_keys",
     "RSACipherError",

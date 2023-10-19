@@ -15,7 +15,7 @@ from app.api.openapi import clients_read_responses
 from app.core.security import auth
 from app.crud import ClientRepository
 from app.models import Client
-from app.schemas import ClientCreate, ClientRead, ClientReadRelations, ClientUpdate
+from app.schemas import ClientCreate, ClientRead, ClientUpdate
 
 router: APIRouter = APIRouter()
 
@@ -27,7 +27,7 @@ router: APIRouter = APIRouter()
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=List[ClientReadRelations],
+    response_model=List[ClientRead],
 )
 async def clients_list(
     current_user: CurrentUser,
@@ -61,7 +61,7 @@ async def clients_list(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=ClientReadRelations,
+    response_model=ClientRead,
 )
 async def clients_create(
     current_user: CurrentUser,
@@ -102,7 +102,7 @@ async def clients_create(
         Depends(get_client_or_404),
     ],
     responses=clients_read_responses,
-    response_model=ClientReadRelations,
+    response_model=ClientRead,
 )
 async def clients_read(
     current_user: CurrentUser,
@@ -133,7 +133,7 @@ async def clients_read(
         Depends(get_async_db),
         Depends(get_client_or_404),
     ],
-    response_model=ClientReadRelations,
+    response_model=ClientRead,
 )
 async def clients_update(
     current_user: CurrentUser,

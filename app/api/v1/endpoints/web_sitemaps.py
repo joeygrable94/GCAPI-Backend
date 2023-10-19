@@ -18,7 +18,6 @@ from app.schemas import (
     WebsiteMapCreate,
     WebsiteMapProcessing,
     WebsiteMapRead,
-    WebsiteMapReadRelations,
     WebsiteMapUpdate,
 )
 from app.worker import task_website_sitemap_fetch_pages
@@ -33,7 +32,7 @@ router: APIRouter = APIRouter()
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=List[WebsiteMapReadRelations],
+    response_model=List[WebsiteMapRead],
 )
 async def sitemap_list(
     current_user: CurrentUser,
@@ -73,7 +72,7 @@ async def sitemap_list(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=WebsiteMapReadRelations,
+    response_model=WebsiteMapRead,
 )
 async def sitemap_create(
     current_user: CurrentUser,
@@ -125,7 +124,7 @@ async def sitemap_create(
         Depends(get_async_db),
         Depends(get_website_map_or_404),
     ],
-    response_model=WebsiteMapReadRelations,
+    response_model=WebsiteMapRead,
 )
 async def sitemap_read(
     current_user: CurrentUser,
@@ -158,7 +157,7 @@ async def sitemap_read(
         Depends(get_async_db),
         Depends(get_website_map_or_404),
     ],
-    response_model=WebsiteMapReadRelations,
+    response_model=WebsiteMapRead,
 )
 async def sitemap_update(
     current_user: CurrentUser,
@@ -237,7 +236,7 @@ async def sitemap_delete(
         Depends(get_async_db),
         Depends(get_website_map_or_404),
     ],
-    response_model=WebsiteMapReadRelations,
+    response_model=WebsiteMapRead,
 )
 async def sitemap_process_sitemap_pages(
     current_user: CurrentUser,

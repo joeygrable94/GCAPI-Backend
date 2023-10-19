@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import UUID4, BaseModel
 
@@ -35,18 +35,3 @@ class WebsiteRead(WebsiteBase, BaseSchemaRead):
 class WebsiteCreateProcessing(BaseModel):
     website: WebsiteRead
     task_id: UUID4
-
-
-# relationships
-class WebsiteReadRelations(WebsiteRead):
-    clients: Optional[List["ClientRead"]] = []
-    sitemaps: Optional[List["WebsiteMapRead"]] = []
-    pages: Optional[List["WebsitePageRead"]] = []
-
-
-# import and update pydantic relationship refs
-from app.schemas.client import ClientRead  # noqa: E402
-from app.schemas.website_map import WebsiteMapRead  # noqa: E402
-from app.schemas.website_page import WebsitePageRead  # noqa: E402
-
-WebsiteReadRelations.model_rebuild()

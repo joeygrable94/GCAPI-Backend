@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import UUID4
 
@@ -40,13 +40,3 @@ class GoUniversalAnalyticsPropertyRead(
     BaseSchemaRead,
 ):
     id: UUID4
-
-
-# relationships
-class GoUniversalAnalyticsPropertyReadRelations(GoUniversalAnalyticsPropertyRead):
-    gua_views: Optional[List["GoUniversalAnalyticsViewRead"]] = []
-
-
-from app.schemas.go_ua_view import GoUniversalAnalyticsViewRead  # noqa: E402
-
-GoUniversalAnalyticsPropertyReadRelations.model_rebuild()

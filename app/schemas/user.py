@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from pydantic import UUID4
 
-from app.core.security import UserRole
+from app.core.security.permissions import AclScope
 from app.db.validators import (
     ValidateSchemaAuthIdRequired,
     ValidateSchemaEmailRequired,
@@ -22,13 +22,14 @@ class UserBase(
 ):
     auth_id: str
     email: str
-    roles: List[UserRole] = [UserRole.user]
 
 
 class UserCreate(
     ValidateSchemaUsernameRequired,
     UserBase,
 ):
+    roles: List[AclScope] = [AclScope(scope="role:user")]
+    scopes: List[AclScope] = []
     username: str
     is_active: bool = True
     is_verified: bool = False
@@ -43,20 +44,9 @@ class UserUpdate(
     is_active: Optional[bool] = None
     is_verified: Optional[bool] = None
     is_superuser: Optional[bool] = None
-    roles: Optional[List[UserRole]] = None
+    roles: Optional[List[AclScope]] = None
+    scopes: Optional[List[AclScope]] = None
 
 
 class UserRead(UserBase, BaseSchemaRead):
     id: UUID4
-
-
-# relationships
-class UserReadRelations(UserRead):
-    clients: Optional[List["ClientRead"]] = []
-    notes: Optional[List["NoteRead"]] = []
-
-
-from app.schemas.client import ClientRead  # noqa: E402
-from app.schemas.note import NoteRead  # noqa: E402
-
-UserReadRelations.model_rebuild()
