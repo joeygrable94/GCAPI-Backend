@@ -24,4 +24,5 @@ class AuthSettings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         env_prefix="AUTH0_",
+        case_sensitive=False,
     )

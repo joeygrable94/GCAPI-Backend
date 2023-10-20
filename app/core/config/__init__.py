@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings
 from .api import ApiSettings
 from .auth import AuthSettings
 from .celery import CelerySettings
+from .cloud import CloudKeySettings
 from .database import DatabaseSettings
 from .mail import EmailSettings
 from .redis import RedisSettings
@@ -20,6 +21,7 @@ class Settings(BaseSettings):
     email: EmailSettings
     redis: RedisSettings
     celery: CelerySettings
+    cloud: CloudKeySettings
 
 
 @lru_cache()
@@ -31,6 +33,7 @@ def get_settings() -> Settings:
         email=EmailSettings(),
         redis=RedisSettings(),
         celery=CelerySettings(),
+        cloud=CloudKeySettings(),
     )
 
 

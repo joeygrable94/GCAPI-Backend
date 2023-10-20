@@ -1,5 +1,4 @@
 import json
-from os import environ
 from typing import List, Optional
 from urllib import request
 from urllib.parse import urlparse
@@ -7,6 +6,7 @@ from urllib.parse import urlparse
 from pydantic import UUID4, AnyHttpUrl
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.logger import logger
 from app.crud import WebsiteMapRepository, WebsitePageRepository
 from app.db.session import get_db_session
@@ -93,7 +93,7 @@ def fetch_pagespeedinsights(
     fetch_url: AnyHttpUrl, device: PageSpeedInsightsDevice
 ) -> Optional[WebsitePageSpeedInsightsBase]:
     try:
-        api_key: Optional[str] = environ.get("GOOGLE_CLOUD_API_KEY", None)
+        api_key: Optional[str] = settings.cloud.googleapi
         if api_key is None:  # pragma: no cover
             raise Exception("Google Cloud API Key not found in environment variables")
         fetch_req = "https://%s/%s/%s?url=%s&key=%s&strategy=%s" % (
