@@ -34,7 +34,10 @@ def auth() -> MockAuth:
         {
             "sub": get_uuid_str(),
             "https://github.com/dorinclisu/fastapi-auth0/email": random_email(),
-            "https://github.com/dorinclisu/fastapi-auth0/roles": ["user", "employee"],
+            "https://github.com/dorinclisu/fastapi-auth0/roles": [
+                "role:user",
+                "role:employee",
+            ],
             "permissions": ["access:test"],
         }
     )

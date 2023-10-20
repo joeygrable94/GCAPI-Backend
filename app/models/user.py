@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, List, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import JSON, Boolean, DateTime, String, func
@@ -56,15 +56,10 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
-    roles: Mapped[List[str]] = mapped_column(
+    scopes: Mapped[List[Dict[Any, Any]]] = mapped_column(
         JSON,
         nullable=False,
-        default=["role:user"],
-    )
-    scopes: Mapped[List[str]] = mapped_column(
-        JSON,
-        nullable=False,
-        default=[],
+        default=[{"scope": "role:user"}],
     )
 
     # relationships
@@ -77,17 +72,16 @@ class User(Base):
     def privileges(self) -> List[AclScope]:
         principals: List[AclScope]
         principals = [AclScope(scope=f"user:{self.id}")]
-        principals.extend([AclScope(scope=role) for role in self.roles])
-        principals.extend([AclScope(scope=sco) for sco in self.scopes])
+        principals.extend([AclScope(scope=sco["scope"]) for sco in self.scopes])
         return principals
 
-    def __acl__(self) -> List[Tuple[Any, Any, Any]]:
+    def __acl__(self) -> List[Tuple[AclAction, AclScope, AclPermission]]:
         return [
-            (AclAction.allow, "role:admin", AclPermission.create),
+            (AclAction.allow, AclScope(scope="role:admin"), AclPermission.create),
             (AclAction.allow, Authenticated, AclPermission.read),
-            (AclAction.allow, "role:admin", AclPermission.update),
-            (AclAction.allow, f"user:{self.id}", AclPermission.update),
-            (AclAction.allow, "role:admin", AclPermission.delete),
+            (AclAction.allow, AclScope(scope="role:admin"), AclPermission.update),
+            (AclAction.allow, AclScope(scope=f"user:{self.id}"), AclPermission.update),
+            (AclAction.allow, AclScope(scope="role:admin"), AclPermission.delete),
         ]
 
     # representation

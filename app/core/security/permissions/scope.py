@@ -1,4 +1,5 @@
 from re import Pattern, compile
+# from typing import NewType
 
 from pydantic import BaseModel, Field
 
@@ -14,3 +15,12 @@ class AclScope(BaseModel):
 
     def __repr__(self) -> str:
         return f"Scope({self.scope})"
+
+# class AclScopeStr(str):
+#     def __new__(cls, value: str) -> 'AclScopeStr':
+#         m = scope_regex.fullmatch(value.lower())
+#         if not m:
+#             raise ValueError("invalid scope format")
+#         return super().__new__(cls, m.group(0))
+
+# AclScope = NewType('AclScope', AclScopeStr)

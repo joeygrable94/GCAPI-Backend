@@ -40,7 +40,10 @@ security_responses: Dict = {**unauthenticated_response, **unauthorized_response}
 
 class Auth0User(BaseModel):
     auth_id: str = Field(..., alias="sub")
-    permissions: Optional[List[str]]
+    permissions: List[str] = []  # type: ignore [literal-required]
+    roles: List[str] = Field(  # type: ignore [literal-required]
+        [], alias=f"{auth0_rule_namespace}/roles"
+    )
     email: Optional[str] = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/email"
     )
@@ -52,9 +55,6 @@ class Auth0User(BaseModel):
     )
     updated_on: Optional[datetime] = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/updated_on"
-    )
-    roles: Optional[List[str]] = Field(  # type: ignore [literal-required]
-        None, alias=f"{auth0_rule_namespace}/roles"
     )
 
 

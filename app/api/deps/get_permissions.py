@@ -1,3 +1,4 @@
+from calendar import c
 from typing import Annotated, Any, List
 
 from fastapi import Depends, HTTPException, Security, status
@@ -17,6 +18,32 @@ from app.schemas import UserCreate
 from .get_db import AsyncDatabaseSession
 
 
+def get_acl_scope_list(roles: List[str], permissions: List[str]) -> List[AclScope]:
+    user_scopes: List[AclScope] = [AclScope(scope="role:user")]
+    if roles:
+        for auth0_role in roles:
+            auth0_scope = AclScope(scope=auth0_role)
+            if auth0_scope not in user_scopes:
+                user_scopes.append(auth0_scope)
+    if permissions:
+        for auth0_perm in permissions:
+            auth0_scope = AclScope(scope=auth0_perm)
+            if auth0_scope not in user_scopes:
+                user_scopes.append(auth0_scope)
+    return user_scopes
+
+
+def check_user_acl_scope_list(roles: List[str] | None, permissions: List[str] | None, user_privileges: List[AclScope]) -> List[AclScope]:
+    auth0_scopes = []
+    if roles and permissions:
+        auth0_scopes = get_acl_scope_list(roles, permissions)
+    user_scopes: List[AclScope] = []
+    for privilege in user_privileges:
+        if privilege not in auth0_scopes:
+            user_scopes.append(privilege)
+    return user_scopes
+
+
 async def get_current_user(
     db: AsyncDatabaseSession,
     auth0_user: Auth0User | None = Security(auth.get_user),
@@ -31,26 +58,28 @@ async def get_current_user(
         field_name="auth_id", field_value=auth0_user.auth_id
     )
     if not user:
-        user_roles: List[str] = ["role:user"]
-        if auth0_user.roles:
-            for auth0_role in auth0_user.roles:
-                user_roles.append(f"role:{auth0_role}")
-        user_scopes: List[str] = []
-        if auth0_user.permissions:
-            for user_perm in auth0_user.permissions:
-                user_scopes.append(user_perm)
+        user_scopes = get_acl_scope_list(auth0_user.roles, auth0_user.permissions)
         user = await users_repo.create(
             UserCreate(
                 auth_id=auth0_user.auth_id,
                 email=auth0_user.email,
                 username=auth0_user.email,
-                roles=user_roles,
                 scopes=user_scopes,
                 is_superuser=False,
                 is_verified=False,
                 is_active=True,
             )
         )
+    else:
+        user_scopes = check_user_acl_scope_list(
+            auth0_user.roles,
+            auth0_user.permissions,
+            user.privileges()
+        )
+        print("Auth0 Roles", auth0_user.roles)
+        print("Auth0 Permissions", auth0_user.permissions)
+        print("User Scopes", user.scopes)
+        print("Update Scopes?", user_scopes)
     return user
 
 

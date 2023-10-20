@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from pydantic import UUID4
 
+from app.core.security.permissions import AclScope
 from app.db.validators import (
     ValidateSchemaAuthIdRequired,
     ValidateSchemaEmailRequired,
@@ -21,8 +22,7 @@ class UserBase(
 ):
     auth_id: str
     email: str
-    roles: List[str] = ["role:user"]
-    scopes: List[str] = []
+    scopes: List[AclScope] = [AclScope(scope="role:user")]
     username: str
 
 
@@ -43,8 +43,7 @@ class UserUpdate(
     is_active: Optional[bool] = None
     is_verified: Optional[bool] = None
     is_superuser: Optional[bool] = None
-    roles: Optional[List[str]] = None
-    scopes: Optional[List[str]] = None
+    scopes: Optional[List[AclScope]] = None
 
 
 class UserRead(UserBase, BaseSchemaRead):
