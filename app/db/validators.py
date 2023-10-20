@@ -1,9 +1,10 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from pydantic import field_validator
 
 from app.core.config import settings
+from app.core.security.permissions import AclScope
 from app.core.utilities import domain_name_regex, email_regex
 from app.schemas.base import BaseSchema
 
@@ -413,6 +414,34 @@ class ValidateSchemaPerformanceValueOptional(BaseSchema):
             min_len=0,
             max_len=4,
         )
+
+
+class ValidateSchemaScopesRequired(BaseSchema):
+    scopes: List[AclScope]
+
+    @field_validator("scopes", mode="before")
+    @classmethod
+    def validate_scopes(cls, value: Union[List[str], List[AclScope]]) -> List[AclScope]:
+        scopes: List[AclScope] = []
+        for scope in value:
+            scopes.append(AclScope(scope))
+        return scopes
+
+
+class ValidateSchemaScopesOptional(BaseSchema):
+    scopes: Optional[List[AclScope]]
+
+    @field_validator("scopes", mode="before")
+    @classmethod
+    def validate_scopes(
+        cls, value: Optional[Union[List[str], List[AclScope]]]
+    ) -> Optional[List[AclScope]]:
+        if value:
+            scopes: List[AclScope] = []
+            for scope in value:
+                scopes.append(AclScope(scope))
+            return scopes
+        return None
 
 
 class ValidateSchemaAuthIdRequired(BaseSchema):

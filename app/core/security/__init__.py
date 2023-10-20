@@ -27,10 +27,10 @@ from .permissions import (
     AclAction,
     AclPermission,
     AclScope,
+    AuthPermissionException,
     configure_permissions,
     has_permission,
     list_permissions,
-    permission_exception,
 )
 
 __all__: List[str] = [
@@ -58,7 +58,7 @@ __all__: List[str] = [
     "RSACipherError",
     "RSAEncryptionError",
     "RSADecryptionError",
-    "permission_exception",
+    "AuthPermissionException",
     "configure_permissions",
     "has_permission",
     "list_permissions",

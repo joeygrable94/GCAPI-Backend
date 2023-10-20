@@ -1005,25 +1005,6 @@ httpx = ["httpx[httpx] (>=0.23,<0.24)"]
 redis = ["redis[redis] (>=4.3,<5.0)"]
 
 [[package]]
-name = "fastapi-permissions"
-version = "0.2.7"
-description = "Row Level Permissions for FastAPI"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "fastapi_permissions-0.2.7-py3-none-any.whl", hash = "sha256:b9e5c05b4621b00db3d3ffb9cac55be1295c83648ced6c253fe94cd8cd3bc75f"},
-    {file = "fastapi_permissions-0.2.7.tar.gz", hash = "sha256:9a344b2f67d983959f8922a02aa308f1c6382efeab12cdc9f013482c49df9b76"},
-]
-
-[package.dependencies]
-fastapi = ">=0.33.0"
-python-multipart = ">=0.0.5"
-
-[package.extras]
-dev = ["black", "fastapi[all]", "flake8", "flake8-comprehensions", "isort (>=5.0.0)", "keyring", "passlib[bcrypt]", "pre-commit", "pyjwt"]
-test = ["pytest (>=4.0.0)", "pytest-asyncio", "pytest-cov", "pytest-mock", "pytest-randomly", "tox"]
-
-[[package]]
 name = "flake8"
 version = "6.0.0"
 description = "the modular source code checker: pep8 pyflakes and co"
@@ -3166,4 +3147,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "3124fda686106ee8d4d35b8b2fd1ce34e400a7aeaf9f4c7940eef7ca2d9a3b75"
+content-hash = "a94469dd3dc44d63c003b04d26c724f637f66f75826ab901bf0e457e74a79484"

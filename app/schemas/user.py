@@ -8,6 +8,8 @@ from app.core.security.permissions import AclScope
 from app.db.validators import (
     ValidateSchemaAuthIdRequired,
     ValidateSchemaEmailRequired,
+    ValidateSchemaScopesOptional,
+    ValidateSchemaScopesRequired,
     ValidateSchemaUsernameOptional,
     ValidateSchemaUsernameRequired,
 )
@@ -18,25 +20,27 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 class UserBase(
     ValidateSchemaAuthIdRequired,
     ValidateSchemaEmailRequired,
+    ValidateSchemaUsernameRequired,
     BaseSchema,
 ):
     auth_id: str
     email: str
-    scopes: List[AclScope] = [AclScope(scope="role:user")]
     username: str
 
 
 class UserCreate(
-    ValidateSchemaUsernameRequired,
+    ValidateSchemaScopesRequired,
     UserBase,
 ):
     is_active: bool = True
     is_verified: bool = False
     is_superuser: bool = False
+    scopes: List[AclScope] = [AclScope("role:user")]
 
 
 class UserUpdate(
     ValidateSchemaUsernameOptional,
+    ValidateSchemaScopesOptional,
     BaseSchema,
 ):
     username: Optional[str] = None

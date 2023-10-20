@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, List, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import JSON, Boolean, DateTime, String, func
@@ -11,7 +11,10 @@ from app.core.security.permissions import (
     AclPermission,
     AclScope,
     Authenticated,
+    RoleAdmin,
+    RoleUser,
 )
+from app.core.security.permissions.core import RoleManager
 from app.core.utilities.uuids import get_random_username  # type: ignore
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
@@ -56,10 +59,10 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
-    scopes: Mapped[List[Dict[Any, Any]]] = mapped_column(
+    scopes: Mapped[List[AclScope]] = mapped_column(
         JSON,
         nullable=False,
-        default=[{"scope": "role:user"}],
+        default=[RoleUser],
     )
 
     # relationships
@@ -68,20 +71,34 @@ class User(Base):
     )
     notes: Mapped[List["Note"]] = relationship(backref=backref("user", lazy="noload"))
 
-    # User Privileges to Access ACL Permission Restricted Resources
+    # privileges to access permission restricted resources via ACL
     def privileges(self) -> List[AclScope]:
         principals: List[AclScope]
-        principals = [AclScope(scope=f"user:{self.id}")]
-        principals.extend([AclScope(scope=sco["scope"]) for sco in self.scopes])
+        principals = [AclScope(f"user:{self.id}")]
+        principals.extend([AclScope(sco) for sco in self.scopes])
         return principals
 
+    # ACL
     def __acl__(self) -> List[Tuple[AclAction, AclScope, AclPermission]]:
         return [
-            (AclAction.allow, AclScope(scope="role:admin"), AclPermission.create),
+            # create
+            (AclAction.allow, RoleAdmin, AclPermission.create),
+            # read
             (AclAction.allow, Authenticated, AclPermission.read),
-            (AclAction.allow, AclScope(scope="role:admin"), AclPermission.update),
-            (AclAction.allow, AclScope(scope=f"user:{self.id}"), AclPermission.update),
-            (AclAction.allow, AclScope(scope="role:admin"), AclPermission.delete),
+            # update
+            (AclAction.allow, RoleAdmin, AclPermission.update),
+            # update
+            (AclAction.allow, AclScope(f"user:{self.id}"), AclPermission.update),
+            # delete
+            (AclAction.allow, RoleAdmin, AclPermission.delete),
+            # read_relations
+            (AclAction.allow, RoleAdmin, AclPermission.read_relations),
+            (AclAction.allow, RoleManager, AclPermission.read_relations),
+            (
+                AclAction.allow,
+                AclScope(f"user:{self.id}"),
+                AclPermission.read_relations,
+            ),
         ]
 
     # representation

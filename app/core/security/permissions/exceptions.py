@@ -1,9 +1,12 @@
-from fastapi import HTTPException, status
+from fastapi import status
 
-# the exception that will be raised, if no sufficient permissions are found
-# can be configured in the configure_permissions() function
-permission_exception = HTTPException(
-    status_code=status.HTTP_403_FORBIDDEN,
-    detail="Insufficient permissions",
-    headers={"WWW-Authenticate": "Bearer"},
-)
+
+class AuthPermissionException(Exception):
+    def __init__(
+        self,
+        status_code: int = status.HTTP_403_FORBIDDEN,
+        message: str = "Insufficient permissions",
+    ):
+        self.status_code = status_code
+        self.message = message
+        self.headers = {"WWW-Authenticate": "Bearer"}

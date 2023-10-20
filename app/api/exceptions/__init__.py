@@ -1,11 +1,17 @@
 from functools import lru_cache
-from typing import List
+from typing import Dict, List
 
 from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
 
-from app.core.security import CipherError, CsrfProtectError
+from app.core.security import (
+    Auth0UnauthenticatedException,
+    Auth0UnauthorizedException,
+    AuthPermissionException,
+    CipherError,
+    CsrfProtectError,
+)
 
 from .errors import ErrorCode, ErrorCodeReasonModel, ErrorModel
 from .exceptions import (
@@ -75,6 +81,54 @@ def configure_exceptions(app: FastAPI) -> None:
                 exc.status_code,
                 detail=exc.message,
                 headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(Auth0UnauthenticatedException)
+    async def auth0_unauthenticated_exception_handler(
+        request: Request, exc: Auth0UnauthenticatedException
+    ) -> Response:  # noqa: E501
+        request_headers = get_global_headers()
+        if exc.headers:
+            request_headers.update(exc.headers)
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.detail,
+                headers=request_headers,
+            ),
+        )
+
+    @app.exception_handler(Auth0UnauthorizedException)
+    async def auth0_unauthorized_exception_handler(
+        request: Request, exc: Auth0UnauthorizedException
+    ) -> Response:  # noqa: E501
+        request_headers = get_global_headers()
+        if exc.headers:
+            request_headers.update(exc.headers)
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.detail,
+                headers=request_headers,
+            ),
+        )
+
+    @app.exception_handler(AuthPermissionException)
+    async def permissions_exception_handler(
+        request: Request, exc: AuthPermissionException
+    ) -> Response:  # noqa: E501
+        request_headers = get_global_headers()
+        if exc.headers:
+            request_headers.update(exc.headers)
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers=request_headers,
             ),
         )
 

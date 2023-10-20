@@ -5,11 +5,16 @@ from .core import (
     AclPermission,
     Authenticated,
     Everyone,
+    RoleAdmin,
+    RoleClient,
+    RoleEmployee,
+    RoleManager,
+    RoleUser,
     configure_permissions,
     has_permission,
     list_permissions,
 )
-from .exceptions import permission_exception
+from .exceptions import AuthPermissionException
 from .scope import AclScope
 
 __all__: List[str] = [
@@ -18,8 +23,13 @@ __all__: List[str] = [
     "AclPermission",
     "Everyone",
     "Authenticated",
-    "permission_exception",
+    "AuthPermissionException",
     "configure_permissions",
     "has_permission",
     "list_permissions",
+    "RoleAdmin",
+    "RoleClient",
+    "RoleEmployee",
+    "RoleManager",
+    "RoleUser",
 ]

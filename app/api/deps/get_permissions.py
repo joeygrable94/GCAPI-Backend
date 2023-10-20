@@ -1,4 +1,3 @@
-from calendar import c
 from typing import Annotated, Any, List
 
 from fastapi import Depends, HTTPException, Security, status
@@ -10,6 +9,7 @@ from app.core.security.permissions import (
     AclScope,
     Authenticated,
     Everyone,
+    RoleUser,
 )
 from app.crud import UserRepository
 from app.models import User
@@ -19,22 +19,26 @@ from .get_db import AsyncDatabaseSession
 
 
 def get_acl_scope_list(roles: List[str], permissions: List[str]) -> List[AclScope]:
-    user_scopes: List[AclScope] = [AclScope(scope="role:user")]
+    user_scopes: List[AclScope] = [RoleUser]
     if roles:
         for auth0_role in roles:
-            auth0_scope = AclScope(scope=auth0_role)
+            auth0_scope = AclScope(auth0_role)
             if auth0_scope not in user_scopes:
                 user_scopes.append(auth0_scope)
     if permissions:
         for auth0_perm in permissions:
-            auth0_scope = AclScope(scope=auth0_perm)
+            auth0_scope = AclScope(auth0_perm)
             if auth0_scope not in user_scopes:
                 user_scopes.append(auth0_scope)
     return user_scopes
 
 
-def check_user_acl_scope_list(roles: List[str] | None, permissions: List[str] | None, user_privileges: List[AclScope]) -> List[AclScope]:
-    auth0_scopes = []
+def check_user_acl_scope_list(
+    roles: List[str] | None,
+    permissions: List[str] | None,
+    user_privileges: List[AclScope],
+) -> List[AclScope]:
+    auth0_scopes: List[AclScope] = []
     if roles and permissions:
         auth0_scopes = get_acl_scope_list(roles, permissions)
     user_scopes: List[AclScope] = []
@@ -72,9 +76,7 @@ async def get_current_user(
         )
     else:
         user_scopes = check_user_acl_scope_list(
-            auth0_user.roles,
-            auth0_user.permissions,
-            user.privileges()
+            auth0_user.roles, auth0_user.permissions, user.privileges()
         )
         print("Auth0 Roles", auth0_user.roles)
         print("Auth0 Permissions", auth0_user.permissions)
@@ -95,16 +97,7 @@ def get_current_user_privileges(
     return principals
 
 
-Permission = configure_permissions(
-    get_current_user_privileges,
-    HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail=ErrorCode.INSUFFICIENT_PERMISSIONS,
-    ),
-)
-
-
-# utilities
+Permission = configure_permissions(get_current_user_privileges)
 
 
 def user_privilege_authorized(

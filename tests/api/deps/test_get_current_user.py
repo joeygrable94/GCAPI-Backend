@@ -68,5 +68,5 @@ async def test_get_current_user_privileges(
         assert len(principals) == 6
         assert Everyone in principals
         assert Authenticated in principals
-        assert AclScope(scope="role:user") in principals
-        assert AclScope(scope="role:employee") in principals
+        assert AclScope("role:user") in principals
+        assert AclScope("role:employee") in principals

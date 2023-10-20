@@ -10,9 +10,9 @@ import functools
 from enum import StrEnum
 from typing import Any, Dict, List, Tuple
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 
-from .exceptions import permission_exception
+from .exceptions import AuthPermissionException
 from .scope import AclScope
 
 # constants
@@ -25,8 +25,14 @@ class AclAction(StrEnum):
 
 
 # Privileges
-Everyone: AclScope = AclScope(scope="system:everyone")
-Authenticated: AclScope = AclScope(scope="system:authenticated")
+Everyone: AclScope = AclScope("system:everyone")
+Authenticated: AclScope = AclScope("system:authenticated")
+# Role Based Privileges: Client, Employee, Manager, User
+RoleAdmin: AclScope = AclScope("role:admin")
+RoleClient: AclScope = AclScope("role:client")
+RoleEmployee: AclScope = AclScope("role:employee")
+RoleManager: AclScope = AclScope("role:manager")
+RoleUser: AclScope = AclScope("role:user")
 
 
 # Permissions
@@ -54,14 +60,11 @@ ALOW_ALL: Tuple[AclAction, AclScope, AclPermission] = (
 
 def configure_permissions(
     active_privileges_func: Any,
-    permission_exception: HTTPException = permission_exception,
 ) -> Any:
     """sets the basic configuration for the permissions system
 
     active_privileges_func:
         a dependency that returns the privileges of the current active user
-    permission_exception:
-        the exception used if a permission is denied
 
     returns: permission_dependency_factory function,
              with some parameters already provisioned
@@ -71,7 +74,6 @@ def configure_permissions(
     return functools.partial(
         permission_dependency_factory,
         active_privileges_func=active_privileges_func,
-        permission_exception=permission_exception,
     )
 
 
@@ -79,7 +81,6 @@ def permission_dependency_factory(
     permission: AclPermission,
     resource: Any,
     active_privileges_func: Any,
-    permission_exception: HTTPException,
 ) -> Any:
     """returns a function that acts as a dependable for checking permissions
 
@@ -93,8 +94,6 @@ def permission_dependency_factory(
         the resource that will be accessed
     active_privileges_func (provisioned  by configure_permissions):
         a dependency that returns the privileges of the current active user
-    permission_exception (provisioned  by configure_permissions):
-        exception if permission is denied
 
     returns: dependency function for "Depends()"
     """
@@ -112,7 +111,7 @@ def permission_dependency_factory(
     ) -> Any:
         if has_permission(privileges, permission, resource):
             return resource
-        raise permission_exception
+        raise AuthPermissionException()
 
     return Depends(permission_dependency)
 

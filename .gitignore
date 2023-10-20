@@ -16,7 +16,7 @@ venv
 # Security
 *.pem
 
-# PyTest
+# PyTest / Coverage / Lint
 htmlcov
 coverage.xml
 .pytest_cache
@@ -24,6 +24,7 @@ coverage.xml
 .coverage
 .cache
 codecov
+.ruff_cache
 
 # unused
 unused
