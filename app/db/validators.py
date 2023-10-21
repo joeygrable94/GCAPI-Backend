@@ -6,15 +6,15 @@ from pydantic import field_validator
 from app.core.config import settings
 from app.core.security.permissions import AclScope
 from app.core.utilities import domain_name_regex, email_regex
+from app.db.constants import (
+    DB_FLOAT_MAX_LEN,
+    DB_INT_INTEGER_MAX_LEN,
+    DB_STR_BLOB_MAX_LEN,
+    DB_STR_LONGTEXT_MAX_LEN,
+    DB_STR_NAME_TITLE_MAX_LEN,
+    DB_STR_URL_PATH_MAX_LEN,
+)
 from app.schemas.base import BaseSchema
-
-DB_FLOAT_MAX_LEN = 20
-DB_STR_NAME_TITLE_MAX_LEN = 96
-DB_STR_URL_PATH_MAX_LEN = 2048
-DB_STR_BLOB_MAX_LEN = 65500
-DB_STR_LONGTEXT_MAX_LEN = 4000000000  # 4 billion characters
-DB_INT_INTEGER_MAX_LEN = 1000000000  # 1 billion
-
 
 # ----------------------------
 # Validation Functions

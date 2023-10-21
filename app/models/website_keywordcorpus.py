@@ -8,6 +8,7 @@ from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_STR_LONGTEXT_MAX_LEN
 
 if TYPE_CHECKING:  # pragma: no cover
     from .website import Website  # noqa: F401
@@ -37,8 +38,12 @@ class WebsiteKeywordCorpus(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    corpus: Mapped[str] = mapped_column(Text(4000000000), nullable=False, default="")
-    rawtext: Mapped[str] = mapped_column(Text(4000000000), nullable=False, default="")
+    corpus: Mapped[str] = mapped_column(
+        Text(DB_STR_LONGTEXT_MAX_LEN), nullable=False, default=""
+    )
+    rawtext: Mapped[str] = mapped_column(
+        Text(DB_STR_LONGTEXT_MAX_LEN), nullable=False, default=""
+    )
 
     # relationships
     website_id: Mapped[UUID4] = mapped_column(
