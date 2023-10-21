@@ -3,18 +3,24 @@ repos:
     rev: v8.11.0
     hooks:
       - id: gitleaks
-  - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
+  - repo: local
     hooks:
-      - id: isort
-        name: isort (python)
-  - repo: https://github.com/psf/black
-    rev: 22.6.0
+      - id: format-code
+        name: format-code
+        entry: ./scripts/format.sh
+        language: script
+        pass_filenames: false
+  - repo: local
     hooks:
-    - id: black
-      language_version: python3
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.2
+      - id: lint-code
+        name: lint-code
+        entry: ./scripts/lint.sh
+        language: script
+        pass_filenames: false
+  - repo: local
     hooks:
-    - id: flake8
-      language_version: python3
+      - id: test-code
+        name: test-code
+        entry: ./scripts/test-cov.sh
+        language: script
+        pass_filenames: false
