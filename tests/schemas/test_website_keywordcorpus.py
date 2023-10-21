@@ -29,7 +29,7 @@ def test_keyword_corpus_required_with_empty_str_corpus() -> None:
 
 
 def test_keyword_corpus_required_with_invalid_corpus() -> None:
-    input_data: Dict[str, str] = {"corpus": "a" * 4000000001}
+    input_data: Dict[str, str] = {"corpus": "a" * 5000000001}
     with pytest.raises(ValueError):
         ValidateSchemaCorpusRequired.model_validate(input_data)
 
@@ -51,7 +51,7 @@ def test_keyword_corpus_optional_with_empty_str_corpus() -> None:
 
 
 def test_keyword_corpus_optional_with_invalid_corpus() -> None:
-    input_data: Dict[str, str] = {"corpus": "a" * 4000000001}
+    input_data: Dict[str, str] = {"corpus": "a" * 5000000001}
     with pytest.raises(ValueError):
         ValidateSchemaCorpusOptional.model_validate(input_data)
 
@@ -75,7 +75,7 @@ def test_keyword_rawtext_required_with_empty_str_rawtext() -> None:
 
 
 def test_keyword_rawtext_required_with_invalid_rawtext() -> None:
-    input_data: Dict[str, str] = {"rawtext": "a" * 4000000001}
+    input_data: Dict[str, str] = {"rawtext": "a" * 5000000001}
     with pytest.raises(ValueError):
         ValidateSchemaRawTextRequired.model_validate(input_data)
 
@@ -97,6 +97,6 @@ def test_keyword_rawtext_optional_with_empty_str_rawtext() -> None:
 
 
 def test_keyword_rawtext_optional_with_invalid_rawtext() -> None:
-    input_data: Dict[str, str] = {"rawtext": "a" * 4000000001}
+    input_data: Dict[str, str] = {"rawtext": "a" * 5000000001}
     with pytest.raises(ValueError):
         ValidateSchemaRawTextOptional.model_validate(input_data)
