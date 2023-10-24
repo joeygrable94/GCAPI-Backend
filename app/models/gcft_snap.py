@@ -1,15 +1,16 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING, Any, List, Optional
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, Integer, String, func
-from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
+    from .file_asset import FileAsset  # noqa: F401
     from .gcft import Gcft  # noqa: F401
     from .gcft_snap_activeduration import GcftSnapActiveduration  # noqa: F401
     from .gcft_snap_browserreport import GcftSnapBrowserreport  # noqa: F401
@@ -48,31 +49,37 @@ class GcftSnap(Base):
     altitude: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     # relationships
-    gcft_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("gcft.id"), nullable=False
-    )
     file_asset_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("file_asset.id"), nullable=True, default=None
+    )
+    file_asset: Mapped[Optional["FileAsset"]] = relationship(
+        "FileAsset", back_populates="gcft_snap"
     )
     geocoord_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("geocoord.id"), nullable=False
     )
+    geotag: Mapped["Geocoord"] = relationship("Geocoord", back_populates="gcft_snaps")
+    gcft_id: Mapped[UUID4] = mapped_column(
+        UUIDType(binary=False), ForeignKey("gcft.id"), nullable=False
+    )
+    gcflytour: Mapped["Gcft"] = relationship("Gcft", back_populates="gcft_snaps")
     snap_views: Mapped[List["GcftSnapView"]] = relationship(
-        "GcftSnapView", backref=backref("gcft_snap", lazy="noload")
+        "GcftSnapView", back_populates="gcft_snap"
     )
     active_durations: Mapped[List["GcftSnapActiveduration"]] = relationship(
-        "GcftSnapActiveduration", backref=backref("gcft_snap", lazy="noload")
+        "GcftSnapActiveduration", back_populates="gcft_snap"
     )
     hotspot_clicks: Mapped[List["GcftSnapHotspotclick"]] = relationship(
-        "GcftSnapHotspotclick", backref=backref("gcft_snap", lazy="noload")
+        "GcftSnapHotspotclick", back_populates="gcft_snap"
     )
     traffic_sources: Mapped[List["GcftSnapTrafficsource"]] = relationship(
-        "GcftSnapTrafficsource", backref=backref("gcft_snap", lazy="noload")
+        "GcftSnapTrafficsource", back_populates="gcft_snap"
     )
     browser_reports: Mapped[List["GcftSnapBrowserreport"]] = relationship(
-        "GcftSnapBrowserreport", backref=backref("gcft_snap", lazy="noload")
+        "GcftSnapBrowserreport", back_populates="gcft_snap"
     )
 
+    # represenation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"GcftSnap({self.snap_name}[{self.snap_slug}], \
             Tour[{self.gcft_id}], Coords[{self.geocoord_id}])"

@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, List, Optional
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
@@ -11,6 +11,7 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
     from .geocoord import Geocoord  # noqa: F401
+    from .user import User  # noqa: F401
 
 
 class Ipaddress(Base):
@@ -46,10 +47,17 @@ class Ipaddress(Base):
     )
 
     # relationships
-    geocoord_id: Mapped[UUID4] = mapped_column(
+    geocoord_id: Mapped[Optional[UUID4]] = mapped_column(
         UUIDType(binary=False), ForeignKey("geocoord.id"), nullable=True
     )
+    geotag: Mapped[Optional["Geocoord"]] = relationship(
+        "Geocoord", back_populates="ipaddresses"
+    )
+    users: Mapped[List["User"]] = relationship(
+        "User", secondary="user_ipaddress", back_populates="ipaddresses"
+    )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"Ipaddress({self.address} by ISP: {self.isp})"
         return repr_str

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, String, func
-from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
@@ -11,8 +11,13 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
+    from .go_a4 import GoAnalytics4Property  # noqa: F401
+    from .go_sc import GoSearchConsoleProperty  # noqa: F401
+    from .go_ua import GoUniversalAnalyticsProperty  # noqa: F401
+    from .website_keywordcorpus import WebsiteKeywordCorpus  # noqa: F401
     from .website_map import WebsiteMap  # noqa: F401
     from .website_page import WebsitePage  # noqa: F401
+    from .website_pagespeedinsights import WebsitePageSpeedInsights  # noqa: F401
 
 
 class Website(Base):
@@ -48,15 +53,32 @@ class Website(Base):
         "Client", secondary="client_website", back_populates="websites"
     )
     sitemaps: Mapped[List["WebsiteMap"]] = relationship(
-        "WebsiteMap", backref=backref("website", lazy="noload")
+        "WebsiteMap", back_populates="website"
     )
     pages: Mapped[List["WebsitePage"]] = relationship(
-        "WebsitePage", backref=backref("website", lazy="noload")
+        "WebsitePage", back_populates="website"
+    )
+    gsc_accounts: Mapped[List["GoSearchConsoleProperty"]] = relationship(
+        "GoSearchConsoleProperty", back_populates="website"
+    )
+    ga4_accounts: Mapped[List["GoAnalytics4Property"]] = relationship(
+        "GoAnalytics4Property", back_populates="website"
+    )
+    gua_accounts: Mapped[List["GoUniversalAnalyticsProperty"]] = relationship(
+        "GoUniversalAnalyticsProperty", back_populates="website"
+    )
+    keywordcorpus: Mapped[List["WebsiteKeywordCorpus"]] = relationship(
+        "WebsiteKeywordCorpus", back_populates="website"
+    )
+    pagespeedinsights: Mapped[List["WebsitePageSpeedInsights"]] = relationship(
+        "WebsitePageSpeedInsights", back_populates="website"
     )
 
+    # properties as methods
     def get_link(self) -> str:  # pragma: no cover
         return f"https://{self.domain}" if self.is_secure else f"http://{self.domain}"
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"Website({self.id}, URL[{self.domain}])"
         return repr_str

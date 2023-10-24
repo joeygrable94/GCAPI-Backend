@@ -17,7 +17,7 @@ pytestmark = pytest.mark.asyncio
 async def test_create_website_sitemap_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website: WebsiteRead = await create_random_website(db_session)
     data = {
@@ -26,7 +26,7 @@ async def test_create_website_sitemap_as_superuser(
     }
     response: Response = await client.post(
         "sitemaps/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert 200 <= response.status_code < 300
@@ -39,7 +39,7 @@ async def test_create_website_sitemap_as_superuser(
 async def test_create_website_sitemap_as_superuser_url_already_exists(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
     data = {
@@ -48,7 +48,7 @@ async def test_create_website_sitemap_as_superuser_url_already_exists(
     }
     response: Response = await client.post(
         "sitemaps/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 400
@@ -59,7 +59,7 @@ async def test_create_website_sitemap_as_superuser_url_already_exists(
 async def test_create_website_sitemap_as_superuser_unassigned_website_id(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     fake_id: str = get_uuid_str()
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
@@ -69,7 +69,7 @@ async def test_create_website_sitemap_as_superuser_unassigned_website_id(
     }
     response: Response = await client.post(
         "sitemaps/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 404
@@ -80,7 +80,7 @@ async def test_create_website_sitemap_as_superuser_unassigned_website_id(
 async def test_create_website_sitemap_as_superuser_url_too_short(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
     data = {
@@ -89,7 +89,7 @@ async def test_create_website_sitemap_as_superuser_url_too_short(
     }
     response: Response = await client.post(
         "sitemaps/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422
@@ -100,7 +100,7 @@ async def test_create_website_sitemap_as_superuser_url_too_short(
 async def test_create_website_sitemap_as_superuser_url_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     long_url: str = random_lower_string(chars=5001)
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
@@ -110,7 +110,7 @@ async def test_create_website_sitemap_as_superuser_url_too_long(
     }
     response: Response = await client.post(
         "sitemaps/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422

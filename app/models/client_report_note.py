@@ -47,6 +47,7 @@ class ClientReportNote(Base):
         nullable=False,
     )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"ClientReportNote({self.id}, [R({self.client_report_id}), N({self.note_id})])"  # noqa: E501
         return repr_str

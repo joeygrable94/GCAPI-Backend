@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
 from sqlalchemy import BLOB, DateTime, Float, ForeignKey, Integer, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
@@ -50,7 +50,11 @@ class GoSearchConsoleDevice(Base):
     gsc_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("go_sc.id"), nullable=False
     )
+    gsc_account: Mapped["GoSearchConsoleProperty"] = relationship(
+        "GoSearchConsoleProperty", back_populates="gsc_devices"
+    )
 
+    # represenation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"GoSearchConsoleDevice(GSCID[{self.gsc_id}], \
             C={self.clicks} I={self.impressions} CTR={self.ctr} Pos={self.position})"

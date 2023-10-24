@@ -14,12 +14,12 @@ pytestmark = pytest.mark.asyncio
 async def test_update_website_page(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: WebsitePageRead = await create_random_website_page(db_session)
     response: Response = await client.patch(
         f"webpages/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json={
             "url": "/",
             "status": 301,
@@ -39,13 +39,13 @@ async def test_update_website_page(
 async def test_update_website_page_as_superuser_url_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     long_url: str = random_lower_string(chars=5001)
     entry_a: WebsitePageRead = await create_random_website_page(db_session)
     response: Response = await client.patch(
         f"webpages/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json={
             "url": long_url,
             "status": 301,

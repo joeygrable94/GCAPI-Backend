@@ -11,14 +11,14 @@ pytestmark = pytest.mark.asyncio
 
 async def test_create_client_as_superuser(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     title: str = random_lower_string()
     description: str = random_lower_string()
     data: Dict[str, str] = {"title": title, "description": description}
     response: Response = await client.post(
         "clients/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     entry: Dict[str, Any] = response.json()
@@ -29,14 +29,14 @@ async def test_create_client_as_superuser(
 
 async def test_create_client_as_superuser_client_already_exists(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     title: str = random_lower_string()
     description: str = random_lower_string()
     data: Dict[str, str] = {"title": title, "description": description}
     response: Response = await client.post(
         "clients/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert 200 <= response.status_code < 300
@@ -47,7 +47,7 @@ async def test_create_client_as_superuser_client_already_exists(
     data_2: Dict[str, str] = {"title": title, "description": description_2}
     response_2: Response = await client.post(
         "clients/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data_2,
     )
     assert response_2.status_code == 400
@@ -57,14 +57,14 @@ async def test_create_client_as_superuser_client_already_exists(
 
 async def test_create_client_as_superuser_client_title_too_short(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     title: str = "1234"
     description: str = random_lower_string()
     data: Dict[str, str] = {"title": title, "description": description}
     response: Response = await client.post(
         "clients/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422
@@ -76,14 +76,14 @@ async def test_create_client_as_superuser_client_title_too_short(
 
 async def test_create_client_as_superuser_client_title_too_long(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     title: str = random_lower_string() * 4
     description: str = random_lower_string()
     data: Dict[str, str] = {"title": title, "description": description}
     response: Response = await client.post(
         "clients/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422
@@ -95,14 +95,14 @@ async def test_create_client_as_superuser_client_title_too_long(
 
 async def test_create_client_as_superuser_client_description_too_long(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     title: str = random_lower_string()
     description: str = random_lower_string() * 160
     data: Dict[str, str] = {"title": title, "description": description}
     response: Response = await client.post(
         "clients/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422

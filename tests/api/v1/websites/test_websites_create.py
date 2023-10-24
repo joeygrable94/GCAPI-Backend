@@ -12,14 +12,14 @@ pytestmark = pytest.mark.asyncio
 async def test_create_website_as_superuser(
     celery_worker: Any,
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = "joeygrable.com"
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
         "websites/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert 200 <= response.status_code < 300
@@ -30,7 +30,7 @@ async def test_create_website_as_superuser(
     task_id = entry["task_id"]
     response: Response = await client.get(
         f"tasks/{task_id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
     )
     response_json = response.json()
     assert response.status_code == 200
@@ -43,14 +43,14 @@ async def test_create_website_as_superuser(
 
 async def test_create_website_as_superuser_website_already_exists(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = "oceanbrightconsulting.com"
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
         "websites/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert 200 <= response.status_code < 300
@@ -62,7 +62,7 @@ async def test_create_website_as_superuser_website_already_exists(
     data_2: Dict[str, Any] = {"domain": domain, "is_secure": is_secure_2}
     response_2: Response = await client.post(
         "websites/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data_2,
     )
     assert response_2.status_code == 400
@@ -72,14 +72,14 @@ async def test_create_website_as_superuser_website_already_exists(
 
 async def test_create_website_as_superuser_domain_invalid(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     bad_domain: str = random_domain(16, "co")
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": bad_domain, "is_secure": is_secure}
     response: Response = await client.post(
         "websites/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 400
@@ -89,14 +89,14 @@ async def test_create_website_as_superuser_domain_invalid(
 
 async def test_create_website_as_superuser_domain_too_short(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = random_domain(1, "co")
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
         "websites/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422
@@ -108,14 +108,14 @@ async def test_create_website_as_superuser_domain_too_short(
 
 async def test_create_website_as_superuser_domain_too_long(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = random_domain(255, "com")
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
         "websites/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422
@@ -128,14 +128,14 @@ async def test_create_website_as_superuser_domain_too_long(
 
 async def test_create_website_as_superuser_domain_is_not_valid_domain(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = "https://" + random_domain(3, "pub")
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
         "websites/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422

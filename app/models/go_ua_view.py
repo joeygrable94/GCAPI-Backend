@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
@@ -43,6 +43,9 @@ class GoUniversalAnalyticsView(Base):
     # relationships
     gua_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("go_ua.id"), nullable=False
+    )
+    gua_account: Mapped["GoUniversalAnalyticsProperty"] = relationship(
+        "GoUniversalAnalyticsProperty", back_populates="gua_views"
     )
 
     def __repr__(self) -> str:  # pragma: no cover

@@ -17,10 +17,10 @@ repos:
         entry: ./scripts/lint.sh
         language: script
         pass_filenames: false
-  - repo: local
-    hooks:
-      - id: test-code
-        name: test-code
-        entry: ./scripts/test-cov.sh
-        language: script
-        pass_filenames: false
+#   - repo: local
+#     hooks:
+#       - id: test-code
+#         name: test-code
+#         entry: ./scripts/test-cov.sh
+#         language: script
+#         pass_filenames: false

@@ -27,10 +27,10 @@ class GoCloudPropertyBase(
     ValidateSchemaHashedServiceAccountRequired,
 ):
     project_name: str
-    hashed_api_key: str
-    hashed_project_id: str
-    hashed_project_number: str
-    hashed_service_account: str
+    api_key: str
+    project_id: str
+    project_number: str
+    service_account: str
 
 
 class GoCloudPropertyCreate(GoCloudPropertyBase):
@@ -44,10 +44,10 @@ class GoCloudPropertyUpdate(
     ValidateSchemaHashedServiceAccountOptional,
 ):
     project_name: Optional[str] = None
-    hashed_api_key: Optional[str] = None
-    hashed_project_id: Optional[str] = None
-    hashed_project_number: Optional[str] = None
-    hashed_service_account: Optional[str] = None
+    api_key: Optional[str] = None
+    project_id: Optional[str] = None
+    project_number: Optional[str] = None
+    service_account: Optional[str] = None
 
 
 class GoCloudPropertyRead(GoCloudPropertyBase, BaseSchemaRead):

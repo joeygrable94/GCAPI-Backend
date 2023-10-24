@@ -3,24 +3,32 @@ from typing import TYPE_CHECKING, Any, List, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import JSON, Boolean, DateTime, String, func
-from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.security.permissions import (
+    AccessCreate,
+    AccessDelete,
+    AccessList,
+    AccessRead,
+    AccessReadSelf,
+    AccessUpdate,
+    AccessUpdateSelf,
     AclAction,
     AclPermission,
     AclScope,
-    Authenticated,
     RoleAdmin,
+    RoleManager,
     RoleUser,
 )
-from app.core.security.permissions.core import RoleManager
 from app.core.utilities.uuids import get_random_username  # type: ignore
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
+    from .file_asset import FileAsset  # noqa: F401
+    from .ipaddress import Ipaddress  # noqa: F401
     from .note import Note  # noqa: F401
 
 
@@ -67,12 +75,25 @@ class User(Base):
 
     # relationships
     clients: Mapped[List["Client"]] = relationship(
-        "Client", secondary="user_client", back_populates="users", lazy="noload"
+        "Client", secondary="user_client", back_populates="users", lazy="selectin"
     )
-    notes: Mapped[List["Note"]] = relationship(backref=backref("user", lazy="noload"))
+    notes: Mapped[List["Note"]] = relationship(
+        "Note", back_populates="user", lazy="selectin"
+    )
+    ipaddresses: Mapped[List["Ipaddress"]] = relationship(
+        "Ipaddress", secondary="user_ipaddress", back_populates="users"
+    )
+    file_assets: Mapped[List["FileAsset"]] = relationship(
+        "FileAsset",
+        back_populates="user",
+    )
 
-    # privileges to access permission restricted resources via ACL
+    # properties as methods
     def privileges(self) -> List[AclScope]:
+        """
+        Returns a list of user privileges to access permission restricted
+        resources via ACL.
+        """
         principals: List[AclScope]
         principals = [AclScope(f"user:{self.id}")]
         principals.extend([AclScope(sco) for sco in self.scopes])
@@ -81,24 +102,21 @@ class User(Base):
     # ACL
     def __acl__(self) -> List[Tuple[AclAction, AclScope, AclPermission]]:
         return [
+            # list
+            (AclAction.allow, RoleAdmin, AccessList),
+            (AclAction.allow, RoleManager, AccessList),
             # create
-            (AclAction.allow, RoleAdmin, AclPermission.create),
+            (AclAction.allow, RoleAdmin, AccessCreate),
             # read
-            (AclAction.allow, Authenticated, AclPermission.read),
+            (AclAction.allow, RoleAdmin, AccessRead),
+            (AclAction.allow, RoleManager, AccessRead),
+            (AclAction.allow, AclScope(f"user:{self.id}"), AccessReadSelf),
             # update
-            (AclAction.allow, RoleAdmin, AclPermission.update),
-            # update
-            (AclAction.allow, AclScope(f"user:{self.id}"), AclPermission.update),
+            (AclAction.allow, RoleAdmin, AccessUpdate),
+            (AclAction.allow, RoleManager, AccessUpdate),
+            (AclAction.allow, AclScope(f"user:{self.id}"), AccessUpdateSelf),
             # delete
-            (AclAction.allow, RoleAdmin, AclPermission.delete),
-            # read_relations
-            (AclAction.allow, RoleAdmin, AclPermission.read_relations),
-            (AclAction.allow, RoleManager, AclPermission.read_relations),
-            (
-                AclAction.allow,
-                AclScope(f"user:{self.id}"),
-                AclPermission.read_relations,
-            ),
+            (AclAction.allow, RoleAdmin, AccessDelete),
         ]
 
     # representation

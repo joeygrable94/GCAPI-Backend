@@ -1,16 +1,18 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, List, Optional
 
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, func
-from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
+    from .website import Website  # noqa: F401
     from .website_keywordcorpus import WebsiteKeywordCorpus  # noqa: F401
+    from .website_map import WebsiteMap  # noqa: F401
     from .website_pagespeedinsights import WebsitePageSpeedInsights  # noqa: F401
 
 
@@ -52,16 +54,21 @@ class WebsitePage(Base):
     website_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("website.id"), nullable=False
     )
-    sitemap_id: Mapped[UUID4] = mapped_column(
+    website: Mapped["Website"] = relationship("Website", back_populates="pages")
+    sitemap_id: Mapped[Optional[UUID4]] = mapped_column(
         UUIDType(binary=False), ForeignKey("website_map.id"), nullable=True
     )
-    keywordcorpus: Mapped[UUID4] = relationship(
-        "WebsiteKeywordCorpus", backref=backref("website_keywordcorpus", lazy="noload")
+    sitemap: Mapped[Optional["WebsiteMap"]] = relationship(
+        "WebsiteMap", back_populates="pages"
     )
-    pagespeedinsights: Mapped[UUID4] = relationship(
-        "WebsitePageSpeedInsights", backref=backref("website_page", lazy="noload")
+    keywordcorpus: Mapped[List["WebsiteKeywordCorpus"]] = relationship(
+        "WebsiteKeywordCorpus", back_populates="page"
+    )
+    pagespeedinsights: Mapped[List["WebsitePageSpeedInsights"]] = relationship(
+        "WebsitePageSpeedInsights", back_populates="page"
     )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"Page({self.id}, Site[{self.website_id}], Path[{self.url}])"
         return repr_str

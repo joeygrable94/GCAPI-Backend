@@ -18,9 +18,9 @@ pytestmark = pytest.mark.asyncio
 async def test_list_website_pagespeedinsights_as_superuser_none_found(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
-    response: Response = await client.get("psi/", headers=superuser_token_headers)
+    response: Response = await client.get("psi/", headers=admin_token_headers)
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
     assert len(all_entries) == 0
@@ -31,7 +31,7 @@ async def test_list_website_pagespeedinsights_as_superuser_none_found(
 async def test_list_website_pagespeedinsights_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_1: WebsitePageSpeedInsightsRead = (
         await create_random_website_page_speed_insights(db_session)
@@ -39,7 +39,7 @@ async def test_list_website_pagespeedinsights_as_superuser(
     entry_2: WebsitePageSpeedInsightsRead = (
         await create_random_website_page_speed_insights(db_session)
     )
-    response: Response = await client.get("psi/", headers=superuser_token_headers)
+    response: Response = await client.get("psi/", headers=admin_token_headers)
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
     assert len(all_entries) >= 1
@@ -57,7 +57,7 @@ async def test_list_website_pagespeedinsights_as_superuser(
 async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id_devices_all(  # noqa: E501
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
@@ -140,7 +140,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     )
     response: Response = await client.get(
         "psi/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         params={
             "website_id": str(website_a.id),
             "page_id": str(webpage_a.id),
@@ -164,7 +164,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
 async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id_devices_desktop(  # noqa: E501
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
@@ -247,7 +247,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     )
     response: Response = await client.get(
         "psi/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         params={
             "website_id": str(website_a.id),
             "page_id": str(webpage_a.id),
@@ -267,7 +267,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
 async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id_devices_mobile(  # noqa: E501
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
@@ -350,7 +350,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     )
     response: Response = await client.get(
         "psi/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         params={
             "website_id": str(website_b.id),
             "page_id": str(webpage_b.id),
@@ -370,7 +370,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
 async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
@@ -453,7 +453,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     )
     response: Response = await client.get(
         "psi/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         params={
             "website_id": str(website_a.id),
             "page_id": str(webpage_a.id),
@@ -476,7 +476,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
 async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
@@ -559,7 +559,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
     )
     response: Response = await client.get(
         "psi/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         params={
             "website_id": str(website_a.id),
             "strategy": ["mobile"],
@@ -582,7 +582,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
 async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
@@ -665,7 +665,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
     )
     response: Response = await client.get(
         "psi/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         params={
             "page_id": str(webpage_b.id),
             "strategy": ["desktop"],
@@ -688,7 +688,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
 async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
@@ -771,7 +771,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
     )
     response: Response = await client.get(
         "psi/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         params={
             "website_id": str(website_a.id),
         },
@@ -801,7 +801,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
 async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
@@ -884,7 +884,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
     )
     response: Response = await client.get(
         "psi/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         params={
             "page_id": str(webpage_b.id),
         },
@@ -914,7 +914,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
 async def test_list_website_pagespeedinsights_as_superuser_by_devices_all(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
@@ -997,7 +997,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_devices_all(
     )
     response: Response = await client.get(
         "psi/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         params={
             "strategy": ["desktop", "mobile"],
         },

@@ -3,11 +3,12 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_STR_TINYTEXT_MAX_LEN
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
@@ -36,14 +37,20 @@ class Sharpspring(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    hashed_api_key: Mapped[str] = mapped_column(String(64), nullable=False)
-    hashed_secret_key: Mapped[str] = mapped_column(String(64), nullable=False)
+    api_key: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAX_LEN), nullable=False
+    )
+    secret_key: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAX_LEN), nullable=False
+    )
 
     # relationships
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("client.id"), nullable=False
     )
+    client: Mapped["Client"] = relationship(back_populates="sharpspring_accounts")
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"Sharpspring(Client[{self.client_id}] since {self.created_on})"
         return repr_str

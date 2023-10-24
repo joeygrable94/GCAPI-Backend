@@ -1,11 +1,13 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING, Any, List, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, String, Text, func
-from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
+from app.core.security import AclAction, AclPermission, AclScope
+from app.core.security.permissions import AccessList, Authenticated
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
@@ -13,8 +15,11 @@ if TYPE_CHECKING:  # pragma: no cover
     from .bdx_feed import BdxFeed  # noqa: F401
     from .client_bucket import ClientBucket  # noqa: F401
     from .client_report import ClientReport  # noqa: F401
+    from .file_asset import FileAsset  # noqa: F401
+    from .gcft import Gcft  # noqa: F401
     from .go_a4 import GoAnalytics4Property  # noqa: F401
     from .go_cloud import GoCloudProperty  # noqa: F401
+    from .go_sc import GoSearchConsoleProperty  # noqa: F401
     from .go_ua import GoUniversalAnalyticsProperty  # noqa: F401
     from .sharpspring import Sharpspring  # noqa: F401
     from .user import User  # noqa: F401
@@ -51,33 +56,54 @@ class Client(Base):
 
     # relationships
     users: Mapped[List["User"]] = relationship(
-        "User", secondary="user_client", back_populates="clients"
+        "User", secondary="user_client", back_populates="clients", lazy="selectin"
     )
     websites: Mapped[List["Website"]] = relationship(
-        "Website", secondary="client_website", back_populates="clients"
+        secondary="client_website", back_populates="clients"
     )
     client_reports: Mapped[List["ClientReport"]] = relationship(
-        "ClientReport", backref=backref("client", lazy="noload")
+        "ClientReport", back_populates="client"
     )
     gcloud_accounts: Mapped[List["GoCloudProperty"]] = relationship(
-        "GoCloudProperty", backref=backref("client", lazy="noload")
+        "GoCloudProperty", back_populates="client"
+    )
+    gsc_accounts: Mapped[List["GoSearchConsoleProperty"]] = relationship(
+        "GoSearchConsoleProperty", back_populates="client"
     )
     ga4_accounts: Mapped[List["GoAnalytics4Property"]] = relationship(
-        "GoAnalytics4Property", backref=backref("client", lazy="noload")
+        "GoAnalytics4Property", back_populates="client"
     )
     gua_accounts: Mapped[List["GoUniversalAnalyticsProperty"]] = relationship(
-        "GoUniversalAnalyticsProperty", backref=backref("client", lazy="noload")
+        "GoUniversalAnalyticsProperty", back_populates="client"
     )
     sharpspring_accounts: Mapped[List["Sharpspring"]] = relationship(
-        "Sharpspring", backref=backref("client", lazy="noload")
+        "Sharpspring", back_populates="client"
     )
     buckets: Mapped[List["ClientBucket"]] = relationship(
-        "ClientBucket", backref=backref("client", lazy="noload")
+        "ClientBucket", back_populates="client"
     )
     bdx_feeds: Mapped[List["BdxFeed"]] = relationship(
-        "BdxFeed", backref=backref("client", lazy="noload")
+        "BdxFeed", back_populates="client"
     )
+    file_assets: Mapped[List["FileAsset"]] = relationship(
+        "FileAsset",
+        back_populates="client",
+    )
+    gcflytours: Mapped[List["Gcft"]] = relationship("Gcft", back_populates="client")
 
+    # ACL
+    def __acl__(self) -> List[Tuple[AclAction, AclScope, AclPermission]]:
+        return [
+            # list
+            (AclAction.deny, Authenticated, AccessList),
+            # create
+            # read
+            # read_relations
+            # update
+            # delete
+        ]
+
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"Client({self.title}, since {self.created_on})"
         return repr_str

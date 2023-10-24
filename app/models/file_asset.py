@@ -1,16 +1,21 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from pydantic import UUID4
 from sqlalchemy import BLOB, Boolean, DateTime, ForeignKey, Integer, String, func
-from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
-from app.core.utilities.uuids import get_uuid  # type: ignore
+from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
+    from .bdx_feed import BdxFeed  # noqa: F401
+    from .client import Client  # noqa: F401
+    from .client_bucket import ClientBucket  # noqa: F401
+    from .gcft_snap import GcftSnap  # noqa: F401
     from .geocoord import Geocoord  # noqa: F401
+    from .user import User  # noqa: F401
 
 
 class FileAsset(Base):
@@ -83,22 +88,34 @@ class FileAsset(Base):
     user_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("user.id"), nullable=False
     )
+    user: Mapped["User"] = relationship("User", back_populates="file_assets")
     bucket_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("client_bucket.id"), nullable=False
+    )
+    client_bucket: Mapped["ClientBucket"] = relationship(
+        "ClientBucket", back_populates="file_assets"
     )
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("client.id"), nullable=False
     )
+    client: Mapped["Client"] = relationship("Client", back_populates="file_assets")
     geocoord_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("geocoord.id"), nullable=True
+    )
+    geotag: Mapped[Optional["Geocoord"]] = relationship(
+        "Geocoord", back_populates="file_assets"
     )
     bdx_feed_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("bdx_feed.id"), nullable=True
     )
-    geotag: Mapped["Geocoord"] = relationship(
-        "Geocoord", backref=backref("file_asset", lazy="subquery")
+    bdx_feed: Mapped[Optional["BdxFeed"]] = relationship(
+        "BdxFeed", back_populates="file_assets"
+    )
+    gcft_snap: Mapped[Optional["GcftSnap"]] = relationship(
+        "GcftSnap", back_populates="file_asset"
     )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"FileAsset({self.title} | {self.name}.{self.extension} \
             [{self.size_kb} kb]: created {self.created_on}, updated {self.updated_on})"

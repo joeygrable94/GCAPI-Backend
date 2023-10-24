@@ -7,8 +7,10 @@ python prestart.py
 echo "Running Backend DB Migrations..."
 alembic upgrade head
 
-# start the server
-python start.py
+sleep 5
 
 # Create initial data in DB
 python initial_data.py
+
+# start the server
+python start.py

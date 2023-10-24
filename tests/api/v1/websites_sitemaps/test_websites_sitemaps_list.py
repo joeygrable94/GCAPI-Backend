@@ -14,11 +14,11 @@ pytestmark = pytest.mark.asyncio
 async def test_list_website_sitemaps_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_1: WebsiteMapRead = await create_random_website_map(db_session)
     entry_2: WebsiteMapRead = await create_random_website_map(db_session)
-    response: Response = await client.get("sitemaps/", headers=superuser_token_headers)
+    response: Response = await client.get("sitemaps/", headers=admin_token_headers)
     assert 200 <= response.status_code < 300
     all_entries: Any = response.json()
     assert len(all_entries) >= 1
@@ -35,7 +35,7 @@ async def test_list_website_sitemaps_as_superuser(
 async def test_list_website_sitemaps_as_superuser_by_website_id(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
@@ -56,7 +56,7 @@ async def test_list_website_sitemaps_as_superuser_by_website_id(
     )
     response: Response = await client.get(
         "sitemaps/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         params={"website_id": str(website_a.id)},
     )
     assert 200 <= response.status_code < 300

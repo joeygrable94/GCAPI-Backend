@@ -32,6 +32,12 @@ from .permissions import (
     has_permission,
     list_permissions,
 )
+from .rate_limiter import (
+    FastAPILimiter,
+    RateLimitedRequestException,
+    RateLimiter,
+    WebSocketRateLimiter,
+)
 
 __all__: List[str] = [
     "AclScope",
@@ -62,4 +68,8 @@ __all__: List[str] = [
     "configure_permissions",
     "has_permission",
     "list_permissions",
+    "FastAPILimiter",
+    "RateLimiter",
+    "WebSocketRateLimiter",
+    "RateLimitedRequestException",
 ]

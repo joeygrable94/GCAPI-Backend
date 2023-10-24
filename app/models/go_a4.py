@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, func
-from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
@@ -47,14 +47,16 @@ class GoAnalytics4Property(Base):
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("client.id"), nullable=False
     )
+    client: Mapped["Client"] = relationship(back_populates="ga4_accounts")
     website_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("website.id"), nullable=False
     )
+    website: Mapped["Website"] = relationship(back_populates="ga4_accounts")
     ga4_streams: Mapped[List["GoAnalytics4Stream"]] = relationship(
-        "GoAnalytics4Stream",
-        backref=backref("go_a4", lazy="subquery"),
+        "GoAnalytics4Stream", back_populates="ga4_account"
     )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"GoAnalytics4Property(\
             MeasurementID[{self.measurement_id}] for \

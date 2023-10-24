@@ -11,6 +11,7 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client_report import ClientReport  # noqa: F401
+    from .user import User  # noqa: F401
 
 
 class Note(Base):
@@ -45,10 +46,12 @@ class Note(Base):
     user_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("user.id"), nullable=False
     )
+    user: Mapped["User"] = relationship("User", back_populates="notes")
     client_reports: Mapped[List["ClientReport"]] = relationship(
         "ClientReport", secondary="client_report_note", back_populates="notes"
     )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"Item({self.title} by {self.user_id} on {self.updated_on})"
         return repr_str

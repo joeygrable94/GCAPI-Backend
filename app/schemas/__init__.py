@@ -98,7 +98,7 @@ from .security import (
 )
 from .sharpspring import SharpspringCreate, SharpspringRead, SharpspringUpdate
 from .task import TaskState
-from .user import UserCreate, UserRead, UserUpdate
+from .user import UserCreate, UserRead, UserReadAsAdmin, UserReadAsManager, UserUpdate
 from .user_client import UserClientCreate, UserClientRead, UserClientUpdate
 from .user_ipaddress import UserIpaddressCreate, UserIpaddressRead, UserIpaddressUpdate
 from .website import WebsiteCreate, WebsiteCreateProcessing, WebsiteRead, WebsiteUpdate
@@ -227,6 +227,8 @@ __all__: List[str] = [
     "TaskState",
     "UserCreate",
     "UserRead",
+    "UserReadAsManager",
+    "UserReadAsAdmin",
     "UserUpdate",
     "UserClientCreate",
     "UserClientRead",

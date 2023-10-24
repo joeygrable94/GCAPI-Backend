@@ -15,14 +15,14 @@ pytestmark = pytest.mark.asyncio
 async def test_update_website_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: WebsiteRead = await create_random_website(db_session)
     new_is_secure: bool = random_boolean()
     update_dict = WebsiteUpdate(is_secure=new_is_secure)
     response: Response = await client.patch(
         f"websites/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=update_dict.model_dump(),
     )
     assert 200 <= response.status_code < 300
@@ -35,14 +35,14 @@ async def test_update_website_as_superuser(
 async def test_update_website_already_exists(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: WebsiteRead = await create_random_website(db_session)
     entry_b: WebsiteRead = await create_random_website(db_session)
     update_dict = WebsiteUpdate(domain=entry_b.domain, is_secure=random_boolean())
     response: Response = await client.patch(
         f"websites/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=update_dict.model_dump(),
     )
     updated_entry: Dict[str, Any] = response.json()
@@ -53,14 +53,14 @@ async def test_update_website_already_exists(
 async def test_update_website_as_superuser_domain_too_short(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: WebsiteRead = await create_random_website(db_session)
     new_domain: str = "a.co"
     data: Dict[str, Any] = {"domain": new_domain, "is_secure": random_boolean()}
     response: Response = await client.patch(
         f"websites/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422
@@ -73,14 +73,14 @@ async def test_update_website_as_superuser_domain_too_short(
 async def test_update_website_as_superuser_domain_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: WebsiteRead = await create_random_website(db_session)
     new_domain: str = random_lower_string() * 10 + ".com"
     data: Dict[str, Any] = {"domain": new_domain, "is_secure": random_boolean()}
     response: Response = await client.patch(
         f"websites/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422
@@ -94,14 +94,14 @@ async def test_update_website_as_superuser_domain_too_long(
 async def test_update_website_as_superuser_domain_invalid(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: WebsiteRead = await create_random_website(db_session)
     new_domain: str = "https://" + random_lower_string() + ".com"
     data: Dict[str, Any] = {"domain": new_domain, "is_secure": random_boolean()}
     response: Response = await client.patch(
         f"websites/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422

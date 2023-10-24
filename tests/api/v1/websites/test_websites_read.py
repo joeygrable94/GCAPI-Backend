@@ -15,21 +15,21 @@ pytestmark = pytest.mark.asyncio
 async def test_read_website_by_id_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = "greatersmc.com"
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
         "websites/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     new_website: Dict[str, Any] = response.json()
     entry = WebsiteRead(**new_website["website"])
     response: Response = await client.get(
         f"websites/{entry.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
@@ -38,12 +38,12 @@ async def test_read_website_by_id_as_superuser(
 
 async def test_read_website_by_id_as_superuser_website_not_found(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_id: str = get_uuid_str()
     response: Response = await client.get(
         f"websites/{entry_id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 404

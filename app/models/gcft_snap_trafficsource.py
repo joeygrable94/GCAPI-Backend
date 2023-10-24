@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
@@ -54,10 +54,15 @@ class GcftSnapTrafficsource(Base):
     gcft_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("gcft.id"), nullable=False
     )
+    gcflytour: Mapped["Gcft"] = relationship("Gcft", back_populates="traffic_sources")
     snap_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("gcft_snap.id"), nullable=False
     )
+    gcft_snap: Mapped["GcftSnap"] = relationship(
+        "GcftSnap", back_populates="traffic_sources"
+    )
 
+    # represenation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"GcftSnapTrafficsource({self.session_id} \
             on {self.visit_date}, referrer={self.referrer})"

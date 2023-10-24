@@ -1,16 +1,17 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
-    pass
+    from .client import Client  # noqa: F401
+    from .file_asset import FileAsset  # noqa: F401
 
 
 class BdxFeed(Base):
@@ -40,12 +41,20 @@ class BdxFeed(Base):
     )
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     serverhost: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    # relationships
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         ForeignKey("client.id"),
         nullable=False,
     )
+    client: Mapped["Client"] = relationship(back_populates="bdx_feeds")
+    file_assets: Mapped[List["FileAsset"]] = relationship(
+        "FileAsset",
+        back_populates="bdx_feed",
+    )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"BdxFeed({self.username})"
         return repr_str

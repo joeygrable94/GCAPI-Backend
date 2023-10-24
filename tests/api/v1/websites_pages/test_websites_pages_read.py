@@ -16,12 +16,12 @@ pytestmark = pytest.mark.asyncio
 async def test_read_website_page_by_id_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_page: WebsitePageRead = await create_random_website_page(db_session)
     response: Response = await client.get(
         f"webpages/{website_page.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
@@ -40,12 +40,12 @@ async def test_read_website_page_by_id_as_superuser(
 
 async def test_read_website_page_by_id_as_superuser_page_not_found(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_id: str = get_uuid_str()
     response: Response = await client.get(
         f"webpages/{entry_id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 404

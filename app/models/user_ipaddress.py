@@ -47,6 +47,7 @@ class UserIpaddress(Base):
         nullable=False,
     )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (
             f"UserIpaddress({self.id}, [U({self.user_id}), I({self.ipaddress_id})])"

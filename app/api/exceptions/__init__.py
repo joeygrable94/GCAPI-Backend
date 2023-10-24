@@ -11,6 +11,7 @@ from app.core.security import (
     AuthPermissionException,
     CipherError,
     CsrfProtectError,
+    RateLimitedRequestException,
 )
 
 from .errors import ErrorCode, ErrorCodeReasonModel, ErrorModel
@@ -38,8 +39,7 @@ from .exceptions import (
 )
 
 
-@lru_cache()
-def get_global_headers() -> dict[str, str]:
+def get_global_headers() -> Dict[str, str]:
     return {
         "x-request-id": correlation_id.get() or "",
         "Access-Control-Expose-Headers": "x-request-id",
@@ -119,6 +119,22 @@ def configure_exceptions(app: FastAPI) -> None:
     @app.exception_handler(AuthPermissionException)
     async def permissions_exception_handler(
         request: Request, exc: AuthPermissionException
+    ) -> Response:  # noqa: E501
+        request_headers = get_global_headers()
+        if exc.headers:
+            request_headers.update(exc.headers)
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers=request_headers,
+            ),
+        )
+
+    @app.exception_handler(RateLimitedRequestException)
+    async def rate_limited_request_exception_handler(
+        request: Request, exc: RateLimitedRequestException
     ) -> Response:  # noqa: E501
         request_headers = get_global_headers()
         if exc.headers:

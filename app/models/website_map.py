@@ -1,15 +1,16 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING, Any, List, Optional
 
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, func
-from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
+    from .website import Website  # noqa: F401
     from .website_page import WebsitePage  # noqa: F401
 
 
@@ -47,10 +48,12 @@ class WebsiteMap(Base):
     website_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("website.id"), nullable=False
     )
-    pages: Mapped[List["WebsitePage"]] = relationship(
-        "WebsitePage", backref=backref("website_map", lazy="noload")
+    website: Mapped["Website"] = relationship("Website", back_populates="sitemaps")
+    pages: Mapped[Optional[List["WebsitePage"]]] = relationship(
+        "WebsitePage", back_populates="sitemap"
     )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"WebsiteMap({self.url}, Site[{self.website_id}])"
         return repr_str

@@ -2,6 +2,14 @@
 
 Based on [FastAPI Permissions by @holgi](https://github.com/holgi/fastapi-permissions)
 
+
+# Permission is already wrapped in Depends()
+Permission = configure_permissions(get_active_user_principals)
+
+@app.get("/item/{item_identifier}")
+async def show_item(item: Item=Permission(AclPermission("read:item"), get_item)):
+    return [{"item": item}]
+
 """
 
 __version__ = "0.2.7"
@@ -12,8 +20,9 @@ from typing import Any, Dict, List, Tuple
 
 from fastapi import Depends
 
+from .access import AccessAll, Everyone
 from .exceptions import AuthPermissionException
-from .scope import AclScope
+from .scope import AclPermission, AclScope
 
 # constants
 
@@ -24,37 +33,16 @@ class AclAction(StrEnum):
     deny = "deny"
 
 
-# Privileges
-Everyone: AclScope = AclScope("system:everyone")
-Authenticated: AclScope = AclScope("system:authenticated")
-# Role Based Privileges: Client, Employee, Manager, User
-RoleAdmin: AclScope = AclScope("role:admin")
-RoleClient: AclScope = AclScope("role:client")
-RoleEmployee: AclScope = AclScope("role:employee")
-RoleManager: AclScope = AclScope("role:manager")
-RoleUser: AclScope = AclScope("role:user")
-
-
-# Permissions
-class AclPermission(StrEnum):
-    all: str = "permission:*"
-    create: str = "permission:create"
-    read: str = "permission:read"
-    update: str = "permission:update"
-    delete: str = "permission:delete"
-    read_relations: str = "permission:read_relations"
-
-
 # ACL Tuples: Action, Privilege, Permission
 DENY_ALL: Tuple[AclAction, AclScope, AclPermission] = (
     AclAction.deny,
     Everyone,
-    AclPermission.all,
+    AccessAll,
 )
 ALOW_ALL: Tuple[AclAction, AclScope, AclPermission] = (
     AclAction.allow,
     Everyone,
-    AclPermission.all,
+    AccessAll,
 )
 
 
@@ -78,7 +66,7 @@ def configure_permissions(
 
 
 def permission_dependency_factory(
-    permission: AclPermission,
+    permission: AclPermission | List[AclPermission],
     resource: Any,
     active_privileges_func: Any,
 ) -> Any:
@@ -109,8 +97,13 @@ def permission_dependency_factory(
         resource: Any = dependable_resource,
         privileges: Any = active_privileges_func,
     ) -> Any:
-        if has_permission(privileges, permission, resource):
-            return resource
+        if isinstance(permission, list):
+            for perm in permission:
+                if has_permission(privileges, perm, resource):
+                    return resource
+        else:
+            if has_permission(privileges, permission, resource):
+                return resource
         raise AuthPermissionException()
 
     return Depends(permission_dependency)

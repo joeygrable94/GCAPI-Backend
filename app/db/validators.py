@@ -16,9 +16,7 @@ from app.db.constants import (
 )
 from app.schemas.base import BaseSchema
 
-# ----------------------------
-# Validation Functions
-# ----------------------------
+# validation utilities
 
 
 def require_int_name_min_max_len(
@@ -187,9 +185,7 @@ def optional_string_in_list(
     return v
 
 
-# ----------------------------
-# Validation Schemas
-# ----------------------------
+# validation Schemas
 
 
 class ValidFileExtensionEnum(str, Enum):
@@ -529,56 +525,56 @@ class ValidateSchemaPasswordOptional(BaseSchema):
 
 
 class ValidateSchemaHashedApiKeyRequired(BaseSchema):
-    hashed_api_key: str
+    api_key: str
 
-    @field_validator("hashed_api_key", mode="before")
+    @field_validator("api_key", mode="before")
     @classmethod
-    def validate_hashed_api_key(cls, value: str) -> str:
+    def validate_api_key(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
-            name="hashed_api_key",
+            name="api_key",
             min_len=0,
             max_len=64,
         )
 
 
 class ValidateSchemaHashedSecretKeyRequired(BaseSchema):
-    hashed_secret_key: str
+    secret_key: str
 
-    @field_validator("hashed_secret_key", mode="before")
+    @field_validator("secret_key", mode="before")
     @classmethod
-    def validate_hashed_secret_key(cls, value: str) -> str:
+    def validate_secret_key(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
-            name="hashed_secret_key",
+            name="secret_key",
             min_len=0,
             max_len=64,
         )
 
 
 class ValidateSchemaHashedApiKeyOptional(BaseSchema):
-    hashed_api_key: Optional[str] = None
+    api_key: Optional[str] = None
 
-    @field_validator("hashed_api_key", mode="before")
+    @field_validator("api_key", mode="before")
     @classmethod
-    def validate_hashed_api_key(cls, value: Optional[str]) -> Optional[str]:
+    def validate_api_key(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
-            name="hashed_api_key",
+            name="api_key",
             min_len=0,
             max_len=64,
         )
 
 
 class ValidateSchemaHashedSecretKeyOptional(BaseSchema):
-    hashed_secret_key: Optional[str] = None
+    secret_key: Optional[str] = None
 
-    @field_validator("hashed_secret_key", mode="before")
+    @field_validator("secret_key", mode="before")
     @classmethod
-    def validate_hashed_secret_key(cls, value: Optional[str]) -> Optional[str]:
+    def validate_secret_key(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
-            name="hashed_secret_key",
+            name="secret_key",
             min_len=0,
             max_len=64,
         )
@@ -1383,84 +1379,84 @@ class ValidateSchemaProjectNameRequired(BaseSchema):
 
 
 class ValidateSchemaHashedProjectIdRequired(BaseSchema):
-    hashed_project_id: str
+    project_id: str
 
-    @field_validator("hashed_project_id", mode="before")
+    @field_validator("project_id", mode="before")
     @classmethod
-    def validate_hashed_project_id(cls, value: str) -> str:
+    def validate_project_id(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
-            name="hashed_project_id",
+            name="project_id",
             min_len=0,
             max_len=64,
         )
 
 
 class ValidateSchemaHashedProjectNumberRequired(BaseSchema):
-    hashed_project_number: str
+    project_number: str
 
-    @field_validator("hashed_project_number", mode="before")
+    @field_validator("project_number", mode="before")
     @classmethod
-    def validate_hashed_project_number(cls, value: str) -> str:
+    def validate_project_number(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
-            name="hashed_project_number",
+            name="project_number",
             min_len=0,
             max_len=64,
         )
 
 
 class ValidateSchemaHashedServiceAccountRequired(BaseSchema):
-    hashed_service_account: str
+    service_account: str
 
-    @field_validator("hashed_service_account", mode="before")
+    @field_validator("service_account", mode="before")
     @classmethod
-    def validate_hashed_service_account(cls, value: str) -> str:
+    def validate_service_account(cls, value: str) -> str:
         return require_string_name_min_max_len(
             v=value,
-            name="hashed_service_account",
+            name="service_account",
             min_len=0,
             max_len=64,
         )
 
 
 class ValidateSchemaHashedProjectIdOptional(BaseSchema):
-    hashed_project_id: Optional[str] = None
+    project_id: Optional[str] = None
 
-    @field_validator("hashed_project_id", mode="before")
+    @field_validator("project_id", mode="before")
     @classmethod
-    def validate_hashed_project_id(cls, value: Optional[str]) -> Optional[str]:
+    def validate_project_id(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
-            name="hashed_project_id",
+            name="project_id",
             min_len=0,
             max_len=64,
         )
 
 
 class ValidateSchemaHashedProjectNumberOptional(BaseSchema):
-    hashed_project_number: Optional[str] = None
+    project_number: Optional[str] = None
 
-    @field_validator("hashed_project_number", mode="before")
+    @field_validator("project_number", mode="before")
     @classmethod
-    def validate_hashed_project_number(cls, value: Optional[str]) -> Optional[str]:
+    def validate_project_number(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
-            name="hashed_project_number",
+            name="project_number",
             min_len=0,
             max_len=64,
         )
 
 
 class ValidateSchemaHashedServiceAccountOptional(BaseSchema):
-    hashed_service_account: Optional[str] = None
+    service_account: Optional[str] = None
 
-    @field_validator("hashed_service_account", mode="before")
+    @field_validator("service_account", mode="before")
     @classmethod
-    def validate_hashed_service_account(cls, value: Optional[str]) -> Optional[str]:
+    def validate_service_account(cls, value: Optional[str]) -> Optional[str]:
         return optional_string_name_min_max_len(
             v=value,
-            name="hashed_service_account",
+            name="service_account",
             min_len=0,
             max_len=64,
         )

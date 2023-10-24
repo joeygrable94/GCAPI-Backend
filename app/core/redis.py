@@ -1,7 +1,8 @@
-import redis.asyncio  # pragma: no cover
+from redis import asyncio as aioredis
+from redis.asyncio.client import Redis
 
 from app.core.config import settings  # pragma: no cover
 
-redis_conn = redis.asyncio.from_url(
+redis_conn: Redis = aioredis.from_url(
     settings.redis.uri, decode_responses=True
 )  # pragma: no cover

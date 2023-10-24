@@ -139,6 +139,21 @@ class CommonClientQueryParams(PageQueryParams, ClientQueryParams):
 GetClientQueryParams = Annotated[CommonClientQueryParams, Depends()]
 
 
+class CommonUserClientQueryParams(PageQueryParams, UserQueryParams, ClientQueryParams):
+    def __init__(
+        self,
+        page: int = 1,
+        user_id: Any | None = Query(None),
+        client_id: Any | None = Query(None),
+    ):
+        PageQueryParams.__init__(self, page)
+        UserQueryParams.__init__(self, user_id)
+        ClientQueryParams.__init__(self, client_id)
+
+
+GetUserClientQueryParams = Annotated[CommonUserClientQueryParams, Depends()]
+
+
 class CommonWebsiteQueryParams(PageQueryParams, WebsiteQueryParams):
     def __init__(
         self,

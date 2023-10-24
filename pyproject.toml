@@ -13,7 +13,6 @@ requests = "^2.31.0"
 types-requests = "^2.31.0.4"
 cryptography = "41.0.4"
 bcrypt = "^4.0.0"
-passlib = "^1.7.4"
 types-passlib = "^1.7.7"
 python-jose = "^3.3.0"
 PyJWT = "^2.4.0"
@@ -48,6 +47,7 @@ ultimate-sitemap-parser = "^0.5"
 tenacity = "^8.2.2"
 sentry-sdk = {version = "^1.32.0", extras = ["fastapi"]}
 ruff = "^0.1.0"
+fastapi-pagination = "^0.12.11"
 
 [tool.poetry.group.dev.dependencies]
 httpx = "0.23.3"

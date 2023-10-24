@@ -16,19 +16,19 @@ pytestmark = pytest.mark.asyncio
 async def test_delete_website_pagespeedinsights_by_id_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry: WebsitePageSpeedInsightsRead = (
         await create_random_website_page_speed_insights(db_session)
     )
     response: Response = await client.delete(
         f"psi/{entry.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
     )
     assert 200 <= response.status_code < 300
     response: Response = await client.get(
         f"psi/{entry.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
     )
     assert response.status_code == 404
     data: Dict[str, Any] = response.json()

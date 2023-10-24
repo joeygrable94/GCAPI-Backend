@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
@@ -11,6 +11,7 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
+    from .file_asset import FileAsset  # noqa: F401
 
 
 class ClientBucket(Base):
@@ -51,7 +52,13 @@ class ClientBucket(Base):
         ForeignKey("client.id"),
         nullable=False,
     )
+    client: Mapped["Client"] = relationship(back_populates="buckets")
+    file_assets: Mapped[List["FileAsset"]] = relationship(
+        "FileAsset",
+        back_populates="client_bucket",
+    )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"ClientBucket({self.bucket_name}, [C({self.client_id})])"
         return repr_str

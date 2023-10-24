@@ -1,11 +1,13 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+
+# from fastapi_pagination import add_pagination
 from sentry_sdk import Client
-from starlette.middleware.cors import CORSMiddleware
 
 from app.api.exceptions import configure_exceptions
 from app.api.middleware import configure_middleware
 from app.api.monitoring import configure_monitoring
 from app.core.config import settings
+from app.core.security import RateLimiter
 from app.core.templates import static_files
 
 sentry_client: Client | None = configure_monitoring()
@@ -22,41 +24,49 @@ def configure_static(app: FastAPI) -> None:
 
 
 def configure_events(app: FastAPI) -> None:
+    from app.core.redis import redis_conn
+    from app.core.security import FastAPILimiter
     from app.db.commands import check_db_connected, check_db_disconnected
 
     # startup actions
     @app.on_event("startup")
     async def on_startup() -> None:
         await check_db_connected()
+        await FastAPILimiter.init(
+            redis_conn,
+            prefix="gcapi-limit",
+        )
 
     # shutdown actions
     @app.on_event("shutdown")
     async def on_shutdown() -> None:
+        await FastAPILimiter.close()
         await check_db_disconnected()
 
 
 def create_app() -> FastAPI:
+    deps = []
+    if settings.api.mode == "production":
+        deps = [
+            RateLimiter(times=10000, hours=24),
+            RateLimiter(times=5000, hours=1),
+            RateLimiter(times=120, minutes=1),
+            RateLimiter(times=10, seconds=1),
+        ]
     app: FastAPI = FastAPI(
         title=settings.api.name,
         version=settings.api.version,
         openapi_url="/api/v1/docs/openapi.json",
         docs_url="/api/v1/docs",
         redoc_url="/api/v1/redoc",
+        dependencies=[Depends(dep) for dep in deps],
     )
-    if settings.api.allowed_cors:
-        app.add_middleware(  # pragma: no cover
-            CORSMiddleware,
-            allow_origins=[str(origin) for origin in settings.api.allowed_cors],
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-            expose_headers=["*"],
-        )
+    # add_pagination(app)
     configure_middleware(app)
     configure_exceptions(app)
-    configure_routers(app)
-    configure_static(app)
     configure_events(app)
+    configure_static(app)
+    configure_routers(app)
     return app
 
 

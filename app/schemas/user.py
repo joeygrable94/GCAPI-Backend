@@ -52,3 +52,26 @@ class UserUpdate(
 
 class UserRead(UserBase, BaseSchemaRead):
     id: UUID4
+
+
+class UserReadAsManager(
+    ValidateSchemaScopesRequired,
+    UserBase,
+    BaseSchemaRead,
+):
+    id: UUID4
+    is_active: bool
+    is_verified: bool
+    scopes: List[AclScope]
+
+
+class UserReadAsAdmin(
+    ValidateSchemaScopesRequired,
+    UserBase,
+    BaseSchemaRead,
+):
+    id: UUID4
+    is_active: bool
+    is_verified: bool
+    is_superuser: bool
+    scopes: List[AclScope]

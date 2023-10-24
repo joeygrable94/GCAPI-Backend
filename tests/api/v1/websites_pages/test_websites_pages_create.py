@@ -20,7 +20,7 @@ async def test_create_website_page_as_superuser(
     celery_worker: Any,
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website: WebsiteRead = await create_random_website(db_session)
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
@@ -33,7 +33,7 @@ async def test_create_website_page_as_superuser(
     }
     response: Response = await client.post(
         "webpages/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert 200 <= response.status_code < 300
@@ -48,7 +48,7 @@ async def test_create_website_page_as_superuser(
 async def test_create_website_page_as_superuser_url_already_exists(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     webpage: WebsitePageRead = await create_random_website_page(db_session)
     data = {
@@ -60,7 +60,7 @@ async def test_create_website_page_as_superuser_url_already_exists(
     }
     response: Response = await client.post(
         "webpages/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 400
@@ -71,7 +71,7 @@ async def test_create_website_page_as_superuser_url_already_exists(
 async def test_create_website_page_as_superuser_url_too_short(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     webpage: WebsitePageRead = await create_random_website_page(db_session)
     data = {
@@ -83,7 +83,7 @@ async def test_create_website_page_as_superuser_url_too_short(
     }
     response: Response = await client.post(
         "webpages/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422
@@ -94,7 +94,7 @@ async def test_create_website_page_as_superuser_url_too_short(
 async def test_create_website_page_as_superuser_url_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     long_url: str = random_lower_string(chars=5001)
     webpage: WebsitePageRead = await create_random_website_page(db_session)
@@ -107,7 +107,7 @@ async def test_create_website_page_as_superuser_url_too_long(
     }
     response: Response = await client.post(
         "webpages/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 422
@@ -121,7 +121,7 @@ async def test_create_website_page_as_superuser_website_not_exists(
     celery_worker: Any,
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website: WebsiteRead = await create_random_website(db_session)  # noqa: F841
     web_fake_id: UUID4 = get_uuid()
@@ -135,7 +135,7 @@ async def test_create_website_page_as_superuser_website_not_exists(
     }
     response: Response = await client.post(
         "webpages/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert response.status_code == 404

@@ -10,6 +10,7 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
+    from .client import Client  # noqa: F401
     from .note import Note  # noqa: F401
 
 
@@ -46,10 +47,12 @@ class ClientReport(Base):
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("client.id"), nullable=False
     )
+    client: Mapped["Client"] = relationship("Client", back_populates="client_reports")
     notes: Mapped[List["Note"]] = relationship(
         "Note", secondary="client_report_note", back_populates="client_reports"
     )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"ClientReport({self.title}, created {self.created_on})"
         return repr_str

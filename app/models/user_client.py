@@ -47,6 +47,7 @@ class UserClient(Base):
         nullable=False,
     )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (
             f"UserClient({self.id}, [U({self.user_id}), C({self.client_id})])"

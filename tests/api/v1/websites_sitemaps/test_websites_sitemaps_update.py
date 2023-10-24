@@ -14,7 +14,7 @@ pytestmark = pytest.mark.asyncio
 async def test_update_website_sitemaps(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
     data = {
@@ -22,7 +22,7 @@ async def test_update_website_sitemaps(
     }
     response: Response = await client.patch(
         f"sitemaps/{sitemap.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     assert 200 <= response.status_code < 300
@@ -35,13 +35,13 @@ async def test_update_website_sitemaps(
 async def test_update_website_sitemaps_as_superuser_url_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     long_url: str = random_lower_string(chars=5001)
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
     response: Response = await client.patch(
         f"sitemaps/{sitemap.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json={
             "url": long_url,
         },

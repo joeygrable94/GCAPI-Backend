@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
@@ -51,10 +51,15 @@ class WebsiteKeywordCorpus(Base):
         ForeignKey("website.id"),
         nullable=False,
     )
+    website: Mapped["Website"] = relationship("Website", back_populates="keywordcorpus")
     page_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("website_page.id"), nullable=False
     )
+    page: Mapped["WebsitePage"] = relationship(
+        "WebsitePage", back_populates="keywordcorpus"
+    )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (
             f"KeywordCorpus({self.id}, Site[{self.website_id}], Pg[{self.page_id}])"

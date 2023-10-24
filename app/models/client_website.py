@@ -47,6 +47,7 @@ class ClientWebsite(Base):
         nullable=False,
     )
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (
             f"ClientWebsite({self.id}, [C({self.client_id}), W({self.website_id})])"

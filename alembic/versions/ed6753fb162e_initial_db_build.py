@@ -1,8 +1,8 @@
-"""db base
+"""initial db build
 
-Revision ID: a96ee1c171cb
+Revision ID: ed6753fb162e
 Revises:
-Create Date: 2023-10-20 16:09:31.812897
+Create Date: 2023-10-22 15:07:32.701287
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlalchemy_utils
 
 
 # revision identifiers, used by Alembic.
-revision = 'a96ee1c171cb'
+revision = 'ed6753fb162e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -159,10 +159,10 @@ def upgrade() -> None:
     sa.Column('created_on', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_on', sa.DateTime(timezone=True), nullable=False),
     sa.Column('project_name', sa.String(length=255), nullable=False),
-    sa.Column('hashed_api_key', sa.String(length=64), nullable=False),
-    sa.Column('hashed_project_id', sa.String(length=64), nullable=False),
-    sa.Column('hashed_project_number', sa.String(length=64), nullable=False),
-    sa.Column('hashed_service_account', sa.String(length=64), nullable=False),
+    sa.Column('api_key', sa.String(length=255), nullable=False),
+    sa.Column('project_id', sa.String(length=255), nullable=False),
+    sa.Column('project_number', sa.String(length=255), nullable=False),
+    sa.Column('service_account', sa.String(length=255), nullable=False),
     sa.Column('client_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.ForeignKeyConstraint(['client_id'], ['client.id'], ),
     sa.PrimaryKeyConstraint('project_name'),
@@ -234,8 +234,8 @@ def upgrade() -> None:
     sa.Column('id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('created_on', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_on', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('hashed_api_key', sa.String(length=64), nullable=False),
-    sa.Column('hashed_secret_key', sa.String(length=64), nullable=False),
+    sa.Column('api_key', sa.String(length=255), nullable=False),
+    sa.Column('secret_key', sa.String(length=255), nullable=False),
     sa.Column('client_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.ForeignKeyConstraint(['client_id'], ['client.id'], ),
     sa.PrimaryKeyConstraint('id'),
@@ -451,9 +451,9 @@ def upgrade() -> None:
     sa.Column('snap_name', sa.String(length=255), nullable=False),
     sa.Column('snap_slug', sa.String(length=12), nullable=False),
     sa.Column('altitude', sa.Integer(), nullable=False),
-    sa.Column('gcft_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('file_asset_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=True),
     sa.Column('geocoord_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
+    sa.Column('gcft_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.ForeignKeyConstraint(['file_asset_id'], ['file_asset.id'], ),
     sa.ForeignKeyConstraint(['gcft_id'], ['gcft.id'], ),
     sa.ForeignKeyConstraint(['geocoord_id'], ['geocoord.id'], ),
@@ -505,8 +505,8 @@ def upgrade() -> None:
     sa.Column('tbt_grade', sa.Float(), nullable=False),
     sa.Column('tbt_value', sa.Float(), nullable=False),
     sa.Column('tbt_unit', sa.String(length=16), nullable=False),
-    sa.Column('page_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('website_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
+    sa.Column('page_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.ForeignKeyConstraint(['page_id'], ['website_page.id'], ),
     sa.ForeignKeyConstraint(['website_id'], ['website.id'], ),
     sa.PrimaryKeyConstraint('id'),

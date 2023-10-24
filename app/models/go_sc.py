@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, func
-from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
@@ -48,32 +48,28 @@ class GoSearchConsoleProperty(Base):
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("client.id"), nullable=False
     )
+    client: Mapped["Client"] = relationship("Client", back_populates="gsc_accounts")
     website_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("website.id"), nullable=False
     )
+    website: Mapped["Website"] = relationship("Website", back_populates="gsc_accounts")
     gsc_countries: Mapped[List["GoSearchConsoleCountry"]] = relationship(
-        "GoSearchConsoleCountry",
-        backref=backref("go_sc", lazy="noload"),
+        "GoSearchConsoleCountry", back_populates="gsc_account"
     )
     gsc_devices: Mapped[List["GoSearchConsoleDevice"]] = relationship(
-        "GoSearchConsoleDevice",
-        backref=backref("go_sc", lazy="noload"),
+        "GoSearchConsoleDevice", back_populates="gsc_account"
     )
     gsc_pages: Mapped[List["GoSearchConsolePage"]] = relationship(
-        "GoSearchConsolePage",
-        backref=backref("go_sc", lazy="noload"),
+        "GoSearchConsolePage", back_populates="gsc_account"
     )
     gsc_queries: Mapped[List["GoSearchConsoleQuery"]] = relationship(
-        "GoSearchConsoleQuery",
-        backref=backref("go_sc", lazy="noload"),
+        "GoSearchConsoleQuery", back_populates="gsc_account"
     )
     gsc_searchappearances: Mapped[
         List["GoSearchConsoleSearchappearance"]
-    ] = relationship(
-        "GoSearchConsoleSearchappearance",
-        backref=backref("go_sc", lazy="noload"),
-    )
+    ] = relationship("GoSearchConsoleSearchappearance", back_populates="gsc_account")
 
+    # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"GoSearchConsoleProperty({self.title}, \
             Client[{self.client_id}] Website[{self.website_id}])"

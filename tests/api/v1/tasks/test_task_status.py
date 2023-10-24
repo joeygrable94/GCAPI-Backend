@@ -10,17 +10,17 @@ pytestmark = pytest.mark.asyncio
 async def test_get_status_task_speak(
     celery_worker: Any,
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     speak_word: str = random_lower_string()
     request = await client.get(
-        f"/status?message={speak_word}", headers=superuser_token_headers
+        f"/status?message={speak_word}", headers=admin_token_headers
     )
     req_data = request.json()
     assert req_data["status"] == "ok"
     task_id = req_data["speak_task_id"]
     assert task_id
-    response = await client.get(f"tasks/{task_id}", headers=superuser_token_headers)
+    response = await client.get(f"tasks/{task_id}", headers=admin_token_headers)
     response_json: Dict[str, Any] = response.json()
     assert response_json == {
         "task_id": task_id,
@@ -33,7 +33,7 @@ async def test_get_status_task_speak(
     while response_json["task_status"] == "PENDING":
         response = await client.get(
             f"tasks/{task_id}",
-            headers=superuser_token_headers
+            headers=admin_token_headers
         )
         response_json = response.json()
     assert response_json == {

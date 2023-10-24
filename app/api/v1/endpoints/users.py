@@ -5,20 +5,33 @@ from fastapi import APIRouter, Depends, Request
 from app.api.deps import (
     AsyncDatabaseSession,
     CurrentUser,
-    FetchUserOr404,
     GetPageQueryParams,
+    Permission,
+    PermissionController,
     get_async_db,
     get_current_user,
+    get_permission_controller,
+    get_request_client_ip,
     get_user_or_404,
 )
 from app.api.exceptions import UserAlreadyExists
-from app.api.middleware import get_request_client_ip
 
 # from app.api.openapi import users_read_responses
 from app.core.security import auth
+from app.core.security.permissions import (
+    AccessDelete,
+    AccessList,
+    AccessRead,
+    AccessReadSelf,
+    AccessUpdate,
+    AccessUpdateSelf,
+    RoleAdmin,
+    RoleManager,
+)
+from app.core.security.permissions.access import Authenticated
 from app.crud.user import UserRepository
-from app.models.user import User
-from app.schemas import UserRead, UserUpdate
+from app.models import User
+from app.schemas import UserRead, UserReadAsAdmin, UserReadAsManager, UserUpdate
 
 router: APIRouter = APIRouter()
 
@@ -36,7 +49,7 @@ router: APIRouter = APIRouter()
 async def users_current(
     request: Request,
     db: AsyncDatabaseSession,
-    current_user: CurrentUser,
+    current_user: User = Permission([AccessRead, AccessReadSelf], get_current_user),
     request_ip: str = Depends(get_request_client_ip),
 ) -> UserRead | None:
     """Retrieve the profile information about the currently active, verified user.
@@ -55,7 +68,6 @@ async def users_current(
     req_sess_ip = request.session.get("ip_address", False)
     if not req_sess_ip:
         request.session["ip_address"] = str(request_ip)
-    print(current_user.privileges())
     return UserRead.model_validate(current_user)
 
 
@@ -69,9 +81,9 @@ async def users_current(
     response_model=List[UserRead],
 )
 async def users_list(
-    current_user: CurrentUser,
     db: AsyncDatabaseSession,
     query: GetPageQueryParams,
+    current_user: User = Permission(AccessList, get_current_user),
 ) -> List[UserRead] | List:
     """Retrieve a list of users.
 
@@ -79,20 +91,15 @@ async def users_list(
     ------------
     `role=admin|manager` : all users
 
-    `role=client` : all users associated with the client through the `user_client` table
-
-    `role=employee` : users associated with clients they are associated with in
-        `user_client` table
-
     Returns:
     --------
     `List[UserRead] | List[None]` : a list of users, optionally filtered, or returns
         an empty list
 
     """
-    # can_access = get_current_user_authorization(current_user, "access", UserRead)
     users_repo: UserRepository = UserRepository(session=db)
-    users: List[User] | List[None] | None = await users_repo.list(page=query.page)
+    users: List[User] | List[None] | None
+    users = await users_repo.list(page=query.page)
     return [UserRead.model_validate(c) for c in users] if users else []
 
 
@@ -102,16 +109,17 @@ async def users_list(
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
         Depends(get_user_or_404),
     ],
     # responses=users_read_responses,
-    response_model=UserRead,
 )
 async def users_read(
-    current_user: CurrentUser,
     db: AsyncDatabaseSession,
-    user: FetchUserOr404,
-) -> UserRead:
+    current_user: CurrentUser,
+    user: User = Permission([AccessRead, AccessReadSelf], get_user_or_404),
+    acl: PermissionController = Depends(get_permission_controller),
+) -> UserReadAsAdmin | UserReadAsManager | UserRead:
     """Retrieve a single user by id.
 
     Permissions:
@@ -134,7 +142,14 @@ async def users_read(
     - `role=client|employee|user` : all fields except `is_superuser`
 
     """
-    return UserRead.model_validate(user)
+    return acl.return_acl_resource(
+        resource=user,
+        responses={
+            RoleAdmin: UserReadAsAdmin,  # type: ignore
+            RoleManager: UserReadAsManager,  # type: ignore
+            Authenticated: UserRead,  # type: ignore
+        },
+    )
 
 
 @router.patch(
@@ -150,8 +165,8 @@ async def users_read(
 async def users_update(
     current_user: CurrentUser,
     db: AsyncDatabaseSession,
-    user: FetchUserOr404,
     user_in: UserUpdate,
+    user: User = Permission([AccessUpdate, AccessUpdateSelf], get_user_or_404),
 ) -> UserRead:
     """Update a user by id. Users may update limited fields of their own data,
     and maybe the fields of other users depending on their role.
@@ -199,7 +214,7 @@ async def users_update(
 async def users_delete(
     current_user: CurrentUser,
     db: AsyncDatabaseSession,
-    user: FetchUserOr404,
+    user: User = Permission(AccessDelete, get_user_or_404),
 ) -> None:
     """Delete a user by id.
 

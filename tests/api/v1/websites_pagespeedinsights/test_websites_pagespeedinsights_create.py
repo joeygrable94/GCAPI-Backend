@@ -19,7 +19,7 @@ pytestmark = pytest.mark.asyncio
 
 async def test_create_website_pagespeedinsights_as_superuser(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     # create a website
     domain: str = "aestheticclimbinggym.com"
@@ -27,7 +27,7 @@ async def test_create_website_pagespeedinsights_as_superuser(
     w_data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
         "websites/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=w_data,
     )
     assert 200 <= response.status_code < 300
@@ -40,7 +40,7 @@ async def test_create_website_pagespeedinsights_as_superuser(
     }
     response: Response = await client.post(
         "sitemaps/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=s_data,
     )
     assert 200 <= response.status_code < 300
@@ -55,7 +55,7 @@ async def test_create_website_pagespeedinsights_as_superuser(
     }
     response: Response = await client.post(
         "webpages/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=p_data,
     )
     assert 200 <= response.status_code < 300
@@ -69,7 +69,7 @@ async def test_create_website_pagespeedinsights_as_superuser(
     response: Response = await client.post(
         "psi/",
         params={"website_id": str(a_website.id), "page_id": str(a_webpage.id)},
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=psi_base.model_dump(),
     )
     data: Dict[str, Any] = response.json()
@@ -82,7 +82,7 @@ async def test_create_website_pagespeedinsights_as_superuser(
 
 async def test_create_website_pagespeedinsights_as_superuser_query_website_not_exists(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     webpage_id = get_uuid_str()
     d_strategy: str = "mobile"
@@ -92,7 +92,7 @@ async def test_create_website_pagespeedinsights_as_superuser_query_website_not_e
     response: Response = await client.post(
         "psi/",
         params={"page_id": str(webpage_id)},
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=psi_base.model_dump(),
     )
     data: Dict[str, Any] = response.json()
@@ -102,7 +102,7 @@ async def test_create_website_pagespeedinsights_as_superuser_query_website_not_e
 
 async def test_create_website_pagespeedinsights_as_superuser_website_not_exists(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     website_id = get_uuid_str()
     webpage_id = get_uuid_str()
@@ -113,7 +113,7 @@ async def test_create_website_pagespeedinsights_as_superuser_website_not_exists(
     response: Response = await client.post(
         "psi/",
         params={"website_id": str(website_id), "page_id": str(webpage_id)},
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=psi_base.model_dump(),
     )
     data: Dict[str, Any] = response.json()
@@ -123,14 +123,14 @@ async def test_create_website_pagespeedinsights_as_superuser_website_not_exists(
 
 async def test_create_website_pagespeedinsights_as_superuser_webaite_page_not_exists(
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = "gcembed.getcommunity.com"
     is_secure: bool = random_boolean()
     w_data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
         "websites/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=w_data,
     )
     assert 200 <= response.status_code < 300
@@ -144,7 +144,7 @@ async def test_create_website_pagespeedinsights_as_superuser_webaite_page_not_ex
     response: Response = await client.post(
         "psi/",
         params={"website_id": str(a_website.id), "page_id": str(webpage_id)},
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=psi_base.model_dump(),
     )
     data: Dict[str, Any] = response.json()
@@ -154,14 +154,14 @@ async def test_create_website_pagespeedinsights_as_superuser_webaite_page_not_ex
 
 async def test_create_website_pagespeedinsights_as_superuser_query_website_page_not_exists(  # noqa: E501
     client: AsyncClient,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = "giftgurugal.com"
     is_secure: bool = random_boolean()
     w_data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
         "websites/",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=w_data,
     )
     assert 200 <= response.status_code < 300
@@ -174,7 +174,7 @@ async def test_create_website_pagespeedinsights_as_superuser_query_website_page_
     response: Response = await client.post(
         "psi/",
         params={"website_id": str(a_website.id)},
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=psi_base.model_dump(),
     )
     data: Dict[str, Any] = response.json()

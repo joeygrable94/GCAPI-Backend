@@ -15,14 +15,14 @@ pytestmark = pytest.mark.asyncio
 async def test_update_client_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: ClientRead = await create_random_client(db_session)
     title: str = "New Client Title"
     data: Dict[str, str] = {"title": title}
     response: Response = await client.patch(
         f"clients/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     updated_entry: Dict[str, Any] = response.json()
@@ -35,14 +35,14 @@ async def test_update_client_as_superuser(
 async def test_update_client_as_superuser_title_too_short(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: ClientRead = await create_random_client(db_session)
     title: str = "1234"
     data: Dict[str, str] = {"title": title}
     response: Response = await client.patch(
         f"clients/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     updated_entry: Dict[str, Any] = response.json()
@@ -56,14 +56,14 @@ async def test_update_client_as_superuser_title_too_short(
 async def test_update_client_as_superuser_title_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: ClientRead = await create_random_client(db_session)
     title: str = random_lower_string() * 4
     data: Dict[str, str] = {"title": title}
     response: Response = await client.patch(
         f"clients/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     updated_entry: Dict[str, Any] = response.json()
@@ -77,14 +77,14 @@ async def test_update_client_as_superuser_title_too_long(
 async def test_update_client_as_superuser_description_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: ClientRead = await create_random_client(db_session)
     description: str = random_lower_string() * 160
     data: Dict[str, str] = {"description": description}
     response: Response = await client.patch(
         f"clients/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=data,
     )
     updated_entry: Dict[str, Any] = response.json()
@@ -98,7 +98,7 @@ async def test_update_client_as_superuser_description_too_long(
 async def test_update_client_already_exists(
     client: AsyncClient,
     db_session: AsyncSession,
-    superuser_token_headers: Dict[str, str],
+    admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: ClientRead = await create_random_client(db_session)
     entry_b: ClientRead = await create_random_client(db_session)
@@ -108,7 +108,7 @@ async def test_update_client_already_exists(
     )
     response: Response = await client.patch(
         f"clients/{entry_a.id}",
-        headers=superuser_token_headers,
+        headers=admin_token_headers,
         json=update_dict.model_dump(),
     )
     updated_entry: Dict[str, Any] = response.json()
