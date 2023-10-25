@@ -13,7 +13,7 @@
     - [Configuration](#configuration)
     - [Commands](#commands)
   - [SQLAlchemy ORM](#sqlalchemy-orm)
-    - [SQLAlchemy Resources](#sqlalchemy-resources)
+    - [Pagination](#pagination)
   - [PyTest](#pytest)
     - [PyTest Commands](#pytest-commands)
     - [PyTest Resources](#pytest-resources)
@@ -49,10 +49,14 @@ worker.py               # Celery worker entry point
 core/                   # Core application code shared
     config/                 # Configuration settings
     logger/                 # Logger configuration
+    pagination/             # Pagination settings
     security/               # Security protocols and utilities
         auth/                   # Authentication protocols (Auth0)
         csrf/                   # Cross Site Request Forgery protection
         encryption/             # Encryption protocols (RSA, AES)
+        permissions/            # Permissions protocols
+        rate_limiter/           # Rate limiting protocols
+        schemas.py              # Security models
     utilities/              # Core service layer utilities
     celery.py               # Celery worker setting
     email.py                # FastAPI email service
@@ -137,9 +141,12 @@ Always add a message about what changed in the db models/tables.
 
 ## SQLAlchemy ORM
 
-### SQLAlchemy Resources
+- [SQLAlchemy Relationship Loading Techniques](https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html)
 
-- [SQLAlchemy Relationship Loading Techniques](https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html)
+### Pagination
+
+- [Basic FastAPI-SQLAlchemy Pagination](https://github.com/jayhawk24/pagination-fastapi/tree/main)
+- [Asyncio Support Pagination Example](https://github.com/dialoguemd/fastapi-sqla/blob/master/fastapi_sqla/asyncio_support.py)
 
 ---
 
