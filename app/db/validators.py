@@ -322,37 +322,37 @@ def validate_ps_value_optional(cls: Any, value: str | None) -> str | None:
 
 def validate_ps_unit_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
-        v=value, name="ps_unit", min_len=0, max_len=100
+        v=value, name="ps_unit", min_len=0, max_len=16
     )
 
 
 def validate_fcp_unit_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
-        v=value, name="fcp_unit", min_len=0, max_len=100
+        v=value, name="fcp_unit", min_len=0, max_len=16
     )
 
 
 def validate_lcp_unit_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
-        v=value, name="lcp_unit", min_len=0, max_len=100
+        v=value, name="lcp_unit", min_len=0, max_len=16
     )
 
 
 def validate_cls_unit_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
-        v=value, name="cls_unit", min_len=0, max_len=100
+        v=value, name="cls_unit", min_len=0, max_len=16
     )
 
 
 def validate_si_unit_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
-        v=value, name="si_unit", min_len=0, max_len=100
+        v=value, name="si_unit", min_len=0, max_len=16
     )
 
 
 def validate_tbt_unit_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
-        v=value, name="tbt_unit", min_len=0, max_len=100
+        v=value, name="tbt_unit", min_len=0, max_len=16
     )
 
 
@@ -361,7 +361,10 @@ def validate_scopes_required(
 ) -> List[Scope]:
     scopes: List[Scope] = []
     for scope in value:
-        scopes.append(Scope(scope))
+        if isinstance(scope, str):
+            scopes.append(Scope(scope))
+        if isinstance(scope, Scope):
+            scopes.append(scope)
     return scopes
 
 
