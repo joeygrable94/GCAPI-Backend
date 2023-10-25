@@ -1,4 +1,11 @@
-# https://github.com/jayhawk24/pagination-fastapi/tree/main
+"""
+Package Source:
+https://github.com/jayhawk24/pagination-fastapi/tree/main
+
+Asyncio Support Example:
+https://github.com/dialoguemd/fastapi-sqla/blob/master/fastapi_sqla/asyncio_support.py
+
+"""
 from typing import Generic, List, TypeVar
 
 from pydantic import BaseModel, Field
