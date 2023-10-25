@@ -144,7 +144,7 @@ async def users_read(
 
     """
     response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
-        acl.return_acl_resource(
+        acl.get_resource_response(
             responses={
                 RoleAdmin: UserReadAsAdmin.model_validate(user),
                 RoleManager: UserReadAsManager.model_validate(user),

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Dict, Generic, List, TypeVar
 
 from fastapi import Depends, status
 
@@ -27,8 +27,10 @@ def get_current_user_privileges(
 
 Permission = configure_permissions(get_current_user_privileges)
 
+T = TypeVar("T")
 
-class PermissionController:
+
+class PermissionController(Generic[T]):
     db: AsyncDatabaseSession
     user: CurrentUser
     privileges: List[Scope]
@@ -46,10 +48,10 @@ class PermissionController:
         self.user = user
         self.privileges = privileges
 
-    def return_acl_resource(
+    def get_resource_response(
         self,
-        responses: Dict[Scope, Any],
-    ) -> Any:
+        responses: Dict[Scope, T],
+    ) -> T:
         for permission, response in responses.items():
             if permission in self.privileges:
                 return response
