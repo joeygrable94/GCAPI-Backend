@@ -120,7 +120,7 @@ async def users_read(
     current_user: CurrentUser,
     user: User = Permission([AccessRead, AccessReadSelf], get_user_or_404),
     acl: PermissionController = Depends(get_permission_controller),
-) -> UserReadAsAdmin | UserReadAsManager | UserRead:
+) -> Union[UserReadAsAdmin, UserReadAsManager, UserRead]:
     """Retrieve a single user by id.
 
     Permissions:
@@ -143,14 +143,16 @@ async def users_read(
     - `role=client|employee|user` : all fields except `is_superuser`
 
     """
-    return acl.return_acl_resource(
-        resource=user,
-        responses={
-            RoleAdmin: UserReadAsAdmin,  # type: ignore
-            RoleManager: UserReadAsManager,  # type: ignore
-            Authenticated: UserRead,  # type: ignore
-        },
+    response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
+        acl.return_acl_resource(
+            responses={
+                RoleAdmin: UserReadAsAdmin.model_validate(user),
+                RoleManager: UserReadAsManager.model_validate(user),
+                Authenticated: UserRead.model_validate(user),
+            },
+        )
     )
+    return response_out
 
 
 @router.patch(

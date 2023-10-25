@@ -56,9 +56,9 @@ def create_app() -> FastAPI:
     app: FastAPI = FastAPI(
         title=settings.api.name,
         version=settings.api.version,
-        openapi_url="/api/v1/docs/openapi.json",
-        docs_url="/api/v1/docs",
-        redoc_url="/api/v1/redoc",
+        openapi_url="/api/docs/openapi.json",
+        docs_url="/api/docs",
+        redoc_url="/api/redoc",
         dependencies=[Depends(dep) for dep in deps],
     )
     # add_pagination(app)

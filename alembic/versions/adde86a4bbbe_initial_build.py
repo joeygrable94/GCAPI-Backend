@@ -1,8 +1,8 @@
-"""initial db build
+"""initial build
 
-Revision ID: ed6753fb162e
+Revision ID: adde86a4bbbe
 Revises:
-Create Date: 2023-10-22 15:07:32.701287
+Create Date: 2023-10-24 21:31:14.239242
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlalchemy_utils
 
 
 # revision identifiers, used by Alembic.
-revision = 'ed6753fb162e'
+revision = 'adde86a4bbbe'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -280,7 +280,7 @@ def upgrade() -> None:
     sa.Column('id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('created_on', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_on', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('name', sa.String(length=96), nullable=False),
+    sa.Column('filename', sa.String(length=96), nullable=False),
     sa.Column('extension', sa.String(length=255), nullable=False),
     sa.Column('size_kb', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=96), nullable=False),
@@ -297,8 +297,8 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['client_id'], ['client.id'], ),
     sa.ForeignKeyConstraint(['geocoord_id'], ['geocoord.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('name'),
-    sa.UniqueConstraint('name'),
+    sa.PrimaryKeyConstraint('filename'),
+    sa.UniqueConstraint('filename'),
     mysql_engine='InnoDB'
     )
     op.create_index(op.f('ix_file_asset_id'), 'file_asset', ['id'], unique=True)

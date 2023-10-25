@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List
 
 from fastapi import Depends, status
 
@@ -48,15 +48,11 @@ class PermissionController:
 
     def return_acl_resource(
         self,
-        resource: Any,
-        responses: Dict[Scope, Type[Any]],
-        default_response: Any = None,
+        responses: Dict[Scope, Any],
     ) -> Any:
         for permission, response in responses.items():
             if permission in self.privileges:
-                return response.model_validate(resource)
-        if default_response:
-            return default_response
+                return response
         raise AuthPermissionException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             message="You do not have permission to access this resource",
