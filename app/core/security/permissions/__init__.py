@@ -28,12 +28,11 @@ from .core import (
     permission_dependency_factory,
 )
 from .exceptions import AuthPermissionException
-from .scope import AclPermission, AclScope
+from .scope import Scope
 
 __all__: List[str] = [
-    "AclScope",
+    "Scope",
     "AclAction",
-    "AclPermission",
     "Everyone",
     "Authenticated",
     "AuthPermissionException",

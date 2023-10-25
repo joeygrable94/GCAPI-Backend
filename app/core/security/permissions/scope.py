@@ -7,19 +7,9 @@ from re import Pattern, compile
 scope_regex: Pattern = compile(r"^[a-z0-9-_]+(:[a-z0-9-_@.]+)+$")
 
 
-class ScopeStr(str):
-    def __new__(self, value: str) -> "ScopeStr":
+class Scope(str):
+    def __new__(self, value: str) -> "Scope":
         m = scope_regex.fullmatch(value.lower())
         if not m:
             raise ValueError("invalid scope format")
         return super().__new__(self, m.group(0))
-
-
-class AclScope(ScopeStr):
-    def __new__(self, value: str) -> "AclScope":
-        return super().__new__(self, value)  # type: ignore
-
-
-class AclPermission(ScopeStr):
-    def __new__(self, value: str) -> "AclPermission":
-        return super().__new__(self, value)  # type: ignore

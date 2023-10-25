@@ -1,32 +1,32 @@
-from .scope import AclPermission, AclScope
+from .scope import Scope
 
 # Privileges
 # generic
-Everyone: AclScope = AclScope("system:everyone")
-Authenticated: AclScope = AclScope("system:authenticated")
+Everyone: Scope = Scope("system:everyone")
+Authenticated: Scope = Scope("system:authenticated")
 # role based privileges: client, employee, manager, user
-RoleAdmin: AclScope = AclScope("role:admin")
-RoleClient: AclScope = AclScope("role:client")
-RoleEmployee: AclScope = AclScope("role:employee")
-RoleManager: AclScope = AclScope("role:manager")
-RoleUser: AclScope = AclScope("role:user")
+RoleAdmin: Scope = Scope("role:admin")
+RoleClient: Scope = Scope("role:client")
+RoleEmployee: Scope = Scope("role:employee")
+RoleManager: Scope = Scope("role:manager")
+RoleUser: Scope = Scope("role:user")
 
 
 # Permissions
 # generic
-AccessAll: AclPermission = AclPermission("access:all")
+AccessAll: Scope = Scope("access:all")
 # list
-AccessList: AclPermission = AclPermission("list:all")
-AccessListRelated: AclPermission = AclPermission("list:related")
+AccessList: Scope = Scope("list:all")
+AccessListRelated: Scope = Scope("list:related")
 # create
-AccessCreate: AclPermission = AclPermission("create:all")
+AccessCreate: Scope = Scope("create:all")
 # read
-AccessRead: AclPermission = AclPermission("read:all")
-AccessReadSelf: AclPermission = AclPermission("read:self")
-AccessReadRelated: AclPermission = AclPermission("read:related")
+AccessRead: Scope = Scope("read:all")
+AccessReadSelf: Scope = Scope("read:self")
+AccessReadRelated: Scope = Scope("read:related")
 # update
-AccessUpdate: AclPermission = AclPermission("update:all")
-AccessUpdateSelf: AclPermission = AclPermission("update:self")
+AccessUpdate: Scope = Scope("update:all")
+AccessUpdateSelf: Scope = Scope("update:self")
 # delete
-AccessDelete: AclPermission = AclPermission("delete:all")
-AccessDeleteSelf: AclPermission = AclPermission("delete:self")
+AccessDelete: Scope = Scope("delete:all")
+AccessDeleteSelf: Scope = Scope("delete:self")

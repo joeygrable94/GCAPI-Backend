@@ -6,7 +6,7 @@ from sqlalchemy import Boolean, DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
-from app.core.security import AclAction, AclPermission, AclScope
+from app.core.security import AclAction, Scope
 from app.core.security.permissions import AccessList, Authenticated
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
@@ -92,7 +92,7 @@ class Client(Base):
     gcflytours: Mapped[List["Gcft"]] = relationship("Gcft", back_populates="client")
 
     # ACL
-    def __acl__(self) -> List[Tuple[AclAction, AclScope, AclPermission]]:
+    def __acl__(self) -> List[Tuple[AclAction, Scope, Scope]]:
         return [
             # list
             (AclAction.deny, Authenticated, AccessList),

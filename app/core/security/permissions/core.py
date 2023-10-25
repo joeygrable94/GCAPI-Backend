@@ -7,7 +7,7 @@ Based on [FastAPI Permissions by @holgi](https://github.com/holgi/fastapi-permis
 Permission = configure_permissions(get_active_user_principals)
 
 @app.get("/item/{item_identifier}")
-async def show_item(item: Item=Permission(AclPermission("read:item"), get_item)):
+async def show_item(item: Item=Permission(Scope("read:item"), get_item)):
     return [{"item": item}]
 
 """
@@ -22,7 +22,7 @@ from fastapi import Depends
 
 from .access import AccessAll, Everyone
 from .exceptions import AuthPermissionException
-from .scope import AclPermission, AclScope
+from .scope import Scope
 
 # constants
 
@@ -34,12 +34,12 @@ class AclAction(StrEnum):
 
 
 # ACL Tuples: Action, Privilege, Permission
-DENY_ALL: Tuple[AclAction, AclScope, AclPermission] = (
+DENY_ALL: Tuple[AclAction, Scope, Scope] = (
     AclAction.deny,
     Everyone,
     AccessAll,
 )
-ALOW_ALL: Tuple[AclAction, AclScope, AclPermission] = (
+ALOW_ALL: Tuple[AclAction, Scope, Scope] = (
     AclAction.allow,
     Everyone,
     AccessAll,
@@ -66,7 +66,7 @@ def configure_permissions(
 
 
 def permission_dependency_factory(
-    permission: AclPermission | List[AclPermission],
+    permission: Scope | List[Scope],
     resource: Any,
     active_privileges_func: Any,
 ) -> Any:
@@ -110,8 +110,8 @@ def permission_dependency_factory(
 
 
 def has_permission(
-    user_privileges: List[AclScope],
-    requested_permission: AclPermission,
+    user_privileges: List[Scope],
+    requested_permission: Scope,
     resource: Any,
 ) -> bool:
     """checks if a user has the permission for a resource
@@ -133,9 +133,7 @@ def has_permission(
     return False
 
 
-def list_permissions(
-    user_privileges: List[AclScope], resource: Any
-) -> Dict[AclPermission, bool]:
+def list_permissions(user_privileges: List[Scope], resource: Any) -> Dict[Scope, bool]:
     """lists all permissions of a user for a resouce
 
     user_privileges: the privileges of a user
@@ -155,7 +153,7 @@ def list_permissions(
 # utility functions
 
 
-def normalize_acl(resource: Any) -> List[Tuple[AclAction, AclScope, AclPermission]]:
+def normalize_acl(resource: Any) -> List[Tuple[AclAction, Scope, Scope]]:
     """returns the access controll list for a resource
 
     If the resource is not an acl list itself it needs to have an "__acl__"

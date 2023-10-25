@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from fastapi import APIRouter, Depends, Request
 
@@ -44,14 +44,14 @@ router: APIRouter = APIRouter()
         Depends(get_async_db),
         Depends(get_current_user),
     ],
-    response_model=UserRead | None,
+    response_model=UserRead,
 )
 async def users_current(
     request: Request,
     db: AsyncDatabaseSession,
     current_user: User = Permission([AccessRead, AccessReadSelf], get_current_user),
     request_ip: str = Depends(get_request_client_ip),
-) -> UserRead | None:
+) -> UserRead:
     """Retrieve the profile information about the currently active, verified user.
 
     Permissions:
@@ -60,7 +60,7 @@ async def users_current(
 
     Returns:
     --------
-    `UserRead | None` : a dictionary containing the user profile information
+    `UserRead` : a dictionary containing the user profile information
 
     """
     # set session vars
@@ -113,6 +113,7 @@ async def users_list(
         Depends(get_user_or_404),
     ],
     # responses=users_read_responses,
+    response_model=Union[UserReadAsAdmin, UserReadAsManager, UserRead],
 )
 async def users_read(
     db: AsyncDatabaseSession,

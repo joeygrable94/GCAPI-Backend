@@ -1,5 +1,5 @@
 import time
-from typing import Any
+from typing import Any, List
 
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI, Request
@@ -32,6 +32,6 @@ def configure_middleware(app: FastAPI) -> None:
         return response_result
 
 
-__all__ = [
+__all__: List[str] = [
     "configure_middleware",
 ]

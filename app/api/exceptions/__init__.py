@@ -1,4 +1,3 @@
-from functools import lru_cache
 from typing import Dict, List
 
 from asgi_correlation_id.context import correlation_id

@@ -25,9 +25,8 @@ from .encryption import (
 )
 from .permissions import (
     AclAction,
-    AclPermission,
-    AclScope,
     AuthPermissionException,
+    Scope,
     configure_permissions,
     has_permission,
     list_permissions,
@@ -38,11 +37,18 @@ from .rate_limiter import (
     RateLimiter,
     WebSocketRateLimiter,
 )
+from .schemas import (
+    CsrfToken,
+    EncryptedMessage,
+    PlainMessage,
+    RateLimitedToken,
+    RSADecryptMessage,
+    RSAEncryptMessage,
+)
 
 __all__: List[str] = [
-    "AclScope",
     "AclAction",
-    "AclPermission",
+    "Scope",
     "AESCipherCBC",
     "AESEncryptionError",
     "AESDecryptionError",
@@ -55,6 +61,12 @@ __all__: List[str] = [
     "CipherError",
     "CsrfProtect",
     "CsrfProtectError",
+    "CsrfToken",
+    "EncryptedMessage",
+    "PlainMessage",
+    "RateLimitedToken",
+    "RSADecryptMessage",
+    "RSAEncryptMessage",
     "HTTPAuth0Error",
     "JwksDict",
     "JwksKeyDict",

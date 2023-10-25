@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, Security, status
 from app.api.exceptions import ErrorCode
 from app.core.logger import logger
 from app.core.security import Auth0User, auth
-from app.core.security.permissions import AclScope, RoleUser
+from app.core.security.permissions import RoleUser, Scope
 from app.crud import UserRepository
 from app.models import User
 from app.schemas import UserCreate
@@ -14,16 +14,16 @@ from app.schemas.user import UserUpdate
 from .get_db import AsyncDatabaseSession
 
 
-def get_acl_scope_list(roles: List[str], permissions: List[str]) -> List[AclScope]:
-    user_scopes: List[AclScope] = [RoleUser]
+def get_acl_scope_list(roles: List[str], permissions: List[str]) -> List[Scope]:
+    user_scopes: List[Scope] = [RoleUser]
     if roles:
         for auth0_role in roles:
-            auth0_scope = AclScope(auth0_role)
+            auth0_scope = Scope(auth0_role)
             if auth0_scope not in user_scopes:
                 user_scopes.append(auth0_scope)
     if permissions:
         for auth0_perm in permissions:
-            auth0_scope = AclScope(auth0_perm)
+            auth0_scope = Scope(auth0_perm)
             if auth0_scope not in user_scopes:
                 user_scopes.append(auth0_scope)
     return user_scopes

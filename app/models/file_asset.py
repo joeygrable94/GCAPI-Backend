@@ -74,7 +74,7 @@ class FileAsset(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    name: Mapped[str] = mapped_column(
+    filename: Mapped[str] = mapped_column(
         String(96), nullable=False, unique=True, primary_key=True, default="default"
     )
     extension: Mapped[str] = mapped_column(String(255), nullable=False, default="jpg")
@@ -117,6 +117,6 @@ class FileAsset(Base):
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"FileAsset({self.title} | {self.name}.{self.extension} \
+        repr_str: str = f"FileAsset({self.title} | {self.filename}.{self.extension} \
             [{self.size_kb} kb]: created {self.created_on}, updated {self.updated_on})"
         return repr_str

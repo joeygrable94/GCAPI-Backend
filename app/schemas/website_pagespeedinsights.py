@@ -3,12 +3,18 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseModel, field_validator
 
 from app.db.validators import (
-    ValidateSchemaDeviceRequired,
-    ValidateSchemaPerformanceValueRequired,
-    ValidateSchemaStrategyRequired,
+    validate_cls_unit_required,
+    validate_device_required,
+    validate_fcp_unit_required,
+    validate_lcp_unit_required,
+    validate_ps_unit_required,
+    validate_ps_value_required,
+    validate_si_unit_required,
+    validate_strategy_required,
+    validate_tbt_unit_required,
 )
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
@@ -18,16 +24,16 @@ class PSIDevice(str, Enum):
     mobile = "mobile"
 
 
-class PageSpeedInsightsDevice(ValidateSchemaDeviceRequired, BaseModel):
+class PageSpeedInsightsDevice(BaseModel):
     device: PSIDevice
+
+    _validate_device = field_validator("device", mode="before")(
+        validate_device_required
+    )
 
 
 # schemas
-class WebsitePageSpeedInsightsBase(
-    ValidateSchemaStrategyRequired,
-    ValidateSchemaPerformanceValueRequired,
-    BaseSchema,
-):
+class WebsitePageSpeedInsightsBase(BaseSchema):
     strategy: str
     ps_weight: int
     ps_grade: float
@@ -53,6 +59,31 @@ class WebsitePageSpeedInsightsBase(
     tbt_grade: float
     tbt_value: float
     tbt_unit: str
+
+    _validate_strategy = field_validator("strategy", mode="before")(
+        validate_strategy_required
+    )
+    _validate_ps_value = field_validator("ps_value", mode="before")(
+        validate_ps_value_required
+    )
+    _validate_ps_unit = field_validator("ps_unit", mode="before")(
+        validate_ps_unit_required
+    )
+    _validate_fcp_unit = field_validator("fcp_unit", mode="before")(
+        validate_fcp_unit_required
+    )
+    _validate_lcp_unit = field_validator("lcp_unit", mode="before")(
+        validate_lcp_unit_required
+    )
+    _validate_cls_unit = field_validator("cls_unit", mode="before")(
+        validate_cls_unit_required
+    )
+    _validate_si_unit = field_validator("si_unit", mode="before")(
+        validate_si_unit_required
+    )
+    _validate_tbt_unit = field_validator("tbt_unit", mode="before")(
+        validate_tbt_unit_required
+    )
 
 
 class WebsitePageSpeedInsightsProcessing(BaseModel):

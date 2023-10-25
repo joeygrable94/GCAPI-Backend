@@ -25,6 +25,7 @@ coverage.xml
 .cache
 codecov
 .ruff_cache
+beta.py
 
 # unused
 unused

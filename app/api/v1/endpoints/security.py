@@ -9,8 +9,8 @@ from app.api.deps import (
     get_rsa_encryption,
 )
 from app.core.config import Settings, get_settings
-from app.core.security import CsrfProtect
-from app.schemas import (
+from app.core.security import (
+    CsrfProtect,
     CsrfToken,
     EncryptedMessage,
     PlainMessage,

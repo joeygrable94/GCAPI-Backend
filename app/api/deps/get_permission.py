@@ -4,11 +4,10 @@ from fastapi import Depends, status
 
 from app.core.security import configure_permissions
 from app.core.security.permissions import (
-    AclPermission,
-    AclScope,
     Authenticated,
     AuthPermissionException,
     Everyone,
+    Scope,
 )
 from app.crud import ClientRepository, UserClientRepository, UserRepository
 from app.models import User
@@ -19,8 +18,8 @@ from .get_db import AsyncDatabaseSession
 
 def get_current_user_privileges(
     user: User = Depends(get_current_user),
-) -> List[AclScope]:
-    principals: List[AclScope]
+) -> List[Scope]:
+    principals: List[Scope]
     principals = [Everyone, Authenticated]
     principals.extend(user.privileges())
     return principals
@@ -32,7 +31,7 @@ Permission = configure_permissions(get_current_user_privileges)
 class PermissionController:
     db: AsyncDatabaseSession
     user: CurrentUser
-    privileges: List[AclScope]
+    privileges: List[Scope]
     user_repo: UserRepository
     client_repo: ClientRepository
     user_client_repo: UserClientRepository
@@ -41,7 +40,7 @@ class PermissionController:
         self,
         db: AsyncDatabaseSession,
         user: CurrentUser,
-        privileges: List[AclScope],
+        privileges: List[Scope],
     ):
         self.db = db
         self.user = user
@@ -50,7 +49,7 @@ class PermissionController:
     def return_acl_resource(
         self,
         resource: Any,
-        responses: Dict[AclPermission, Type[Any]],
+        responses: Dict[Scope, Type[Any]],
         default_response: Any = None,
     ) -> Any:
         for permission, response in responses.items():
@@ -71,6 +70,6 @@ class PermissionController:
 def get_permission_controller(
     db: AsyncDatabaseSession,
     user: CurrentUser,
-    privileges: List[AclScope] = Depends(get_current_user_privileges),
+    privileges: List[Scope] = Depends(get_current_user_privileges),
 ) -> PermissionController:
     return PermissionController(db, user, privileges)
