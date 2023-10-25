@@ -1,3 +1,4 @@
+# https://github.com/jayhawk24/pagination-fastapi/tree/main
 from typing import Generic, List, TypeVar
 
 from pydantic import BaseModel, Field
@@ -26,7 +27,6 @@ def paginate(
     page_params: PageParams, query: Query, ResponseSchema: BaseModel
 ) -> PagedResponseSchema[T]:
     """Paginate the query."""
-
     paginated_query = (
         query.offset((page_params.page - 1) * page_params.size)
         .limit(page_params.size)
