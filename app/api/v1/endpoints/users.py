@@ -1,11 +1,10 @@
-from typing import List, Union
+from typing import Union
 
 from fastapi import APIRouter, Depends, Request
 
 from app.api.deps import (
     AsyncDatabaseSession,
     CurrentUser,
-    GetPageQueryParams,
     Permission,
     PermissionController,
     get_async_db,
@@ -17,10 +16,10 @@ from app.api.deps import (
 from app.api.exceptions import UserAlreadyExists
 
 # from app.api.openapi import users_read_responses
+from app.core.pagination import PagedResponseSchema, PageParams, paginate
 from app.core.security import auth
 from app.core.security.permissions import (
     AccessDelete,
-    AccessList,
     AccessRead,
     AccessReadSelf,
     AccessUpdate,
@@ -78,13 +77,14 @@ async def users_current(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=List[UserRead],
+    response_model=PagedResponseSchema[UserReadAsAdmin]
+    | PagedResponseSchema[UserReadAsManager],
 )
 async def users_list(
     db: AsyncDatabaseSession,
-    query: GetPageQueryParams,
-    current_user: User = Permission(AccessList, get_current_user),
-) -> List[UserRead] | List:
+    page_params: PageParams = Depends(PageParams),
+    acl: PermissionController = Depends(get_permission_controller),
+) -> PagedResponseSchema[UserReadAsAdmin] | PagedResponseSchema[UserReadAsManager]:
     """Retrieve a list of users.
 
     Permissions:
@@ -98,9 +98,30 @@ async def users_list(
 
     """
     users_repo: UserRepository = UserRepository(session=db)
-    users: List[User] | List[None] | None
-    users = await users_repo.list(page=query.page)
-    return [UserRead.model_validate(c) for c in users] if users else []
+    # users: List[User] | List[None] | None
+    # users = await users_repo.list(page=query.page)
+    # return [UserRead.model_validate(c) for c in users] if users else []
+    response_out: PagedResponseSchema[UserReadAsAdmin] | PagedResponseSchema[
+        UserReadAsManager
+    ] = acl.get_resource_response(
+        responses={
+            RoleAdmin: await paginate(
+                table_name=users_repo._table.__tablename__,
+                db=db,
+                stmt=users_repo.query_list(),
+                page_params=page_params,
+                response_schema=UserReadAsAdmin,
+            ),
+            RoleManager: await paginate(
+                table_name=users_repo._table.__tablename__,
+                db=db,
+                stmt=users_repo.query_list(),
+                page_params=page_params,
+                response_schema=UserReadAsAdmin,
+            ),
+        },
+    )
+    return response_out
 
 
 @router.get(

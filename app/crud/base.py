@@ -2,7 +2,7 @@ import abc
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
 
 from pydantic import UUID4
-from sqlalchemy import select as sql_select
+from sqlalchemy import Select, select as sql_select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -50,6 +50,10 @@ class BaseRepository(
         result: Any = await self._db.execute(query)
         data: List[TABLE] = result.scalars().all()  # pragma: no cover
         return data  # pragma: no cover
+
+    def query_list(self) -> Select:
+        stmt = sql_select(self._table)  # type: ignore
+        return stmt
 
     async def list(
         self,
