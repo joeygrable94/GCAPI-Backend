@@ -7,8 +7,8 @@ from tests.utils.utils import random_email
 
 from app.api.deps import get_current_user, get_current_user_privileges
 from app.api.exceptions import ErrorCode
-from app.core.security import Auth0User, Scope
-from app.core.security.permissions import Authenticated, Everyone
+from app.core.security import Auth0User
+from app.core.security.permissions import AclPrivilege, Authenticated, Everyone
 from app.core.utilities.uuids import get_uuid_str
 from app.models.user import User
 
@@ -64,9 +64,10 @@ async def test_get_current_user_privileges(
     user: Auth0User = await auth.get_user()
     user_in_db: User = await get_current_user(db_session, user)
     if user_in_db:
-        principals: List[Scope] = get_current_user_privileges(user_in_db)
+        principals: List[AclPrivilege] = get_current_user_privileges(user_in_db)
+        print(principals)
         assert len(principals) == 6
         assert Everyone in principals
         assert Authenticated in principals
-        assert Scope("role:user") in principals
-        assert Scope("role:employee") in principals
+        assert AclPrivilege("role:user") in principals
+        assert AclPrivilege("role:employee") in principals

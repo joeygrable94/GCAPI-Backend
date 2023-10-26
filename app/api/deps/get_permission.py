@@ -4,10 +4,10 @@ from fastapi import Depends, status
 
 from app.core.security import configure_permissions
 from app.core.security.permissions import (
+    AclPrivilege,
     Authenticated,
     AuthPermissionException,
     Everyone,
-    Scope,
 )
 from app.crud import ClientRepository, UserClientRepository, UserRepository
 from app.models import User
@@ -18,11 +18,11 @@ from .get_db import AsyncDatabaseSession
 
 def get_current_user_privileges(
     user: User = Depends(get_current_user),
-) -> List[Scope]:
-    principals: List[Scope]
+) -> List[AclPrivilege]:
+    principals: List[AclPrivilege]
     principals = [Everyone, Authenticated]
     principals.extend(user.privileges())
-    return principals
+    return list(set(principals))
 
 
 Permission = configure_permissions(get_current_user_privileges)
@@ -33,7 +33,7 @@ T = TypeVar("T")
 class PermissionController(Generic[T]):
     db: AsyncDatabaseSession
     user: CurrentUser
-    privileges: List[Scope]
+    privileges: List[AclPrivilege]
     user_repo: UserRepository
     client_repo: ClientRepository
     user_client_repo: UserClientRepository
@@ -42,7 +42,7 @@ class PermissionController(Generic[T]):
         self,
         db: AsyncDatabaseSession,
         user: CurrentUser,
-        privileges: List[Scope],
+        privileges: List[AclPrivilege],
     ):
         self.db = db
         self.user = user
@@ -50,7 +50,7 @@ class PermissionController(Generic[T]):
 
     def get_resource_response(
         self,
-        responses: Dict[Scope, T],
+        responses: Dict[AclPrivilege, T],
     ) -> T:
         for permission, response in responses.items():
             if permission in self.privileges:
@@ -68,6 +68,6 @@ class PermissionController(Generic[T]):
 def get_permission_controller(
     db: AsyncDatabaseSession,
     user: CurrentUser,
-    privileges: List[Scope] = Depends(get_current_user_privileges),
+    privileges: List[AclPrivilege] = Depends(get_current_user_privileges),
 ) -> PermissionController:
     return PermissionController(db, user, privileges)

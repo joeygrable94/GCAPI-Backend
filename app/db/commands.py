@@ -7,7 +7,7 @@ from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixe
 
 from app.core.config import settings
 from app.core.logger import logger
-from app.core.security import Scope
+from app.core.security.permissions import AclPrivilege
 from app.crud import ClientRepository, UserClientRepository, UserRepository
 from app.db.base import Base
 from app.db.session import async_engine, async_session, engine
@@ -90,7 +90,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_active=True,
                     is_verified=True,
                     is_superuser=True,
-                    scopes=[Scope("role:user"), Scope("role:admin")],
+                    scopes=[AclPrivilege("role:user"), AclPrivilege("role:admin")],
                 )
             )  # noqa: E501
         manager1: User | None = await user_repo.read_by(
@@ -105,7 +105,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
-                    scopes=[Scope("role:user"), Scope("role:manager")],
+                    scopes=[AclPrivilege("role:user"), AclPrivilege("role:manager")],
                 )
             )  # noqa: E501
         employee1: User | None = await user_repo.read_by(
@@ -120,7 +120,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
-                    scopes=[Scope("role:user"), Scope("role:employee")],
+                    scopes=[AclPrivilege("role:user"), AclPrivilege("role:employee")],
                 )
             )  # noqa: E501
         client_a: User | None = await user_repo.read_by(
@@ -135,7 +135,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
-                    scopes=[Scope("role:user"), Scope("role:client")],
+                    scopes=[AclPrivilege("role:user"), AclPrivilege("role:client")],
                 )
             )  # noqa: E501
         client_b: User | None = await user_repo.read_by(
@@ -150,7 +150,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
-                    scopes=[Scope("role:user"), Scope("role:client")],
+                    scopes=[AclPrivilege("role:user"), AclPrivilege("role:client")],
                 )
             )  # noqa: E501
         user_verified: User | None = await user_repo.read_by(
@@ -165,7 +165,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
-                    scopes=[Scope("role:user")],
+                    scopes=[AclPrivilege("role:user")],
                 )
             )  # noqa: E501
         user_unverified: User | None = await user_repo.read_by(
@@ -180,7 +180,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_active=True,
                     is_verified=False,
                     is_superuser=False,
-                    scopes=[Scope("role:user")],
+                    scopes=[AclPrivilege("role:user")],
                 )
             )  # noqa: E501
 

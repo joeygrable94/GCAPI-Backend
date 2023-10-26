@@ -1,32 +1,32 @@
-from .scope import Scope
+from .scope import AclPermission, AclPrivilege
 
 # Privileges
 # generic
-Everyone: Scope = Scope("system:everyone")
-Authenticated: Scope = Scope("system:authenticated")
+Everyone: AclPrivilege = AclPrivilege("system:everyone")
+Authenticated: AclPrivilege = AclPrivilege("system:authenticated")
 # role based privileges: client, employee, manager, user
-RoleAdmin: Scope = Scope("role:admin")
-RoleClient: Scope = Scope("role:client")
-RoleEmployee: Scope = Scope("role:employee")
-RoleManager: Scope = Scope("role:manager")
-RoleUser: Scope = Scope("role:user")
+RoleAdmin: AclPrivilege = AclPrivilege("role:admin")
+RoleClient: AclPrivilege = AclPrivilege("role:client")
+RoleEmployee: AclPrivilege = AclPrivilege("role:employee")
+RoleManager: AclPrivilege = AclPrivilege("role:manager")
+RoleUser: AclPrivilege = AclPrivilege("role:user")
 
 
 # Permissions
 # generic
-AccessAll: Scope = Scope("access:all")
+AccessAll: AclPermission = AclPermission("access:all")
 # list
-AccessList: Scope = Scope("list:all")
-AccessListRelated: Scope = Scope("list:related")
+AccessList: AclPermission = AclPermission("list:all")
+AccessListRelated: AclPermission = AclPermission("list:related")
 # create
-AccessCreate: Scope = Scope("create:all")
+AccessCreate: AclPermission = AclPermission("create:all")
 # read
-AccessRead: Scope = Scope("read:all")
-AccessReadSelf: Scope = Scope("read:self")
-AccessReadRelated: Scope = Scope("read:related")
+AccessRead: AclPermission = AclPermission("read:all")
+AccessReadSelf: AclPermission = AclPermission("read:self")
+AccessReadRelated: AclPermission = AclPermission("read:related")
 # update
-AccessUpdate: Scope = Scope("update:all")
-AccessUpdateSelf: Scope = Scope("update:self")
+AccessUpdate: AclPermission = AclPermission("update:all")
+AccessUpdateSelf: AclPermission = AclPermission("update:self")
 # delete
-AccessDelete: Scope = Scope("delete:all")
-AccessDeleteSelf: Scope = Scope("delete:self")
+AccessDelete: AclPermission = AclPermission("delete:all")
+AccessDeleteSelf: AclPermission = AclPermission("delete:self")

@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, Security, status
 from app.api.exceptions import ErrorCode
 from app.core.logger import logger
 from app.core.security import Auth0User, auth
-from app.core.security.permissions import RoleUser, Scope
+from app.core.security.permissions import AclPrivilege, RoleUser
 from app.crud import UserRepository
 from app.models import User
 from app.schemas import UserCreate
@@ -14,19 +14,19 @@ from app.schemas.user import UserUpdate
 from .get_db import AsyncDatabaseSession
 
 
-def get_acl_scope_list(roles: List[str], permissions: List[str]) -> List[Scope]:
-    user_scopes: List[Scope] = [RoleUser]
+def get_acl_scope_list(roles: List[str], permissions: List[str]) -> List[AclPrivilege]:
+    user_scopes: List[AclPrivilege] = [RoleUser]
     if roles:
         for auth0_role in roles:
-            auth0_scope = Scope(auth0_role)
+            auth0_scope = AclPrivilege(auth0_role)
             if auth0_scope not in user_scopes:
                 user_scopes.append(auth0_scope)
     if permissions:
         for auth0_perm in permissions:
-            auth0_scope = Scope(auth0_perm)
+            auth0_scope = AclPrivilege(auth0_perm)
             if auth0_scope not in user_scopes:
                 user_scopes.append(auth0_scope)
-    return user_scopes
+    return list(set(user_scopes))
 
 
 async def get_current_user(
@@ -38,7 +38,6 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ErrorCode.UNAUTHORIZED,
         )
-    logger.info("Auth0 User:", auth0_user)
     users_repo: UserRepository = UserRepository(session=db)
     user: User | None = await users_repo.read_by(
         field_name="auth_id", field_value=auth0_user.auth_id
@@ -63,6 +62,7 @@ async def get_current_user(
             update_scopes = True
             new_scopes.append(scope)
     if update_scopes:
+        new_scopes = list(set(new_scopes))
         update_user = await users_repo.update(
             entry=user, schema=UserUpdate(scopes=new_scopes)
         )

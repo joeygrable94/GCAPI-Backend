@@ -13,3 +13,11 @@ class Scope(str):
         if not m:
             raise ValueError("invalid scope format")
         return super().__new__(self, m.group(0))
+
+
+class AclPermission(Scope):
+    pass
+
+
+class AclPrivilege(Scope):
+    pass

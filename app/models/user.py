@@ -15,10 +15,11 @@ from app.core.security.permissions import (
     AccessUpdate,
     AccessUpdateSelf,
     AclAction,
+    AclPermission,
+    AclPrivilege,
     RoleAdmin,
     RoleManager,
     RoleUser,
-    Scope,
 )
 from app.core.utilities.uuids import get_random_username  # type: ignore
 from app.core.utilities.uuids import get_uuid
@@ -66,7 +67,7 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
-    scopes: Mapped[List[Scope]] = mapped_column(
+    scopes: Mapped[List[AclPrivilege]] = mapped_column(
         JSON,
         nullable=False,
         default=[RoleUser],
@@ -88,18 +89,18 @@ class User(Base):
     )
 
     # properties as methods
-    def privileges(self) -> List[Scope]:
+    def privileges(self) -> List[AclPrivilege]:
         """
         Returns a list of user privileges to access permission restricted
         resources via ACL.
         """
-        principals: List[Scope]
-        principals = [Scope(f"user:{self.id}")]
-        principals.extend([Scope(sco) for sco in self.scopes])
+        principals: List[AclPrivilege]
+        principals = [AclPrivilege(f"user:{self.id}")]
+        principals.extend([AclPrivilege(sco) for sco in self.scopes])
         return principals
 
     # ACL
-    def __acl__(self) -> List[Tuple[AclAction, Scope, Scope]]:
+    def __acl__(self) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:
         return [
             # list
             (AclAction.allow, RoleAdmin, AccessList),
@@ -109,11 +110,11 @@ class User(Base):
             # read
             (AclAction.allow, RoleAdmin, AccessRead),
             (AclAction.allow, RoleManager, AccessRead),
-            (AclAction.allow, Scope(f"user:{self.id}"), AccessReadSelf),
+            (AclAction.allow, AclPrivilege(f"user:{self.id}"), AccessReadSelf),
             # update
             (AclAction.allow, RoleAdmin, AccessUpdate),
             (AclAction.allow, RoleManager, AccessUpdate),
-            (AclAction.allow, Scope(f"user:{self.id}"), AccessUpdateSelf),
+            (AclAction.allow, AclPrivilege(f"user:{self.id}"), AccessUpdateSelf),
             # delete
             (AclAction.allow, RoleAdmin, AccessDelete),
         ]

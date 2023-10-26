@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from pydantic import UUID4, field_validator
 
-from app.core.security.permissions import Scope
+from app.core.security.permissions import AclPrivilege
 from app.db.validators import (
     validate_auth_id_required,
     validate_email_required,
@@ -35,7 +35,7 @@ class UserCreate(UserBase):
     is_active: bool = True
     is_verified: bool = False
     is_superuser: bool = False
-    scopes: List[Scope] = [Scope("role:user")]
+    scopes: List[AclPrivilege] = [AclPrivilege("role:user")]
 
     _validate_scopes = field_validator("scopes", mode="before")(
         validate_scopes_required
@@ -47,7 +47,7 @@ class UserUpdate(BaseSchema):
     is_active: Optional[bool] = None
     is_verified: Optional[bool] = None
     is_superuser: Optional[bool] = None
-    scopes: Optional[List[Scope]] = None
+    scopes: Optional[List[AclPrivilege]] = None
 
     _validate_username = field_validator("username", mode="before")(
         validate_username_optional
@@ -68,7 +68,7 @@ class UserReadAsManager(
     id: UUID4
     is_active: bool
     is_verified: bool
-    scopes: List[Scope]
+    scopes: List[AclPrivilege]
 
     _validate_scopes = field_validator("scopes", mode="before")(
         validate_scopes_required
@@ -83,7 +83,7 @@ class UserReadAsAdmin(
     is_active: bool
     is_verified: bool
     is_superuser: bool
-    scopes: List[Scope]
+    scopes: List[AclPrivilege]
 
     _validate_scopes = field_validator("scopes", mode="before")(
         validate_scopes_required

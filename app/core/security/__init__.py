@@ -24,9 +24,7 @@ from .encryption import (
     load_api_keys,
 )
 from .permissions import (
-    AclAction,
     AuthPermissionException,
-    Scope,
     configure_permissions,
     has_permission,
     list_permissions,
@@ -47,8 +45,6 @@ from .schemas import (
 )
 
 __all__: List[str] = [
-    "AclAction",
-    "Scope",
     "AESCipherCBC",
     "AESEncryptionError",
     "AESDecryptionError",

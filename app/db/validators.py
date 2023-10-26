@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Any, List, Union
 
 from app.core.config import settings
-from app.core.security.permissions import Scope
+from app.core.security.permissions import AclPrivilege
 from app.core.utilities import domain_name_regex, email_regex
 from app.db.constants import (
     DB_FLOAT_MAX_LEN,
@@ -357,24 +357,24 @@ def validate_tbt_unit_required(cls: Any, value: str) -> str:
 
 
 def validate_scopes_required(
-    cls: Any, value: Union[List[str], List[Scope]]
-) -> List[Scope]:
-    scopes: List[Scope] = []
+    cls: Any, value: Union[List[str], List[AclPrivilege]]
+) -> List[AclPrivilege]:
+    scopes: List[AclPrivilege] = []
     for scope in value:
         if isinstance(scope, str):
-            scopes.append(Scope(scope))
-        if isinstance(scope, Scope):
+            scopes.append(AclPrivilege(scope))
+        if isinstance(scope, AclPrivilege):
             scopes.append(scope)
     return scopes
 
 
 def validate_scopes_optional(
-    cls: Any, value: Union[List[str], List[Scope]] | None
-) -> List[Scope] | None:
+    cls: Any, value: Union[List[str], List[AclPrivilege]] | None
+) -> List[AclPrivilege] | None:
     if value:
-        scopes: List[Scope] = []
+        scopes: List[AclPrivilege] = []
         for scope in value:
-            scopes.append(Scope(scope))
+            scopes.append(AclPrivilege(scope))
         return scopes
     return None
 

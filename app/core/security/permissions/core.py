@@ -7,7 +7,7 @@ Based on [FastAPI Permissions by @holgi](https://github.com/holgi/fastapi-permis
 Permission = configure_permissions(get_active_user_principals)
 
 @app.get("/item/{item_identifier}")
-async def show_item(item: Item=Permission(Scope("read:item"), get_item)):
+async def show_item(item: Item=Permission(AclPrivilege("read:item"), get_item)):
     return [{"item": item}]
 
 """
@@ -22,7 +22,7 @@ from fastapi import Depends
 
 from .access import AccessAll, Everyone
 from .exceptions import AuthPermissionException
-from .scope import Scope
+from .scope import AclPermission, AclPrivilege
 
 # constants
 
@@ -34,12 +34,12 @@ class AclAction(StrEnum):
 
 
 # ACL Tuples: Action, Privilege, Permission
-DENY_ALL: Tuple[AclAction, Scope, Scope] = (
+DENY_ALL: Tuple[AclAction, AclPrivilege, AclPermission] = (
     AclAction.deny,
     Everyone,
     AccessAll,
 )
-ALOW_ALL: Tuple[AclAction, Scope, Scope] = (
+ALOW_ALL: Tuple[AclAction, AclPrivilege, AclPermission] = (
     AclAction.allow,
     Everyone,
     AccessAll,
@@ -66,7 +66,7 @@ def configure_permissions(
 
 
 def permission_dependency_factory(
-    permission: Scope | List[Scope],
+    permission: AclPermission | List[AclPermission],
     resource: Any,
     active_privileges_func: Any,
 ) -> Any:
@@ -95,7 +95,7 @@ def permission_dependency_factory(
     # the permission itself is available through the outer function scope
     def permission_dependency(
         resource: Any = dependable_resource,
-        privileges: Any = active_privileges_func,
+        privileges: List[AclPrivilege] = active_privileges_func,
     ) -> Any:
         if isinstance(permission, list):
             for perm in permission:
@@ -110,8 +110,8 @@ def permission_dependency_factory(
 
 
 def has_permission(
-    user_privileges: List[Scope],
-    requested_permission: Scope,
+    user_privileges: List[AclPrivilege],
+    requested_permission: AclPermission,
     resource: Any,
 ) -> bool:
     """checks if a user has the permission for a resource
@@ -133,7 +133,9 @@ def has_permission(
     return False
 
 
-def list_permissions(user_privileges: List[Scope], resource: Any) -> Dict[Scope, bool]:
+def list_permissions(
+    user_privileges: List[AclPrivilege], resource: Any
+) -> Dict[AclPermission, bool]:
     """lists all permissions of a user for a resouce
 
     user_privileges: the privileges of a user
@@ -153,7 +155,7 @@ def list_permissions(user_privileges: List[Scope], resource: Any) -> Dict[Scope,
 # utility functions
 
 
-def normalize_acl(resource: Any) -> List[Tuple[AclAction, Scope, Scope]]:
+def normalize_acl(resource: Any) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:
     """returns the access controll list for a resource
 
     If the resource is not an acl list itself it needs to have an "__acl__"
