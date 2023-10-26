@@ -1,9 +1,6 @@
-from typing import Any
-
-from sqlalchemy.orm import declarative_base
-
-declared_base: Any = declarative_base()
+from sqlalchemy.ext.asyncio import AsyncAttrs
+from sqlalchemy.orm import DeclarativeBase
 
 
-class Base(declared_base):
+class Base(AsyncAttrs, DeclarativeBase):
     pass
