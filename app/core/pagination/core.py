@@ -1,4 +1,4 @@
-from typing import Any, Generic, List, Type, TypeVar
+from typing import Generic, List, Sequence, Type, TypeVar
 
 from pydantic import BaseModel, Field
 from sqlalchemy import Result, Select, column, func, select, table
@@ -38,15 +38,15 @@ async def paginate(
 ) -> PagedResponseSchema[T]:
     """Paginate the query."""
     count_table = table(table_name, column("id"))
-    count_stmt = select(func.count()).select_from(count_table)
+    count_stmt: Select = select(func.count()).select_from(count_table)
     count_rslt: Result = await db.execute(count_stmt)
-    total_count: Any = count_rslt.scalars().all()
+    total_count: Sequence = count_rslt.scalars().all()
 
     paginated_query = stmt.offset((page_params.page - 1) * page_params.size).limit(
         page_params.size
     )
     result: Result = await db.execute(paginated_query)
-    data: Any = result.scalars().all()
+    data: Sequence = result.scalars().all()
 
     return PagedResponseSchema(
         total=len(total_count),

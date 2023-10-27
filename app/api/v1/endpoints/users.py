@@ -3,8 +3,6 @@ from typing import Union
 from fastapi import APIRouter, Depends, Request
 
 from app.api.deps import (
-    AsyncDatabaseSession,
-    CurrentUser,
     Permission,
     PermissionController,
     get_async_db,
@@ -20,6 +18,7 @@ from app.core.pagination import PagedResponseSchema, PageParams, paginate
 from app.core.security import auth
 from app.core.security.permissions import (
     AccessDelete,
+    AccessDeleteSelf,
     AccessRead,
     AccessReadSelf,
     AccessUpdate,
@@ -28,7 +27,6 @@ from app.core.security.permissions import (
     RoleManager,
 )
 from app.core.security.permissions.access import Authenticated
-from app.crud.user import UserRepository
 from app.models import User
 from app.schemas import UserRead, UserReadAsAdmin, UserReadAsManager, UserUpdate
 
@@ -42,15 +40,16 @@ router: APIRouter = APIRouter()
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
+        Depends(get_permission_controller),
+        Depends(get_request_client_ip),
     ],
-    response_model=UserRead,
+    response_model=Union[UserReadAsAdmin, UserReadAsManager, UserRead],
 )
 async def users_current(
     request: Request,
-    db: AsyncDatabaseSession,
-    current_user: User = Permission([AccessRead, AccessReadSelf], get_current_user),
+    acl: PermissionController = Depends(get_permission_controller),
     request_ip: str = Depends(get_request_client_ip),
-) -> UserRead:
+) -> UserReadAsAdmin | UserReadAsManager | UserRead:
     """Retrieve the profile information about the currently active, verified user.
 
     Permissions:
@@ -59,65 +58,82 @@ async def users_current(
 
     Returns:
     --------
-    `UserRead` : a dictionary containing the user profile information
+    a dictionary containing the user profile information
+
+    - `UserReadAsAdmin` : all fields
+    - `UserReadAsManager` : only fields accessible to the manager role
+    - `UserRead` : only publically accessible fields
 
     """
     # set session vars
-    request.session["user_id"] = str(current_user.id)
+    request.session["user_id"] = str(acl.user.id)
     req_sess_ip = request.session.get("ip_address", False)
     if not req_sess_ip:
         request.session["ip_address"] = str(request_ip)
-    return UserRead.model_validate(current_user)
+    response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
+        acl.get_resource_response(
+            responses={
+                RoleAdmin: UserReadAsAdmin.model_validate(acl.user),
+                RoleManager: UserReadAsManager.model_validate(acl.user),
+                Authenticated: UserRead.model_validate(acl.user),
+            },
+        )
+    )
+    return response_out
 
 
 @router.get(
     "/",
     name="users:list",
     dependencies=[
+        Depends(PageParams),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
-    response_model=PagedResponseSchema[UserReadAsAdmin]
-    | PagedResponseSchema[UserReadAsManager],
+    response_model=Union[
+        PagedResponseSchema[UserReadAsAdmin], PagedResponseSchema[UserReadAsManager]
+    ],
 )
 async def users_list(
-    db: AsyncDatabaseSession,
     page_params: PageParams = Depends(PageParams),
     acl: PermissionController = Depends(get_permission_controller),
 ) -> PagedResponseSchema[UserReadAsAdmin] | PagedResponseSchema[UserReadAsManager]:
-    """Retrieve a list of users.
+    """Retrieve a paginated list of users.
 
     Permissions:
     ------------
-    `role=admin|manager` : all users
+    `role=admin` : all users
+
+    `role=manager` : all users
 
     Returns:
     --------
-    `List[UserRead] | List[None]` : a list of users, optionally filtered, or returns
-        an empty list
+    a paginated response containing a list of users
+
+    - `PagedResponseSchema[UserReadAsAdmin]` : all fields
+    - `PagedResponseSchema[UserReadAsManager]` : only fields accessibile to the
+        manager role
 
     """
-    users_repo: UserRepository = UserRepository(session=db)
-    # users: List[User] | List[None] | None
-    # users = await users_repo.list(page=query.page)
-    # return [UserRead.model_validate(c) for c in users] if users else []
     response_out: PagedResponseSchema[UserReadAsAdmin] | PagedResponseSchema[
         UserReadAsManager
     ] = acl.get_resource_response(
         responses={
             RoleAdmin: await paginate(
-                table_name=users_repo._table.__tablename__,
-                db=db,
-                stmt=users_repo.query_list(),
+                table_name=acl.user_repo._table.__tablename__,
+                db=acl.db,
+                stmt=acl.user_repo.query_list(),
                 page_params=page_params,
                 response_schema=UserReadAsAdmin,
             ),
             RoleManager: await paginate(
-                table_name=users_repo._table.__tablename__,
-                db=db,
-                stmt=users_repo.query_list(),
+                table_name=acl.user_repo._table.__tablename__,
+                db=acl.db,
+                stmt=acl.user_repo.query_list(),
                 page_params=page_params,
-                response_schema=UserReadAsAdmin,
+                response_schema=UserReadAsManager,
             ),
         },
     )
@@ -130,15 +146,14 @@ async def users_list(
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
-        Depends(get_current_user),
         Depends(get_user_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     # responses=users_read_responses,
     response_model=Union[UserReadAsAdmin, UserReadAsManager, UserRead],
 )
 async def users_read(
-    db: AsyncDatabaseSession,
-    current_user: CurrentUser,
     user: User = Permission([AccessRead, AccessReadSelf], get_user_or_404),
     acl: PermissionController = Depends(get_permission_controller),
 ) -> Union[UserReadAsAdmin, UserReadAsManager, UserRead]:
@@ -158,10 +173,11 @@ async def users_read(
 
     Returns:
     --------
-    `UserRead` : a dictionary containing the user profile information
+    a dictionary containing the user profile information
 
-    - `role=admin|manager` : all fields
-    - `role=client|employee|user` : all fields except `is_superuser`
+    - `UserReadAsAdmin` : all fields
+    - `UserReadAsManager` : only fields accessible to the manager role
+    - `UserRead` : only publically accessible fields
 
     """
     response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
@@ -183,15 +199,16 @@ async def users_read(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_user_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
-    response_model=UserRead,
+    response_model=Union[UserReadAsAdmin, UserReadAsManager, UserRead],
 )
 async def users_update(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     user_in: UserUpdate,
     user: User = Permission([AccessUpdate, AccessUpdateSelf], get_user_or_404),
-) -> UserRead:
+    acl: PermissionController = Depends(get_permission_controller),
+) -> UserReadAsAdmin | UserReadAsManager | UserRead:
     """Update a user by id. Users may update limited fields of their own data,
     and maybe the fields of other users depending on their role.
 
@@ -203,26 +220,39 @@ async def users_update(
 
     Returns:
     --------
-    `UserRead` : the updated user
+    the updated user object
 
-    - `role=admin` : all fields
-    - `role=manager` : all fields except `is_superuser`
-    - `role=user` : can only update non-sensitive profile information like: `username`
+    - `UserReadAsAdmin` : all fields
+    - `UserReadAsManager` : only fields accessible to the manager role
+    - `UserRead` : only publically accessible fields
 
     """
-    users_repo: UserRepository = UserRepository(session=db)
+    # users_repo: UserRepository = UserRepository(session=acl.db)
     if user_in.username is not None:
-        a_user: User | None = await users_repo.read_by(
+        a_user: User | None = await acl.user_repo.read_by(
             field_name="username", field_value=user_in.username
         )
         if a_user:
             raise UserAlreadyExists()
-    updated_user: User | None = await users_repo.update(entry=user, schema=user_in)
-    return (
-        UserRead.model_validate(updated_user)
-        if updated_user
-        else UserRead.model_validate(user)
+    updated_user: User | None = await acl.user_repo.update(entry=user, schema=user_in)
+    response_out: UserReadAsAdmin | UserReadAsManager | UserRead
+    if updated_user:
+        response_out = acl.get_resource_response(
+            responses={
+                RoleAdmin: UserReadAsAdmin.model_validate(updated_user),
+                RoleManager: UserReadAsManager.model_validate(updated_user),
+                Authenticated: UserRead.model_validate(updated_user),
+            },
+        )
+        return response_out
+    response_out = acl.get_resource_response(
+        responses={
+            RoleAdmin: UserReadAsAdmin.model_validate(user),
+            RoleManager: UserReadAsManager.model_validate(user),
+            Authenticated: UserRead.model_validate(user),
+        },
     )
+    return response_out
 
 
 @router.delete(
@@ -232,13 +262,13 @@ async def users_update(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_user_or_404),
+        Depends(get_current_user),
     ],
     response_model=None,
 )
 async def users_delete(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    user: User = Permission(AccessDelete, get_user_or_404),
+    user: User = Permission([AccessDelete, AccessDeleteSelf], get_user_or_404),
+    acl: PermissionController = Depends(get_permission_controller),
 ) -> None:
     """Delete a user by id.
 
@@ -253,6 +283,6 @@ async def users_delete(
     `None`
 
     """
-    users_repo: UserRepository = UserRepository(session=db)
-    await users_repo.delete(entry=user)
+    # TODO: add logic to request user deletion if AclPermission is AccessDeleteSelf
+    await acl.user_repo.delete(entry=user)
     return None
