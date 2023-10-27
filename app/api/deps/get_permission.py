@@ -52,8 +52,8 @@ class PermissionController(Generic[T]):
         self,
         responses: Dict[AclPrivilege, T],
     ) -> T:
-        for permission, response in responses.items():
-            if permission in self.privileges:
+        for privilege, response in responses.items():
+            if privilege in self.privileges:
                 return response
         raise AuthPermissionException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
