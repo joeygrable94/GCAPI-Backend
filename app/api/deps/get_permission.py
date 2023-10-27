@@ -47,6 +47,9 @@ class PermissionController(Generic[T]):
         self.db = db
         self.user = user
         self.privileges = privileges
+        self.user_repo = UserRepository(db)
+        self.client_repo = ClientRepository(db)
+        self.user_client_repo = UserClientRepository(db)
 
     def get_resource_response(
         self,
