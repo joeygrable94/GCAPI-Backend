@@ -142,6 +142,8 @@ Always add a message about what changed in the db models/tables.
 ## SQLAlchemy ORM
 
 - [SQLAlchemy Relationship Loading Techniques](https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html)
+- [Asynchronous I/O (asyncio)](https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html)
+- [ORM Querying Guide](https://docs.sqlalchemy.org/en/20/orm/queryguide/index.html)
 
 ### Pagination
 
