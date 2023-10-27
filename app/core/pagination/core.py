@@ -20,7 +20,7 @@ class PageParams(BaseModel):
 T = TypeVar("T")
 
 
-class PagedResponseSchema(BaseModel, Generic[T]):
+class Paginated(BaseModel, Generic[T]):
     """Response schema for any paged API."""
 
     total: int
@@ -35,7 +35,7 @@ async def paginate(
     stmt: Select,
     page_params: PageParams,
     response_schema: Type[BaseModel],
-) -> PagedResponseSchema[T]:
+) -> Paginated[T]:
     """Paginate the query."""
     count_table = table(table_name, column("id"))
     count_stmt: Select = select(func.count()).select_from(count_table)
@@ -48,7 +48,7 @@ async def paginate(
     result: Result = await db.execute(paginated_query)
     data: Sequence = result.scalars().all()
 
-    return PagedResponseSchema(
+    return Paginated(
         total=len(total_count),
         page=page_params.page,
         size=page_params.size,

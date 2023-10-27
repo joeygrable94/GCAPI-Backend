@@ -14,7 +14,7 @@ from app.api.deps import (
 from app.api.exceptions import UserAlreadyExists
 
 # from app.api.openapi import users_read_responses
-from app.core.pagination import PagedResponseSchema, PageParams, paginate
+from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
 from app.core.security.permissions import (
     AccessDelete,
@@ -72,10 +72,11 @@ async def users_current(
         request.session["ip_address"] = str(request_ip)
     response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
         acl.get_resource_response(
+            resource=acl.user,
             responses={
-                RoleAdmin: UserReadAsAdmin.model_validate(acl.user),
-                RoleManager: UserReadAsManager.model_validate(acl.user),
-                Authenticated: UserRead.model_validate(acl.user),
+                RoleAdmin: UserReadAsAdmin,
+                RoleManager: UserReadAsManager,
+                Authenticated: UserRead,
             },
         )
     )
@@ -92,14 +93,12 @@ async def users_current(
         Depends(get_current_user),
         Depends(get_permission_controller),
     ],
-    response_model=Union[
-        PagedResponseSchema[UserReadAsAdmin], PagedResponseSchema[UserReadAsManager]
-    ],
+    response_model=Union[Paginated[UserReadAsAdmin], Paginated[UserReadAsManager]],
 )
 async def users_list(
     page_params: PageParams = Depends(PageParams),
     acl: PermissionController = Depends(get_permission_controller),
-) -> PagedResponseSchema[UserReadAsAdmin] | PagedResponseSchema[UserReadAsManager]:
+) -> Paginated[UserReadAsAdmin] | Paginated[UserReadAsManager]:
     """Retrieve a paginated list of users.
 
     Permissions:
@@ -112,29 +111,20 @@ async def users_list(
     --------
     a paginated response containing a list of users
 
-    - `PagedResponseSchema[UserReadAsAdmin]` : all fields
-    - `PagedResponseSchema[UserReadAsManager]` : only fields accessibile to the
+    - `Paginated[UserReadAsAdmin]` : all fields
+    - `Paginated[UserReadAsManager]` : only fields accessibile to the
         manager role
 
     """
-    response_out: PagedResponseSchema[UserReadAsAdmin] | PagedResponseSchema[
+    response_out: Paginated[UserReadAsAdmin] | Paginated[
         UserReadAsManager
-    ] = acl.get_resource_response(
+    ] = await acl.get_paginated_resource_response(
+        table_name=acl.user_repo._table.__tablename__,
+        stmt=acl.user_repo.query_list(),
+        page_params=page_params,
         responses={
-            RoleAdmin: await paginate(
-                table_name=acl.user_repo._table.__tablename__,
-                db=acl.db,
-                stmt=acl.user_repo.query_list(),
-                page_params=page_params,
-                response_schema=UserReadAsAdmin,
-            ),
-            RoleManager: await paginate(
-                table_name=acl.user_repo._table.__tablename__,
-                db=acl.db,
-                stmt=acl.user_repo.query_list(),
-                page_params=page_params,
-                response_schema=UserReadAsManager,
-            ),
+            RoleAdmin: UserReadAsAdmin,
+            RoleManager: UserReadAsManager,
         },
     )
     return response_out
@@ -182,10 +172,11 @@ async def users_read(
     """
     response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
         acl.get_resource_response(
+            resource=user,
             responses={
-                RoleAdmin: UserReadAsAdmin.model_validate(user),
-                RoleManager: UserReadAsManager.model_validate(user),
-                Authenticated: UserRead.model_validate(user),
+                RoleAdmin: UserReadAsAdmin,
+                RoleManager: UserReadAsManager,
+                Authenticated: UserRead,
             },
         )
     )
@@ -235,22 +226,16 @@ async def users_update(
         if a_user:
             raise UserAlreadyExists()
     updated_user: User | None = await acl.user_repo.update(entry=user, schema=user_in)
-    response_out: UserReadAsAdmin | UserReadAsManager | UserRead
-    if updated_user:
-        response_out = acl.get_resource_response(
+    user_out = updated_user or user
+    response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
+        acl.get_resource_response(
+            resource=user_out,
             responses={
-                RoleAdmin: UserReadAsAdmin.model_validate(updated_user),
-                RoleManager: UserReadAsManager.model_validate(updated_user),
-                Authenticated: UserRead.model_validate(updated_user),
+                RoleAdmin: UserReadAsAdmin,
+                RoleManager: UserReadAsManager,
+                Authenticated: UserRead,
             },
         )
-        return response_out
-    response_out = acl.get_resource_response(
-        responses={
-            RoleAdmin: UserReadAsAdmin.model_validate(user),
-            RoleManager: UserReadAsManager.model_validate(user),
-            Authenticated: UserRead.model_validate(user),
-        },
     )
     return response_out
 

@@ -9,10 +9,10 @@ https://github.com/dialoguemd/fastapi-sqla/blob/master/fastapi_sqla/asyncio_supp
 
 from typing import List
 
-from .core import PagedResponseSchema, PageParams, paginate
+from .core import PageParams, Paginated, paginate
 
 __all__: List[str] = [
     "PageParams",
-    "PagedResponseSchema",
+    "Paginated",
     "paginate",
 ]

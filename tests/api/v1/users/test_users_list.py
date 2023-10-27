@@ -5,7 +5,7 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.pagination import PagedResponseSchema
+from app.core.pagination import Paginated
 
 # from app.schemas import UserRead, ClientRead
 from app.schemas.user import UserReadAsAdmin
@@ -25,7 +25,7 @@ async def test_list_users_as_admin(
         "users/",
         headers=admin_token_headers,
     )
-    data: PagedResponseSchema[UserReadAsAdmin] = PagedResponseSchema(**response.json())
+    data: Paginated[UserReadAsAdmin] = Paginated(**response.json())
     assert 200 <= response.status_code < 300
     assert data.page == 1
     assert data.total == 1

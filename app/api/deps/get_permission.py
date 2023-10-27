@@ -1,7 +1,10 @@
-from typing import Dict, Generic, List, TypeVar
+from typing import Dict, Generic, List, Type, TypeVar
 
 from fastapi import Depends, status
+from pydantic import BaseModel
+from sqlalchemy import Select
 
+from app.core.pagination import PageParams, Paginated, paginate
 from app.core.security import configure_permissions
 from app.core.security.permissions import (
     AclPrivilege,
@@ -10,6 +13,7 @@ from app.core.security.permissions import (
     Everyone,
 )
 from app.crud import ClientRepository, UserClientRepository, UserRepository
+from app.db.base_class import Base
 from app.models import User
 
 from .get_auth import CurrentUser, get_current_user
@@ -27,7 +31,9 @@ def get_current_user_privileges(
 
 Permission = configure_permissions(get_current_user_privileges)
 
-T = TypeVar("T")
+
+T = TypeVar("T", bound=BaseModel)
+B = TypeVar("B", bound=Base)
 
 
 class PermissionController(Generic[T]):
@@ -53,11 +59,33 @@ class PermissionController(Generic[T]):
 
     def get_resource_response(
         self,
+        resource: B,
         responses: Dict[AclPrivilege, T],
     ) -> T:
-        for privilege, response in responses.items():
+        for privilege, response_schema in responses.items():
             if privilege in self.privileges:
-                return response
+                return response_schema.model_validate(resource)
+        raise AuthPermissionException(
+            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+            message="You do not have permission to access this resource",
+        )
+
+    async def get_paginated_resource_response(
+        self,
+        table_name: str,
+        stmt: Select,
+        page_params: PageParams,
+        responses: Dict[AclPrivilege, Type[T]],
+    ) -> Paginated[T]:
+        for privilege, response_schema in responses.items():
+            if privilege in self.privileges:
+                return await paginate(
+                    table_name=table_name,
+                    db=self.db,
+                    stmt=stmt,
+                    page_params=page_params,
+                    response_schema=response_schema,
+                )
         raise AuthPermissionException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             message="You do not have permission to access this resource",
