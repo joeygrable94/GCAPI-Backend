@@ -47,6 +47,14 @@ def task_speak(
 
 
 @celery_app.task(
+    name="tasks:task_request_to_delete_user",
+    acks_late=True,
+)
+def task_request_to_delete_user(user_id: UUID4) -> None:
+    logger.info(f"User({user_id}) requested to delete their account.")
+
+
+@celery_app.task(
     name="sitemaps:task_website_sitemap_fetch_pages",
     acks_late=True,
 )

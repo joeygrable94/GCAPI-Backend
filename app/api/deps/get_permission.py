@@ -1,20 +1,23 @@
 from typing import Dict, Generic, List, Type, TypeVar
 
 from fastapi import Depends, status
-from pydantic import BaseModel
+from pydantic import UUID4, BaseModel
 from sqlalchemy import Select
 
-from app.core.pagination import PageParams, Paginated, paginate
+from app.core.pagination import PageParams, Paginated, paginated_query
 from app.core.security import configure_permissions
 from app.core.security.permissions import (
     AclPrivilege,
     Authenticated,
     AuthPermissionException,
     Everyone,
+    RoleAdmin,
+    RoleManager,
 )
 from app.crud import ClientRepository, UserClientRepository, UserRepository
 from app.db.base_class import Base
-from app.models import User
+from app.models import User, UserClient
+from app.schemas import UserUpdateAsAdmin, UserUpdateAsManager
 
 from .get_auth import CurrentUser, get_current_user
 from .get_db import AsyncDatabaseSession
@@ -57,10 +60,50 @@ class PermissionController(Generic[T]):
         self.client_repo = ClientRepository(db)
         self.user_client_repo = UserClientRepository(db)
 
+    async def verify_user_can_access(
+        self,
+        user_id: UUID4 | None = None,
+        client_id: UUID4 | None = None,
+    ) -> bool:
+        print(self.user)
+        print(self.privileges)
+        # admins and managers can access all users and clients
+        if (
+            self.user.is_superuser
+            or RoleAdmin in self.privileges
+            or RoleManager in self.privileges
+        ):
+            return True
+        # check if the current user owns the user
+        if user_id and user_id == self.user.id:
+            return True
+        # check if the current user owns the client
+        if client_id:
+            user_client: UserClient | None = await self.user_client_repo.exists_by_two(
+                field_name_a="user_id",
+                field_value_a=self.user.id,
+                field_name_b="client_id",
+                field_value_b=client_id,
+            )
+            if user_client:
+                return True
+        return False
+
+    def verify_input_schema_by_role(
+        self, input_object: T, schema_privileges: Dict[AclPrivilege, Type[T]]
+    ) -> None:
+        for privilege, schema in schema_privileges.items():
+            if privilege in self.privileges and isinstance(input_object, schema):
+                return
+        raise AuthPermissionException(
+            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+            message="You do not have permission to access this resource",
+        )
+
     def get_resource_response(
         self,
         resource: B,
-        responses: Dict[AclPrivilege, T],
+        responses: Dict[AclPrivilege, Type[T]],
     ) -> T:
         for privilege, response_schema in responses.items():
             if privilege in self.privileges:
@@ -79,7 +122,7 @@ class PermissionController(Generic[T]):
     ) -> Paginated[T]:
         for privilege, response_schema in responses.items():
             if privilege in self.privileges:
-                return await paginate(
+                return await paginated_query(
                     table_name=table_name,
                     db=self.db,
                     stmt=stmt,
@@ -90,6 +133,18 @@ class PermissionController(Generic[T]):
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             message="You do not have permission to access this resource",
         )
+
+    async def add_privileges(
+        self, to_user: User, schema: UserUpdateAsManager | UserUpdateAsAdmin
+    ) -> User:
+        user: User = await self.user_repo.add_privileges(to_user, schema)
+        return user
+
+    async def remove_privileges(
+        self, to_user: User, schema: UserUpdateAsManager | UserUpdateAsAdmin
+    ) -> User:
+        user: User = await self.user_repo.remove_privileges(to_user, schema)
+        return user
 
     def __repr__(self) -> str:
         repr_str: str = f"PermissionControl(User={self.user.auth_id})"

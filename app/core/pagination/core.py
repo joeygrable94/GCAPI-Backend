@@ -29,7 +29,7 @@ class Paginated(BaseModel, Generic[T]):
     results: List[T]
 
 
-async def paginate(
+async def paginated_query(
     table_name: str,
     db: AsyncSession,
     stmt: Select,

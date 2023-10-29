@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Any, List, Union
 
 from app.core.config import settings
@@ -183,19 +182,22 @@ def optional_string_in_list(
 
 
 # validation Schemas
-class ValidFileExtensionEnum(str, Enum):
-    webp = "webp"
-    gif = "gif"
-    jpg = "jpg"
-    jpeg = "jpeg"
-    png = "png"
-    csv = "csv"
-    json = "json"
-    xml = "xml"
-    html = "html"
-    md = "md"
-    txt = "txt"
-    pdf = "pdf"
+
+
+def validate_file_extension_required(cls: Any, value: str) -> str:
+    return required_string_in_list(
+        v=value,
+        name="extension",
+        choices=settings.api.accepted_types,
+    )
+
+
+def validate_file_extension_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_in_list(
+        v=value,
+        name="extension",
+        choices=settings.api.accepted_types,
+    )
 
 
 def validate_title_required(cls: Any, value: str) -> str:

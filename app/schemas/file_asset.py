@@ -5,8 +5,9 @@ from typing import Optional
 from pydantic import UUID4, field_validator
 
 from app.db.validators import (
-    ValidFileExtensionEnum,
     validate_caption_optional,
+    validate_file_extension_optional,
+    validate_file_extension_required,
     validate_filename_optional,
     validate_filename_required,
     validate_keys_optional,
@@ -21,7 +22,7 @@ from app.schemas.base import BaseSchemaRead
 # schemas
 class FileAssetBase(BaseSchemaRead):
     filename: str
-    extension: ValidFileExtensionEnum
+    extension: str
     size_kb: int
     title: str
     caption: Optional[str] = None
@@ -35,6 +36,9 @@ class FileAssetBase(BaseSchemaRead):
 
     _validate_filename = field_validator("filename", mode="before")(
         validate_filename_required
+    )
+    _validate_extension = field_validator("extension", mode="before")(
+        validate_file_extension_required
     )
     _validate_size_kb = field_validator("size_kb", mode="before")(
         validate_size_kb_required
@@ -52,7 +56,7 @@ class FileAssetCreate(FileAssetBase):
 
 class FileAssetUpdate(BaseSchemaRead):
     filename: Optional[str] = None
-    extension: Optional[ValidFileExtensionEnum] = None
+    extension: Optional[str] = None
     size_kb: Optional[int] = None
     title: Optional[str] = None
     caption: Optional[str] = None
@@ -66,6 +70,9 @@ class FileAssetUpdate(BaseSchemaRead):
 
     _validate_filename = field_validator("filename", mode="before")(
         validate_filename_optional
+    )
+    _validate_extension = field_validator("extension", mode="before")(
+        validate_file_extension_optional
     )
     _validate_size_kb = field_validator("size_kb", mode="before")(
         validate_size_kb_optional

@@ -46,15 +46,22 @@ class UserUpdate(BaseSchema):
     username: Optional[str] = None
     is_active: Optional[bool] = None
     is_verified: Optional[bool] = None
-    is_superuser: Optional[bool] = None
-    scopes: Optional[List[AclPrivilege]] = None
 
     _validate_username = field_validator("username", mode="before")(
         validate_username_optional
     )
+
+
+class UserUpdateAsManager(BaseSchema):
+    scopes: Optional[List[AclPrivilege]] = None
+
     _validate_scopes = field_validator("scopes", mode="before")(
         validate_scopes_optional
     )
+
+
+class UserUpdateAsAdmin(UserUpdateAsManager):
+    is_superuser: Optional[bool] = None
 
 
 class UserRead(UserBase, BaseSchemaRead):

@@ -90,7 +90,15 @@ from .ipaddress import IpaddressCreate, IpaddressRead, IpaddressUpdate
 from .note import NoteCreate, NoteRead, NoteUpdate
 from .sharpspring import SharpspringCreate, SharpspringRead, SharpspringUpdate
 from .task import TaskState
-from .user import UserCreate, UserRead, UserReadAsAdmin, UserReadAsManager, UserUpdate
+from .user import (
+    UserCreate,
+    UserRead,
+    UserReadAsAdmin,
+    UserReadAsManager,
+    UserUpdate,
+    UserUpdateAsAdmin,
+    UserUpdateAsManager,
+)
 from .user_client import UserClientCreate, UserClientRead, UserClientUpdate
 from .user_ipaddress import UserIpaddressCreate, UserIpaddressRead, UserIpaddressUpdate
 from .website import WebsiteCreate, WebsiteCreateProcessing, WebsiteRead, WebsiteUpdate
@@ -222,6 +230,8 @@ __all__: List[str] = [
     "UserReadAsManager",
     "UserReadAsAdmin",
     "UserUpdate",
+    "UserUpdateAsManager",
+    "UserUpdateAsAdmin",
     "UserClientCreate",
     "UserClientRead",
     "UserClientUpdate",
