@@ -1,5 +1,3 @@
-from typing import Union
-
 from fastapi import APIRouter, Depends, Request
 
 from app.api.deps import (
@@ -51,13 +49,13 @@ router: APIRouter = APIRouter()
         Depends(get_permission_controller),
         Depends(get_request_client_ip),
     ],
-    response_model=Union[UserReadAsAdmin, UserReadAsManager, UserRead],
+    response_model=UserRead | UserReadAsManager | UserReadAsAdmin,
 )
 async def users_current(
     request: Request,
     permissions: PermissionController = Depends(get_permission_controller),
     request_ip: str = Depends(get_request_client_ip),
-) -> Union[UserReadAsAdmin, UserReadAsManager, UserRead]:
+) -> UserRead | UserReadAsManager | UserReadAsAdmin:
     """Retrieve the profile information about the currently active, verified user.
 
     Permissions:
@@ -74,14 +72,14 @@ async def users_current(
 
     """
     # set session vars
-    request.session["user_id"] = str(permissions.user.id)
+    request.session["user_id"] = str(permissions.current_user.id)
     req_sess_ip = request.session.get("ip_address", False)
     if not req_sess_ip:
         request.session["ip_address"] = str(request_ip)
     # return role based response
-    response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
+    response_out: UserRead | UserReadAsManager | UserReadAsAdmin = (
         permissions.get_resource_response(
-            resource=permissions.user,
+            resource=permissions.current_user,
             responses={
                 RoleAdmin: UserReadAsAdmin,
                 RoleManager: UserReadAsManager,
@@ -102,12 +100,12 @@ async def users_current(
         Depends(get_current_user),
         Depends(get_permission_controller),
     ],
-    response_model=Union[Paginated[UserReadAsAdmin], Paginated[UserReadAsManager]],
+    response_model=Paginated[UserReadAsManager] | Paginated[UserReadAsAdmin],
 )
 async def users_list(
     page_params: PageParams = Depends(PageParams),
     permissions: PermissionController = Depends(get_permission_controller),
-) -> Union[Paginated[UserReadAsAdmin], Paginated[UserReadAsManager]]:
+) -> Paginated[UserReadAsManager] | Paginated[UserReadAsAdmin]:
     """Retrieve a paginated list of users.
 
     Permissions:
@@ -125,8 +123,8 @@ async def users_list(
         manager role
 
     """
-    response_out: Paginated[UserReadAsAdmin] | Paginated[
-        UserReadAsManager
+    response_out: Paginated[UserReadAsManager] | Paginated[
+        UserReadAsAdmin
     ] = await permissions.get_paginated_resource_response(
         table_name=permissions.user_repo._table.__tablename__,
         stmt=permissions.user_repo.query_list(),
@@ -150,12 +148,12 @@ async def users_list(
         Depends(get_permission_controller),
     ],
     # responses=users_read_responses,
-    response_model=Union[UserReadAsAdmin, UserReadAsManager, UserRead],
+    response_model=UserRead | UserReadAsManager | UserReadAsAdmin,
 )
 async def users_read(
     user: User = Permission([AccessRead, AccessReadSelf], get_user_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
-) -> Union[UserReadAsAdmin, UserReadAsManager, UserRead]:
+) -> UserRead | UserReadAsManager | UserReadAsAdmin:
     """Retrieve a single user by id.
 
     Permissions:
@@ -182,7 +180,7 @@ async def users_read(
     # verify current user has permission to update the user
     await permissions.verify_user_can_access(user_id=user.id)
     # return role based response
-    response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
+    response_out: UserRead | UserReadAsManager | UserReadAsAdmin = (
         permissions.get_resource_response(
             resource=user,
             responses={
@@ -205,13 +203,13 @@ async def users_read(
         Depends(get_current_user),
         Depends(get_permission_controller),
     ],
-    response_model=Union[UserReadAsAdmin, UserReadAsManager, UserRead],
+    response_model=UserRead | UserReadAsManager | UserReadAsAdmin,
 )
 async def users_update(
     user_in: UserUpdate,
     user: User = Permission([AccessUpdate, AccessUpdateSelf], get_user_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
-) -> Union[UserReadAsAdmin, UserReadAsManager, UserRead]:
+) -> UserRead | UserReadAsManager | UserReadAsAdmin:
     """Update a user by id. Users may update limited fields of their own data,
     and maybe the fields of other users depending on their role.
 
@@ -247,7 +245,7 @@ async def users_update(
     )
     user_out = updated_user or user
     # return role based response
-    response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
+    response_out: UserRead | UserReadAsManager | UserReadAsAdmin = (
         permissions.get_resource_response(
             resource=user_out,
             responses={
@@ -292,7 +290,7 @@ async def users_delete(
     await permissions.verify_user_can_access(user_id=user.id)
     if RoleAdmin in permissions.privileges:
         await permissions.user_repo.delete(entry=user)
-    elif permissions.user.id == user.id:
+    elif permissions.current_user.id == user.id:
         task_request_to_delete_user.delay(user_id=user.id)
     return None
 
@@ -307,13 +305,13 @@ async def users_delete(
         Depends(get_current_user),
         Depends(get_permission_controller),
     ],
-    response_model=Union[UserReadAsAdmin, UserReadAsManager, UserRead],
+    response_model=UserReadAsManager | UserReadAsAdmin,
 )
 async def users_update_add_privileges(
     user_in: UserUpdateAsManager | UserUpdateAsAdmin,
     user: User = Permission(AccessUpdate, get_user_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
-) -> Union[UserReadAsAdmin, UserReadAsManager, UserRead]:
+) -> UserReadAsManager | UserReadAsAdmin:
     # verify the input schema is valid for the current users role
     permissions.verify_input_schema_by_role(
         input_object=user_in,
@@ -323,11 +321,11 @@ async def users_update_add_privileges(
         },
     )
     # verify current user has permission to update the user
-    # await permissions.verify_user_can_access(user_id=user.id)
+    await permissions.verify_user_can_access(user_id=user.id)
     # update the user data
     updated_user: User = await permissions.add_privileges(user, user_in)
     # return role based response
-    response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
+    response_out: UserReadAsAdmin | UserReadAsManager = (
         permissions.get_resource_response(
             resource=updated_user,
             responses={
@@ -349,13 +347,13 @@ async def users_update_add_privileges(
         Depends(get_current_user),
         Depends(get_permission_controller),
     ],
-    response_model=Union[UserReadAsAdmin, UserReadAsManager, UserRead],
+    response_model=UserReadAsManager | UserReadAsAdmin,
 )
 async def users_update_remove_privileges(
     user_in: UserUpdateAsManager | UserUpdateAsAdmin,
     user: User = Permission(AccessUpdate, get_user_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
-) -> Union[UserReadAsAdmin, UserReadAsManager, UserRead]:
+) -> UserReadAsManager | UserReadAsAdmin:
     # verify the input schema is valid for the current users role
     permissions.verify_input_schema_by_role(
         input_object=user_in,
@@ -369,7 +367,7 @@ async def users_update_remove_privileges(
     # update the user data
     updated_user: User = await permissions.remove_privileges(user, user_in)
     # return role based response
-    response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
+    response_out: UserReadAsAdmin | UserReadAsManager = (
         permissions.get_resource_response(
             resource=updated_user,
             responses={

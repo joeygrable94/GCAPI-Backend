@@ -35,7 +35,7 @@ router_v1.include_router(
     tags=["Tasks"],
 )
 
-# client routes
+# user routes
 router_v1.include_router(
     users.router,
     prefix="/users",

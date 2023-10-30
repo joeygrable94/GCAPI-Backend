@@ -41,7 +41,7 @@ B = TypeVar("B", bound=Base)
 
 class PermissionController(Generic[T]):
     db: AsyncDatabaseSession
-    user: CurrentUser
+    current_user: CurrentUser
     privileges: List[AclPrivilege]
     user_repo: UserRepository
     client_repo: ClientRepository
@@ -54,7 +54,7 @@ class PermissionController(Generic[T]):
         privileges: List[AclPrivilege],
     ):
         self.db = db
-        self.user = user
+        self.current_user = user
         self.privileges = privileges
         self.user_repo = UserRepository(db)
         self.client_repo = ClientRepository(db)
@@ -65,23 +65,23 @@ class PermissionController(Generic[T]):
         user_id: UUID4 | None = None,
         client_id: UUID4 | None = None,
     ) -> bool:
-        print(self.user)
+        print(self.current_user)
         print(self.privileges)
         # admins and managers can access all users and clients
         if (
-            self.user.is_superuser
+            self.current_user.is_superuser
             or RoleAdmin in self.privileges
             or RoleManager in self.privileges
         ):
             return True
         # check if the current user owns the user
-        if user_id and user_id == self.user.id:
+        if user_id and user_id == self.current_user.id:
             return True
         # check if the current user owns the client
         if client_id:
             user_client: UserClient | None = await self.user_client_repo.exists_by_two(
                 field_name_a="user_id",
-                field_value_a=self.user.id,
+                field_value_a=self.current_user.id,
                 field_name_b="client_id",
                 field_value_b=client_id,
             )
@@ -147,7 +147,7 @@ class PermissionController(Generic[T]):
         return user
 
     def __repr__(self) -> str:
-        repr_str: str = f"PermissionControl(User={self.user.auth_id})"
+        repr_str: str = f"PermissionControl(User={self.current_user.auth_id})"
         return repr_str
 
 

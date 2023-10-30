@@ -44,8 +44,6 @@ class UserCreate(UserBase):
 
 class UserUpdate(BaseSchema):
     username: Optional[str] = None
-    is_active: Optional[bool] = None
-    is_verified: Optional[bool] = None
 
     _validate_username = field_validator("username", mode="before")(
         validate_username_optional
@@ -53,6 +51,8 @@ class UserUpdate(BaseSchema):
 
 
 class UserUpdateAsManager(BaseSchema):
+    is_active: Optional[bool] = None
+    is_verified: Optional[bool] = None
     scopes: Optional[List[AclPrivilege]] = None
 
     _validate_scopes = field_validator("scopes", mode="before")(
@@ -68,30 +68,14 @@ class UserRead(UserBase, BaseSchemaRead):
     id: UUID4
 
 
-class UserReadAsManager(
-    UserBase,
-    BaseSchemaRead,
-):
-    id: UUID4
+class UserReadAsManager(UserRead):
     is_active: bool
     is_verified: bool
-    scopes: List[AclPrivilege]
-
-    _validate_scopes = field_validator("scopes", mode="before")(
-        validate_scopes_required
-    )
+    scopes: List[str]
 
 
-class UserReadAsAdmin(
-    UserBase,
-    BaseSchemaRead,
-):
-    id: UUID4
+class UserReadAsAdmin(UserRead):
     is_active: bool
     is_verified: bool
     is_superuser: bool
-    scopes: List[AclPrivilege]
-
-    _validate_scopes = field_validator("scopes", mode="before")(
-        validate_scopes_required
-    )
+    scopes: List[str]
