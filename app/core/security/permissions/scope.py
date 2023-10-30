@@ -1,4 +1,5 @@
 from re import Pattern, compile
+from typing import Annotated
 
 # https://pydantic-docs.helpmanual.io/usage/types/#custom-data-types
 # first str before ':' should only be in a-z, 0-9, -, _
@@ -15,9 +16,6 @@ class Scope(str):
         return super().__new__(self, m.group(0))
 
 
-class AclPermission(Scope):
-    pass
+AclPermission = Annotated[str, Scope]
 
-
-class AclPrivilege(Scope):
-    pass
+AclPrivilege = Annotated[str, Scope]

@@ -48,10 +48,12 @@ def create_app() -> FastAPI:
     deps = []
     if settings.api.mode == "production":
         deps = [
-            RateLimiter(times=10000, hours=24),
-            RateLimiter(times=5000, hours=1),
-            RateLimiter(times=120, minutes=1),
-            RateLimiter(times=10, seconds=1),
+            RateLimiter(times=1000000, hours=8760),  # 114.15 req/hr over 1 year
+            RateLimiter(times=100000, hours=168),  # 595.23 req/hr over 1 week
+            RateLimiter(times=20000, hours=24),  # 833.33 req/hr over 1 day
+            RateLimiter(times=1000, hours=1),  # 1,000 req/hr
+            RateLimiter(times=120, minutes=1),  # 120 req/min = 7,200 req/hr
+            RateLimiter(times=10, seconds=1),  # 10 req/sec = 36,000 req/hr
         ]
     app: FastAPI = FastAPI(
         title=settings.api.name,

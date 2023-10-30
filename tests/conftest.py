@@ -59,7 +59,7 @@ async def client(app: FastAPI) -> AsyncGenerator:
     async with LifespanManager(app):
         async with AsyncClient(
             app=app,
-            base_url=f"http://0.0.0.0:8888{settings.api.prefix}",
+            base_url=f"http://0.0.0.0:8888{settings.api.prefix}/v1",
             headers={"Content-Type": "application/json"},
         ) as client:
             yield client

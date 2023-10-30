@@ -14,7 +14,7 @@ from app.api.v1.endpoints import (
     websites,
 )
 
-router_v1 = APIRouter()
+router_v1 = APIRouter(prefix="/v1")
 
 
 # public routes

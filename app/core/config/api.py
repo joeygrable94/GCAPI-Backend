@@ -25,7 +25,7 @@ class ApiSettings(BaseSettings):
     )
     host: str = environ.get("API_HOST_IP", "0.0.0.0")
     port: int = int(environ.get("API_HOST_PORT", 8888))
-    prefix: str = "/api/v1"
+    prefix: str = "/api"
     domain_name: str = environ.get("API_DOMAIN", "localhost")
     timezone: str = environ.get("API_TIMEZONE", "America/Los_Angeles")
     logging_level: str = environ.get("API_LOG_LEVEL", "DEBUG").upper()
