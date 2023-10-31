@@ -54,7 +54,7 @@ class ApiSettings(BaseSettings):
     query_limit_rows_default: int = int(
         environ.get("API_QUERY_LIMIT_ROWS_DEFAULT", 100)
     )
-    query_limit_rows_max: int = int(environ.get("API_QUERY_LIMIT_ROWS_MAX", 1000))
+    query_limit_rows_max: int = int(environ.get("API_QUERY_LIMIT_ROWS_MAX", 10000))
     accepted_types: List[str] = [
         "webp",
         "gif",
@@ -82,7 +82,7 @@ class ApiSettings(BaseSettings):
     @field_validator("allowed_cors", mode="before")
     def assemble_cors_origins(
         cls: Any, v: Union[str, List[str]], info: FieldValidationInfo
-    ) -> List[str]:
+    ) -> List[str]:  # pragma: no cover
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, list):

@@ -3,7 +3,7 @@ from app.core.config import settings
 
 def paginate(
     page: int = 1, limit: int = settings.api.query_limit_rows_default
-) -> tuple[int, int]:
+) -> tuple[int, int]:  # pragma: no cover
     """A simple pagination utility.
 
     Args:

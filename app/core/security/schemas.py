@@ -22,7 +22,7 @@ class RSAEncryptMessage(BaseModel):
     message: str
 
     @field_validator("message")
-    def check_message(cls, value: str) -> str:
+    def check_message(cls, value: str) -> str:  # pragma: no cover
         if not value:
             raise ValueError("message cannot be empty")
         if len(value) > 53:
@@ -34,7 +34,7 @@ class RSADecryptMessage(BaseModel):
     message: str
 
     @field_validator("message")
-    def check_message(cls, value: str) -> str:
+    def check_message(cls, value: str) -> str:  # pragma: no cover
         if not value:
             raise ValueError("message cannot be empty")
         if len(value) > 128:

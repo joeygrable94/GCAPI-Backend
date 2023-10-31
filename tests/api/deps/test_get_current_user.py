@@ -65,7 +65,6 @@ async def test_get_current_user_privileges(
     user_in_db: User = await get_current_user(db_session, user)
     if user_in_db:
         principals: List[AclPrivilege] = get_current_user_privileges(user_in_db)
-        print(principals)
         assert len(principals) == 6
         assert Everyone in principals
         assert Authenticated in principals

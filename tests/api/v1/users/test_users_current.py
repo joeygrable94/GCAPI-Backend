@@ -1,12 +1,13 @@
-from typing import Dict
+from typing import Any, Dict
 
 import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.exceptions.errors import ErrorCode
 from app.crud import UserRepository
 from app.models import User
-from app.schemas.user import UserRead
+from app.schemas.user import UserRead, UserReadAsAdmin, UserReadAsManager
 
 pytestmark = pytest.mark.asyncio
 
@@ -20,7 +21,7 @@ async def test_read_current_user_admin(
         "users/me",
         headers=admin_token_headers,
     )
-    data: UserRead = UserRead.model_validate(response.json())
+    data: UserReadAsAdmin = UserReadAsAdmin.model_validate(response.json())
     assert 200 <= response.status_code < 300
     assert data.id
     user_repo: UserRepository = UserRepository(db_session)
@@ -38,7 +39,7 @@ async def test_read_current_user_manager(
         "users/me",
         headers=manager_token_headers,
     )
-    data: UserRead = UserRead.model_validate(response.json())
+    data: UserReadAsManager = UserReadAsManager.model_validate(response.json())
     assert 200 <= response.status_code < 300
     assert data.id
     user_repo: UserRepository = UserRepository(db_session)
@@ -117,10 +118,6 @@ async def test_read_current_user_unverified(
         "users/me",
         headers=user_unverified_token_headers,
     )
-    data: UserRead = UserRead.model_validate(response.json())
-    assert 200 <= response.status_code < 300
-    assert data.id
-    user_repo: UserRepository = UserRepository(db_session)
-    existing_data: User | None = await user_repo.read_by("auth_id", data.auth_id)
-    assert existing_data
-    assert existing_data.email == data.email
+    json_data: Dict[str, Any] = response.json()
+    assert response.status_code == 403
+    assert json_data["detail"] == ErrorCode.UNVERIFIED_ACCESS_DENIED

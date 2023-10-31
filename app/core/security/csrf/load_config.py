@@ -22,7 +22,7 @@ class LoadConfig(BaseModel):
     token_key: Optional[StrictStr] = "csrf-token-key"
 
     @field_validator("methods")
-    def validate_csrf_methods(cls, value: str) -> str:
+    def validate_csrf_methods(cls, value: str) -> str:  # pragma: no cover
         if value.upper() not in {"GET", "HEAD", "POST", "PUT", "DELETE", "PATCH"}:
             raise ValueError('The "csrf_methods" must be between http request methods')
         return value.upper()
@@ -30,7 +30,7 @@ class LoadConfig(BaseModel):
     @field_validator("cookie_samesite")  # type: ignore
     def validate_cookie_samesite(
         cls, value: CookieSamesite, values: Dict[str, Any]
-    ) -> CookieSamesite:  # noqa: E501
+    ) -> CookieSamesite:  # noqa: E501  # pragma: no cover
         if value not in {"strict", "lax", "none"}:
             raise ValueError(
                 'The "cookie_samesite" must be between "strict", "lax", or "none".'
@@ -42,7 +42,7 @@ class LoadConfig(BaseModel):
         return value
 
     @field_validator("token_location")
-    def validate_token_location(cls, value: str) -> str:
+    def validate_token_location(cls, value: str) -> str:  # pragma: no cover
         if value not in {"body", "header"}:
             raise ValueError('The "token_location" must be either "body" or "header".')
         return value

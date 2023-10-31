@@ -1,10 +1,10 @@
-from typing import Type, Union
+from typing import Type
 
 from app.core.security.permissions.access import RoleUser
 from app.crud.base import BaseRepository
 from app.models import User
 from app.schemas import UserCreate, UserRead, UserUpdate
-from app.schemas.user import UserUpdateAsAdmin, UserUpdateAsManager
+from app.schemas.user import UserUpdatePrivileges
 
 
 class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
@@ -15,7 +15,7 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
     async def add_privileges(
         self,
         entry: User,
-        schema: UserUpdateAsAdmin | UserUpdateAsManager,
+        schema: UserUpdatePrivileges,
     ) -> User:
         user_scopes = entry.scopes
         input_scopes = schema.scopes
@@ -23,9 +23,6 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
         if input_scopes:
             user_scopes.extend(input_scopes)
         entry.scopes = list(set(user_scopes))
-        if isinstance(schema, UserUpdateAsAdmin):
-            if schema.is_superuser is not None:
-                entry.is_superuser = schema.is_superuser
         await self._db.commit()
         await self._db.refresh(entry)
         return entry
@@ -33,7 +30,7 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
     async def remove_privileges(
         self,
         entry: User,
-        schema: Union[UserUpdateAsAdmin, UserUpdateAsManager],
+        schema: UserUpdatePrivileges,
     ) -> User:
         user_scopes = entry.scopes
         remove_scopes = schema.scopes
@@ -45,9 +42,6 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
         if RoleUser not in updated_scopes:
             updated_scopes.append(RoleUser)
         entry.scopes = list(set(updated_scopes))
-        if isinstance(schema, UserUpdateAsAdmin):
-            if schema.is_superuser is not None:
-                entry.is_superuser = schema.is_superuser
         await self._db.commit()
         await self._db.refresh(entry)
         return entry

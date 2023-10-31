@@ -20,6 +20,7 @@ class ErrorCode(str, Enum):
     # authorization
     UNAUTHORIZED = "UNAUTHORIZED"
     INSUFFICIENT_PERMISSIONS = "INSUFFICIENT_PERMISSIONS"
+    UNVERIFIED_ACCESS_DENIED = "UNVERIFIED_ACCESS_DENIED"
     # security
     IP_RESTRICTED_TOO_MANY_REQUESTS = "call limit reached"
     # users

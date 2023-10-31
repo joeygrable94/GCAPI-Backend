@@ -1,8 +1,8 @@
 from typing import Any, Dict
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
 
-from app.api.deps import GetQueryParams
+from app.api.deps import GetPublicQueryParams
 from app.worker import task_speak
 
 router: APIRouter = APIRouter()
@@ -13,10 +13,7 @@ router: APIRouter = APIRouter()
     name="public:status",
     response_model=Dict[str, Any],
 )
-async def status(
-    request: Request,
-    query: GetQueryParams,
-) -> Dict[str, Any]:
+async def status(query: GetPublicQueryParams) -> Dict[str, Any]:
     """Retrieve the status of the API.
 
     Permissions:

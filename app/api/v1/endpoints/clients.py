@@ -6,12 +6,12 @@ from app.api.deps import (
     AsyncDatabaseSession,
     CurrentUser,
     FetchClientOr404,
-    GetPageQueryParams,
     get_async_db,
     get_client_or_404,
 )
 from app.api.exceptions import ClientAlreadyExists
 from app.api.openapi import clients_read_responses
+from app.core.pagination import GetPaginatedQueryParams
 from app.core.security import auth
 from app.crud import ClientRepository
 from app.models import Client
@@ -32,7 +32,7 @@ router: APIRouter = APIRouter()
 async def clients_list(
     current_user: CurrentUser,
     db: AsyncDatabaseSession,
-    query: GetPageQueryParams,
+    query: GetPaginatedQueryParams,
 ) -> List[ClientRead] | List:
     """Retrieve a list of clients.
 

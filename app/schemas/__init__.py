@@ -98,6 +98,7 @@ from .user import (
     UserUpdate,
     UserUpdateAsAdmin,
     UserUpdateAsManager,
+    UserUpdatePrivileges,
 )
 from .user_client import UserClientCreate, UserClientRead, UserClientUpdate
 from .user_ipaddress import UserIpaddressCreate, UserIpaddressRead, UserIpaddressUpdate
@@ -232,6 +233,7 @@ __all__: List[str] = [
     "UserUpdate",
     "UserUpdateAsManager",
     "UserUpdateAsAdmin",
+    "UserUpdatePrivileges",
     "UserClientCreate",
     "UserClientRead",
     "UserClientUpdate",

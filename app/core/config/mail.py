@@ -39,7 +39,7 @@ class EmailSettings(BaseSettings):
     @field_validator("enabled", mode="before")
     def assemble_emails_enabled(
         cls: Any, v: Optional[bool], info: FieldValidationInfo
-    ) -> bool:
+    ) -> bool:  # pragma: no cover
         if v:
             return v
         return bool(

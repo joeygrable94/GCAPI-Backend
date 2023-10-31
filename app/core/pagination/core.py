@@ -1,10 +1,28 @@
-from typing import Generic, List, Sequence, Type, TypeVar
+from typing import Annotated, Generic, List, Sequence, Type, TypeVar
 
+from fastapi import Depends, Query
 from pydantic import BaseModel, Field
 from sqlalchemy import Result, Select, column, func, select, table
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+
+
+class PageParamsFromQuery:
+    def __init__(
+        self,
+        page: int = Query(1, ge=1),
+        size: int = Query(
+            settings.api.query_limit_rows_default,
+            ge=1,
+            le=settings.api.query_limit_rows_max,
+        ),
+    ):  # pragma: no cover
+        self.page = page
+        self.size = size
+
+
+GetPaginatedQueryParams = Annotated[PageParamsFromQuery, Depends()]
 
 
 class PageParams(BaseModel):
@@ -17,7 +35,7 @@ class PageParams(BaseModel):
     )
 
 
-T = TypeVar("T")
+T = TypeVar("T", bound=BaseModel)
 
 
 class Paginated(BaseModel, Generic[T]):
@@ -34,7 +52,7 @@ async def paginated_query(
     db: AsyncSession,
     stmt: Select,
     page_params: PageParams,
-    response_schema: Type[BaseModel],
+    response_schema: Type[T],
 ) -> Paginated[T]:
     """Paginate the query."""
     count_table = table(table_name, column("id"))

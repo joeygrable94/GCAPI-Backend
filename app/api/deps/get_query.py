@@ -4,26 +4,15 @@ from fastapi import Depends, HTTPException, Query, status
 from pydantic import UUID4
 
 from app.api.exceptions import InvalidID
+from app.core.config import settings
+from app.core.pagination import PageParamsFromQuery
 from app.core.utilities.uuids import parse_id
 from app.schemas import PageSpeedInsightsDevice
 
-# from uuid import UUID
+# utility query classes
 
 
-class PageQueryParams:
-    def __init__(self, page: int = 1):
-        if page < 1:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Page number must be greater than 0",
-            )
-        self.page = page
-
-
-GetPageQueryParams = Annotated[PageQueryParams, Depends()]
-
-
-class UserQueryParams:
+class UserIdQueryParams:
     def __init__(self, user_id: Any | None = None):
         q_user_id: UUID4 | None
         try:
@@ -36,7 +25,7 @@ class UserQueryParams:
         self.user_id: UUID4 | None = q_user_id
 
 
-class ClientQueryParams:
+class ClientIdQueryParams:
     def __init__(self, client_id: Any | None = None):
         q_client_id: UUID4 | None
         try:
@@ -49,7 +38,7 @@ class ClientQueryParams:
         self.client_id: UUID4 | None = q_client_id
 
 
-class WebsiteQueryParams:
+class WebsiteIdQueryParams:
     def __init__(self, website_id: Any | None = None):
         q_website_id: UUID4 | None
         try:
@@ -62,7 +51,7 @@ class WebsiteQueryParams:
         self.website_id: UUID4 | None = q_website_id
 
 
-class WebsiteMapQueryParams:
+class WebsiteMapIdQueryParams:
     def __init__(self, sitemap_id: Any | None = None):
         q_sitemap_id: UUID4 | None
         try:
@@ -75,7 +64,7 @@ class WebsiteMapQueryParams:
         self.sitemap_id: UUID4 | None = q_sitemap_id
 
 
-class WebsitePageQueryParams:
+class WebsitePageIdQueryParams:
     def __init__(self, page_id: Any | None = None):
         q_page_id: UUID4 | None
         try:
@@ -105,131 +94,176 @@ class DeviceStrategyQueryParams:
         self.devices: List[str] | None = q_devices
 
 
-class CommonQueryParams(PageQueryParams):
+# compound query classes
+
+
+class PublicQueryParams:
     def __init__(self, message: str | None = Query(None)):
         self.message = message
 
 
-GetQueryParams = Annotated[CommonQueryParams, Depends()]
+GetPublicQueryParams = Annotated[PublicQueryParams, Depends()]
 
 
-class CommonUserQueryParams(PageQueryParams, UserQueryParams):
+class CommonUserQueryParams(PageParamsFromQuery, UserIdQueryParams):
     def __init__(
         self,
-        page: int = 1,
+        page: int = Query(1, ge=1),
+        size: int = Query(
+            settings.api.query_limit_rows_default,
+            ge=1,
+            le=settings.api.query_limit_rows_max,
+        ),
         user_id: Any | None = Query(None),
     ):
-        PageQueryParams.__init__(self, page)
-        UserQueryParams.__init__(self, user_id)
+        PageParamsFromQuery.__init__(self, page, size)
+        UserIdQueryParams.__init__(self, user_id)
 
 
 GetUserQueryParams = Annotated[CommonUserQueryParams, Depends()]
 
 
-class CommonClientQueryParams(PageQueryParams, ClientQueryParams):
+class CommonClientQueryParams(PageParamsFromQuery, ClientIdQueryParams):
     def __init__(
         self,
-        page: int = 1,
+        page: int = Query(1, ge=1),
+        size: int = Query(
+            settings.api.query_limit_rows_default,
+            ge=1,
+            le=settings.api.query_limit_rows_max,
+        ),
         client_id: Any | None = Query(None),
     ):
-        PageQueryParams.__init__(self, page)
-        ClientQueryParams.__init__(self, client_id)
+        PageParamsFromQuery.__init__(self, page, size)
+        ClientIdQueryParams.__init__(self, client_id)
 
 
 GetClientQueryParams = Annotated[CommonClientQueryParams, Depends()]
 
 
-class CommonUserClientQueryParams(PageQueryParams, UserQueryParams, ClientQueryParams):
+class CommonUserClientQueryParams(
+    PageParamsFromQuery, UserIdQueryParams, ClientIdQueryParams
+):
     def __init__(
         self,
-        page: int = 1,
+        page: int = Query(1, ge=1),
+        size: int = Query(
+            settings.api.query_limit_rows_default,
+            ge=1,
+            le=settings.api.query_limit_rows_max,
+        ),
         user_id: Any | None = Query(None),
         client_id: Any | None = Query(None),
     ):
-        PageQueryParams.__init__(self, page)
-        UserQueryParams.__init__(self, user_id)
-        ClientQueryParams.__init__(self, client_id)
+        PageParamsFromQuery.__init__(self, page, size)
+        UserIdQueryParams.__init__(self, user_id)
+        ClientIdQueryParams.__init__(self, client_id)
 
 
 GetUserClientQueryParams = Annotated[CommonUserClientQueryParams, Depends()]
 
 
-class CommonWebsiteQueryParams(PageQueryParams, WebsiteQueryParams):
+class CommonWebsiteQueryParams(PageParamsFromQuery, WebsiteIdQueryParams):
     def __init__(
         self,
-        page: int = 1,
+        page: int = Query(1, ge=1),
+        size: int = Query(
+            settings.api.query_limit_rows_default,
+            ge=1,
+            le=settings.api.query_limit_rows_max,
+        ),
         website_id: Any | None = Query(None),
     ):
-        PageQueryParams.__init__(self, page)
-        WebsiteQueryParams.__init__(self, website_id)
+        PageParamsFromQuery.__init__(self, page, size)
+        WebsiteIdQueryParams.__init__(self, website_id)
 
 
 GetWebsiteQueryParams = Annotated[CommonClientQueryParams, Depends()]
 
 
 class CommonClientWebsiteQueryParams(
-    PageQueryParams, ClientQueryParams, WebsiteQueryParams
+    PageParamsFromQuery, ClientIdQueryParams, WebsiteIdQueryParams
 ):
     def __init__(
         self,
-        page: int = 1,
+        page: int = Query(1, ge=1),
+        size: int = Query(
+            settings.api.query_limit_rows_default,
+            ge=1,
+            le=settings.api.query_limit_rows_max,
+        ),
         client_id: Any | None = Query(None),
         website_id: Any | None = Query(None),
     ):
-        PageQueryParams.__init__(self, page)
-        ClientQueryParams.__init__(self, client_id)
-        WebsiteQueryParams.__init__(self, website_id)
+        PageParamsFromQuery.__init__(self, page, size)
+        ClientIdQueryParams.__init__(self, client_id)
+        WebsiteIdQueryParams.__init__(self, website_id)
 
 
 GetClientWebsiteQueryParams = Annotated[CommonClientWebsiteQueryParams, Depends()]
 
 
 class CommonWebsitePageQueryParams(
-    PageQueryParams, WebsiteQueryParams, WebsiteMapQueryParams
+    PageParamsFromQuery, WebsiteIdQueryParams, WebsiteMapIdQueryParams
 ):
     def __init__(
         self,
-        page: int = 1,
+        page: int = Query(1, ge=1),
+        size: int = Query(
+            settings.api.query_limit_rows_default,
+            ge=1,
+            le=settings.api.query_limit_rows_max,
+        ),
         website_id: Any | None = Query(None),
         sitemap_id: Any | None = Query(None),
     ):
-        PageQueryParams.__init__(self, page)
-        WebsiteQueryParams.__init__(self, website_id)
-        WebsiteMapQueryParams.__init__(self, sitemap_id)
+        PageParamsFromQuery.__init__(self, page, size)
+        WebsiteIdQueryParams.__init__(self, website_id)
+        WebsiteMapIdQueryParams.__init__(self, sitemap_id)
 
 
 GetWebsitePageQueryParams = Annotated[CommonWebsitePageQueryParams, Depends()]
 
 
-class CommonWebsiteMapQueryParams(PageQueryParams, WebsiteQueryParams):
+class CommonWebsiteMapQueryParams(PageParamsFromQuery, WebsiteIdQueryParams):
     def __init__(
         self,
-        page: int = 1,
+        page: int = Query(1, ge=1),
+        size: int = Query(
+            settings.api.query_limit_rows_default,
+            ge=1,
+            le=settings.api.query_limit_rows_max,
+        ),
         website_id: Any | None = Query(None),
     ):
-        PageQueryParams.__init__(self, page)
-        WebsiteQueryParams.__init__(self, website_id)
+        PageParamsFromQuery.__init__(self, page, size)
+        WebsiteIdQueryParams.__init__(self, website_id)
 
 
 GetWebsiteMapQueryParams = Annotated[CommonWebsitePageQueryParams, Depends()]
 
 
 class CommonWebsitePageSpeedInsightsQueryParams(
-    PageQueryParams,
-    WebsiteQueryParams,
-    WebsitePageQueryParams,
+    PageParamsFromQuery,
+    WebsiteIdQueryParams,
+    WebsitePageIdQueryParams,
     DeviceStrategyQueryParams,
 ):
     def __init__(
         self,
-        page: int = 1,
+        page: int = Query(1, ge=1),
+        size: int = Query(
+            settings.api.query_limit_rows_default,
+            ge=1,
+            le=settings.api.query_limit_rows_max,
+        ),
         website_id: Any | None = Query(None),
         page_id: Any | None = Query(None),
         strategy: List[str] | None = Query(None),
     ):
-        PageQueryParams.__init__(self, page)
-        WebsiteQueryParams.__init__(self, website_id)
-        WebsitePageQueryParams.__init__(self, page_id)
+        PageParamsFromQuery.__init__(self, page, size)
+        WebsiteIdQueryParams.__init__(self, website_id)
+        WebsitePageIdQueryParams.__init__(self, page_id)
         DeviceStrategyQueryParams.__init__(self, strategy)
 
 
@@ -239,19 +273,24 @@ GetWebsitePageSpeedInsightsQueryParams = Annotated[
 
 
 class CommonWebsiteKeywordCorpusQueryParams(
-    PageQueryParams,
-    WebsiteQueryParams,
-    WebsitePageQueryParams,
+    PageParamsFromQuery,
+    WebsiteIdQueryParams,
+    WebsitePageIdQueryParams,
 ):
     def __init__(
         self,
-        page: int = 1,
+        page: int = Query(1, ge=1),
+        size: int = Query(
+            settings.api.query_limit_rows_default,
+            ge=1,
+            le=settings.api.query_limit_rows_max,
+        ),
         website_id: Any | None = Query(None),
         page_id: Any | None = Query(None),
     ):
-        PageQueryParams.__init__(self, page)
-        WebsiteQueryParams.__init__(self, website_id)
-        WebsitePageQueryParams.__init__(self, page_id)
+        PageParamsFromQuery.__init__(self, page, size)
+        WebsiteIdQueryParams.__init__(self, website_id)
+        WebsitePageIdQueryParams.__init__(self, page_id)
 
 
 GetWebsiteKeywordCorpusQueryParams = Annotated[

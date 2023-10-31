@@ -11,7 +11,7 @@ from app.models import User
 pytestmark = pytest.mark.asyncio
 
 
-async def test_read_user_as_admin(
+async def test_read_all_users_as_admin(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
@@ -32,7 +32,7 @@ async def test_read_user_as_admin(
                 assert data.get("is_superuser") is not None
 
 
-async def test_read_user_as_manager(
+async def test_read_all_users_as_manager(
     client: AsyncClient,
     db_session: AsyncSession,
     manager_token_headers: Dict[str, str],

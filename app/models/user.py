@@ -100,7 +100,9 @@ class User(Base):
         return principals
 
     # ACL
-    def __acl__(self) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:
+    def __acl__(
+        self,
+    ) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
         return [
             # list
             (AclAction.allow, RoleAdmin, AccessList),

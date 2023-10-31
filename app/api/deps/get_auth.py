@@ -38,6 +38,11 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ErrorCode.UNAUTHORIZED,
         )
+    if auth0_user.is_verified is False:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=ErrorCode.UNVERIFIED_ACCESS_DENIED,
+        )
     users_repo: UserRepository = UserRepository(session=db)
     user: User | None = await users_repo.read_by(
         field_name="auth_id", field_value=auth0_user.auth_id
@@ -50,9 +55,9 @@ async def get_current_user(
                 email=auth0_user.email,
                 username=auth0_user.email,
                 scopes=auth0_scopes,
-                is_superuser=False,
-                is_verified=False,
                 is_active=True,
+                is_verified=auth0_user.is_verified or False,
+                is_superuser=False,
             )
         )
     update_scopes = False

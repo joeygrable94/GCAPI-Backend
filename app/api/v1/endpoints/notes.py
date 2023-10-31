@@ -6,11 +6,11 @@ from app.api.deps import (
     AsyncDatabaseSession,
     CurrentUser,
     FetchNoteOr404,
-    GetPageQueryParams,
     get_async_db,
     get_note_or_404,
 )
 from app.api.exceptions import NoteAlreadyExists
+from app.core.pagination import GetPaginatedQueryParams
 from app.core.security import auth
 from app.crud import NoteRepository
 from app.models import Note
@@ -31,7 +31,7 @@ router: APIRouter = APIRouter()
 async def notes_list(
     current_user: CurrentUser,
     db: AsyncDatabaseSession,
-    query: GetPageQueryParams,
+    query: GetPaginatedQueryParams,
 ) -> List[NoteRead] | List:
     """Retrieve a list of notes.
 

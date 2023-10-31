@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import List, Optional
-
 from pydantic import UUID4, field_validator
 
 from app.core.security.permissions import AclPrivilege
@@ -35,7 +33,7 @@ class UserCreate(UserBase):
     is_active: bool = True
     is_verified: bool = False
     is_superuser: bool = False
-    scopes: List[AclPrivilege] = [AclPrivilege("role:user")]
+    scopes: list[AclPrivilege] = [AclPrivilege("role:user")]
 
     _validate_scopes = field_validator("scopes", mode="before")(
         validate_scopes_required
@@ -43,39 +41,52 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseSchema):
-    username: Optional[str] = None
+    username: str | None = None
 
     _validate_username = field_validator("username", mode="before")(
         validate_username_optional
     )
 
 
-class UserUpdateAsManager(BaseSchema):
-    is_active: Optional[bool] = None
-    is_verified: Optional[bool] = None
-    scopes: Optional[List[AclPrivilege]] = None
+class UserUpdateAsManager(UserUpdate):
+    is_active: bool | None = None
+    is_verified: bool | None = None
+
+
+class UserUpdateAsAdmin(UserUpdateAsManager):
+    is_superuser: bool | None = None
+
+
+class UserUpdatePrivileges(BaseSchema):
+    scopes: list[AclPrivilege] | None = None
 
     _validate_scopes = field_validator("scopes", mode="before")(
         validate_scopes_optional
     )
 
 
-class UserUpdateAsAdmin(UserUpdateAsManager):
-    is_superuser: Optional[bool] = None
-
-
 class UserRead(UserBase, BaseSchemaRead):
     id: UUID4
 
 
-class UserReadAsManager(UserRead):
+class UserReadAsManager(UserBase, BaseSchemaRead):
+    id: UUID4
     is_active: bool
     is_verified: bool
-    scopes: List[str]
+    scopes: list[AclPrivilege]
+
+    _validate_scopes = field_validator("scopes", mode="before")(
+        validate_scopes_required
+    )
 
 
-class UserReadAsAdmin(UserRead):
+class UserReadAsAdmin(UserBase, BaseSchemaRead):
+    id: UUID4
     is_active: bool
     is_verified: bool
     is_superuser: bool
-    scopes: List[str]
+    scopes: list[AclPrivilege]
+
+    _validate_scopes = field_validator("scopes", mode="before")(
+        validate_scopes_required
+    )

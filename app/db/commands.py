@@ -193,7 +193,7 @@ async def create_init_data() -> None:  # pragma: no cover
         if not c2:
             c2 = await client_repo.create(ClientCreate(title="The Grables"))
 
-        # assign admin and manager to client 1
+        # assign users to client1: admin1, manager1, employee1
         c1_admin1: UserClient | None = await user_client_repo.exists_by_two(
             "user_id", admin1.id, "client_id", c1.id
         )
@@ -208,8 +208,15 @@ async def create_init_data() -> None:  # pragma: no cover
             await user_client_repo.create(
                 UserClientCreate(user_id=manager1.id, client_id=c1.id)
             )
+        c1_employee1: UserClient | None = await user_client_repo.exists_by_two(
+            "user_id", employee1.id, "client_id", c1.id
+        )
+        if not c1_employee1:
+            await user_client_repo.create(
+                UserClientCreate(user_id=employee1.id, client_id=c1.id)
+            )
 
-        # assign admin and manager to client 2
+        # assign users to client2: admin1, manager1
         c1_admin1: UserClient | None = await user_client_repo.exists_by_two(
             "user_id", admin1.id, "client_id", c2.id
         )

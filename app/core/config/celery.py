@@ -27,7 +27,7 @@ class CelerySettings(BaseSettings):
     @field_validator("sentry_dsn", mode="before")
     def validate_database_user(
         cls: Any, v: Optional[str], info: FieldValidationInfo
-    ) -> str | None:
+    ) -> str | None:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
                 return v

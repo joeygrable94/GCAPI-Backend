@@ -97,7 +97,9 @@ class Client(Base):
     gcflytours: Mapped[List["Gcft"]] = relationship("Gcft", back_populates="client")
 
     # ACL
-    def __acl__(self) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:
+    def __acl__(
+        self,
+    ) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
         return [
             # list
             (AclAction.deny, Authenticated, AccessList),

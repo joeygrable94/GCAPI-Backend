@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
 
 from pydantic import UUID4, BaseModel, field_validator
 from usp.objects.page import SITEMAP_PAGE_DEFAULT_PRIORITY  # type: ignore
@@ -16,20 +15,20 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 class GoogleNewsStory(BaseModel):
     title: str
     publish_date: datetime
-    publication_name: Optional[str] = None
-    publication_language: Optional[str] = None
-    access: Optional[str] = None
-    genres: Optional[List[str]] = None
-    keywords: Optional[List[str]] = None
-    stock_tickers: Optional[List[str]] = None
+    publication_name: str | None = None
+    publication_language: str | None = None
+    access: str | None = None
+    genres: list[str] | None = None
+    keywords: list[str] | None = None
+    stock_tickers: list[str] | None = None
 
 
 class WebsiteMapPage(BaseModel):
     url: str
     priority: Decimal = SITEMAP_PAGE_DEFAULT_PRIORITY
-    last_modified: Optional[datetime] = None
-    change_frequency: Optional[SitemapPageChangeFrequency] = None
-    news_story: Optional[GoogleNewsStory] = None
+    last_modified: datetime | None = None
+    change_frequency: SitemapPageChangeFrequency | None = None
+    news_story: GoogleNewsStory | None = None
 
 
 # schemas
@@ -48,8 +47,8 @@ class WebsiteMapCreate(WebsiteMapBase):
 
 
 class WebsiteMapUpdate(BaseSchema):
-    url: Optional[str] = None
-    is_active: Optional[bool] = None
+    url: str | None = None
+    is_active: bool | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_optional)
 
@@ -68,4 +67,4 @@ class WebsiteMapProcessing(BaseSchema):
 
 
 class WebsiteMapProcessedResult(WebsiteMapCreate):
-    website_map_pages: List[WebsiteMapPage]
+    website_map_pages: list[WebsiteMapPage]

@@ -365,7 +365,7 @@ def validate_scopes_required(
     for scope in value:
         if isinstance(scope, str):
             scopes.append(AclPrivilege(scope))
-        if isinstance(scope, AclPrivilege):
+        else:
             scopes.append(scope)
     return scopes
 

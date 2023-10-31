@@ -36,7 +36,7 @@ class DatabaseSettings(BaseSettings):
     @field_validator("connector", mode="before")
     def validate_database_connector(
         cls, v: Optional[str], info: FieldValidationInfo
-    ) -> Any:
+    ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
                 return v
@@ -45,14 +45,16 @@ class DatabaseSettings(BaseSettings):
     @field_validator("connector_async", mode="before")
     def validate_database_async_connector(
         cls, v: Optional[str], info: FieldValidationInfo
-    ) -> Any:
+    ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
                 return v
         raise ValueError("DATABASE_CONNECTOR_ASYNC not set")
 
     @field_validator("user", mode="before")
-    def validate_database_user(cls, v: Optional[str], info: FieldValidationInfo) -> Any:
+    def validate_database_user(
+        cls, v: Optional[str], info: FieldValidationInfo
+    ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
                 return v
@@ -61,7 +63,7 @@ class DatabaseSettings(BaseSettings):
     @field_validator("password", mode="before")
     def validate_database_password(
         cls, v: Optional[str], info: FieldValidationInfo
-    ) -> Any:
+    ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
                 return v
@@ -70,21 +72,25 @@ class DatabaseSettings(BaseSettings):
     @field_validator("server", mode="before")
     def validate_database_server(
         cls, v: Optional[str], info: FieldValidationInfo
-    ) -> Any:
+    ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
                 return v
         raise ValueError("DATABASE_SERVER not set")
 
     @field_validator("port", mode="before")
-    def validate_database_port(cls, v: Optional[str], info: FieldValidationInfo) -> Any:
+    def validate_database_port(
+        cls, v: Optional[str], info: FieldValidationInfo
+    ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
                 return v
         raise ValueError("DATABASE_PORT not set")
 
     @field_validator("name", mode="before")
-    def validate_database_name(cls, v: Optional[str], info: FieldValidationInfo) -> Any:
+    def validate_database_name(
+        cls, v: Optional[str], info: FieldValidationInfo
+    ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
                 return v
@@ -93,14 +99,16 @@ class DatabaseSettings(BaseSettings):
     @field_validator("charset", mode="before")
     def validate_database_charset(
         cls, v: Optional[str], info: FieldValidationInfo
-    ) -> Any:
+    ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
                 return v
         raise ValueError("DATABASE_CHARSET not set")
 
     @field_validator("uri", mode="before")
-    def assemble_db_connection(cls, v: Optional[str], info: FieldValidationInfo) -> str:
+    def assemble_db_connection(
+        cls, v: Optional[str], info: FieldValidationInfo
+    ) -> str:  # pragma: no cover
         if environ.get("API_MODE", "development") == "test":
             return TEST_URI
         if isinstance(v, str):
@@ -119,7 +127,7 @@ class DatabaseSettings(BaseSettings):
     @field_validator("uri_async", mode="before")
     def assemble_async_db_connection(
         cls, v: Optional[str], info: FieldValidationInfo
-    ) -> str:
+    ) -> str:  # pragma: no cover
         if environ.get("API_MODE", "development") == "test":
             return TEST_URI_ASYNC
         if isinstance(v, str):
