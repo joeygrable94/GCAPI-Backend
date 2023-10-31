@@ -1,16 +1,34 @@
-from fastapi import Depends, FastAPI
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
-# from fastapi_pagination import add_pagination
+from fastapi import Depends, FastAPI
 from sentry_sdk import Client
 
 from app.api.exceptions import configure_exceptions
 from app.api.middleware import configure_middleware
 from app.api.monitoring import configure_monitoring
 from app.core.config import settings
-from app.core.security import RateLimiter
+from app.core.redis import redis_conn
+from app.core.security import FastAPILimiter, RateLimiter
 from app.core.templates import static_files
+from app.db.commands import check_db_connected, check_db_disconnected
 
 sentry_client: Client | None = configure_monitoring()
+
+
+@asynccontextmanager  # type: ignore
+async def application_lifespan(app: FastAPI) -> AsyncGenerator:
+    # application lifespan actions: startup and shutdown
+    await check_db_connected()  # check DB connected
+    await FastAPILimiter.init(  # check REDIS connected
+        redis_conn,
+        prefix="gcapi-limit",
+    )
+
+    yield  # yeild the application
+
+    await FastAPILimiter.close()  # close REDIS connection
+    await check_db_disconnected()  # close DB connection
 
 
 def configure_routers(app: FastAPI) -> None:
@@ -21,27 +39,6 @@ def configure_routers(app: FastAPI) -> None:
 
 def configure_static(app: FastAPI) -> None:
     app.mount("/static", static_files, name="static")
-
-
-def configure_events(app: FastAPI) -> None:
-    from app.core.redis import redis_conn
-    from app.core.security import FastAPILimiter
-    from app.db.commands import check_db_connected, check_db_disconnected
-
-    # startup actions
-    @app.on_event("startup")
-    async def on_startup() -> None:
-        await check_db_connected()
-        await FastAPILimiter.init(
-            redis_conn,
-            prefix="gcapi-limit",
-        )
-
-    # shutdown actions
-    @app.on_event("shutdown")
-    async def on_shutdown() -> None:
-        await FastAPILimiter.close()
-        await check_db_disconnected()
 
 
 def create_app() -> FastAPI:
@@ -68,11 +65,10 @@ def create_app() -> FastAPI:
         docs_url="/api/docs",
         redoc_url="/api/redoc",
         dependencies=[Depends(dep) for dep in deps],
+        lifespan=application_lifespan,
     )
-    # add_pagination(app)
     configure_middleware(app)
     configure_exceptions(app)
-    configure_events(app)
     configure_static(app)
     configure_routers(app)
     return app

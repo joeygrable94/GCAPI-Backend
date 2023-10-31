@@ -128,6 +128,13 @@ class PermissionController(Generic[T]):
             if privilege in self.privileges:
                 input_schema_keys = set(input_dict.keys())
                 output_schema_keys = set(schema.__annotations__.keys())
+                print("input schema:", input_schema_keys)
+                print("output schema:", output_schema_keys)
+                print(
+                    "input/output subset:",
+                    input_schema_keys.issubset(output_schema_keys),
+                    output_schema_keys.issubset(input_schema_keys),
+                )
                 if input_schema_keys.issubset(output_schema_keys):
                     return
         raise AuthPermissionException(

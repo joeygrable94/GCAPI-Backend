@@ -12,6 +12,7 @@ from tests.utils.users import get_auth0_access_token
 
 from app.core.config import settings
 from app.db.base import Base
+from app.db.commands import create_init_data
 from app.db.session import async_engine, async_session
 from app.main import create_app
 
@@ -37,6 +38,8 @@ def celery_config() -> Any:
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    await create_init_data()
 
     session: AsyncSession
     async with async_session() as session:

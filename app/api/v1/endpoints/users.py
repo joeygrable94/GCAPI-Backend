@@ -231,6 +231,7 @@ async def users_update(
     - `UserRead` : only publically accessible fields
 
     """
+    print(user_in.model_dump())
     # verify the input schema is valid for the current user's role
     permissions.verify_input_schema_by_role(
         input_object=user_in,
@@ -240,6 +241,7 @@ async def users_update(
             RoleUser: UserUpdate,
         },
     )
+    print(permissions.current_user)
     # verify current user has permission to update the user
     await permissions.verify_user_can_access(user_id=user.id)
     # check user to be updated exists
