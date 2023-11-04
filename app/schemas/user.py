@@ -48,13 +48,25 @@ class UserUpdate(BaseSchema):
     )
 
 
-class UserUpdateAsManager(UserUpdate):
+class UserUpdateAsManager(BaseSchema):
+    username: str | None = None
     is_active: bool | None = None
     is_verified: bool | None = None
 
+    _validate_username = field_validator("username", mode="before")(
+        validate_username_optional
+    )
 
-class UserUpdateAsAdmin(UserUpdateAsManager):
+
+class UserUpdateAsAdmin(BaseSchema):
+    username: str | None = None
+    is_active: bool | None = None
+    is_verified: bool | None = None
     is_superuser: bool | None = None
+
+    _validate_username = field_validator("username", mode="before")(
+        validate_username_optional
+    )
 
 
 class UserUpdatePrivileges(BaseSchema):
@@ -90,3 +102,9 @@ class UserReadAsAdmin(UserBase, BaseSchemaRead):
     _validate_scopes = field_validator("scopes", mode="before")(
         validate_scopes_required
     )
+
+
+class UserDelete(BaseSchema):
+    message: str
+    user_id: UUID4 | None = None
+    task_id: UUID4 | None = None

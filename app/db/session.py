@@ -32,15 +32,11 @@ async_engine: AsyncEngine = create_async_engine(
 async_session: Any = async_sessionmaker(async_engine, expire_on_commit=False)
 
 
-def async_session_generator() -> async_sessionmaker:
-    return async_session
-
-
 @asynccontextmanager
 async def get_db_session() -> AsyncGenerator[AsyncSession, Any]:
-    async_session = async_session_generator()
     session: AsyncSession
     async with async_session() as session:
+        # session.begin()
         try:
             yield session
             await session.commit()

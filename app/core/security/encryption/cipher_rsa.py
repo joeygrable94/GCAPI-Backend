@@ -9,9 +9,9 @@ from .keys import load_api_keys
 class RSACipher(object):
     def __init__(self, file_key: str = settings.api.key):
         self.file_key: str = file_key
-        self.pvt_key: rsa.PrivateKey
         self.pub_key: rsa.PublicKey
-        self.pvt_key, self.pub_key = load_api_keys(file_key)
+        self.pvt_key: rsa.PrivateKey
+        self.pub_key, self.pvt_key = load_api_keys(file_key)
 
     def encrypt(self, plain_text: str) -> str:
         try:

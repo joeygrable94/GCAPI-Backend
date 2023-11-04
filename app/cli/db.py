@@ -2,6 +2,7 @@ import asyncio
 
 import typer
 
+from app.core.logger import logger
 from app.db.commands import build_database, check_db_connected, create_init_data
 
 app = typer.Typer()
@@ -9,7 +10,7 @@ app = typer.Typer()
 
 @app.command()
 def check_connection() -> None:
-    print("Checking Database connection...")
+    logger.info("Checking Database connection...")
 
     async def _check_db_connected() -> None:
         await check_db_connected()
@@ -19,7 +20,7 @@ def check_connection() -> None:
 
 @app.command()
 def create_db() -> None:
-    print("Building Database...")
+    logger.info("Building Database...")
 
     async def _build_database() -> None:
         await build_database()
@@ -29,7 +30,7 @@ def create_db() -> None:
 
 @app.command()
 def add_initial_data() -> None:
-    print("Inserting Intial DB Data...")
+    logger.info("Inserting Intial DB Data...")
 
     async def _create_init_data() -> None:
         await create_init_data()

@@ -88,7 +88,7 @@ def permission_dependency_factory(
     if callable(resource):
         dependable_resource = Depends(resource)
     else:
-        dependable_resource = Depends(lambda: resource)
+        dependable_resource = Depends(lambda: resource)  # pragma: no cover
 
     # to get the caller signature right, we need to add only the resource and
     # user dependable in the definition

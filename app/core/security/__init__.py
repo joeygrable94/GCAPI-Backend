@@ -21,6 +21,8 @@ from .encryption import (
     RSACipher,
     RSADecryptionError,
     RSAEncryptionError,
+    SecureMessage,
+    SignatureVerificationError,
     load_api_keys,
 )
 from .permissions import (
@@ -29,12 +31,7 @@ from .permissions import (
     has_permission,
     list_permissions,
 )
-from .rate_limiter import (
-    FastAPILimiter,
-    RateLimitedRequestException,
-    RateLimiter,
-    WebSocketRateLimiter,
-)
+from .rate_limiter import FastAPILimiter, RateLimitedRequestException, RateLimiter
 from .schemas import (
     CsrfToken,
     EncryptedMessage,
@@ -72,12 +69,13 @@ __all__: List[str] = [
     "RSACipherError",
     "RSAEncryptionError",
     "RSADecryptionError",
+    "SecureMessage",
+    "SignatureVerificationError",
     "AuthPermissionException",
     "configure_permissions",
     "has_permission",
     "list_permissions",
     "FastAPILimiter",
     "RateLimiter",
-    "WebSocketRateLimiter",
     "RateLimitedRequestException",
 ]

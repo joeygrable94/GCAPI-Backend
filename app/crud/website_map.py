@@ -42,5 +42,6 @@ class WebsiteMapRepository(
         page: int = 1,
         website_id: UUID | None = None,
     ) -> Optional[Union[List[WebsiteMap], List[None]]]:
+        self._db.begin()
         skip, limit = paginate(page)
         return await self._list(skip=skip, limit=limit, website_id=website_id)

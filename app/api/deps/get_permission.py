@@ -12,12 +12,15 @@ from app.core.security.permissions import (
     AuthPermissionException,
     Everyone,
     RoleAdmin,
+    RoleClient,
+    RoleEmployee,
     RoleManager,
+    RoleUser,
 )
 from app.crud import ClientRepository, UserClientRepository, UserRepository
 from app.db.base_class import Base
 from app.models import User, UserClient
-from app.schemas.user import UserUpdatePrivileges
+from app.schemas import UserUpdatePrivileges
 
 from .get_auth import CurrentUser, get_current_user
 from .get_db import AsyncDatabaseSession
@@ -62,18 +65,18 @@ class PermissionController(Generic[T]):
 
     async def verify_user_can_access(
         self,
+        privileges: List[AclPrivilege] = [],
         user_id: UUID4 | None = None,
         client_id: UUID4 | None = None,
     ) -> bool:
-        print(self.current_user.id, user_id, client_id)
         user_client: UserClient | None
-        # admins and managers can access all users and clients
-        if (
-            self.current_user.is_superuser
-            or RoleAdmin in self.privileges
-            or RoleManager in self.privileges
-        ):
+        # admins can access all users and clients
+        if self.current_user.is_superuser or RoleAdmin in self.privileges:
             return True
+        # current user with these privileges can access
+        for perm in privileges:
+            if perm in self.privileges:
+                return True
         # user_id and client_id was provided
         if user_id and client_id:
             # check if the requested user_id has a relationship with the client
@@ -126,16 +129,7 @@ class PermissionController(Generic[T]):
         input_dict = input_object.model_dump(exclude_unset=True, exclude_none=True)
         for privilege, schema in schema_privileges.items():
             if privilege in self.privileges:
-                input_schema_keys = set(input_dict.keys())
-                output_schema_keys = set(schema.__annotations__.keys())
-                print("input schema:", input_schema_keys)
-                print("output schema:", output_schema_keys)
-                print(
-                    "input/output subset:",
-                    input_schema_keys.issubset(output_schema_keys),
-                    output_schema_keys.issubset(input_schema_keys),
-                )
-                if input_schema_keys.issubset(output_schema_keys):
+                if set(input_dict.keys()).issubset(set(schema.__annotations__.keys())):
                     return
         raise AuthPermissionException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
@@ -176,15 +170,69 @@ class PermissionController(Generic[T]):
             message="You do not have permission to access the paginated output of this resource",  # noqa: E501
         )
 
-    async def add_privileges(self, to_user: User, schema: UserUpdatePrivileges) -> User:
-        user: User = await self.user_repo.add_privileges(to_user, schema)
-        return user
+    def verify_user_add_scopes(
+        self,
+        schema: UserUpdatePrivileges,
+    ) -> bool:
+        # admin can add any scope
+        if RoleAdmin in self.privileges:
+            return True
+        # only admin can add role based access
+        if (
+            (schema.scopes and RoleAdmin in schema.scopes)
+            or (schema.scopes and RoleManager in schema.scopes)
+            or (schema.scopes and RoleClient in schema.scopes)
+            or (schema.scopes and RoleEmployee in schema.scopes)
+            or (schema.scopes and RoleUser in schema.scopes)
+        ):
+            raise AuthPermissionException(
+                status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+                message="You do not have permission to add role based access to users",
+            )
+        # manager can only add user based access
+        return True
+
+    def verify_user_remove_scopes(
+        self,
+        schema: UserUpdatePrivileges,
+    ) -> bool:
+        # admin can remove any scope
+        if RoleAdmin in self.privileges:
+            return True
+        # only admin can remove role based access
+        if (
+            (schema.scopes and RoleAdmin in schema.scopes)
+            or (schema.scopes and RoleManager in schema.scopes)
+            or (schema.scopes and RoleClient in schema.scopes)
+            or (schema.scopes and RoleEmployee in schema.scopes)
+            or (schema.scopes and RoleUser in schema.scopes)
+        ):
+            raise AuthPermissionException(
+                status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+                message="You do not have permission to remove role based access to users",  # noqa: E501
+            )
+        # manager can only remove user based access
+        return True
+
+    async def add_privileges(
+        self, to_user: User, schema: UserUpdatePrivileges
+    ) -> list[AclPrivilege]:
+        # TODO: add validation to ensure that the scopes are valid
+        self.verify_user_add_scopes(schema=schema)
+        user_scopes: list[AclPrivilege] = await self.user_repo.add_privileges(
+            entry=to_user, schema=schema
+        )
+        return user_scopes
 
     async def remove_privileges(
         self, to_user: User, schema: UserUpdatePrivileges
-    ) -> User:
-        user: User = await self.user_repo.remove_privileges(to_user, schema)
-        return user
+    ) -> list[AclPrivilege]:
+        # TODO: add validation to ensure that the scopes are valid
+        self.verify_user_remove_scopes(schema=schema)
+        user_scopes: list[AclPrivilege] = await self.user_repo.remove_privileges(
+            entry=to_user, schema=schema
+        )
+        return user_scopes
 
     def __repr__(self) -> str:
         repr_str: str = f"PermissionControl(User={self.current_user.auth_id})"

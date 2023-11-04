@@ -1,8 +1,9 @@
 from typing import Any, Dict
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from app.api.deps import GetPublicQueryParams
+from app.core.security.rate_limiter.deps import RateLimiter
 from app.worker import task_speak
 
 router: APIRouter = APIRouter()
@@ -11,6 +12,7 @@ router: APIRouter = APIRouter()
 @router.get(
     "/status",
     name="public:status",
+    dependencies=[Depends(RateLimiter(times=1, seconds=5))],
     response_model=Dict[str, Any],
 )
 async def status(query: GetPublicQueryParams) -> Dict[str, Any]:
@@ -28,4 +30,17 @@ async def status(query: GetPublicQueryParams) -> Dict[str, Any]:
     if query.message:
         speak_task = task_speak.delay(query.message)
         return {"status": "ok", "speak_task_id": speak_task.id}
+    return {"status": "ok"}
+
+
+@router.get(
+    "/rate-limited-multiple",
+    name="public:rate_limited_multiple",
+    dependencies=[
+        Depends(RateLimiter(times=1, seconds=5)),
+        Depends(RateLimiter(times=2, seconds=15)),
+    ],
+    response_model=Dict[str, Any],
+)
+async def rate_limited_multiple(query: GetPublicQueryParams) -> Dict[str, Any]:
     return {"status": "ok"}

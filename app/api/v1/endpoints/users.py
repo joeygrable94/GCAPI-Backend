@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import APIRouter, Depends, Request
 
 from app.api.deps import (
@@ -27,6 +29,7 @@ from app.core.security.permissions import (
 )
 from app.models import User
 from app.schemas import (
+    UserDelete,
     UserRead,
     UserReadAsAdmin,
     UserReadAsManager,
@@ -178,8 +181,10 @@ async def users_read(
     - `UserRead` : only publically accessible fields
 
     """
-    # verify current user has permission to update the user
-    await permissions.verify_user_can_access(user_id=user.id)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager], user_id=user.id
+    )
     # return role based response
     response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
         permissions.get_resource_response(
@@ -231,7 +236,6 @@ async def users_update(
     - `UserRead` : only publically accessible fields
 
     """
-    print(user_in.model_dump())
     # verify the input schema is valid for the current user's role
     permissions.verify_input_schema_by_role(
         input_object=user_in,
@@ -241,9 +245,10 @@ async def users_update(
             RoleUser: UserUpdate,
         },
     )
-    print(permissions.current_user)
-    # verify current user has permission to update the user
-    await permissions.verify_user_can_access(user_id=user.id)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager], user_id=user.id
+    )
     # check user to be updated exists
     if user_in.username is not None:
         a_user: User | None = await permissions.user_repo.read_by(
@@ -255,11 +260,12 @@ async def users_update(
     updated_user: User | None = await permissions.user_repo.update(
         entry=user, schema=user_in
     )
-    user_out = updated_user or user
+    if updated_user is None:  # pragma: no cover
+        updated_user = user
     # return role based response
     response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
         permissions.get_resource_response(
-            resource=user_out,
+            resource=updated_user,
             responses={
                 RoleAdmin: UserReadAsAdmin,
                 RoleManager: UserReadAsManager,
@@ -284,7 +290,7 @@ async def users_update(
 async def users_delete(
     user: User = Permission([AccessDelete, AccessDeleteSelf], get_user_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
-) -> None:
+) -> UserDelete:
     """Delete a user by id.
 
     Permissions:
@@ -295,21 +301,29 @@ async def users_delete(
 
     Returns:
     --------
-    `None`
+    `UserDelete` : a message indicating the user was deleted or requested to be
+        deleted with the user id and corresponding task id
 
     """
-    # verify current user has permission to update the user
-    await permissions.verify_user_can_access(user_id=user.id)
-    if RoleAdmin in permissions.privileges:
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(privileges=[RoleAdmin], user_id=user.id)
+    user_delete: UserDelete
+    if permissions.current_user.id == user.id:
+        delete_user_task: Any = task_request_to_delete_user.delay(user_id=user.id)
+        user_delete = UserDelete(
+            message="User requested to be deleted",
+            user_id=user.id,
+            task_id=delete_user_task.id,
+        )
+    else:
         await permissions.user_repo.delete(entry=user)
-    elif permissions.current_user.id == user.id:
-        task_request_to_delete_user.delay(user_id=user.id)
-    return None
+        user_delete = UserDelete(message="User deleted", user_id=user.id)
+    return user_delete
 
 
 @router.post(
     "/{user_id}/privileges/add",
-    name="users:update",
+    name="users:add_privileges",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -328,7 +342,9 @@ async def users_update_add_privileges(
 
     Permissions:
     ------------
-    `role=admin|manager` : all users
+    `role=admin` : all users
+
+    `role=manager` : cannot add the RoleAdmin privilege
 
     Returns:
     --------
@@ -338,10 +354,15 @@ async def users_update_add_privileges(
     - `UserReadAsManager` : only fields accessible to the manager role
 
     """
-    # verify current user has permission to update the user
-    await permissions.verify_user_can_access(user_id=user.id)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager], user_id=user.id
+    )
     # update the user data
-    updated_user: User = await permissions.add_privileges(user, user_in)
+    await permissions.add_privileges(to_user=user, schema=user_in)
+    updated_user: User | None = await permissions.user_repo.read(user.id)
+    if updated_user is None:  # pragma: no cover
+        updated_user = user
     # return role based response
     response_out: UserReadAsAdmin | UserReadAsManager = (
         permissions.get_resource_response(
@@ -356,8 +377,8 @@ async def users_update_add_privileges(
 
 
 @router.post(
-    "/{user_id}privileges/remove",
-    name="users:update",
+    "/{user_id}/privileges/remove",
+    name="users:remove_privileges",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -386,10 +407,15 @@ async def users_update_remove_privileges(
     - `UserReadAsManager` : only fields accessible to the manager role
 
     """
-    # verify current user has permission to update the user
-    await permissions.verify_user_can_access(user_id=user.id)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager], user_id=user.id
+    )
     # update the user data
-    updated_user: User = await permissions.remove_privileges(user, user_in)
+    await permissions.remove_privileges(to_user=user, schema=user_in)
+    updated_user: User | None = await permissions.user_repo.read(user.id)
+    if updated_user is None:  # pragma: no cover
+        updated_user = user
     # return role based response
     response_out: UserReadAsAdmin | UserReadAsManager = (
         permissions.get_resource_response(

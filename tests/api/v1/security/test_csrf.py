@@ -1,0 +1,4 @@
+"""
+GET
+client.get("/csrf",
+"""

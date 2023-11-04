@@ -73,6 +73,7 @@ class WebsiteKeywordCorpusRepository(
         website_id: UUID | None = None,
         page_id: UUID | None = None,
     ) -> Optional[Union[List[WebsiteKeywordCorpus], List[None]]]:
+        self._db.begin()
         skip, limit = paginate(page)
         return await self._list(
             skip=skip,

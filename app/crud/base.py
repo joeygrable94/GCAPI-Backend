@@ -59,10 +59,12 @@ class BaseRepository(
         self,
         page: int = 1,
     ) -> Optional[Union[List[TABLE], List[None]]]:
+        self._db.begin()
         skip, limit = paginate(page)
         return await self._list(skip=skip, limit=limit)
 
     async def create(self, schema: Union[SCHEMA_CREATE, Any]) -> TABLE:
+        self._db.begin()
         entry: Any = self._table(id=self.gen_uuid(), **schema.model_dump())  # type: ignore  # noqa: E501
         self._db.add(entry)
         await self._db.commit()
@@ -70,6 +72,7 @@ class BaseRepository(
         return entry
 
     async def read_by(self, field_name: str, field_value: Any) -> Optional[TABLE]:
+        self._db.begin()
         check_val: Any = getattr(self._table, field_name)
         query: Any = sql_select(self._table).where(check_val == field_value)  # type: ignore  # noqa: E501
         entry: Any = await self._get(query)
@@ -78,6 +81,7 @@ class BaseRepository(
         return entry
 
     async def read(self, entry_id: UUID4) -> Optional[TABLE]:
+        self._db.begin()
         query: Any = sql_select(self._table).where(self._table.id == entry_id)  # type: ignore  # noqa: E501
         entry: Any = await self._get(query)
         if not entry:
@@ -89,6 +93,7 @@ class BaseRepository(
         entry: TABLE,
         schema: Union[SCHEMA_UPDATE, Any],
     ) -> Optional[TABLE]:
+        self._db.begin()
         for k, v in schema.model_dump(exclude_unset=True, exclude_none=True).items():
             setattr(entry, k, v)
         await self._db.commit()
@@ -96,6 +101,7 @@ class BaseRepository(
         return entry  # pragma: no cover
 
     async def delete(self, entry: TABLE) -> None:
+        self._db.begin()
         await self._db.delete(entry)
         await self._db.commit()
         return None  # pragma: no cover
@@ -107,6 +113,7 @@ class BaseRepository(
         field_name_b: str,
         field_value_b: Any,
     ) -> Optional[TABLE]:
+        self._db.begin()
         check_val_a: Any = getattr(self._table, field_name_a)
         check_val_b: Any = getattr(self._table, field_name_b)
         query: Any = sql_select(self._table).where(  # type: ignore

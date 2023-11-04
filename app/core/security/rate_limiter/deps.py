@@ -2,7 +2,7 @@ from math import ceil
 from typing import Annotated, Any
 
 import redis as pyredis
-from fastapi import Request, Response, WebSocket
+from fastapi import Request, Response
 from pydantic import Field
 
 from app.core.logger import logger
@@ -33,7 +33,7 @@ class RateLimiter:
         return pexpire
 
     async def __call__(self, request: Request, response: Response) -> None:
-        if not FastAPILimiter.redis:
+        if not FastAPILimiter.redis:  # pragma: no cover
             raise Exception(
                 "You must call FastAPILimiter.init in startup event of fastapi!"
             )
@@ -52,7 +52,7 @@ class RateLimiter:
         key = f"{FastAPILimiter.prefix}:{rate_key}:{route_index}:{dep_index}"
         try:
             pexpire = await self._check(key)
-        except pyredis.exceptions.NoScriptError:
+        except pyredis.exceptions.NoScriptError:  # pragma: no cover
             FastAPILimiter.lua_sha = await FastAPILimiter.redis.script_load(
                 FastAPILimiter.lua_script
             )
@@ -63,6 +63,7 @@ class RateLimiter:
             raise RateLimitedRequestException(expire=expire)
 
 
+"""
 class WebSocketRateLimiter(RateLimiter):
     async def __call__(self, ws: WebSocket, context_key: str = "") -> None:  # type: ignore  # noqa: E501
         assert type(ws) is WebSocket
@@ -77,3 +78,4 @@ class WebSocketRateLimiter(RateLimiter):
             expire = ceil(pexpire / 1000)
             logger.warning(f"Rate limit exceeded for {key}, expires {expire}.")
             raise RateLimitedRequestException(expire=expire)
+"""

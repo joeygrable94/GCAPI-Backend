@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, List, Tuple
+from typing import TYPE_CHECKING, Any, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import JSON, Boolean, DateTime, String, func
@@ -9,6 +9,7 @@ from sqlalchemy_utils import UUIDType  # type: ignore
 from app.core.security.permissions import (
     AccessCreate,
     AccessDelete,
+    AccessDeleteSelf,
     AccessList,
     AccessRead,
     AccessReadSelf,
@@ -67,34 +68,34 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
-    scopes: Mapped[List[AclPrivilege]] = mapped_column(
+    scopes: Mapped[list[AclPrivilege]] = mapped_column(
         JSON,
         nullable=False,
         default=[RoleUser],
     )
 
     # relationships
-    clients: Mapped[List["Client"]] = relationship(
+    clients: Mapped[list["Client"]] = relationship(
         "Client", secondary="user_client", back_populates="users", lazy="selectin"
     )
-    notes: Mapped[List["Note"]] = relationship(
+    notes: Mapped[list["Note"]] = relationship(
         "Note", back_populates="user", lazy="selectin"
     )
-    ipaddresses: Mapped[List["Ipaddress"]] = relationship(
+    ipaddresses: Mapped[list["Ipaddress"]] = relationship(
         "Ipaddress", secondary="user_ipaddress", back_populates="users"
     )
-    file_assets: Mapped[List["FileAsset"]] = relationship(
+    file_assets: Mapped[list["FileAsset"]] = relationship(
         "FileAsset",
         back_populates="user",
     )
 
     # properties as methods
-    def privileges(self) -> List[AclPrivilege]:
+    def privileges(self) -> list[AclPrivilege]:
         """
         Returns a list of user privileges to access permission restricted
         resources via ACL.
         """
-        principals: List[AclPrivilege]
+        principals: list[AclPrivilege]
         principals = [AclPrivilege(f"user:{self.id}")]
         principals.extend([AclPrivilege(sco) for sco in self.scopes])
         return principals
@@ -102,7 +103,7 @@ class User(Base):
     # ACL
     def __acl__(
         self,
-    ) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
+    ) -> list[Tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
         return [
             # list
             (AclAction.allow, RoleAdmin, AccessList),
@@ -119,9 +120,16 @@ class User(Base):
             (AclAction.allow, AclPrivilege(f"user:{self.id}"), AccessUpdateSelf),
             # delete
             (AclAction.allow, RoleAdmin, AccessDelete),
+            (AclAction.allow, RoleUser, AccessDeleteSelf),
         ]
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"User({self.username})"
+        repr_str: str = "User(%s, Act[%s] Val[%s] Sup[%s] Sco[%d])" % (
+            self.username,
+            self.is_active,
+            self.is_verified,
+            self.is_superuser,
+            len(self.scopes),
+        )
         return repr_str

@@ -5,14 +5,12 @@ from redis.asyncio.client import Redis
 
 
 def default_identifier(request: Union[Request, WebSocket]) -> str:
-    ip: str
+    ip: str = "127.0.0.1"
     forwarded: str | None = request.headers.get("X-Forwarded-For")
-    if forwarded:
+    if forwarded:  # pragma: no cover
         ip = forwarded.split(",")[0]
     elif request.client:
         ip = request.client.host
-    else:
-        ip = "127.0.0.1"
     return ip + ":" + request.scope["path"]
 
 

@@ -25,8 +25,10 @@ from .get_db_items import (
 from .get_encryption import (
     AESCBCEncrypt,
     RSAEncrypt,
+    SecureMessageEncryption,
     get_aes_cbc_encryption,
     get_rsa_encryption,
+    get_secure_message_encryption,
 )
 from .get_permission import (
     Permission,
@@ -87,6 +89,8 @@ __all__: List[str] = [
     "RSAEncrypt",
     "get_aes_cbc_encryption",
     "get_rsa_encryption",
+    "get_secure_message_encryption",
+    "SecureMessageEncryption",
     "Permission",
     "PermissionController",
     "get_current_user_privileges",

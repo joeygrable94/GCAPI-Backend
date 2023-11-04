@@ -11,6 +11,11 @@ class CipherError(Exception):
         self.message = message
 
 
+class SignatureVerificationError(CipherError):
+    def __init__(self, message: str = "error signing the message securely"):
+        super().__init__(message=message)
+
+
 class AESEncryptionError(CipherError):
     def __init__(self, message: str = "AES cipher error encrypting message"):
         super().__init__(message=message)

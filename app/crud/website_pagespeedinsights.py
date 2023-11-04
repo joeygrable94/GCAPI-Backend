@@ -119,6 +119,7 @@ class WebsitePageSpeedInsightsRepository(
         page_id: UUID | None = None,
         devices: List[str] | None = None,
     ) -> Optional[Union[List[WebsitePageSpeedInsights], List[None]]]:
+        self._db.begin()
         skip, limit = paginate(page)
         return await self._list(
             skip=skip,

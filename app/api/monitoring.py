@@ -5,7 +5,7 @@ from app.core.config import settings
 
 def configure_monitoring() -> Client | None:
     sentry_client: Client | None = None
-    if settings.celery.sentry_dsn:
+    if settings.celery.sentry_dsn and settings.api.mode == "prodcution":
         sentry_client = init(
             settings.celery.sentry_dsn,
             # Set traces_sample_rate to 1.0 to capture 100%

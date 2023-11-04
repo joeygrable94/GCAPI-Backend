@@ -8,28 +8,28 @@ from app.core.config import settings
 
 def generate_api_keys(file_key: str = settings.api.key) -> None:
     (pub_key, pvt_key) = rsa.newkeys(2048)
-    private_pem = pub_key.save_pkcs1().decode()
-    public_pem = pvt_key.save_pkcs1().decode()
-    pvt_pem_file = f"{settings.api.root_dir}/{file_key}_private_key.pem"
+    public_pem = pub_key.save_pkcs1().decode()
+    private_pem = pvt_key.save_pkcs1().decode()
     pub_pem_file = f"{settings.api.root_dir}/{file_key}_public_key.pem"
-    with open(pvt_pem_file, "w") as pr:
-        pr.write(private_pem)
+    pvt_pem_file = f"{settings.api.root_dir}/{file_key}_private_key.pem"
     with open(pub_pem_file, "w") as pu:
         pu.write(public_pem)
+    with open(pvt_pem_file, "w") as pr:
+        pr.write(private_pem)
 
 
 def load_api_keys(
     file_key: str = settings.api.key,
-) -> Tuple[rsa.PrivateKey, rsa.PublicKey]:
-    pvt_pem_file = f"{settings.api.root_dir}/{file_key}_private_key.pem"
+) -> Tuple[rsa.PublicKey, rsa.PrivateKey]:
     pub_pem_file = f"{settings.api.root_dir}/{file_key}_public_key.pem"
-    if not os.path.exists(pvt_pem_file) and not os.path.exists(pub_pem_file):
+    pvt_pem_file = f"{settings.api.root_dir}/{file_key}_private_key.pem"
+    if not os.path.exists(pub_pem_file) and not os.path.exists(pvt_pem_file):
         generate_api_keys(settings.api.key)
         load_api_keys(settings.api.key)
-    with open(pvt_pem_file, "r") as pr:
-        private_pem = pr.read().encode("utf-8")
     with open(pub_pem_file, "r") as pu:
         public_pem = pu.read().encode("utf-8")
-    pvt_key = rsa.PrivateKey.load_pkcs1(private_pem)
+    with open(pvt_pem_file, "r") as pr:
+        private_pem = pr.read().encode("utf-8")
     pub_key = rsa.PublicKey.load_pkcs1(public_pem)
-    return pvt_key, pub_key
+    pvt_key = rsa.PrivateKey.load_pkcs1(private_pem)
+    return pub_key, pvt_key

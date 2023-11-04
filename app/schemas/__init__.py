@@ -92,6 +92,7 @@ from .sharpspring import SharpspringCreate, SharpspringRead, SharpspringUpdate
 from .task import TaskState
 from .user import (
     UserCreate,
+    UserDelete,
     UserRead,
     UserReadAsAdmin,
     UserReadAsManager,
@@ -227,6 +228,7 @@ __all__: List[str] = [
     "SharpspringUpdate",
     "TaskState",
     "UserCreate",
+    "UserDelete",
     "UserRead",
     "UserReadAsManager",
     "UserReadAsAdmin",

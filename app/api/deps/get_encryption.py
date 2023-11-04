@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from app.core.config import Settings, get_settings
-from app.core.security import AESCipherCBC, RSACipher
+from app.core.security import AESCipherCBC, RSACipher, SecureMessage
 
 
 def get_rsa_encryption() -> RSACipher:
@@ -20,3 +20,14 @@ def get_aes_cbc_encryption(
 
 
 AESCBCEncrypt = Annotated[AESCipherCBC, Depends(get_aes_cbc_encryption)]
+
+
+def get_secure_message_encryption(
+    settings: Settings = Depends(get_settings),
+) -> SecureMessage:
+    return SecureMessage(key=settings.api.secret_key)
+
+
+SecureMessageEncryption = Annotated[
+    SecureMessage, Depends(get_secure_message_encryption)
+]
