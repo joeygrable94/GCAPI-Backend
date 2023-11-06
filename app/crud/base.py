@@ -96,6 +96,7 @@ class BaseRepository(
         self._db.begin()
         for k, v in schema.model_dump(exclude_unset=True, exclude_none=True).items():
             setattr(entry, k, v)
+        self._db.add(entry)
         await self._db.commit()
         await self._db.refresh(entry)  # pragma: no cover
         return entry  # pragma: no cover

@@ -20,6 +20,8 @@ from itsdangerous import BadData, SignatureExpired, URLSafeTimedSerializer
 from pydantic import create_model
 from starlette.datastructures import Headers
 
+from app.core.config import settings
+
 from .csrf_config import CsrfConfig
 from .exceptions import InvalidHeaderError, MissingTokenError, TokenValidationError
 
@@ -48,7 +50,7 @@ class CsrfProtect(CsrfConfig):
         secret_key = secret_key or self._secret_key
         if secret_key is None:
             raise RuntimeError("A secret key is required to use CsrfProtect extension.")
-        serializer = URLSafeTimedSerializer(secret_key, salt="fastapi-csrf-token")
+        serializer = URLSafeTimedSerializer(secret_key, salt=settings.api.csrf_salt)
         token = sha1(urandom(64)).hexdigest()
         signed = serializer.dumps(token)
         return token, str(signed)
@@ -106,6 +108,14 @@ class CsrfProtect(CsrfConfig):
                 )
             token = header_parts[1]
         return token
+
+    def set_csrf_header(self, csrf_token: str, response: Response) -> None:
+        response.headers.append(self._header_name, csrf_token)
+
+    def unset_csrf_header(self, response: Response) -> None:
+        if not isinstance(response, Response):
+            raise TypeError("The response must be an object response FastAPI")
+        response.headers.update({self._header_name: ""})
 
     def set_csrf_cookie(self, csrf_signed_token: str, response: Response) -> None:
         """
@@ -182,7 +192,7 @@ class CsrfProtect(CsrfConfig):
             token = self.get_csrf_from_headers(request.headers)
         else:
             token = self.get_csrf_from_body(await request.body())
-        serializer = URLSafeTimedSerializer(secret_key, salt="fastapi-csrf-token")
+        serializer = URLSafeTimedSerializer(secret_key, salt=settings.api.csrf_salt)
         try:
             signature: str = serializer.loads(signed_token, max_age=time_limit)
             if token != signature:

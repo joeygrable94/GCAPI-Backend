@@ -16,21 +16,11 @@ class SignatureVerificationError(CipherError):
         super().__init__(message=message)
 
 
-class AESEncryptionError(CipherError):
-    def __init__(self, message: str = "AES cipher error encrypting message"):
+class EncryptionError(CipherError):
+    def __init__(self, message: str = "error encrypting message"):
         super().__init__(message=message)
 
 
-class AESDecryptionError(CipherError):
-    def __init__(self, message: str = "AES cipher error decrypting message"):
-        super().__init__(message=message)
-
-
-class RSAEncryptionError(CipherError):
-    def __init__(self, message: str = "RSA cipher error encrypting message"):
-        super().__init__(message=message)
-
-
-class RSADecryptionError(CipherError):
-    def __init__(self, message: str = "RSA cipher error decrypting message"):
+class DecryptionError(CipherError):
+    def __init__(self, message: str = "error decrypting message"):
         super().__init__(message=message)

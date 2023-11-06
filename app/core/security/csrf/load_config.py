@@ -17,15 +17,22 @@ class LoadConfig(BaseModel):
     httponly: Optional[StrictBool] = True
     max_age: Optional[StrictInt] = 3600
     methods: Optional[Set[StrictStr]] = {"POST", "PUT", "PATCH", "DELETE"}
-    secret_key: Optional[StrictStr] = None
+    secret_key: Optional[StrictStr] = "super-secret-key"
     token_location: Optional[StrictStr] = "header"
     token_key: Optional[StrictStr] = "csrf-token-key"
 
     @field_validator("methods")
-    def validate_csrf_methods(cls, value: str) -> str:  # pragma: no cover
-        if value.upper() not in {"GET", "HEAD", "POST", "PUT", "DELETE", "PATCH"}:
-            raise ValueError('The "csrf_methods" must be between http request methods')
-        return value.upper()
+    def validate_csrf_methods(
+        cls, value: Set[StrictStr]
+    ) -> Set[StrictStr]:  # pragma: no cover
+        methods = set()
+        for v in value:
+            if v.upper() not in {"GET", "HEAD", "POST", "PUT", "DELETE", "PATCH"}:
+                raise ValueError(
+                    'The "csrf_methods" must be between http request methods'
+                )
+            methods.add(v.upper())
+        return methods
 
     @field_validator("cookie_samesite")  # type: ignore
     def validate_cookie_samesite(

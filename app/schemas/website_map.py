@@ -58,7 +58,7 @@ class WebsiteMapRead(WebsiteMapBase, BaseSchemaRead):
 
 
 # tasks
-class WebsiteMapProcessing(BaseSchema):
+class WebsiteMapProcessing(BaseModel):
     url: str
     website_id: UUID4
     task_id: str

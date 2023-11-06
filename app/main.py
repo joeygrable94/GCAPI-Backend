@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Callable
 
 from fastapi import Depends, FastAPI
 from sentry_sdk import Client
@@ -9,7 +9,7 @@ from app.api.middleware import configure_middleware
 from app.api.monitoring import configure_monitoring
 from app.core.config import settings
 from app.core.redis import redis_conn
-from app.core.security import FastAPILimiter, RateLimiter
+from app.core.security import CsrfProtect, CsrfSettings, FastAPILimiter, RateLimiter
 from app.core.templates import static_files
 from app.db.commands import check_db_connected, check_db_disconnected
 
@@ -19,16 +19,22 @@ sentry_client: Client | None = configure_monitoring()
 @asynccontextmanager  # type: ignore
 async def application_lifespan(app: FastAPI) -> AsyncGenerator:
     # application lifespan actions: startup and shutdown
-    await check_db_connected()  # check DB connected
-    await FastAPILimiter.init(  # check REDIS connected
-        redis_conn,
-        prefix="gcapi-limit",
-    )
+    # check DB connected
+    await check_db_connected()
+    # check REDIS connected
+    await FastAPILimiter.init(redis_conn, prefix="gcapi-limit")
 
-    yield  # yeild the application
+    # load CSRF settings
+    @CsrfProtect.load_config
+    def get_csrf_config() -> Callable[...]:  # type: ignore
+        return CsrfSettings
 
-    await FastAPILimiter.close()  # close REDIS connection
-    await check_db_disconnected()  # close DB connection
+    # yeild the application
+    yield
+    # close REDIS connection
+    await FastAPILimiter.close()
+    # close DB connection
+    await check_db_disconnected()
 
 
 def configure_routers(app: FastAPI) -> None:

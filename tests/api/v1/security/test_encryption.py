@@ -1,33 +1,35 @@
-"""
-test_encrypt_message_with_rsa
-test_decrypt_message_with_rsa
-test_encrypt_message_with_rsa_too_long_message
-test_encrypt_message_with_aes_cbc
-test_dncrypt_message_with_aes_cbc
+from typing import Any, Dict
 
-POST
-await client.post(
-    "/encrypt/rsa",
-    json=RSAEncryptMessage(message="").model_dump()
-)
+from httpx import AsyncClient, Response
+from sqlalchemy.ext.asyncio import AsyncSession
+from tests.utils.utils import random_lower_string
 
-POST
-await client.post(
-    "/decrypt/rsa",
-    json=RSADecryptMessage(message="").model_dump()
-)
+from app.core.security.schemas import EncryptedMessage, PlainMessage
 
-test_encrypt_and_decrypt_message_with_aes_cbc
 
-POST
-await client.post(
-    "/encrypt/aes-cbc",
-    json=PlainMessage(message="").model_dump()
-)
-
-POST
-await client.post(
-    "/decrypt/aes-cbc",
-    json=EncryptedMessage(message="").model_dump()
-)
-"""
+async def test_encrypt_decrypt_message_as_admin(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_token_headers: Dict[str, str],
+) -> None:
+    # encrypt a message
+    input_message: PlainMessage = PlainMessage(message=random_lower_string())
+    response: Response = await client.post(
+        "/encrypt/message",
+        headers=admin_token_headers,
+        json=input_message.model_dump(),
+    )
+    data: Dict[str, Any] = response.json()
+    encrypted_message = EncryptedMessage.model_validate(data)
+    assert 200 <= response.status_code < 300
+    assert encrypted_message.message != input_message.message
+    # decrypt the message
+    response_2: Response = await client.post(
+        "/decrypt/message",
+        headers=admin_token_headers,
+        json=encrypted_message.model_dump(),
+    )
+    data_2: Dict[str, Any] = response_2.json()
+    decrypted_message = PlainMessage.model_validate(data_2)
+    assert 200 <= response_2.status_code < 300
+    assert decrypted_message.message == input_message.message

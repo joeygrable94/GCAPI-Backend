@@ -24,7 +24,7 @@ from app.schemas.website_pagespeedinsights import PSIDevice
 celery_app: Celery = create_celery_worker()
 sentry_client: Client | None = configure_monitoring()
 
-if not settings.api.debug:
+if not settings.api.debug:  # pragma: no cover
 
     @celery_app.before_task_publish.connect()
     def transfer_correlation_id(headers: Any) -> None:
@@ -51,6 +51,8 @@ def task_speak(
     acks_late=True,
 )
 def task_request_to_delete_user(user_id: UUID4) -> None:
+    # TODO: Send email to user to confirm deletion
+    # TODO: flag user as pending delete.
     logger.info(f"User({user_id}) requested to delete their account.")
 
 

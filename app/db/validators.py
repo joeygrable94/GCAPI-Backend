@@ -1,7 +1,7 @@
 from typing import Any, List, Union
 
 from app.core.config import settings
-from app.core.security.permissions import AclPrivilege
+from app.core.security.permissions import AclPrivilege, Scope
 from app.core.utilities import domain_name_regex, email_regex
 from app.db.constants import (
     DB_FLOAT_MAX_LEN,
@@ -37,11 +37,11 @@ def optional_int_name_min_max_len(
     max_len: int = 255,
 ) -> int | None:
     if min_len is not None:
-        if min_len == 0 and v and v <= 0:
+        if min_len == 0 and v is not None and v <= 0:
             raise ValueError(f"{name} is required")
-        if v and v < min_len:
+        if v is not None and v < min_len:
             raise ValueError(f"{name} must be {min_len} characters or more")
-    if v and v > max_len:
+    if v is not None and v > max_len:
         raise ValueError(f"{name} must be {max_len} characters or less")
     return v
 
@@ -82,7 +82,7 @@ def require_string_name_min_max_len(
     min_len: int = 0,
     max_len: int = 255,
 ) -> str:
-    if min_len == 0 and len(v) <= 0:
+    if not v or (min_len == 0 and len(v) <= 0):
         raise ValueError(f"{name} is required")
     if len(v) < min_len:
         raise ValueError(f"{name} must be {min_len} characters or more")
@@ -97,12 +97,12 @@ def optional_string_name_min_max_len(
     min_len: int | None = None,
     max_len: int = 255,
 ) -> str | None:
-    if min_len is not None:
+    if min_len:
         if min_len == 0 and v is None:
             raise ValueError(f"{name} is required")
-        if v and len(v) < min_len:
+        if v is not None and len(v) < min_len:
             raise ValueError(f"{name} must be {min_len} characters or more")
-    if v and len(v) > max_len:
+    if v is not None and len(v) > max_len:
         raise ValueError(f"{name} must be {max_len} characters or less")
     return v
 
@@ -113,7 +113,7 @@ def require_string_domain(
     min_len: int = 5,
     max_len: int = 255,
 ) -> str:
-    if min_len == 0 and len(v) <= 0:
+    if not v or (min_len == 0 and len(v) <= 0):
         raise ValueError(f"{name} is required")
     if len(v) < min_len:
         raise ValueError(f"{name} must be {min_len} characters or more")
@@ -132,7 +132,7 @@ def require_string_email(
     min_len: int = 5,
     max_len: int = 255,
 ) -> str:
-    if min_len == 0 and len(v) <= 0:
+    if not v or (min_len == 0 and len(v) <= 0):
         raise ValueError(f"{name} is required")
     if len(v) < min_len:
         raise ValueError(f"{name} must be {min_len} characters or more")
@@ -154,11 +154,11 @@ def optional_string_domain(
     if min_len is not None:
         if min_len == 0 and v is None:
             raise ValueError(f"{name} is required")
-        if v and len(v) < min_len:
+        if v is not None and len(v) < min_len:
             raise ValueError(f"{name} must be {min_len} characters or more")
-    if v and len(v) > max_len:
+    if v is not None and len(v) > max_len:
         raise ValueError(f"{name} must be {max_len} characters or less")
-    if v and not domain_name_regex.search(v):
+    if v is not None and not domain_name_regex.search(v):
         raise ValueError(
             "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
         )
@@ -168,7 +168,7 @@ def optional_string_domain(
 def required_string_in_list(
     v: str, name: str = "device", choices: List[str] = []
 ) -> str:
-    if len(v) <= 0:
+    if v is None or len(v) <= 0:
         raise ValueError(f"{name} is required")
     if v.lower() not in choices:
         choices_str = ", ".join(choices)
@@ -179,9 +179,9 @@ def required_string_in_list(
 def optional_string_in_list(
     v: str | None, name: str = "device", choices: List[str] = []
 ) -> str | None:
-    if v and len(v) <= 0:
+    if v is not None and len(v) <= 0:
         raise ValueError(f"{name} is required")
-    if v and v.lower() not in choices:
+    if v is not None and v.lower() not in choices:
         choices_str = ", ".join(choices)
         raise ValueError(f"{name} must be one of: {choices_str}")
     if v:
@@ -289,6 +289,7 @@ def validate_url_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="url",
+        min_len=1,
         max_len=DB_STR_URL_PATH_MAX_LEN,
     )
 
@@ -321,6 +322,7 @@ def validate_ps_value_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="ps_value",
+        min_len=1,
         max_len=4,
     )
 
@@ -352,10 +354,13 @@ def validate_tbt_unit_required(cls: Any, value: str) -> str:
 def validate_scopes_required(
     cls: Any, value: Union[List[str], List[AclPrivilege]]
 ) -> List[AclPrivilege]:
+    if value is None or len(value) <= 0:
+        raise ValueError("scopes is required")
     scopes: List[AclPrivilege] = []
     for scope in value:
         if isinstance(scope, str):
-            scopes.append(AclPrivilege(scope))
+            tmp = Scope(scope)
+            scopes.append(AclPrivilege(tmp))
         else:
             scopes.append(scope)
     return scopes
@@ -364,10 +369,14 @@ def validate_scopes_required(
 def validate_scopes_optional(
     cls: Any, value: Union[List[str], List[AclPrivilege]] | None
 ) -> List[AclPrivilege] | None:
-    if value:
+    if value is not None:
         scopes: List[AclPrivilege] = []
         for scope in value:
-            scopes.append(AclPrivilege(scope))
+            if isinstance(scope, str):
+                tmp = Scope(scope)
+                scopes.append(AclPrivilege(tmp))
+            else:
+                scopes.append(scope)
         return scopes
     return None
 
@@ -412,6 +421,7 @@ def validate_username_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="username",
+        min_len=5,
         max_len=255,
     )
 
@@ -447,6 +457,7 @@ def validate_api_key_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="api_key",
+        min_len=0,
         max_len=64,
     )
 
@@ -455,6 +466,7 @@ def validate_secret_key_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="secret_key",
+        min_len=0,
         max_len=64,
     )
 
@@ -472,6 +484,7 @@ def validate_serverhost_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="serverhost",
+        min_len=3,
         max_len=255,
     )
 
@@ -480,6 +493,7 @@ def validate_keys_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="keys",
+        min_len=0,
         max_len=65500,
     )
 
@@ -497,6 +511,7 @@ def validate_object_key_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="object_key",
+        min_len=1,
         max_len=DB_STR_URL_PATH_MAX_LEN,
     )
 
@@ -514,6 +529,7 @@ def validate_bucket_name_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="bucket_name",
+        min_len=1,
         max_len=100,
     )
 
@@ -539,6 +555,7 @@ def validate_filename_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="name",
+        min_len=5,
         max_len=DB_STR_NAME_TITLE_MAX_LEN,
     )
 
@@ -556,6 +573,7 @@ def validate_size_kb_optional(cls: Any, value: int | None) -> int | None:
     return optional_int_name_min_max_len(
         v=value,
         name="size_kb",
+        min_len=0,
         max_len=settings.api.payload_limit_kb,
     )
 
@@ -601,6 +619,7 @@ def validate_address_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="address",
+        min_len=0,
         max_len=255,
     )
 
@@ -618,6 +637,7 @@ def validate_ip_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="ip",
+        min_len=0,
         max_len=40,
     )
 
@@ -635,6 +655,7 @@ def validate_isp_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="isp",
+        min_len=0,
         max_len=255,
     )
 
@@ -652,6 +673,7 @@ def validate_ip_location_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="location",
+        min_len=0,
         max_len=255,
     )
 
@@ -669,6 +691,7 @@ def validate_group_name_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="group_name",
+        min_len=0,
         max_len=255,
     )
 
@@ -695,6 +718,7 @@ def validate_snap_name_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="snap_name",
+        min_len=0,
         max_len=255,
     )
 
@@ -721,6 +745,7 @@ def validate_altitude_optional(cls: Any, value: int | None) -> int | None:
     return optional_int_name_min_max_len(
         v=value,
         name="altitude",
+        min_len=0,
         max_len=1000,
     )
 
@@ -738,6 +763,7 @@ def validate_utm_campaign_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="utm_campaign",
+        min_len=0,
         max_len=255,
     )
 
@@ -746,6 +772,7 @@ def validate_utm_content_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="utm_content",
+        min_len=0,
         max_len=255,
     )
 
@@ -754,6 +781,7 @@ def validate_utm_medium_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="utm_medium",
+        min_len=0,
         max_len=255,
     )
 
@@ -762,6 +790,7 @@ def validate_utm_source_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="utm_source",
+        min_len=0,
         max_len=255,
     )
 
@@ -770,6 +799,7 @@ def validate_utm_term_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="utm_term",
+        min_len=0,
         max_len=255,
     )
 
@@ -786,6 +816,7 @@ def validate_hotspot_type_name_optional(cls: Any, value: str | None) -> str | No
     return optional_string_name_min_max_len(
         v=value,
         name="hotspot_type_name",
+        min_len=0,
         max_len=32,
     )
 
@@ -794,6 +825,7 @@ def validate_hotspot_content_optional(cls: Any, value: str | None) -> str | None
     return optional_string_name_min_max_len(
         v=value,
         name="hotspot_content",
+        min_len=0,
         max_len=DB_STR_BLOB_MAX_LEN,
     )
 
@@ -802,6 +834,7 @@ def validate_hotspot_icon_name_optional(cls: Any, value: str | None) -> str | No
     return optional_string_name_min_max_len(
         v=value,
         name="hotspot_icon_name",
+        min_len=0,
         max_len=255,
     )
 
@@ -810,6 +843,7 @@ def validate_hotspot_name_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="hotspot_name",
+        min_len=0,
         max_len=255,
     )
 
@@ -818,6 +852,7 @@ def validate_hotspot_user_icon_name_optional(cls: Any, value: str | None) -> str
     return optional_string_name_min_max_len(
         v=value,
         name="hotspot_user_icon_name",
+        min_len=0,
         max_len=255,
     )
 
@@ -826,6 +861,7 @@ def validate_linked_snap_name_optional(cls: Any, value: str | None) -> str | Non
     return optional_string_name_min_max_len(
         v=value,
         name="linked_snap_name",
+        min_len=0,
         max_len=255,
     )
 
@@ -834,6 +870,7 @@ def validate_snap_file_name_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="snap_file_name",
+        min_len=0,
         max_len=255,
     )
 
@@ -842,6 +879,7 @@ def validate_icon_color_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="icon_color",
+        min_len=0,
         max_len=32,
     )
 
@@ -850,6 +888,7 @@ def validate_bg_color_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="bg_color",
+        min_len=0,
         max_len=32,
     )
 
@@ -858,6 +897,7 @@ def validate_text_color_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="text_color",
+        min_len=0,
         max_len=32,
     )
 
@@ -866,6 +906,7 @@ def validate_browser_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="browser",
+        min_len=0,
         max_len=255,
     )
 
@@ -874,6 +915,7 @@ def validate_browser_version_optional(cls: Any, value: str | None) -> str | None
     return optional_string_name_min_max_len(
         v=value,
         name="browser_version",
+        min_len=0,
         max_len=255,
     )
 
@@ -882,6 +924,7 @@ def validate_platform_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="platform",
+        min_len=0,
         max_len=255,
     )
 
@@ -890,6 +933,7 @@ def validate_platform_version_optional(cls: Any, value: str | None) -> str | Non
     return optional_string_name_min_max_len(
         v=value,
         name="platform_version",
+        min_len=0,
         max_len=255,
     )
 
@@ -898,6 +942,7 @@ def validate_city_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="city",
+        min_len=0,
         max_len=255,
     )
 
@@ -906,6 +951,7 @@ def validate_country_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="country",
+        min_len=0,
         max_len=255,
     )
 
@@ -914,6 +960,7 @@ def validate_state_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="state",
+        min_len=0,
         max_len=255,
     )
 
@@ -922,6 +969,7 @@ def validate_language_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="language",
+        min_len=0,
         max_len=255,
     )
 
@@ -948,6 +996,7 @@ def validate_project_name_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="project_name",
+        min_len=0,
         max_len=255,
     )
 
@@ -983,6 +1032,7 @@ def validate_project_id_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="project_id",
+        min_len=0,
         max_len=64,
     )
 
@@ -991,6 +1041,7 @@ def validate_project_number_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="project_number",
+        min_len=0,
         max_len=64,
     )
 
@@ -999,6 +1050,7 @@ def validate_service_account_optional(cls: Any, value: str | None) -> str | None
     return optional_string_name_min_max_len(
         v=value,
         name="service_account",
+        min_len=0,
         max_len=64,
     )
 

@@ -32,27 +32,3 @@ class EncryptedMessage(BaseModel):
         if len(value) > 5000:
             raise ValueError("message may not contain more than 5000 characters")
         return value
-
-
-class RSAEncryptMessage(BaseModel):
-    message: str
-
-    @field_validator("message")
-    def check_message(cls, value: str) -> str:  # pragma: no cover
-        if not value:
-            raise ValueError("message cannot be empty")
-        if len(value) > 53:
-            raise ValueError("message may not contain more than 53 characters")
-        return value
-
-
-class RSADecryptMessage(BaseModel):
-    message: str
-
-    @field_validator("message")
-    def check_message(cls, value: str) -> str:  # pragma: no cover
-        if not value:
-            raise ValueError("message cannot be empty")
-        if len(value) > 512:
-            raise ValueError("message may not contain more than 512 characters")
-        return value

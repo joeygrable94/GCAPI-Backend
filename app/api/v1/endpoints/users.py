@@ -262,6 +262,7 @@ async def users_update(
     )
     if updated_user is None:  # pragma: no cover
         updated_user = user
+    # permissions.db.refresh(updated_user)
     # return role based response
     response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
         permissions.get_resource_response(
@@ -313,7 +314,7 @@ async def users_delete(
         user_delete = UserDelete(
             message="User requested to be deleted",
             user_id=user.id,
-            task_id=delete_user_task.id,
+            task_id=delete_user_task.task_id,
         )
     else:
         await permissions.user_repo.delete(entry=user)

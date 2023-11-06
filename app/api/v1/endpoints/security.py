@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.api.deps import (
-    AESCBCEncrypt,
     CurrentUser,
-    RSAEncrypt,
-    get_aes_cbc_encryption,
-    get_rsa_encryption,
+    SecureMessageEncryption,
+    get_secure_message_encryption,
 )
 from app.core.config import Settings, get_settings
 from app.core.security import (
@@ -13,8 +11,6 @@ from app.core.security import (
     CsrfToken,
     EncryptedMessage,
     PlainMessage,
-    RSADecryptMessage,
-    RSAEncryptMessage,
     auth,
 )
 
@@ -23,7 +19,7 @@ router: APIRouter = APIRouter()
 
 @router.get(
     "/csrf",
-    name="public:csrf",
+    name="public:get_csrf",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(CsrfProtect),
@@ -48,85 +44,86 @@ async def get_csrf(
     `Dict[str, Any]` : a dictionary containing the CSRF token for the API
 
     """
-    csrf_token, signed_token = csrf_protect.generate_csrf_tokens(settings.api.csrf_key)
-
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens(
+        settings.api.csrf_secret_key
+    )
     csrf_protect.set_csrf_cookie(signed_token, response)
-    response.headers["X-CSRF-Token"] = csrf_token
+    csrf_protect.set_csrf_header(csrf_token, response)
 
     return CsrfToken(csrf_token=csrf_token)
 
 
 @router.post(
-    "/encrypt/rsa",
-    name="public:encrypt_rsa",
+    "/csrf",
+    name="public:check_csrf",
     dependencies=[
         Depends(auth.implicit_scheme),
-        Depends(get_rsa_encryption),
+        Depends(CsrfProtect),
+        Depends(get_settings),
     ],
+    response_model=None,
 )
-async def rsa_encrypt_message(
+async def check_csrf(
     request: Request,
+    response: Response,
     current_user: CurrentUser,
-    rsa: RSAEncrypt,
-    input: RSAEncryptMessage,
-) -> RSADecryptMessage:
-    """Encrypts a message using the public key of the API."""
-    encrypted_message = rsa.encrypt(input.message)
-    return RSADecryptMessage(message=encrypted_message)
+    csrf_protect: CsrfProtect = Depends(),
+    settings: Settings = Depends(get_settings),
+) -> None:
+    """Verifies an secure CSRF token for the API.
+
+    Permissions:
+    ------------
+    anyone can access this endpoint
+
+    Returns:
+    --------
+    `Dict[str, Any]` : a dictionary containing the CSRF token for the API
+
+    """
+    await csrf_protect.validate_csrf(
+        request,
+        secret_key=settings.api.csrf_secret_key,
+        cookie_key=settings.api.csrf_name_key,
+    )
+    csrf_protect.unset_csrf_cookie(response)  # prevent token reuse
+    csrf_protect.unset_csrf_header(response)  # prevent token reuse
+    return None
 
 
 @router.post(
-    "/decrypt/rsa",
-    name="public:decrypt_rsa",
+    "/encrypt/message",
+    name="public:secure_encrypt_message",
     dependencies=[
         Depends(auth.implicit_scheme),
-        Depends(get_rsa_encryption),
+        Depends(get_secure_message_encryption),
     ],
 )
-async def rsa_decrypt_message(
+async def secure_encrypt_message(
     request: Request,
     current_user: CurrentUser,
-    rsa: RSAEncrypt,
-    input: RSADecryptMessage,
-) -> RSAEncryptMessage:
-    """Decrypts a message using the private key of the API."""
-    decrypted_message = rsa.decrypt(input.message)
-    return RSAEncryptMessage(message=decrypted_message)
-
-
-@router.post(
-    "/encrypt/aes-cbc",
-    name="public:encrypt_aes_cbc",
-    dependencies=[
-        Depends(auth.implicit_scheme),
-        Depends(get_aes_cbc_encryption),
-    ],
-)
-async def aes_cbc_encrypt_message(
-    request: Request,
-    current_user: CurrentUser,
-    aes: AESCBCEncrypt,
+    secure: SecureMessageEncryption,
     input: PlainMessage,
 ) -> EncryptedMessage:
-    """Encrypts a message using AES CBC mode."""
-    encrypted_message = aes.encrypt(input.message)
+    """Encrypts a message using AES signed by an RSA key."""
+    encrypted_message = secure.sign_and_encrypt(input.message)
     return EncryptedMessage(message=encrypted_message)
 
 
 @router.post(
-    "/decrypt/aes-cbc",
-    name="public:decrypt_aes_cbc",
+    "/decrypt/message",
+    name="public:secure_decrypt_message",
     dependencies=[
         Depends(auth.implicit_scheme),
-        Depends(get_aes_cbc_encryption),
+        Depends(get_secure_message_encryption),
     ],
 )
-async def aes_cbc_decrypt_message(
+async def secure_decrypt_message(
     request: Request,
     current_user: CurrentUser,
-    aes: AESCBCEncrypt,
+    secure: SecureMessageEncryption,
     input: EncryptedMessage,
 ) -> PlainMessage:
-    """Decrypts a message using AES CBC mode."""
-    decrypted_message = aes.decrypt(input.message)
+    """Decrypts and verifies the RSA signature of a securely encrypted message."""
+    decrypted_message = secure.decrypt_and_verify(input.message)
     return PlainMessage(message=decrypted_message)

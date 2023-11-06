@@ -29,7 +29,7 @@ async def status(query: GetPublicQueryParams) -> Dict[str, Any]:
     """
     if query.message:
         speak_task = task_speak.delay(query.message)
-        return {"status": "ok", "speak_task_id": speak_task.id}
+        return {"status": "ok", "speak_task_id": speak_task.task_id}
     return {"status": "ok"}
 
 

@@ -12,8 +12,6 @@ from app.db.validators import (
     require_string_email,
     require_string_name_min_max_len,
     required_string_in_list,
-    validate_file_extension_optional,
-    validate_file_extension_required,
 )
 
 
@@ -182,22 +180,3 @@ def test_optional_string_in_list() -> None:
 
     with pytest.raises(ValueError):
         optional_string_in_list(v="test", name="test", choices=["test2"])
-
-
-def test_validate_file_extension_required() -> None:
-    value = validate_file_extension_required(cls=None, value="png")
-    assert value == "png"
-
-    with pytest.raises(ValueError):
-        validate_file_extension_required(cls=None, value="sh")
-
-
-def test_validate_file_extension_optional() -> None:
-    value = validate_file_extension_optional(cls=None, value=None)
-    assert value is None
-
-    value = validate_file_extension_optional(cls=None, value="png")
-    assert value == "png"
-
-    with pytest.raises(ValueError):
-        validate_file_extension_optional(cls=None, value="sh")

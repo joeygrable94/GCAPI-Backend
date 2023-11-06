@@ -26,7 +26,8 @@ session: Any = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Async Session
 async_engine: AsyncEngine = create_async_engine(
-    url=settings.db.uri_async, echo=False  # echo=settings.api.mode == "development",
+    url=settings.db.uri_async,
+    echo=False,  # echo=settings.api.mode == "development",
 )
 
 async_session: Any = async_sessionmaker(async_engine, expire_on_commit=False)

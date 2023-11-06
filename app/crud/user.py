@@ -22,7 +22,7 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
             updated_scopes.extend(schema.scopes)
         setattr(entry, "scopes", list(set(updated_scopes)))
         await self._db.commit()
-        await self._db.refresh(entry)
+        await self._db.refresh(entry, ["scopes"])
         return entry.scopes
 
     async def remove_privileges(
@@ -37,5 +37,5 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
             ]
         setattr(entry, "scopes", list(set(updated_scopes)))
         await self._db.commit()
-        await self._db.refresh(entry)
+        await self._db.refresh(entry, ["scopes"])
         return entry.scopes

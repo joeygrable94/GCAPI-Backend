@@ -4,7 +4,9 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.exceptions.errors import ErrorCode
 from app.core.config import settings
+from app.core.utilities.uuids import get_uuid_str
 from app.crud import UserRepository
 from app.models import User
 
@@ -119,3 +121,18 @@ async def test_read_user_as_user_verified(
     data_b: Dict[str, Any] = response_b.json()
     assert data_b["detail"] == "Insufficient permissions"
     assert response_b.status_code == 403
+
+
+async def test_read_user_by_id_as_admin_id_invalid(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_token_headers: Dict[str, str],
+) -> None:
+    fake_id = get_uuid_str()
+    response: Response = await client.get(
+        f"users/{fake_id}",
+        headers=admin_token_headers,
+    )
+    data: Dict[str, Any] = response.json()
+    assert response.status_code == 404
+    assert data["detail"] == ErrorCode.USER_NOT_FOUND

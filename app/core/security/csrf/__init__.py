@@ -16,10 +16,23 @@ __version__ = "0.3.2"
 
 from typing import List
 
+from pydantic import BaseModel, StrictStr
+
+from app.core.config import settings
+
 from .core import CsrfProtect
 from .exceptions import CsrfProtectError
 
+
+class CsrfSettings(BaseModel):
+    cookie_key: StrictStr = settings.api.csrf_name_key
+    header_name: StrictStr = settings.api.csrf_header_key
+    secret_key: StrictStr = settings.api.secret_key
+    token_key: StrictStr = settings.api.csrf_name_key
+
+
 __all__: List[str] = [
     "CsrfProtect",
+    "CsrfSettings",
     "CsrfProtectError",
 ]

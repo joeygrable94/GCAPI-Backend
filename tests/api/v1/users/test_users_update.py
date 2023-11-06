@@ -93,7 +93,6 @@ async def test_update_user_self_manager(
     assert 200 <= response_revert.status_code < 300
     data_revert: Dict[str, Any] = response_revert.json()
     manager1_revert: UserReadAsManager = UserReadAsManager.model_validate(data_revert)
-    print(manager1_revert)
     assert manager1_revert.is_active is True
 
 

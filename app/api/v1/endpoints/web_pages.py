@@ -238,7 +238,7 @@ async def website_page_delete(
     return None
 
 
-@router.get(
+@router.post(
     "/{page_id}/process-psi",
     name="website_pages:process_website_page_speed_insights",
     dependencies=[
@@ -246,7 +246,7 @@ async def website_page_delete(
         Depends(get_async_db),
         Depends(get_website_page_or_404),
     ],
-    response_model=WebsitePageRead,
+    response_model=WebsitePagePSIProcessing,
 )
 async def website_page_process_website_page_speed_insights(
     current_user: CurrentUser,
@@ -291,6 +291,6 @@ async def website_page_process_website_page_speed_insights(
     )
     return WebsitePagePSIProcessing(
         page=WebsitePageRead.model_validate(website_page),
-        psi_mobile_task_id=website_page_psi_mobile.id,
-        psi_desktop_task_id=website_page_psi_desktop.id,
+        psi_mobile_task_id=website_page_psi_mobile.task_id,
+        psi_desktop_task_id=website_page_psi_desktop.task_id,
     )

@@ -22,11 +22,11 @@ jobs:
       AUTH0_API_AUDIENCE: ${{ secrets.AUTH0_API_AUDIENCE }}
       AUTH0_SPA_CLIENT_ID: ${{ secrets.AUTH0_SPA_CLIENT_ID }}
       AUTH0_SPA_CLIENT_SECRET: ${{ secrets.AUTH0_SPA_CLIENT_SECRET }}
-      FIRST_SUPERUSER: ${{ secrets.FIRST_SUPERUSER }}
-      FIRST_SUPERUSER_PASSWORD: ${{ secrets.FIRST_SUPERUSER_PASSWORD }}
-      GOOGLE_CLOUD_API_KEY: ${{ secrets.GOOGLE_CLOUD_API_KEY }}
-      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-      SMTP_USER: ${{ secrets.SMTP_USER }}
+      AUTH0_FIRST_ADMIN: ${{ secrets.AUTH0_FIRST_ADMIN }}
+      AUTH0_FIRST_ADMIN_PASSWORD: ${{ secrets.AUTH0_FIRST_ADMIN_PASSWORD }}
+      CLOUDKEY_GOOGLE_API: ${{ secrets.CLOUDKEY_GOOGLE_API }}
+      EMAIL_SMTP_PASSWORD: ${{ secrets.EMAIL_SMTP_PASSWORD }}
+      EMAIL_SMTP_USER: ${{ secrets.EMAIL_SMTP_USER }}
     steps:
       - name: Checkout Source
         uses: actions/checkout@v3

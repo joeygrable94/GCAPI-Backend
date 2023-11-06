@@ -70,17 +70,28 @@ async def drop_db_tables() -> None:  # pragma: no cover
 
 
 async def create_init_data() -> None:  # pragma: no cover
-    logger.info("Inserting Initial Data")
+    i_count = 0
     session: AsyncSession
+    admin1: User | None
+    manager1: User | None
+    employee1: User | None
+    client_a: User | None
+    client_b: User | None
+    user_verified: User | None
+    user_unverified: User | None
+    c1: Client | None
+    c2: Client | None
+    c1_admin1: UserClient | None
+    c1_manager1: UserClient | None
+    c1_employee1: UserClient | None
+    user_repo: UserRepository
+    client_repo: ClientRepository
+    user_client_repo: UserClientRepository
+
+    # first admin
     async with async_session() as session:
         user_repo = UserRepository(session)
-        client_repo = ClientRepository(session)
-        user_client_repo = UserClientRepository(session)
-
-        # first users
-        admin1: User | None = await user_repo.read_by(
-            "auth_id", settings.auth.first_admin_auth_id
-        )
+        admin1 = await user_repo.read_by("auth_id", settings.auth.first_admin_auth_id)
         if not admin1:
             admin1 = await user_repo.create(
                 UserCreate(
@@ -92,8 +103,13 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_superuser=True,
                     scopes=[AclPrivilege("role:user"), AclPrivilege("role:admin")],
                 )
-            )  # noqa: E501
-        manager1: User | None = await user_repo.read_by(
+            )
+            i_count += 1
+
+    # first manager
+    async with async_session() as session:
+        user_repo = UserRepository(session)
+        manager1 = await user_repo.read_by(
             "auth_id", settings.auth.first_manager_auth_id
         )
         if not manager1:
@@ -107,8 +123,13 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_superuser=False,
                     scopes=[AclPrivilege("role:user"), AclPrivilege("role:manager")],
                 )
-            )  # noqa: E501
-        employee1: User | None = await user_repo.read_by(
+            )
+            i_count += 1
+
+    # first employee
+    async with async_session() as session:
+        user_repo = UserRepository(session)
+        employee1 = await user_repo.read_by(
             "auth_id", settings.auth.first_employee_auth_id
         )
         if not employee1:
@@ -122,8 +143,13 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_superuser=False,
                     scopes=[AclPrivilege("role:user"), AclPrivilege("role:employee")],
                 )
-            )  # noqa: E501
-        client_a: User | None = await user_repo.read_by(
+            )
+            i_count += 1
+
+    # first users that is a business client
+    async with async_session() as session:
+        user_repo = UserRepository(session)
+        client_a = await user_repo.read_by(
             "auth_id", settings.auth.first_client_a_auth_id
         )
         if not client_a:
@@ -137,8 +163,10 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_superuser=False,
                     scopes=[AclPrivilege("role:user"), AclPrivilege("role:client")],
                 )
-            )  # noqa: E501
-        client_b: User | None = await user_repo.read_by(
+            )
+            i_count += 1
+
+        client_b = await user_repo.read_by(
             "auth_id", settings.auth.first_client_b_auth_id
         )
         if not client_b:
@@ -152,8 +180,13 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_superuser=False,
                     scopes=[AclPrivilege("role:user"), AclPrivilege("role:client")],
                 )
-            )  # noqa: E501
-        user_verified: User | None = await user_repo.read_by(
+            )
+            i_count += 1
+
+    # first user verified
+    async with async_session() as session:
+        user_repo = UserRepository(session)
+        user_verified = await user_repo.read_by(
             "auth_id", settings.auth.first_user_verified_auth_id
         )
         if not user_verified:
@@ -167,8 +200,13 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_superuser=False,
                     scopes=[AclPrivilege("role:user")],
                 )
-            )  # noqa: E501
-        user_unverified: User | None = await user_repo.read_by(
+            )
+            i_count += 1
+
+    # first user unverified
+    async with async_session() as session:
+        user_repo = UserRepository(session)
+        user_unverified = await user_repo.read_by(
             "auth_id", settings.auth.first_user_unverified_auth_id
         )
         if not user_unverified:
@@ -182,61 +220,89 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_superuser=False,
                     scopes=[AclPrivilege("role:user")],
                 )
-            )  # noqa: E501
+            )
+            i_count += 1
 
-        # first clients
-        c1: Client | None = await client_repo.read_by("title", "Get Community, Inc.")
+    # first clients
+    async with async_session() as session:
+        client_repo = ClientRepository(session)
+        c1 = await client_repo.read_by("title", "Get Community, Inc.")
         if not c1:
             c1 = await client_repo.create(ClientCreate(title="Get Community, Inc."))
+            i_count += 1
 
-        c2: Client | None = await client_repo.read_by("title", "The Grables")
+        c2 = await client_repo.read_by("title", "The Grables")
         if not c2:
             c2 = await client_repo.create(ClientCreate(title="The Grables"))
+            i_count += 1
 
-        # assign users to client1: admin1, manager1, employee1
-        c1_admin1: UserClient | None = await user_client_repo.exists_by_two(
+    # assign users to client1: admin1
+    async with async_session() as session:
+        user_client_repo = UserClientRepository(session)
+        c1_admin1 = await user_client_repo.exists_by_two(
             "user_id", admin1.id, "client_id", c1.id
         )
         if not c1_admin1:
             await user_client_repo.create(
                 UserClientCreate(user_id=admin1.id, client_id=c1.id)
             )
-        c1_manager1: UserClient | None = await user_client_repo.exists_by_two(
+            i_count += 1
+
+    # assign users to client1: manager1
+    async with async_session() as session:
+        user_client_repo = UserClientRepository(session)
+        c1_manager1 = await user_client_repo.exists_by_two(
             "user_id", manager1.id, "client_id", c1.id
         )
         if not c1_manager1:
             await user_client_repo.create(
                 UserClientCreate(user_id=manager1.id, client_id=c1.id)
             )
-        c1_employee1: UserClient | None = await user_client_repo.exists_by_two(
+            i_count += 1
+
+    # assign users to client1: employee1
+    async with async_session() as session:
+        user_client_repo = UserClientRepository(session)
+        c1_employee1 = await user_client_repo.exists_by_two(
             "user_id", employee1.id, "client_id", c1.id
         )
         if not c1_employee1:
             await user_client_repo.create(
                 UserClientCreate(user_id=employee1.id, client_id=c1.id)
             )
+            i_count += 1
 
-        # assign users to client2: admin1, manager1
-        c1_admin1: UserClient | None = await user_client_repo.exists_by_two(
+    # assign users to client2: admin1
+    async with async_session() as session:
+        user_client_repo = UserClientRepository(session)
+        c1_admin1 = await user_client_repo.exists_by_two(
             "user_id", admin1.id, "client_id", c2.id
         )
         if not c1_admin1:
             await user_client_repo.create(
                 UserClientCreate(user_id=admin1.id, client_id=c2.id)
             )
-        c1_manager1: UserClient | None = await user_client_repo.exists_by_two(
+            i_count += 1
+
+    # assign users to client2: manager1
+    async with async_session() as session:
+        user_client_repo = UserClientRepository(session)
+        c1_manager1 = await user_client_repo.exists_by_two(
             "user_id", manager1.id, "client_id", c2.id
         )
         if not c1_manager1:
             await user_client_repo.create(
                 UserClientCreate(user_id=manager1.id, client_id=c2.id)
             )
-
-    logger.info("Data Inserted")
+            i_count += 1
+    logger.info(f"Data Inserted C[{i_count}]")
 
 
 async def build_database() -> None:  # pragma: no cover
-    logger.info("Building Database")
-    await drop_db_tables()
-    await create_db_tables()
-    logger.info("Database Ready")
+    try:
+        logger.info("Building Database")
+        await drop_db_tables()
+        await create_db_tables()
+        logger.info("Database Ready")
+    except Exception as e:
+        logger.warning("Database threw an error", e)

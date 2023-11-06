@@ -10,7 +10,7 @@ app = typer.Typer()
 
 @app.command()
 def check_connection() -> None:
-    logger.info("Checking Database connection...")
+    logger.info("Check Database Connection")
 
     async def _check_db_connected() -> None:
         await check_db_connected()
@@ -20,7 +20,7 @@ def check_connection() -> None:
 
 @app.command()
 def create_db() -> None:
-    logger.info("Building Database...")
+    logger.info("Create Database")
 
     async def _build_database() -> None:
         await build_database()
@@ -30,7 +30,7 @@ def create_db() -> None:
 
 @app.command()
 def add_initial_data() -> None:
-    logger.info("Inserting Intial DB Data...")
+    logger.info("Load Initial Data")
 
     async def _create_init_data() -> None:
         await create_init_data()

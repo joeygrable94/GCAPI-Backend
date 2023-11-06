@@ -221,8 +221,6 @@ __all__: List[str] = [
     "NoteUpdate",
     "CsrfToken",
     "RateLimitedToken",
-    "RSAEncryptMessage",
-    "RSADecryptMessage",
     "SharpspringCreate",
     "SharpspringRead",
     "SharpspringUpdate",

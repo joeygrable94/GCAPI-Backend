@@ -28,7 +28,7 @@ class ApiSettings(BaseSettings):
     prefix: str = "/api"
     domain_name: str = environ.get("API_DOMAIN", "localhost")
     timezone: str = environ.get("API_TIMEZONE", "America/Los_Angeles")
-    logging_level: str = environ.get("API_LOG_LEVEL", "DEBUG").upper()
+    logging_level: str = environ.get("API_LOG_LEVEL", "debug").upper()
     logger_name: str = environ.get("API_NAME", "GCAPI")
     # Security
     asgi_header_key: str = "x-request-id"
@@ -37,7 +37,10 @@ class ApiSettings(BaseSettings):
         "API_SECRET_KEY",
         "54295fb3ad6577bf6ec55fc8a4e2ce86b4a490b5f1666f1e871e94855f6dc0a7",
     )
-    csrf_key: str = environ.get(
+    csrf_header_key: str = "x-csrf-token"
+    csrf_name_key: str = "gcapi-csrf-token"
+    csrf_salt: str = "gcap!-cSrf-$@aLtJv2-lXB*IUFLCcbz45Swnda92laS-DJG{rUX^ASz5Wzz;5sP"
+    csrf_secret_key: str = environ.get(
         "API_CSRF_KEY",
         "fb4cd9547245b656a5a44441eebd5960432c95d9c45970be0d7442f91bf64366",
     )

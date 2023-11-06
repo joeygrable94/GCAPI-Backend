@@ -107,7 +107,7 @@ async def website_create(
     a_sitemap_url = new_site.get_link()
     sitemap_task = task_website_sitemap_fetch_pages.delay(new_site.id, a_sitemap_url)
     return WebsiteCreateProcessing(
-        website=WebsiteRead.model_validate(new_site), task_id=sitemap_task.id
+        website=WebsiteRead.model_validate(new_site), task_id=sitemap_task.task_id
     )
 
 

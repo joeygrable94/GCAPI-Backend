@@ -163,7 +163,7 @@ class Auth0:
         if auto_error = return 403 until solving.
         see: https://github.com/tiangolo/fastapi/pull/2120
         """
-        if creds is None:
+        if creds is None:  # TODO: test
             if self.auto_error:
                 raise HTTPException(403, detail="Missing bearer token")
             else:
@@ -174,7 +174,7 @@ class Auth0:
         try:
             unverified_header = jwt.get_unverified_header(token)
 
-            if "kid" not in unverified_header:
+            if "kid" not in unverified_header:  # TODO: test
                 msg = "Malformed token header"
                 if self.auto_error:
                     raise Auth0UnauthenticatedException(detail=msg)
@@ -201,7 +201,7 @@ class Auth0:
                     audience=self.audience,
                     issuer=f"https://{self.domain}/",
                 )
-            else:
+            else:  # TODO: test
                 msg = "Invalid kid header (wrong tenant or rotated public key)"
                 if self.auto_error:
                     raise Auth0UnauthenticatedException(detail=msg)
@@ -209,7 +209,7 @@ class Auth0:
                     logger.warning(msg)
                     return None
 
-        except jwt.ExpiredSignatureError:
+        except jwt.ExpiredSignatureError:  # TODO: test
             msg = "Expired token"
             if self.auto_error:
                 raise Auth0UnauthenticatedException(detail=msg)
@@ -217,7 +217,7 @@ class Auth0:
                 logger.warning(msg)
                 return None
 
-        except jwt.JWTClaimsError:
+        except jwt.JWTClaimsError:  # TODO: test
             msg = "Invalid token claims (wrong issuer or audience)"
             if self.auto_error:
                 raise Auth0UnauthenticatedException(detail=msg)
@@ -225,7 +225,7 @@ class Auth0:
                 logger.warning(msg)
                 return None
 
-        except jwt.JWTError:
+        except jwt.JWTError:  # TODO: test
             msg = "Malformed token"
             if self.auto_error:
                 raise Auth0UnauthenticatedException(detail=msg)
@@ -233,10 +233,10 @@ class Auth0:
                 logger.warning(msg)
                 return None
 
-        except Auth0UnauthenticatedException:
+        except Auth0UnauthenticatedException:  # TODO: test
             raise
 
-        except Exception as e:
+        except Exception as e:  # TODO: test
             # This is an unlikely case but handle it just to be safe
             # (maybe the token is specially crafted to bug our code)
             logger.error(f'Handled exception decoding token: "{e}"', exc_info=True)
@@ -252,14 +252,14 @@ class Auth0:
                 token_scopes = token_scope_str.split()
 
                 for scope in security_scopes.scopes:
-                    if scope not in token_scopes:
+                    if scope not in token_scopes:  # TODO: test
                         raise Auth0UnauthorizedException(
                             detail=f'Missing "{scope}" scope',
                             headers={
                                 "WWW-Authenticate": f'Bearer scope="{security_scopes.scope_str}"'  # noqa: E501
                             },
                         )
-            else:
+            else:  # TODO: test
                 # This is an unlikely case but handle it just to be safe
                 # (perhaps auth0 will change the scope format)
                 raise Auth0UnauthorizedException(
@@ -269,14 +269,14 @@ class Auth0:
         try:
             user = self.auth0_user_model(**payload)
 
-            if self.email_auto_error and not user.email:
+            if self.email_auto_error and not user.email:  # pragma: no cover
                 raise Auth0UnauthorizedException(
                     detail='Missing email claim (check auth0 rule "Add email to access token")'  # noqa: E501
                 )
 
             return user
 
-        except ValidationError as e:
+        except ValidationError as e:  # TODO: test
             logger.error(f'Handled exception parsing Auth0User: "{e}"', exc_info=True)
             if self.auto_error:
                 raise Auth0UnauthorizedException(detail="Error parsing Auth0User")

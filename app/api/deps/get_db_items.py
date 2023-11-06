@@ -6,7 +6,6 @@ from fastapi import Depends
 from app.api.deps.get_db import AsyncDatabaseSession
 from app.api.exceptions import (
     ClientNotExists,
-    EntityIdNotProvided,
     NoteNotExists,
     UserNotExists,
     WebsiteMapNotExists,
@@ -43,8 +42,6 @@ async def get_user_or_404(
     user_id: Any | None = None,
 ) -> User | None:
     """Parses uuid/int and fetches user by id."""
-    if user_id is None:
-        raise EntityIdNotProvided()
     parsed_id: UUID = parse_id(user_id)
     user_repo: UserRepository = UserRepository(session=db)
     user: User | None = await user_repo.read(entry_id=parsed_id)
@@ -61,8 +58,6 @@ async def get_client_or_404(
     client_id: Any | None = None,
 ) -> Client | None:
     """Parses uuid/int and fetches client by id."""
-    if client_id is None:
-        raise EntityIdNotProvided()
     parsed_id: UUID = parse_id(client_id)
     client_repo: ClientRepository = ClientRepository(session=db)
     client: Client | None = await client_repo.read(entry_id=parsed_id)
@@ -79,8 +74,6 @@ async def get_note_or_404(
     note_id: Any | None = None,
 ) -> Note | None:
     """Parses uuid/int and fetches note by id."""
-    if note_id is None:
-        raise EntityIdNotProvided()
     parsed_id: UUID = parse_id(note_id)
     note_repo: NoteRepository = NoteRepository(session=db)
     note: Note | None = await note_repo.read(entry_id=parsed_id)

@@ -8,19 +8,19 @@ from .load_config import CookieSamesite, LoadConfig
 
 
 class CsrfConfig(object):  # type: ignore
-    _cookie_key: str = "fastapi-csrf-token"
+    _cookie_key: str = "gcapi-csrf-token"
     _cookie_path: str = "/"
     _cookie_domain: Optional[str] = None
     _cookie_samesite: Optional[CookieSamesite] = "lax"
     _cookie_secure: bool = False
-    _header_name: str = "X-CSRF-Token"
+    _header_name: str = "x-csrf-Token"
     _header_type: Optional[str] = None
     _httponly: bool = True
     _max_age: int = 3600
     _methods: Set[str] = {"POST", "PUT", "PATCH", "DELETE"}
     _secret_key: str = "super-secret-key"
     _token_location: str = "header"
-    _token_key: str = "csrf-token-key"
+    _token_key: str = "gcapi-csrf-token"
 
     @classmethod
     def load_config(cls, settings: Callable[..., List[tuple]]) -> None:
@@ -41,7 +41,7 @@ class CsrfConfig(object):  # type: ignore
             cls._token_key = config.token_key or cls._token_key
         except ValidationError:
             raise
-        except Exception as err:
+        except Exception as err:  # pragma: no cover
             logger.warning(err)
             raise TypeError(
                 'CsrfConfig must be pydantic "BaseSettings" or list of tuple'
