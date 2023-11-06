@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Callable
+from typing import Any, AsyncGenerator
 
 from fastapi import Depends, FastAPI
 from sentry_sdk import Client
@@ -26,8 +26,8 @@ async def application_lifespan(app: FastAPI) -> AsyncGenerator:
 
     # load CSRF settings
     @CsrfProtect.load_config
-    def get_csrf_config() -> Callable[...]:  # type: ignore
-        return CsrfSettings
+    def get_csrf_config() -> Any:  # type: ignore
+        return CsrfSettings()
 
     # yeild the application
     yield

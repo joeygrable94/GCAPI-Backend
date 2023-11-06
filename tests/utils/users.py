@@ -38,6 +38,17 @@ def get_auth0_access_token(
     return {"Authorization": f"Bearer {access_token}"}
 
 
+async def get_user_by_email(
+    db_session: AsyncSession,
+    email: EmailStr | None = None,
+) -> User:
+    repo: UserRepository = UserRepository(session=db_session)
+    user: User | None = await repo.read_by("email", email)
+    if user is None:
+        user = await create_random_user(db_session=db_session, email=email)
+    return user
+
+
 async def create_random_user(
     db_session: AsyncSession,
     auth_id: str | None = None,

@@ -16,7 +16,7 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 class ClientBase(BaseSchema):
     title: str
     description: Optional[str] = None
-    is_active: Optional[bool] = True
+    is_active: bool = True
 
     _validate_title = field_validator("title", mode="before")(validate_title_required)
     _validate_description = field_validator("description", mode="before")(
@@ -27,6 +27,7 @@ class ClientBase(BaseSchema):
 class ClientCreate(ClientBase):
     title: str
     description: Optional[str] = None
+    is_active: bool = True
 
 
 class ClientUpdate(BaseSchema):

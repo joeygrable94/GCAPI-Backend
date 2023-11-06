@@ -17,6 +17,7 @@ class NoteBase(BaseSchema):
     title: str
     description: Optional[str] = None
     is_active: bool = True
+    user_id: UUID4
 
     _validate_title = field_validator("title", mode="before")(validate_title_required)
     _validate_description = field_validator("description", mode="before")(
@@ -28,6 +29,7 @@ class NoteCreate(NoteBase):
     title: str
     description: Optional[str] = None
     is_active: bool = True
+    user_id: UUID4
 
 
 class NoteUpdate(BaseSchema):
@@ -43,3 +45,4 @@ class NoteUpdate(BaseSchema):
 
 class NoteRead(NoteBase, BaseSchemaRead):
     id: UUID4
+    user_id: UUID4

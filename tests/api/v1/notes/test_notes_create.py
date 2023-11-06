@@ -3,73 +3,105 @@ from typing import Any, Dict
 import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
+from tests.utils.users import get_user_by_email
 from tests.utils.utils import random_lower_string
 
 from app.api.exceptions import ErrorCode
+from app.core.config import settings
+from app.models.user import User
 
 pytestmark = pytest.mark.asyncio
 
 
-async def test_create_client_as_superuser(
+async def test_create_note_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
+    user: User = await get_user_by_email(
+        db_session=db_session, email=settings.auth.first_admin
+    )
     title: str = random_lower_string()
     description: str = random_lower_string()
-    data: Dict[str, str] = {"title": title, "description": description}
+    data_in: Dict[str, Any] = {
+        "title": title,
+        "description": description,
+        "user_id": str(user.id),
+    }
     response: Response = await client.post(
-        "clients/",
+        "notes/",
         headers=admin_token_headers,
-        json=data,
+        json=data_in,
     )
     entry: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
     assert entry["title"] == title
     assert entry["description"] == description
+    assert entry["is_active"] is True
 
 
-async def test_create_client_as_superuser_client_already_exists(
+async def test_create_note_as_superuser_note_already_exists(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
+    user: User = await get_user_by_email(
+        db_session=db_session, email=settings.auth.first_admin
+    )
     title: str = random_lower_string()
     description: str = random_lower_string()
-    data: Dict[str, str] = {"title": title, "description": description}
+    data_in: Dict[str, Any] = {
+        "title": title,
+        "description": description,
+        "user_id": str(user.id),
+    }
     response: Response = await client.post(
-        "clients/",
+        "notes/",
         headers=admin_token_headers,
-        json=data,
+        json=data_in,
     )
     assert 200 <= response.status_code < 300
     entry: Dict[str, Any] = response.json()
     assert entry["title"] == title
     assert entry["description"] == description
+    assert entry["is_active"] is True
     description_2: str = random_lower_string()
-    data_2: Dict[str, str] = {"title": title, "description": description_2}
+    data_in_2: Dict[str, Any] = {
+        "title": title,
+        "description": description_2,
+        "user_id": str(
+            user.id,
+        ),
+    }
     response_2: Response = await client.post(
-        "clients/",
+        "notes/",
         headers=admin_token_headers,
-        json=data_2,
+        json=data_in_2,
     )
     assert response_2.status_code == 400
     entry_2: Dict[str, Any] = response_2.json()
-    assert entry_2["detail"] == ErrorCode.CLIENT_EXISTS
+    assert entry_2["detail"] == ErrorCode.NOTE_EXISTS
 
 
-async def test_create_client_as_superuser_client_title_too_short(
+async def test_create_note_as_superuser_note_title_too_short(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
+    user: User = await get_user_by_email(
+        db_session=db_session, email=settings.auth.first_admin
+    )
     title: str = "1234"
     description: str = random_lower_string()
-    data: Dict[str, str] = {"title": title, "description": description}
+    data_in: Dict[str, Any] = {
+        "title": title,
+        "description": description,
+        "user_id": str(user.id),
+    }
     response: Response = await client.post(
-        "clients/",
+        "notes/",
         headers=admin_token_headers,
-        json=data,
+        json=data_in,
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
@@ -78,18 +110,25 @@ async def test_create_client_as_superuser_client_title_too_short(
     )
 
 
-async def test_create_client_as_superuser_client_title_too_long(
+async def test_create_note_as_superuser_note_title_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
+    user: User = await get_user_by_email(
+        db_session=db_session, email=settings.auth.first_admin
+    )
     title: str = random_lower_string() * 4
     description: str = random_lower_string()
-    data: Dict[str, str] = {"title": title, "description": description}
+    data_in: Dict[str, Any] = {
+        "title": title,
+        "description": description,
+        "user_id": str(user.id),
+    }
     response: Response = await client.post(
-        "clients/",
+        "notes/",
         headers=admin_token_headers,
-        json=data,
+        json=data_in,
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
@@ -98,18 +137,25 @@ async def test_create_client_as_superuser_client_title_too_long(
     )
 
 
-async def test_create_client_as_superuser_client_description_too_long(
+async def test_create_note_as_superuser_note_description_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
+    user: User = await get_user_by_email(
+        db_session=db_session, email=settings.auth.first_admin
+    )
     title: str = random_lower_string()
     description: str = random_lower_string() * 160
-    data: Dict[str, str] = {"title": title, "description": description}
+    data_in: Dict[str, Any] = {
+        "title": title,
+        "description": description,
+        "user_id": str(user.id),
+    }
     response: Response = await client.post(
-        "clients/",
+        "notes/",
         headers=admin_token_headers,
-        json=data,
+        json=data_in,
     )
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()

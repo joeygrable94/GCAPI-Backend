@@ -3,25 +3,31 @@ from typing import Any, Dict
 import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.clients import create_random_client
+from tests.utils.notes import create_random_note
+from tests.utils.users import get_user_by_email
 from tests.utils.utils import random_lower_string
 
 from app.api.exceptions import ErrorCode
-from app.schemas import ClientRead, ClientUpdate
+from app.core.config import settings
+from app.models import User
+from app.schemas import NoteRead, NoteUpdate
 
 pytestmark = pytest.mark.asyncio
 
 
-async def test_update_client_as_superuser(
+async def test_update_note_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry_a: ClientRead = await create_random_client(db_session)
+    user: User = await get_user_by_email(
+        db_session=db_session, email=settings.auth.first_admin
+    )
+    entry_a: NoteRead = await create_random_note(db_session, user_id=user.id)
     title: str = "New Client Title"
     data: Dict[str, str] = {"title": title}
     response: Response = await client.patch(
-        f"clients/{entry_a.id}",
+        f"notes/{entry_a.id}",
         headers=admin_token_headers,
         json=data,
     )
@@ -32,16 +38,19 @@ async def test_update_client_as_superuser(
     assert updated_entry["description"] == entry_a.description
 
 
-async def test_update_client_as_superuser_title_too_short(
+async def test_update_note_as_superuser_title_too_short(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry_a: ClientRead = await create_random_client(db_session)
+    user: User = await get_user_by_email(
+        db_session=db_session, email=settings.auth.first_admin
+    )
+    entry_a: NoteRead = await create_random_note(db_session, user_id=user.id)
     title: str = "1234"
     data: Dict[str, str] = {"title": title}
     response: Response = await client.patch(
-        f"clients/{entry_a.id}",
+        f"notes/{entry_a.id}",
         headers=admin_token_headers,
         json=data,
     )
@@ -53,16 +62,19 @@ async def test_update_client_as_superuser_title_too_short(
     )
 
 
-async def test_update_client_as_superuser_title_too_long(
+async def test_update_note_as_superuser_title_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry_a: ClientRead = await create_random_client(db_session)
+    user: User = await get_user_by_email(
+        db_session=db_session, email=settings.auth.first_admin
+    )
+    entry_a: NoteRead = await create_random_note(db_session, user_id=user.id)
     title: str = random_lower_string() * 4
     data: Dict[str, str] = {"title": title}
     response: Response = await client.patch(
-        f"clients/{entry_a.id}",
+        f"notes/{entry_a.id}",
         headers=admin_token_headers,
         json=data,
     )
@@ -74,16 +86,19 @@ async def test_update_client_as_superuser_title_too_long(
     )
 
 
-async def test_update_client_as_superuser_description_too_long(
+async def test_update_note_as_superuser_description_too_long(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry_a: ClientRead = await create_random_client(db_session)
+    user: User = await get_user_by_email(
+        db_session=db_session, email=settings.auth.first_admin
+    )
+    entry_a: NoteRead = await create_random_note(db_session, user_id=user.id)
     description: str = random_lower_string() * 160
     data: Dict[str, str] = {"description": description}
     response: Response = await client.patch(
-        f"clients/{entry_a.id}",
+        f"notes/{entry_a.id}",
         headers=admin_token_headers,
         json=data,
     )
@@ -95,22 +110,25 @@ async def test_update_client_as_superuser_description_too_long(
     )
 
 
-async def test_update_client_already_exists(
+async def test_update_note_already_exists(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry_a: ClientRead = await create_random_client(db_session)
-    entry_b: ClientRead = await create_random_client(db_session)
-    update_dict = ClientUpdate(
+    user: User = await get_user_by_email(
+        db_session=db_session, email=settings.auth.first_admin
+    )
+    entry_a: NoteRead = await create_random_note(db_session, user_id=user.id)
+    entry_b: NoteRead = await create_random_note(db_session, user_id=user.id)
+    update_dict = NoteUpdate(
         title=entry_b.title,
         description="New description",
     )
     response: Response = await client.patch(
-        f"clients/{entry_a.id}",
+        f"notes/{entry_a.id}",
         headers=admin_token_headers,
         json=update_dict.model_dump(),
     )
     updated_entry: Dict[str, Any] = response.json()
     assert response.status_code == 400
-    assert updated_entry["detail"] == ErrorCode.CLIENT_EXISTS
+    assert updated_entry["detail"] == ErrorCode.NOTE_EXISTS

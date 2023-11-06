@@ -26,13 +26,13 @@ router: APIRouter = APIRouter()
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
     ],
-    response_model=List[NoteRead],
+    response_model=list[NoteRead],
 )
 async def notes_list(
     current_user: CurrentUser,
     db: AsyncDatabaseSession,
     query: GetPaginatedQueryParams,
-) -> List[NoteRead] | List:
+) -> list[NoteRead] | list:
     """Retrieve a list of notes.
 
     Permissions:
@@ -51,7 +51,7 @@ async def notes_list(
 
     """
     notes_repo: NoteRepository = NoteRepository(session=db)
-    notes: List[Note] | List[None] | None = await notes_repo.list(page=query.page)
+    notes: list[Note] | List[None] | None = await notes_repo.list(page=query.page)
     return [NoteRead.model_validate(c) for c in notes] if notes else []
 
 

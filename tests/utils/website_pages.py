@@ -20,7 +20,9 @@ async def create_random_website_page(
         website: WebsiteRead = await create_random_website(db_session)
         website_id = website.id
     if sitemap_id is None:
-        website_map: WebsiteMapRead = await create_random_website_map(db_session)
+        website_map: WebsiteMapRead = await create_random_website_map(
+            db_session, website_id=website_id
+        )
         sitemap_id = website_map.id
     website_page: WebsitePage = await repo.create(
         schema=WebsitePageCreate(
