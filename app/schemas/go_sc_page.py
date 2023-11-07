@@ -6,10 +6,8 @@ from pydantic import UUID4, field_validator
 
 from app.db.validators import (
     validate_clicks_required,
-    validate_ctr_required,
     validate_impressions_required,
     validate_keys_required,
-    validate_position_required,
 )
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
@@ -31,10 +29,6 @@ class GoSearchConsolePageBase(BaseSchema):
     )
     _validate_impressions = field_validator("impressions", mode="before")(
         validate_impressions_required
-    )
-    _validate_ctr = field_validator("ctr", mode="before")(validate_ctr_required)
-    _validate_position = field_validator("position", mode="before")(
-        validate_position_required
     )
 
 

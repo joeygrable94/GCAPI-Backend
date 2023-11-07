@@ -15,7 +15,7 @@ class InvalidID(ApiException):
         super().__init__(status.HTTP_422_UNPROCESSABLE_ENTITY, message)
 
 
-class EntityIdNotProvided(ApiException):
+class EntityIdNotProvided(ApiException):  # TODO: test
     def __init__(self, message: str = ErrorCode.ID_NOT_PROVIDED):
         super().__init__(status.HTTP_400_BAD_REQUEST, message)
 
@@ -92,7 +92,7 @@ class WebsitePageNotExists(ApiException):
 
 
 # Website Page Speed Insights
-class WebsitePageSpeedInsightsAlreadyExists(ApiException):
+class WebsitePageSpeedInsightsAlreadyExists(ApiException):  # TODO: test
     def __init__(self, message: str = ErrorCode.WEBSITE_PAGE_SPEED_INSIGHTS_EXISTS):
         super().__init__(status.HTTP_400_BAD_REQUEST, message)
 
@@ -103,7 +103,7 @@ class WebsitePageSpeedInsightsNotExists(ApiException):
 
 
 # Website Keyword Corpus
-class WebsitePageKeywordCorpusAlreadyExists(ApiException):
+class WebsitePageKeywordCorpusAlreadyExists(ApiException):  # TODO: test
     def __init__(self, message: str = ErrorCode.WEBSITE_PAGE_KEYWORD_CORPUS_EXISTS):
         super().__init__(status.HTTP_400_BAD_REQUEST, message)
 

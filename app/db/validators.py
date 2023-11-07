@@ -4,7 +4,6 @@ from app.core.config import settings
 from app.core.security.permissions import AclPrivilege, Scope
 from app.core.utilities import domain_name_regex, email_regex
 from app.db.constants import (
-    DB_FLOAT_MAX_LEN,
     DB_INT_INTEGER_MAX_LEN,
     DB_STR_BLOB_MAX_LEN,
     DB_STR_LONGTEXT_MAX_LEN,
@@ -20,9 +19,12 @@ def require_int_name_min_max_len(
     name: str,
     min_len: int = 0,
     max_len: int = 255,
+    can_be_zero: bool = False,
 ) -> int:
-    if min_len == 0 and v <= 0:
+    if min_len == 0 and v < 0:
         raise ValueError(f"{name} is required")
+    if not can_be_zero and v == 0:
+        raise ValueError(f"{name} must be greater than 0")
     if v < min_len:
         raise ValueError(f"{name} must be greater than {min_len}")
     if v > max_len:
@@ -35,45 +37,18 @@ def optional_int_name_min_max_len(
     name: str,
     min_len: int | None = None,
     max_len: int = 255,
+    can_be_zero: bool = False,
 ) -> int | None:
     if min_len is not None:
-        if min_len == 0 and v is not None and v <= 0:
+        if v is not None and v < 0 and min_len == 0:
             raise ValueError(f"{name} is required")
+        if v is not None and v == 0 and not can_be_zero:
+            raise ValueError(f"{name} must be greater than 0")
         if v is not None and v < min_len:
             raise ValueError(f"{name} must be {min_len} characters or more")
     if v is not None and v > max_len:
         raise ValueError(f"{name} must be {max_len} characters or less")
     return v
-
-
-def require_float_rounded_to_max_len(
-    v: float,
-    max_len: int = 20,
-) -> float:
-    float_str = str(v).strip("0")
-    excess_length = (
-        max(0, len(float_str) - max_len)
-        if len(float_str) > max_len
-        else max(0, max_len - len(float_str))
-    )
-    value = round(v, excess_length)
-    return value
-
-
-def optional_float_rounded_to_max_len(
-    v: float | None,
-    max_len: int = 20,
-) -> float | None:
-    value: float | None = None
-    if v:
-        float_str = str(v).strip("0")
-        excess_length = (
-            max(0, len(float_str) - max_len)
-            if len(float_str) > max_len
-            else max(0, max_len - len(float_str))
-        )
-        value = round(v, excess_length)
-    return value
 
 
 def require_string_name_min_max_len(
@@ -97,8 +72,8 @@ def optional_string_name_min_max_len(
     min_len: int | None = None,
     max_len: int = 255,
 ) -> str | None:
-    if min_len:
-        if min_len == 0 and v is None:
+    if min_len is not None:
+        if v is not None and min_len == 0 and len(v) <= 0:
             raise ValueError(f"{name} is required")
         if v is not None and len(v) < min_len:
             raise ValueError(f"{name} must be {min_len} characters or more")
@@ -361,7 +336,7 @@ def validate_scopes_required(
         if isinstance(scope, str):
             tmp = Scope(scope)
             scopes.append(AclPrivilege(tmp))
-        else:
+        else:  # pragma: no cover
             scopes.append(scope)
     return scopes
 
@@ -375,7 +350,7 @@ def validate_scopes_optional(
             if isinstance(scope, str):
                 tmp = Scope(scope)
                 scopes.append(AclPrivilege(tmp))
-            else:
+            else:  # pragma: no cover
                 scopes.append(scope)
         return scopes
     return None
@@ -493,7 +468,7 @@ def validate_keys_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="keys",
-        min_len=0,
+        min_len=1,
         max_len=65500,
     )
 
@@ -575,34 +550,6 @@ def validate_size_kb_optional(cls: Any, value: int | None) -> int | None:
         name="size_kb",
         min_len=0,
         max_len=settings.api.payload_limit_kb,
-    )
-
-
-def validate_latitude_required(cls: Any, value: float) -> float:
-    return require_float_rounded_to_max_len(
-        v=value,
-        max_len=DB_FLOAT_MAX_LEN,
-    )
-
-
-def validate_latitude_optional(cls: Any, value: float | None) -> float | None:
-    return optional_float_rounded_to_max_len(
-        v=value,
-        max_len=DB_FLOAT_MAX_LEN,
-    )
-
-
-def validate_longitude_required(cls: Any, value: float) -> float:
-    return require_float_rounded_to_max_len(
-        v=value,
-        max_len=DB_FLOAT_MAX_LEN,
-    )
-
-
-def validate_longitude_optional(cls: Any, value: float | None) -> float | None:
-    return optional_float_rounded_to_max_len(
-        v=value,
-        max_len=DB_FLOAT_MAX_LEN,
     )
 
 
@@ -738,6 +685,7 @@ def validate_altitude_required(cls: Any, value: int) -> int:
         name="altitude",
         min_len=0,
         max_len=1000,
+        can_be_zero=True,
     )
 
 
@@ -747,6 +695,7 @@ def validate_altitude_optional(cls: Any, value: int | None) -> int | None:
         name="altitude",
         min_len=0,
         max_len=1000,
+        can_be_zero=True,
     )
 
 
@@ -879,7 +828,6 @@ def validate_icon_color_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="icon_color",
-        min_len=0,
         max_len=32,
     )
 
@@ -888,7 +836,6 @@ def validate_bg_color_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="bg_color",
-        min_len=0,
         max_len=32,
     )
 
@@ -897,7 +844,6 @@ def validate_text_color_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="text_color",
-        min_len=0,
         max_len=32,
     )
 
@@ -906,7 +852,6 @@ def validate_browser_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="browser",
-        min_len=0,
         max_len=255,
     )
 
@@ -915,7 +860,6 @@ def validate_browser_version_optional(cls: Any, value: str | None) -> str | None
     return optional_string_name_min_max_len(
         v=value,
         name="browser_version",
-        min_len=0,
         max_len=255,
     )
 
@@ -924,7 +868,6 @@ def validate_platform_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="platform",
-        min_len=0,
         max_len=255,
     )
 
@@ -933,7 +876,6 @@ def validate_platform_version_optional(cls: Any, value: str | None) -> str | Non
     return optional_string_name_min_max_len(
         v=value,
         name="platform_version",
-        min_len=0,
         max_len=255,
     )
 
@@ -942,7 +884,6 @@ def validate_city_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="city",
-        min_len=0,
         max_len=255,
     )
 
@@ -951,7 +892,6 @@ def validate_country_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="country",
-        min_len=0,
         max_len=255,
     )
 
@@ -960,7 +900,6 @@ def validate_state_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="state",
-        min_len=0,
         max_len=255,
     )
 
@@ -969,7 +908,6 @@ def validate_language_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="language",
-        min_len=0,
         max_len=255,
     )
 
@@ -980,6 +918,7 @@ def validate_active_seconds_required(cls: Any, value: int) -> int:
         name="active_seconds",
         min_len=0,
         max_len=86400,
+        can_be_zero=True,
     )
 
 
@@ -1097,6 +1036,7 @@ def validate_clicks_required(cls: Any, value: int) -> int:
         name="clicks",
         min_len=0,
         max_len=DB_INT_INTEGER_MAX_LEN,
+        can_be_zero=True,
     )
 
 
@@ -1106,20 +1046,7 @@ def validate_impressions_required(cls: Any, value: int) -> int:
         name="impressions",
         min_len=0,
         max_len=DB_INT_INTEGER_MAX_LEN,
-    )
-
-
-def validate_ctr_required(cls: Any, value: float) -> float:
-    return require_float_rounded_to_max_len(
-        v=value,
-        max_len=DB_FLOAT_MAX_LEN,
-    )
-
-
-def validate_position_required(cls: Any, value: float) -> float:
-    return require_float_rounded_to_max_len(
-        v=value,
-        max_len=DB_FLOAT_MAX_LEN,
+        can_be_zero=True,
     )
 
 
