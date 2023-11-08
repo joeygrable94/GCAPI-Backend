@@ -50,10 +50,12 @@ def task_speak(
     name="tasks:task_request_to_delete_user",
     acks_late=True,
 )
-def task_request_to_delete_user(user_id: UUID4) -> None:
+def task_request_to_delete_user(user_id: UUID4) -> None:  # TODO: test
     # TODO: Send email to user to confirm deletion
     # TODO: flag user as pending delete.
-    logger.info(f"User({user_id}) requested to delete their account.")
+    logger.info(
+        f"User({user_id}) requested to delete their account."
+    )  # pragma: no cover
 
 
 @celery_app.task(

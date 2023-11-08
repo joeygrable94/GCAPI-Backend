@@ -123,7 +123,7 @@ async def test_read_user_as_user_verified(
     assert response_b.status_code == 403
 
 
-async def test_read_user_by_id_as_admin_id_invalid(
+async def test_read_user_by_id_as_admin_user_not_found(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
@@ -136,3 +136,18 @@ async def test_read_user_by_id_as_admin_id_invalid(
     data: Dict[str, Any] = response.json()
     assert response.status_code == 404
     assert data["detail"] == ErrorCode.USER_NOT_FOUND
+
+
+async def test_read_user_by_id_as_admin_id_invalid(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_token_headers: Dict[str, str],
+) -> None:
+    fake_id = "FAKE-UUID-ASDF-1234567890"
+    response: Response = await client.get(
+        f"users/{fake_id}",
+        headers=admin_token_headers,
+    )
+    data: Dict[str, Any] = response.json()
+    assert response.status_code == 422
+    assert data["detail"] == ErrorCode.ID_INVALID

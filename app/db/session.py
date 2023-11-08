@@ -13,6 +13,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import SingletonThreadPool
 
 from app.core.config import settings
+from app.core.logger import logger
 
 # Session
 engine: Engine = create_engine(
@@ -37,11 +38,11 @@ async_session: Any = async_sessionmaker(async_engine, expire_on_commit=False)
 async def get_db_session() -> AsyncGenerator[AsyncSession, Any]:
     session: AsyncSession
     async with async_session() as session:
-        # session.begin()
         try:
+            session.begin()
             yield session
-            await session.commit()
-        except Exception:  # pragma: no cover
+        except Exception as e:  # pragma: no cover
+            logger.warning(e)
             await session.rollback()
             raise
         finally:

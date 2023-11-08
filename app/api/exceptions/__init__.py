@@ -10,7 +10,10 @@ from app.core.security import (
     AuthPermissionException,
     CipherError,
     CsrfProtectError,
+    DecryptionError,
+    EncryptionError,
     RateLimitedRequestException,
+    SignatureVerificationError,
 )
 
 from .errors import ErrorCode, ErrorCodeReasonModel, ErrorModel
@@ -18,7 +21,6 @@ from .exceptions import (
     ApiException,
     ClientAlreadyExists,
     ClientNotExists,
-    EntityIdNotProvided,
     InvalidID,
     NoteAlreadyExists,
     NoteNotExists,
@@ -30,29 +32,43 @@ from .exceptions import (
     WebsiteMapNotExists,
     WebsiteNotExists,
     WebsitePageAlreadyExists,
-    WebsitePageKeywordCorpusAlreadyExists,
     WebsitePageKeywordCorpusNotExists,
     WebsitePageNotExists,
-    WebsitePageSpeedInsightsAlreadyExists,
     WebsitePageSpeedInsightsNotExists,
 )
 
 
-def get_global_headers() -> Dict[str, str]:
-    return {
+def get_global_headers(inject_headers: Dict[str, str] | None = None) -> Dict[str, str]:
+    global_headers = {
         "x-request-id": correlation_id.get() or "",
         "Access-Control-Expose-Headers": "x-request-id",
     }
+    if inject_headers is not None:
+        global_headers.update(inject_headers)
+    return global_headers
 
 
 def configure_exceptions(app: FastAPI) -> None:
     @app.exception_handler(Exception)
     async def unhandled_exception_handler(request: Request, exc: Exception) -> Response:
-        return await http_exception_handler(
+        return await http_exception_handler(  # pragma: no cover
             request,
             HTTPException(
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
                 "Internal server error",
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(ApiException)
+    async def api_exception_exception_handler(
+        request: Request, exc: ApiException
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(  # pragma: no cover
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
                 headers={**get_global_headers()},
             ),
         )
@@ -71,10 +87,10 @@ def configure_exceptions(app: FastAPI) -> None:
         )
 
     @app.exception_handler(CipherError)
-    async def rsa_security_exception_handler(
-        request: Request, exc: CsrfProtectError
+    async def cipher_security_exception_handler(
+        request: Request, exc: CipherError
     ) -> Response:  # noqa: E501
-        return await http_exception_handler(
+        return await http_exception_handler(  # pragma: no cover
             request,
             HTTPException(
                 exc.status_code,
@@ -87,9 +103,9 @@ def configure_exceptions(app: FastAPI) -> None:
     async def auth0_unauthenticated_exception_handler(
         request: Request, exc: Auth0UnauthenticatedException
     ) -> Response:  # noqa: E501
-        request_headers = get_global_headers()
-        if exc.headers:
-            request_headers.update(exc.headers)
+        request_headers = (
+            get_global_headers(exc.headers) if exc.headers else get_global_headers()
+        )
         return await http_exception_handler(
             request,
             HTTPException(
@@ -103,9 +119,9 @@ def configure_exceptions(app: FastAPI) -> None:
     async def auth0_unauthorized_exception_handler(
         request: Request, exc: Auth0UnauthorizedException
     ) -> Response:  # noqa: E501
-        request_headers = get_global_headers()
-        if exc.headers:
-            request_headers.update(exc.headers)
+        request_headers = (
+            get_global_headers(exc.headers) if exc.headers else get_global_headers()
+        )
         return await http_exception_handler(
             request,
             HTTPException(
@@ -119,9 +135,9 @@ def configure_exceptions(app: FastAPI) -> None:
     async def permissions_exception_handler(
         request: Request, exc: AuthPermissionException
     ) -> Response:  # noqa: E501
-        request_headers = get_global_headers()
-        if exc.headers:
-            request_headers.update(exc.headers)
+        request_headers = (
+            get_global_headers(exc.headers) if exc.headers else get_global_headers()
+        )
         return await http_exception_handler(
             request,
             HTTPException(
@@ -135,9 +151,9 @@ def configure_exceptions(app: FastAPI) -> None:
     async def rate_limited_request_exception_handler(
         request: Request, exc: RateLimitedRequestException
     ) -> Response:  # noqa: E501
-        request_headers = get_global_headers()
-        if exc.headers:
-            request_headers.update(exc.headers)
+        request_headers = (
+            get_global_headers(exc.headers) if exc.headers else get_global_headers()
+        )
         return await http_exception_handler(
             request,
             HTTPException(
@@ -147,35 +163,9 @@ def configure_exceptions(app: FastAPI) -> None:
             ),
         )
 
-    @app.exception_handler(ApiException)
-    async def api_exception_exception_handler(
-        request: Request, exc: ApiException
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
     @app.exception_handler(InvalidID)
     async def invalid_id_exception_handler(
         request: Request, exc: InvalidID
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
-    @app.exception_handler(EntityIdNotProvided)
-    async def entity_id_not_provided_exception_handler(
-        request: Request, exc: EntityIdNotProvided
     ) -> Response:  # noqa: E501
         return await http_exception_handler(
             request,
@@ -355,35 +345,9 @@ def configure_exceptions(app: FastAPI) -> None:
             ),
         )
 
-    @app.exception_handler(WebsitePageSpeedInsightsAlreadyExists)
-    async def website_page_speed_insights_already_exists_exception_handler(
-        request: Request, exc: WebsitePageSpeedInsightsAlreadyExists
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
     @app.exception_handler(WebsitePageSpeedInsightsNotExists)
     async def website_page_speed_insights_not_exists_exception_handler(
         request: Request, exc: WebsitePageSpeedInsightsNotExists
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
-    @app.exception_handler(WebsitePageKeywordCorpusAlreadyExists)
-    async def website_page_keyword_corpus_already_exists_exception_handler(
-        request: Request, exc: WebsitePageKeywordCorpusAlreadyExists
     ) -> Response:  # noqa: E501
         return await http_exception_handler(
             request,
@@ -413,7 +377,6 @@ __all__: List[str] = [
     "ClientAlreadyExists",
     "ClientNotExists",
     "configure_exceptions",
-    "EntityIdNotProvided",
     "ErrorModel",
     "ErrorCodeReasonModel",
     "ErrorCode",
@@ -429,8 +392,6 @@ __all__: List[str] = [
     "WebsiteMapNotExists",
     "WebsitePageAlreadyExists",
     "WebsitePageNotExists",
-    "WebsitePageSpeedInsightsAlreadyExists",
     "WebsitePageSpeedInsightsNotExists",
-    "WebsitePageKeywordCorpusAlreadyExists",
     "WebsitePageKeywordCorpusNotExists",
 ]

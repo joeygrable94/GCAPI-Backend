@@ -68,7 +68,7 @@ async def website_page_speed_insights_list(
         page=query.page,
         website_id=query.website_id,
         page_id=query.page_id,
-        devices=query.devices,
+        devices=query.strategy,
     )
     return (
         [WebsitePageSpeedInsightsRead.model_validate(wpsi) for wpsi in web_psi_list]

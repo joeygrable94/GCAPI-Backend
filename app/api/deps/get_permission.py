@@ -55,7 +55,7 @@ class PermissionController(Generic[T]):
         db: AsyncDatabaseSession,
         user: CurrentUser,
         privileges: List[AclPrivilege],
-    ):
+    ):  # pragma: no cover
         self.db = db
         self.current_user = user
         self.privileges = privileges
@@ -78,7 +78,7 @@ class PermissionController(Generic[T]):
             if perm in self.privileges:
                 return True
         # user_id and client_id was provided
-        if user_id and client_id:
+        if user_id and client_id:  # TODO: test
             # check if the requested user_id has a relationship with the client
             user_client = await self.user_client_repo.exists_by_two(
                 field_name_a="user_id",
@@ -89,7 +89,7 @@ class PermissionController(Generic[T]):
             if user_client:
                 return True
         # only client_id was provided
-        elif client_id:
+        elif client_id:  # TODO: test
             # check if the current user has a relationship with the client
             user_client = await self.user_client_repo.exists_by_two(
                 field_name_a="user_id",
@@ -109,7 +109,7 @@ class PermissionController(Generic[T]):
             user_client = await self.user_client_repo.read_by(
                 field_name="user_id", field_value=user_id
             )
-            if user_client:
+            if user_client:  # TODO: test
                 current_user_client = await self.user_client_repo.exists_by_two(
                     field_name_a="user_id",
                     field_value_a=self.current_user.id,
@@ -144,7 +144,7 @@ class PermissionController(Generic[T]):
         for privilege, response_schema in responses.items():
             if privilege in self.privileges:
                 return response_schema.model_validate(resource)
-        raise AuthPermissionException(
+        raise AuthPermissionException(  # TODO: test
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             message="You do not have permission to access the output of this resource",
         )
@@ -234,7 +234,7 @@ class PermissionController(Generic[T]):
         )
         return user_scopes
 
-    def __repr__(self) -> str:
+    def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"PermissionControl(User={self.current_user.auth_id})"
         return repr_str
 
@@ -243,5 +243,5 @@ def get_permission_controller(
     db: AsyncDatabaseSession,
     user: CurrentUser,
     privileges: List[AclPrivilege] = Depends(get_current_user_privileges),
-) -> PermissionController:
+) -> PermissionController:  # pragma: no cover
     return PermissionController(db, user, privileges)

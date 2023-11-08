@@ -55,6 +55,8 @@ class SecureMessage:
                 return message.decode("utf-8")
             else:
                 raise SignatureVerificationError()
+        except SignatureVerificationError as e:
+            raise SignatureVerificationError(message=e.message)
         except Exception as e:
             logger.exception(e)
             raise DecryptionError()

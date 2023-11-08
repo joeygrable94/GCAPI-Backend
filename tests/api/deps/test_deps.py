@@ -84,4 +84,7 @@ def test_query_devices_param_validation() -> None:
     with pytest.raises(HTTPException) as exc_info:
         DeviceStrategyQueryParams(strategy=["invalid_strategy"])
     assert exc_info.value.status_code == 422
-    assert exc_info.value.detail == "Invalid strategy"
+    assert (
+        exc_info.value.detail
+        == "Invalid device strategy, must be 'mobile' or 'desktop'"
+    )

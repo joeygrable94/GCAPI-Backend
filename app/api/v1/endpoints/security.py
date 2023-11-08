@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, Request, Response
+from typing import Any
+
+from fastapi import APIRouter, Depends, Request, Response, Security
 
 from app.api.deps import (
     CurrentUser,
@@ -13,13 +15,27 @@ from app.core.security import (
     PlainMessage,
     auth,
 )
+from app.core.security.auth.auth0 import Auth0User
 
 router: APIRouter = APIRouter()
 
 
 @router.get(
+    "/test-scope",
+    name="secure:test_security_scope",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+    ],
+)
+async def check_test_token_scope(
+    user: Auth0User = Security(auth.get_user, scopes=["access:test"])
+) -> Any:
+    return {"status": "ok"}
+
+
+@router.get(
     "/csrf",
-    name="public:get_csrf",
+    name="secure:get_csrf",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(CsrfProtect),
@@ -55,7 +71,7 @@ async def get_csrf(
 
 @router.post(
     "/csrf",
-    name="public:check_csrf",
+    name="secure:check_csrf",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(CsrfProtect),
@@ -93,7 +109,7 @@ async def check_csrf(
 
 @router.post(
     "/encrypt/message",
-    name="public:secure_encrypt_message",
+    name="secure:secure_encrypt_message",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_secure_message_encryption),
@@ -112,7 +128,7 @@ async def secure_encrypt_message(
 
 @router.post(
     "/decrypt/message",
-    name="public:secure_decrypt_message",
+    name="secure:secure_decrypt_message",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_secure_message_encryption),

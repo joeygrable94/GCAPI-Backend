@@ -13,8 +13,8 @@ def parse_id(value: Any) -> UUID4:
         return value
     try:
         return uuid.UUID(value)
-    except ValueError as e:
-        raise InvalidID() from e
+    except ValueError:
+        raise InvalidID()
 
 
 def get_uuid() -> UUID4:

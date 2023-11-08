@@ -8,7 +8,7 @@ from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.users import get_auth0_access_token
+from tests.utils.auth0 import get_auth0_access_token
 
 from app.core.config import settings
 from app.db.base import Base

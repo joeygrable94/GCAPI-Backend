@@ -89,16 +89,16 @@ class DeviceStrategyQueryParams:
         except (TypeError, ValueError):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Invalid strategy",
+                detail="Invalid device strategy, must be 'mobile' or 'desktop'",
             )
-        self.devices: List[str] | None = q_devices
+        self.strategy: List[str] | None = q_devices
 
 
 # compound query classes
 
 
 class PublicQueryParams:
-    def __init__(self, message: str | None = Query(None)):
+    def __init__(self, message: Annotated[str | None, Query(max_length=50)] = None):
         self.message = message
 
 
@@ -108,13 +108,15 @@ GetPublicQueryParams = Annotated[PublicQueryParams, Depends()]
 class CommonUserQueryParams(PageParamsFromQuery, UserIdQueryParams):
     def __init__(
         self,
-        page: int = Query(1, ge=1),
-        size: int = Query(
-            settings.api.query_limit_rows_default,
-            ge=1,
-            le=settings.api.query_limit_rows_max,
-        ),
-        user_id: Any | None = Query(None),
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        user_id: Annotated[Any | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         UserIdQueryParams.__init__(self, user_id)
@@ -126,14 +128,17 @@ GetUserQueryParams = Annotated[CommonUserQueryParams, Depends()]
 class CommonClientQueryParams(PageParamsFromQuery, ClientIdQueryParams):
     def __init__(
         self,
-        page: int = Query(1, ge=1),
-        size: int = Query(
-            settings.api.query_limit_rows_default,
-            ge=1,
-            le=settings.api.query_limit_rows_max,
-        ),
-        client_id: Any | None = Query(None),
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        client_id: Annotated[Any | None, Query()] = None,
     ):
+        print(page, size)
         PageParamsFromQuery.__init__(self, page, size)
         ClientIdQueryParams.__init__(self, client_id)
 
@@ -146,14 +151,16 @@ class CommonUserClientQueryParams(
 ):
     def __init__(
         self,
-        page: int = Query(1, ge=1),
-        size: int = Query(
-            settings.api.query_limit_rows_default,
-            ge=1,
-            le=settings.api.query_limit_rows_max,
-        ),
-        user_id: Any | None = Query(None),
-        client_id: Any | None = Query(None),
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        user_id: Annotated[Any | None, Query()] = None,
+        client_id: Annotated[Any | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         UserIdQueryParams.__init__(self, user_id)
@@ -166,13 +173,15 @@ GetUserClientQueryParams = Annotated[CommonUserClientQueryParams, Depends()]
 class CommonWebsiteQueryParams(PageParamsFromQuery, WebsiteIdQueryParams):
     def __init__(
         self,
-        page: int = Query(1, ge=1),
-        size: int = Query(
-            settings.api.query_limit_rows_default,
-            ge=1,
-            le=settings.api.query_limit_rows_max,
-        ),
-        website_id: Any | None = Query(None),
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        website_id: Annotated[Any | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         WebsiteIdQueryParams.__init__(self, website_id)
@@ -186,14 +195,16 @@ class CommonClientWebsiteQueryParams(
 ):
     def __init__(
         self,
-        page: int = Query(1, ge=1),
-        size: int = Query(
-            settings.api.query_limit_rows_default,
-            ge=1,
-            le=settings.api.query_limit_rows_max,
-        ),
-        client_id: Any | None = Query(None),
-        website_id: Any | None = Query(None),
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        client_id: Annotated[Any | None, Query()] = None,
+        website_id: Annotated[Any | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         ClientIdQueryParams.__init__(self, client_id)
@@ -208,14 +219,16 @@ class CommonWebsitePageQueryParams(
 ):
     def __init__(
         self,
-        page: int = Query(1, ge=1),
-        size: int = Query(
-            settings.api.query_limit_rows_default,
-            ge=1,
-            le=settings.api.query_limit_rows_max,
-        ),
-        website_id: Any | None = Query(None),
-        sitemap_id: Any | None = Query(None),
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        website_id: Annotated[Any | None, Query()] = None,
+        sitemap_id: Annotated[Any | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         WebsiteIdQueryParams.__init__(self, website_id)
@@ -228,13 +241,15 @@ GetWebsitePageQueryParams = Annotated[CommonWebsitePageQueryParams, Depends()]
 class CommonWebsiteMapQueryParams(PageParamsFromQuery, WebsiteIdQueryParams):
     def __init__(
         self,
-        page: int = Query(1, ge=1),
-        size: int = Query(
-            settings.api.query_limit_rows_default,
-            ge=1,
-            le=settings.api.query_limit_rows_max,
-        ),
-        website_id: Any | None = Query(None),
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        website_id: Annotated[Any | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         WebsiteIdQueryParams.__init__(self, website_id)
@@ -251,15 +266,17 @@ class CommonWebsitePageSpeedInsightsQueryParams(
 ):
     def __init__(
         self,
-        page: int = Query(1, ge=1),
-        size: int = Query(
-            settings.api.query_limit_rows_default,
-            ge=1,
-            le=settings.api.query_limit_rows_max,
-        ),
-        website_id: Any | None = Query(None),
-        page_id: Any | None = Query(None),
-        strategy: List[str] | None = Query(None),
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        website_id: Annotated[Any | None, Query()] = None,
+        page_id: Annotated[Any | None, Query()] = None,
+        strategy: Annotated[List[str] | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         WebsiteIdQueryParams.__init__(self, website_id)
@@ -279,14 +296,16 @@ class CommonWebsiteKeywordCorpusQueryParams(
 ):
     def __init__(
         self,
-        page: int = Query(1, ge=1),
-        size: int = Query(
-            settings.api.query_limit_rows_default,
-            ge=1,
-            le=settings.api.query_limit_rows_max,
-        ),
-        website_id: Any | None = Query(None),
-        page_id: Any | None = Query(None),
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        website_id: Annotated[Any | None, Query()] = None,
+        page_id: Annotated[Any | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         WebsiteIdQueryParams.__init__(self, website_id)

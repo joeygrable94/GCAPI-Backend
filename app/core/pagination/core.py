@@ -7,17 +7,25 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 
+PAGE_SIZE_MAX = settings.api.query_limit_rows_max
+PAGE_SIZE_DEFAULT = settings.api.query_limit_rows_default
+
 
 class PageParamsFromQuery:
     def __init__(
         self,
-        page: int = Query(1, ge=1),
-        size: int = Query(
-            settings.api.query_limit_rows_default,
-            ge=1,
-            le=settings.api.query_limit_rows_max,
-        ),
-    ):  # pragma: no cover
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=PAGE_SIZE_MAX,
+            ),
+        ] = PAGE_SIZE_DEFAULT,
+    ):
+        page = 1 if page is None or page < 1 else page
+        size = PAGE_SIZE_DEFAULT if size is None or size < 1 else size
+        size = PAGE_SIZE_MAX if size > PAGE_SIZE_MAX else size
         self.page = page
         self.size = size
 
@@ -28,10 +36,10 @@ GetPaginatedQueryParams = Annotated[PageParamsFromQuery, Depends()]
 class PageParams(BaseModel):
     page: int = Field(1, description="Page Number", ge=1)
     size: int = Field(
-        settings.api.query_limit_rows_default,
+        PAGE_SIZE_DEFAULT,
         description="Page Size",
         ge=1,
-        le=settings.api.query_limit_rows_max,
+        le=PAGE_SIZE_MAX,
     )
 
 

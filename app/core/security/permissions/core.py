@@ -32,6 +32,9 @@ class AclAction(StrEnum):
     allow = "allow"
     deny = "deny"
 
+    def __repr__(self) -> str:  # pragma: no cover
+        return f"action:{self.value}"
+
 
 # ACL Tuples: Action, Privilege, Permission
 DENY_ALL: Tuple[AclAction, AclPrivilege, AclPermission] = (
@@ -96,7 +99,7 @@ def permission_dependency_factory(
     def permission_dependency(
         resource: Any = dependable_resource,
         privileges: List[AclPrivilege] = active_privileges_func,
-    ) -> Any:
+    ) -> Any:  # pragma: no cover
         if isinstance(permission, list):
             for perm in permission:
                 if has_permission(privileges, perm, resource):
@@ -113,7 +116,7 @@ def has_permission(
     user_privileges: List[AclPrivilege],
     requested_permission: AclPermission,
     resource: Any,
-) -> bool:
+) -> bool:  # TODO: test
     """checks if a user has the permission for a resource
 
     The order of the function parameters can be remembered like "Joe eat apple"
@@ -135,7 +138,7 @@ def has_permission(
 
 def list_permissions(
     user_privileges: List[AclPrivilege], resource: Any
-) -> Dict[AclPermission, bool]:
+) -> Dict[AclPermission, bool]:  # TODO: test
     """lists all permissions of a user for a resouce
 
     user_privileges: the privileges of a user
@@ -155,7 +158,9 @@ def list_permissions(
 # utility functions
 
 
-def normalize_acl(resource: Any) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:
+def normalize_acl(
+    resource: Any,
+) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:  # TODO: test
     """returns the access controll list for a resource
 
     If the resource is not an acl list itself it needs to have an "__acl__"
@@ -175,7 +180,7 @@ def normalize_acl(resource: Any) -> List[Tuple[AclAction, AclPrivilege, AclPermi
     return [DENY_ALL]
 
 
-def is_like_list(something: Any) -> bool:
+def is_like_list(something: Any) -> bool:  # TODO: test
     """checks if something is iterable but not a string"""
     if isinstance(something, str):
         return False

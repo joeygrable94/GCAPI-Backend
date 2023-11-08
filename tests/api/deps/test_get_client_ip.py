@@ -6,6 +6,8 @@ from app.api.deps.get_client_ip import get_request_client_ip
 
 class MockRequest:
     def __init__(self, client_host: Any = None, headers: Dict[str, str] = {}) -> None:
+        if client_host is None:
+            client_host = "::0"
         self.client = MagicMock(host=client_host)
         self.headers = headers
 

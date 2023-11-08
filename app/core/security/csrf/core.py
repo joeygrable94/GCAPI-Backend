@@ -12,7 +12,6 @@ import re
 from hashlib import sha1
 from os import urandom
 from typing import Any, Dict, Optional, Tuple
-from warnings import warn
 
 from fastapi.requests import Request
 from fastapi.responses import Response
@@ -27,17 +26,6 @@ from .exceptions import InvalidHeaderError, MissingTokenError, TokenValidationEr
 
 
 class CsrfProtect(CsrfConfig):
-    def generate_csrf(self, secret_key: Optional[str] = None) -> Tuple[str, str]:
-        """
-        Deprecated. Please use `generate_csrf_tokens` method instead.
-
-        ---
-        :param secret_key: (Optional) secret key used when generating tokens for users
-        :type secret_key: (str | None) Defaults to None.
-        """
-        warn("This is deprecated; version=0.3.2", DeprecationWarning, stacklevel=2)
-        return self.generate_csrf_tokens(secret_key)
-
     def generate_csrf_tokens(self, secret_key: Optional[str] = None) -> Tuple[str, str]:
         """
         Generate a CSRF token and a signed CSRF token using server's secret key to be
@@ -55,7 +43,7 @@ class CsrfProtect(CsrfConfig):
         signed = serializer.dumps(token)
         return token, str(signed)
 
-    def get_csrf_from_body(self, data: bytes) -> str:
+    def get_csrf_from_body(self, data: bytes) -> str:  # TODO: test
         """
         Get token from the request body
 
@@ -90,14 +78,14 @@ class CsrfProtect(CsrfConfig):
             )
         token = None
         # Make sure the header is in a valid format that we are expecting, ie
-        if not header_type:
+        if not header_type:  # TODO: test
             # <HeaderName>: <Token>
             if len(header_parts) != 1:
                 raise InvalidHeaderError(
                     f'Bad {header_name} header. Expected value "<Token>"'
                 )
             token = header_parts[0]
-        else:
+        else:  # TODO: test
             # <HeaderName>: <HeaderType> <Token>
             if (
                 not re.match(r"{}\s".format(header_type), headers[header_name])
@@ -112,7 +100,7 @@ class CsrfProtect(CsrfConfig):
     def set_csrf_header(self, csrf_token: str, response: Response) -> None:
         response.headers.append(self._header_name, csrf_token)
 
-    def unset_csrf_header(self, response: Response) -> None:
+    def unset_csrf_header(self, response: Response) -> None:  # TODO: test
         if not isinstance(response, Response):
             raise TypeError("The response must be an object response FastAPI")
         response.headers.update({self._header_name: ""})
@@ -127,7 +115,7 @@ class CsrfProtect(CsrfConfig):
         :param response: The FastAPI response object to sets the access cookies in.
         :type response: fastapi.responses.Response
         """
-        if not isinstance(response, Response):
+        if not isinstance(response, Response):  # TODO: test
             raise TypeError("The response must be an object response FastAPI")
         response.set_cookie(
             self._cookie_key,
@@ -148,7 +136,7 @@ class CsrfProtect(CsrfConfig):
         :param response: The FastAPI response object to delete the access cookies in.
         :type response: fastapi.responses.Response
         """
-        if not isinstance(response, Response):
+        if not isinstance(response, Response):  # TODO: test
             raise TypeError("The response must be an object response FastAPI")
         response.delete_cookie(
             self._cookie_key, path=self._cookie_path, domain=self._cookie_domain
@@ -180,7 +168,7 @@ class CsrfProtect(CsrfConfig):
         :raises TokenValidationError: Contains the reason that validation failed.
         """
         secret_key = secret_key or self._secret_key
-        if secret_key is None:
+        if secret_key is None:  # pragma: no cover
             raise RuntimeError("A secret key is required to use CsrfProtect extension.")
         cookie_key = cookie_key or self._cookie_key
         signed_token = request.cookies.get(cookie_key)
@@ -190,7 +178,7 @@ class CsrfProtect(CsrfConfig):
         token: str
         if self._token_location == "header":
             token = self.get_csrf_from_headers(request.headers)
-        else:
+        else:  # TODO: test
             token = self.get_csrf_from_body(await request.body())
         serializer = URLSafeTimedSerializer(secret_key, salt=settings.api.csrf_salt)
         try:
@@ -199,7 +187,7 @@ class CsrfProtect(CsrfConfig):
                 raise TokenValidationError(
                     "The CSRF signatures submitted do not match."
                 )
-        except SignatureExpired:
+        except SignatureExpired:  # TODO: test
             raise TokenValidationError("The CSRF token has expired.")
         except BadData:
             raise TokenValidationError("The CSRF token is invalid.")
