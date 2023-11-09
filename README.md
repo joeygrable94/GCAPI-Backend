@@ -6,7 +6,6 @@
   - [Getting Started](#getting-started)
   - [Application Structure](#application-structure)
   - [Security Resources](#security-resources)
-    - [CSRF](#csrf)
     - [Hashing and Encrypting Data](#hashing-and-encrypting-data)
     - [Session Management](#session-management)
   - [FastAPI Resources](#fastapi-resources)
@@ -84,12 +83,6 @@ templates/email/        # Jinja2 email templates
 ---
 
 ## Security Resources
-
-### CSRF
-
-- [FastAPI CSRF Protect](https://github.com/aekasitt/fastapi-csrf-protect/blob/master/fastapi_csrf_protect/core.py)
-- [Starlette CSRF Middleware](https://github.com/frankie567/starlette-csrf/blob/main/starlette_csrf/middleware.py)
-- [Starlette/FastAPI CSRF Middleware](https://github.com/gnat/csrf-starlette-fastapi/blob/main/csrf_middleware.py)
 
 ### Hashing and Encrypting Data
 
