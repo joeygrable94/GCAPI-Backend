@@ -3,7 +3,7 @@
 set -e
 set -x
 
-source .env
+# source .env
 
 export API_MODE='test'
 
