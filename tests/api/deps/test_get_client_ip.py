@@ -1,4 +1,5 @@
-from typing import Any, Dict
+from typing import Any
+from typing import Dict
 from unittest.mock import MagicMock
 
 from app.api.deps.get_client_ip import get_request_client_ip

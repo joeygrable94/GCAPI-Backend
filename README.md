@@ -47,6 +47,9 @@ Create a virtual environment, activate it, then install the backend python pip `
 ```bash
 main.py                 # Main entry point for the application
 worker.py               # Celery worker entry point
+cli/                    # Command line interface
+    db.py                   # Manages database operations
+    secure.py               # Manages secure cipher operations
 core/                   # Core application code shared
     config/                 # Configuration settings
     logger/                 # Logger configuration

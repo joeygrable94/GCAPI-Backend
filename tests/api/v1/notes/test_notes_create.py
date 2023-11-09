@@ -1,7 +1,9 @@
-from typing import Any, Dict
+from typing import Any
+from typing import Dict
 
 import pytest
-from httpx import AsyncClient, Response
+from httpx import AsyncClient
+from httpx import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.users import get_user_by_email
 from tests.utils.utils import random_lower_string

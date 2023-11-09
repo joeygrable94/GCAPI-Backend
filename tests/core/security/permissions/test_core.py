@@ -2,16 +2,14 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.users import create_random_user
 
-from app.core.security.permissions.core import (
-    DENY_ALL,
-    AclAction,
-    AclPermission,
-    AclPrivilege,
-    has_permission,
-    is_like_list,
-    list_permissions,
-    normalize_acl,
-)
+from app.core.security.permissions.core import DENY_ALL
+from app.core.security.permissions.core import AclAction
+from app.core.security.permissions.core import AclPermission
+from app.core.security.permissions.core import AclPrivilege
+from app.core.security.permissions.core import has_permission
+from app.core.security.permissions.core import is_like_list
+from app.core.security.permissions.core import list_permissions
+from app.core.security.permissions.core import normalize_acl
 from app.models.user import User
 
 pytestmark = pytest.mark.asyncio

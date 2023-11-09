@@ -1,12 +1,15 @@
-from typing import Any, Dict
+from typing import Any
+from typing import Dict
 
 import pytest
-from httpx import AsyncClient, Response
+from httpx import AsyncClient
+from httpx import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.website_maps import create_random_website_map
 from tests.utils.websites import create_random_website
 
-from app.schemas import WebsiteMapRead, WebsiteRead
+from app.schemas import WebsiteMapRead
+from app.schemas import WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 

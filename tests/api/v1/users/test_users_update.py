@@ -1,7 +1,9 @@
-from typing import Any, Dict
+from typing import Any
+from typing import Dict
 
 import pytest
-from httpx import AsyncClient, Response
+from httpx import AsyncClient
+from httpx import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.users import create_random_user
 from tests.utils.utils import random_lower_string
@@ -10,13 +12,12 @@ from app.api.exceptions.errors import ErrorCode
 from app.core.config import settings
 from app.crud import UserRepository
 from app.models import User
-from app.schemas import UserUpdate, UserUpdateAsManager
-from app.schemas.user import (
-    UserRead,
-    UserReadAsAdmin,
-    UserReadAsManager,
-    UserUpdateAsAdmin,
-)
+from app.schemas import UserUpdate
+from app.schemas import UserUpdateAsManager
+from app.schemas.user import UserRead
+from app.schemas.user import UserReadAsAdmin
+from app.schemas.user import UserReadAsManager
+from app.schemas.user import UserUpdateAsAdmin
 
 pytestmark = pytest.mark.asyncio
 

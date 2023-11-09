@@ -1,14 +1,19 @@
-from typing import Any, List
+from typing import Any
+from typing import List
 
 import pytest
-from fastapi import HTTPException, status
+from fastapi import HTTPException
+from fastapi import status
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_email
 
-from app.api.deps import get_current_user, get_current_user_privileges
+from app.api.deps import get_current_user
+from app.api.deps import get_current_user_privileges
 from app.api.exceptions import ErrorCode
 from app.core.security import Auth0User
-from app.core.security.permissions import AclPrivilege, Authenticated, Everyone
+from app.core.security.permissions import AclPrivilege
+from app.core.security.permissions import Authenticated
+from app.core.security.permissions import Everyone
 from app.core.utilities.uuids import get_uuid_str
 from app.models.user import User
 

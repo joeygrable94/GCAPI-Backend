@@ -1,7 +1,9 @@
-from typing import Any, Dict
+from typing import Any
+from typing import Dict
 
 import pytest
-from httpx import AsyncClient, Response
+from httpx import AsyncClient
+from httpx import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.website_pagespeedinsights import (
     create_random_website_page_speed_insights,

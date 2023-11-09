@@ -1,9 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.utils import random_boolean, random_domain
+from tests.utils.utils import random_boolean
+from tests.utils.utils import random_domain
 
 from app.crud import WebsiteRepository
 from app.models import Website
-from app.schemas import WebsiteCreate, WebsiteRead
+from app.schemas import WebsiteCreate
+from app.schemas import WebsiteRead
 
 
 async def create_random_website(db_session: AsyncSession) -> WebsiteRead:

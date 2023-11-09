@@ -3,7 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.website_maps import create_random_website_map
 
 from app.api.deps import get_website_map_or_404
-from app.api.exceptions.exceptions import InvalidID, WebsiteMapNotExists
+from app.api.exceptions.exceptions import InvalidID
+from app.api.exceptions.exceptions import WebsiteMapNotExists
 from app.core.utilities.uuids import get_uuid_str
 from app.models.website_map import WebsiteMap
 from app.schemas.website_map import WebsiteMapRead

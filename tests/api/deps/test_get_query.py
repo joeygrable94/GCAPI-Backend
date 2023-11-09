@@ -1,26 +1,25 @@
 import uuid
 
 import pytest
-from fastapi import HTTPException, status
+from fastapi import HTTPException
+from fastapi import status
 
-from app.api.deps.get_query import (
-    ClientIdQueryParams,
-    CommonClientQueryParams,
-    CommonClientWebsiteQueryParams,
-    CommonUserClientQueryParams,
-    CommonUserQueryParams,
-    CommonWebsiteKeywordCorpusQueryParams,
-    CommonWebsiteMapQueryParams,
-    CommonWebsitePageQueryParams,
-    CommonWebsitePageSpeedInsightsQueryParams,
-    CommonWebsiteQueryParams,
-    DeviceStrategyQueryParams,
-    PublicQueryParams,
-    UserIdQueryParams,
-    WebsiteIdQueryParams,
-    WebsiteMapIdQueryParams,
-    WebsitePageIdQueryParams,
-)
+from app.api.deps.get_query import ClientIdQueryParams
+from app.api.deps.get_query import CommonClientQueryParams
+from app.api.deps.get_query import CommonClientWebsiteQueryParams
+from app.api.deps.get_query import CommonUserClientQueryParams
+from app.api.deps.get_query import CommonUserQueryParams
+from app.api.deps.get_query import CommonWebsiteKeywordCorpusQueryParams
+from app.api.deps.get_query import CommonWebsiteMapQueryParams
+from app.api.deps.get_query import CommonWebsitePageQueryParams
+from app.api.deps.get_query import CommonWebsitePageSpeedInsightsQueryParams
+from app.api.deps.get_query import CommonWebsiteQueryParams
+from app.api.deps.get_query import DeviceStrategyQueryParams
+from app.api.deps.get_query import PublicQueryParams
+from app.api.deps.get_query import UserIdQueryParams
+from app.api.deps.get_query import WebsiteIdQueryParams
+from app.api.deps.get_query import WebsiteMapIdQueryParams
+from app.api.deps.get_query import WebsitePageIdQueryParams
 from app.core.config import settings
 from app.core.utilities.uuids import get_uuid_str
 

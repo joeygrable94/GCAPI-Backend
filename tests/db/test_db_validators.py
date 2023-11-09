@@ -1,16 +1,14 @@
 import pytest
 
-from app.db.validators import (
-    optional_int_name_min_max_len,
-    optional_string_domain,
-    optional_string_in_list,
-    optional_string_name_min_max_len,
-    require_int_name_min_max_len,
-    require_string_domain,
-    require_string_email,
-    require_string_name_min_max_len,
-    required_string_in_list,
-)
+from app.db.validators import optional_int_name_min_max_len
+from app.db.validators import optional_string_domain
+from app.db.validators import optional_string_in_list
+from app.db.validators import optional_string_name_min_max_len
+from app.db.validators import require_int_name_min_max_len
+from app.db.validators import require_string_domain
+from app.db.validators import require_string_email
+from app.db.validators import require_string_name_min_max_len
+from app.db.validators import required_string_in_list
 
 
 def test_require_int_name_min_max_len() -> None:

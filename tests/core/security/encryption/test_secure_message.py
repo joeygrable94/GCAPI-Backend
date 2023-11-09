@@ -4,7 +4,9 @@ import pytest
 from Crypto.PublicKey import RSA
 
 from app.core.config import settings
-from app.core.security.encryption import DecryptionError, EncryptionError, SecureMessage
+from app.core.security.encryption import DecryptionError
+from app.core.security.encryption import EncryptionError
+from app.core.security.encryption import SecureMessage
 from app.core.security.encryption.exceptions import SignatureVerificationError
 
 pytestmark = pytest.mark.asyncio

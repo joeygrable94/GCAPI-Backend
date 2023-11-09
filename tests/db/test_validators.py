@@ -5,121 +5,117 @@ import pytest
 
 from app.core.config import settings
 from app.core.security.permissions.scope import AclPrivilege
-from app.db.constants import (
-    DB_INT_INTEGER_MAX_LEN,
-    DB_STR_BLOB_MAX_LEN,
-    DB_STR_LONGTEXT_MAX_LEN,
-    DB_STR_NAME_TITLE_MAX_LEN,
-    DB_STR_TINYTEXT_MAX_LEN,
-    DB_STR_URL_PATH_MAX_LEN,
-)
-from app.db.validators import (
-    validate_active_seconds_required,
-    validate_address_optional,
-    validate_address_required,
-    validate_altitude_optional,
-    validate_altitude_required,
-    validate_api_key_optional,
-    validate_api_key_required,
-    validate_auth_id_required,
-    validate_bg_color_optional,
-    validate_browser_optional,
-    validate_browser_version_optional,
-    validate_bucket_name_optional,
-    validate_bucket_name_required,
-    validate_caption_optional,
-    validate_city_optional,
-    validate_clicks_required,
-    validate_cls_unit_required,
-    validate_corpus_optional,
-    validate_corpus_required,
-    validate_country_optional,
-    validate_description_optional,
-    validate_device_required,
-    validate_domain_optional,
-    validate_domain_required,
-    validate_email_required,
-    validate_fcp_unit_required,
-    validate_file_extension_optional,
-    validate_file_extension_required,
-    validate_filename_optional,
-    validate_filename_required,
-    validate_group_name_optional,
-    validate_group_name_required,
-    validate_group_slug_required,
-    validate_hotspot_content_optional,
-    validate_hotspot_icon_name_optional,
-    validate_hotspot_name_optional,
-    validate_hotspot_type_name_optional,
-    validate_hotspot_user_icon_name_optional,
-    validate_icon_color_optional,
-    validate_impressions_required,
-    validate_ip_location_optional,
-    validate_ip_location_required,
-    validate_ip_optional,
-    validate_ip_required,
-    validate_isp_optional,
-    validate_isp_required,
-    validate_keys_optional,
-    validate_keys_required,
-    validate_language_optional,
-    validate_lcp_unit_required,
-    validate_linked_snap_name_optional,
-    validate_measurement_id_required,
-    validate_object_key_optional,
-    validate_object_key_required,
-    validate_password_optional,
-    validate_password_required,
-    validate_platform_optional,
-    validate_platform_version_optional,
-    validate_project_id_optional,
-    validate_project_id_required,
-    validate_project_name_optional,
-    validate_project_name_required,
-    validate_project_number_optional,
-    validate_project_number_required,
-    validate_property_id_required,
-    validate_ps_unit_required,
-    validate_ps_value_optional,
-    validate_ps_value_required,
-    validate_rawtext_optional,
-    validate_rawtext_required,
-    validate_referrer_required,
-    validate_reporting_id_required,
-    validate_scopes_optional,
-    validate_scopes_required,
-    validate_secret_key_optional,
-    validate_secret_key_required,
-    validate_serverhost_optional,
-    validate_serverhost_required,
-    validate_service_account_optional,
-    validate_service_account_required,
-    validate_si_unit_required,
-    validate_size_kb_optional,
-    validate_size_kb_required,
-    validate_snap_file_name_optional,
-    validate_snap_name_optional,
-    validate_snap_name_required,
-    validate_snap_slug_required,
-    validate_state_optional,
-    validate_strategy_required,
-    validate_stream_id_required,
-    validate_tbt_unit_required,
-    validate_text_color_optional,
-    validate_title_optional,
-    validate_title_required,
-    validate_tracking_id_required,
-    validate_url_optional,
-    validate_url_required,
-    validate_username_optional,
-    validate_username_required,
-    validate_utm_campaign_optional,
-    validate_utm_content_optional,
-    validate_utm_medium_optional,
-    validate_utm_source_optional,
-    validate_utm_term_optional,
-    validate_view_id_required,
-)
+from app.db.constants import DB_INT_INTEGER_MAX_LEN
+from app.db.constants import DB_STR_BLOB_MAX_LEN
+from app.db.constants import DB_STR_LONGTEXT_MAX_LEN
+from app.db.constants import DB_STR_NAME_TITLE_MAX_LEN
+from app.db.constants import DB_STR_TINYTEXT_MAX_LEN
+from app.db.constants import DB_STR_URL_PATH_MAX_LEN
+from app.db.validators import validate_active_seconds_required
+from app.db.validators import validate_address_optional
+from app.db.validators import validate_address_required
+from app.db.validators import validate_altitude_optional
+from app.db.validators import validate_altitude_required
+from app.db.validators import validate_api_key_optional
+from app.db.validators import validate_api_key_required
+from app.db.validators import validate_auth_id_required
+from app.db.validators import validate_bg_color_optional
+from app.db.validators import validate_browser_optional
+from app.db.validators import validate_browser_version_optional
+from app.db.validators import validate_bucket_name_optional
+from app.db.validators import validate_bucket_name_required
+from app.db.validators import validate_caption_optional
+from app.db.validators import validate_city_optional
+from app.db.validators import validate_clicks_required
+from app.db.validators import validate_cls_unit_required
+from app.db.validators import validate_corpus_optional
+from app.db.validators import validate_corpus_required
+from app.db.validators import validate_country_optional
+from app.db.validators import validate_description_optional
+from app.db.validators import validate_device_required
+from app.db.validators import validate_domain_optional
+from app.db.validators import validate_domain_required
+from app.db.validators import validate_email_required
+from app.db.validators import validate_fcp_unit_required
+from app.db.validators import validate_file_extension_optional
+from app.db.validators import validate_file_extension_required
+from app.db.validators import validate_filename_optional
+from app.db.validators import validate_filename_required
+from app.db.validators import validate_group_name_optional
+from app.db.validators import validate_group_name_required
+from app.db.validators import validate_group_slug_required
+from app.db.validators import validate_hotspot_content_optional
+from app.db.validators import validate_hotspot_icon_name_optional
+from app.db.validators import validate_hotspot_name_optional
+from app.db.validators import validate_hotspot_type_name_optional
+from app.db.validators import validate_hotspot_user_icon_name_optional
+from app.db.validators import validate_icon_color_optional
+from app.db.validators import validate_impressions_required
+from app.db.validators import validate_ip_location_optional
+from app.db.validators import validate_ip_location_required
+from app.db.validators import validate_ip_optional
+from app.db.validators import validate_ip_required
+from app.db.validators import validate_isp_optional
+from app.db.validators import validate_isp_required
+from app.db.validators import validate_keys_optional
+from app.db.validators import validate_keys_required
+from app.db.validators import validate_language_optional
+from app.db.validators import validate_lcp_unit_required
+from app.db.validators import validate_linked_snap_name_optional
+from app.db.validators import validate_measurement_id_required
+from app.db.validators import validate_object_key_optional
+from app.db.validators import validate_object_key_required
+from app.db.validators import validate_password_optional
+from app.db.validators import validate_password_required
+from app.db.validators import validate_platform_optional
+from app.db.validators import validate_platform_version_optional
+from app.db.validators import validate_project_id_optional
+from app.db.validators import validate_project_id_required
+from app.db.validators import validate_project_name_optional
+from app.db.validators import validate_project_name_required
+from app.db.validators import validate_project_number_optional
+from app.db.validators import validate_project_number_required
+from app.db.validators import validate_property_id_required
+from app.db.validators import validate_ps_unit_required
+from app.db.validators import validate_ps_value_optional
+from app.db.validators import validate_ps_value_required
+from app.db.validators import validate_rawtext_optional
+from app.db.validators import validate_rawtext_required
+from app.db.validators import validate_referrer_required
+from app.db.validators import validate_reporting_id_required
+from app.db.validators import validate_scopes_optional
+from app.db.validators import validate_scopes_required
+from app.db.validators import validate_secret_key_optional
+from app.db.validators import validate_secret_key_required
+from app.db.validators import validate_serverhost_optional
+from app.db.validators import validate_serverhost_required
+from app.db.validators import validate_service_account_optional
+from app.db.validators import validate_service_account_required
+from app.db.validators import validate_si_unit_required
+from app.db.validators import validate_size_kb_optional
+from app.db.validators import validate_size_kb_required
+from app.db.validators import validate_snap_file_name_optional
+from app.db.validators import validate_snap_name_optional
+from app.db.validators import validate_snap_name_required
+from app.db.validators import validate_snap_slug_required
+from app.db.validators import validate_state_optional
+from app.db.validators import validate_strategy_required
+from app.db.validators import validate_stream_id_required
+from app.db.validators import validate_tbt_unit_required
+from app.db.validators import validate_text_color_optional
+from app.db.validators import validate_title_optional
+from app.db.validators import validate_title_required
+from app.db.validators import validate_tracking_id_required
+from app.db.validators import validate_url_optional
+from app.db.validators import validate_url_required
+from app.db.validators import validate_username_optional
+from app.db.validators import validate_username_required
+from app.db.validators import validate_utm_campaign_optional
+from app.db.validators import validate_utm_content_optional
+from app.db.validators import validate_utm_medium_optional
+from app.db.validators import validate_utm_source_optional
+from app.db.validators import validate_utm_term_optional
+from app.db.validators import validate_view_id_required
 
 
 @pytest.fixture

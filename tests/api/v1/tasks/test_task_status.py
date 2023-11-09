@@ -1,5 +1,6 @@
 from time import sleep
-from typing import Any, Dict
+from typing import Any
+from typing import Dict
 from unittest.mock import patch
 
 import pytest

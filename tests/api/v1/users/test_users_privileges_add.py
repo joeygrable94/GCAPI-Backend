@@ -1,13 +1,17 @@
-from typing import Any, Dict
+from typing import Any
+from typing import Dict
 
 import pytest
-from httpx import AsyncClient, Response
+from httpx import AsyncClient
+from httpx import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.users import create_random_user
 
 from app.core.security.permissions.scope import AclPrivilege
 from app.models.user import User
-from app.schemas.user import UserReadAsAdmin, UserReadAsManager, UserUpdatePrivileges
+from app.schemas.user import UserReadAsAdmin
+from app.schemas.user import UserReadAsManager
+from app.schemas.user import UserUpdatePrivileges
 
 pytestmark = pytest.mark.asyncio
 
