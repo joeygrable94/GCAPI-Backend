@@ -2,13 +2,13 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, Text, func
+from sqlalchemy import DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
-from app.db.constants import DB_STR_LONGTEXT_MAX_LEN
+from app.db.custom_types import LongText
 
 if TYPE_CHECKING:  # pragma: no cover
     from .website import Website  # noqa: F401
@@ -38,12 +38,8 @@ class WebsiteKeywordCorpus(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    corpus: Mapped[str] = mapped_column(
-        Text(DB_STR_LONGTEXT_MAX_LEN), nullable=False, default=""
-    )
-    rawtext: Mapped[str] = mapped_column(
-        Text(DB_STR_LONGTEXT_MAX_LEN), nullable=False, default=""
-    )
+    corpus: Mapped[str] = mapped_column(LongText(), nullable=False, default="")
+    rawtext: Mapped[str] = mapped_column(LongText(), nullable=False, default="")
 
     # relationships
     website_id: Mapped[UUID4] = mapped_column(
