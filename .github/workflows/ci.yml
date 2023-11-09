@@ -10,6 +10,7 @@ on:
 
 jobs:
   test:
+    environment: GCAPI-Backend
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
