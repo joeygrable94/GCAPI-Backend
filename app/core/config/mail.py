@@ -2,7 +2,7 @@ from os import environ
 from typing import Any, List, Optional
 
 from dotenv import load_dotenv
-from pydantic import EmailStr, FieldValidationInfo, field_validator
+from pydantic import FieldValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .utilities import get_root_directory
@@ -18,7 +18,7 @@ class EmailSettings(BaseSettings):
     smtp_user: str = environ.get("EMAIL_SMTP_USER", "")
     smtp_password: str = environ.get("EMAIL_SMTP_PASSWORD", "")
     enabled: bool = bool(environ.get("EMAIL_ENABLED", False))
-    from_email: EmailStr = environ.get("EMAIL_FROM_EMAIL", "noreply@example.com")
+    from_email: str = environ.get("EMAIL_FROM_EMAIL", "noreply@example.com")
     from_name: str = environ.get("EMAIL_FROM_NAME", "FastAPI")
     provider_restriction: bool = bool(environ.get("EMAIL_PROVIDER_RESTRICTION", True))
     allowed_providers: List[str] = list(
