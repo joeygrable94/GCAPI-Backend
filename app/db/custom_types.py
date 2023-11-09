@@ -14,7 +14,7 @@ class LongText(types.UserDefinedType):
         self.length = length
 
     def get_col_spec(self, **kw: Any) -> str:
-        return "LongText(length=%d)" % self.length
+        return "VARCHAR(%d)" % self.length
 
     def bind_processor(self, dialect: Dialect) -> Optional[Callable[[Any], Any]]:
         def process(value: Any) -> Any:

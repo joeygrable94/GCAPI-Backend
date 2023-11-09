@@ -38,8 +38,8 @@ class WebsiteKeywordCorpus(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    corpus: Mapped[str] = mapped_column(LongText(), nullable=False, default="")
-    rawtext: Mapped[str] = mapped_column(LongText(), nullable=False, default="")
+    corpus: Mapped[str] = mapped_column(LongText, nullable=False, default="")
+    rawtext: Mapped[str] = mapped_column(LongText, nullable=False, default="")
 
     # relationships
     website_id: Mapped[UUID4] = mapped_column(
