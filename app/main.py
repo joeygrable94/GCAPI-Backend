@@ -24,6 +24,9 @@ async def application_lifespan(app: FastAPI) -> AsyncGenerator:
     # check REDIS connected
     await FastAPILimiter.init(redis_conn, prefix="gcapi-limit")
 
+    print(settings.email)
+    exit()
+
     # load CSRF settings
     @CsrfProtect.load_config
     def get_csrf_config() -> Any:  # type: ignore
