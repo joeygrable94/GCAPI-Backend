@@ -28,9 +28,9 @@ async def test_list_users_as_admin(
     data: Paginated[UserReadAsAdmin] = Paginated(**response.json())
     assert 200 <= response.status_code < 300
     assert data.page == 1
-    assert data.total == 1
+    assert data.total == 8
     assert data.size == 100
-    assert len(data.results) > 0
+    assert len(data.results) == 8
 
 
 async def test_list_users_as_manager(
@@ -45,9 +45,9 @@ async def test_list_users_as_manager(
     data: Paginated[UserReadAsManager] = Paginated(**response.json())
     assert 200 <= response.status_code < 300
     assert data.page == 1
-    assert data.total == 1
+    assert data.total == 8
     assert data.size == 100
-    assert len(data.results) > 0
+    assert len(data.results) == 8
 
 
 async def test_list_users_as_employee(

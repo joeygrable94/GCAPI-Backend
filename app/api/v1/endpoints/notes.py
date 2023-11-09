@@ -11,6 +11,7 @@ from app.api.deps import (
 )
 from app.api.exceptions import NoteAlreadyExists
 from app.core.pagination import GetPaginatedQueryParams
+# from app.core.pagination import GetPaginatedQueryParams, PageParams, Paginated
 from app.core.security import auth
 from app.crud import NoteRepository
 from app.models import Note

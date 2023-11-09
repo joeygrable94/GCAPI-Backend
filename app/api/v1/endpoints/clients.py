@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 from fastapi import APIRouter, Depends
 
@@ -6,13 +6,22 @@ from app.api.deps import (
     AsyncDatabaseSession,
     CurrentUser,
     FetchClientOr404,
+    PermissionController,
     get_async_db,
     get_client_or_404,
+    get_current_user,
+    get_permission_controller,
 )
 from app.api.exceptions import ClientAlreadyExists
 from app.api.openapi import clients_read_responses
-from app.core.pagination import GetPaginatedQueryParams
+from app.core.pagination import GetPaginatedQueryParams, PageParams, Paginated
 from app.core.security import auth
+from app.core.security.permissions import (
+    RoleAdmin,
+    RoleClient,
+    RoleEmployee,
+    RoleManager,
+)
 from app.crud import ClientRepository
 from app.models import Client
 from app.schemas import ClientCreate, ClientRead, ClientUpdate
@@ -24,17 +33,20 @@ router: APIRouter = APIRouter()
     "/",
     name="clients:list",
     dependencies=[
+        Depends(PageParams),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
-    response_model=List[ClientRead],
+    response_model=Paginated[ClientRead],
 )
 async def clients_list(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     query: GetPaginatedQueryParams,
-) -> List[ClientRead] | List:
-    """Retrieve a list of clients.
+    db: AsyncDatabaseSession,
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> Paginated[ClientRead]:
+    """Retrieve a paginated list of clients.
 
     Permissions:
     ------------
@@ -50,8 +62,20 @@ async def clients_list(
 
     """
     clients_repo: ClientRepository = ClientRepository(session=db)
-    clients: List[Client] | List[None] | None = await clients_repo.list(page=query.page)
-    return [ClientRead.model_validate(c) for c in clients] if clients else []
+    response_out: Paginated[
+        ClientRead
+    ] = await permissions.get_paginated_resource_response(
+        table_name=Client.__tablename__,
+        stmt=clients_repo.query_list(),
+        page_params=PageParams(page=query.page, size=query.size),
+        responses={
+            RoleAdmin: ClientRead,
+            RoleManager: ClientRead,
+            RoleClient: ClientRead,
+            RoleEmployee: ClientRead,
+        },
+    )
+    return response_out
 
 
 @router.post(

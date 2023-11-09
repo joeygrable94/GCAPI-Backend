@@ -1,9 +1,10 @@
-from typing import Annotated, Generic, List, Sequence, Type, TypeVar
+from typing import Annotated, Generic, List, Type, TypeVar
 
 from fastapi import Depends, Query
 from pydantic import BaseModel, Field
-from sqlalchemy import Result, Select, column, func, select, table
+from sqlalchemy import Select, func, table
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql import column as sql_column, select as sql_select
 
 from app.core.config import settings
 
@@ -54,6 +55,9 @@ class Paginated(BaseModel, Generic[T]):
     size: int
     results: List[T]
 
+    def __repr__(self) -> str:
+        return super().__repr__()
+
 
 async def paginated_query(
     table_name: str,
@@ -63,19 +67,18 @@ async def paginated_query(
     response_schema: Type[T],
 ) -> Paginated[T]:
     """Paginate the query."""
-    count_table = table(table_name, column("id"))
-    count_stmt: Select = select(func.count()).select_from(count_table)
-    count_rslt: Result = await db.execute(count_stmt)
-    total_count: Sequence = count_rslt.scalars().all()
+    count_table = table(table_name, sql_column("id"))
+    count_stmt: Select = sql_select(func.count()).select_from(count_table)
+    total_count: int = await db.scalar(count_stmt)
 
     paginated_query = stmt.offset((page_params.page - 1) * page_params.size).limit(
         page_params.size
     )
-    result: Result = await db.execute(paginated_query)
-    data: Sequence = result.scalars().all()
+    result = await db.execute(paginated_query)
+    data = result.scalars().all()
 
     return Paginated(
-        total=len(total_count),
+        total=total_count,
         page=page_params.page,
         size=page_params.size,
         results=[response_schema.model_validate(item) for item in data],
