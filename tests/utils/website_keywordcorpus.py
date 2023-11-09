@@ -6,8 +6,7 @@ from tests.utils.websites import create_random_website
 
 from app.crud import WebsiteKeywordCorpusRepository
 from app.models import WebsiteKeywordCorpus
-from app.schemas import WebsiteKeywordCorpusCreate
-from app.schemas import WebsiteKeywordCorpusRead
+from app.schemas import WebsiteKeywordCorpusCreate, WebsiteKeywordCorpusRead
 
 
 async def create_random_website_keywordcorpus(

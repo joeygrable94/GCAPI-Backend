@@ -5,11 +5,13 @@ from tests.utils.websites import create_random_website
 
 from app.crud import WebsitePageSpeedInsightsRepository
 from app.models import WebsitePageSpeedInsights
-from app.schemas import WebsitePageRead
-from app.schemas import WebsitePageSpeedInsightsBase
-from app.schemas import WebsitePageSpeedInsightsCreate
-from app.schemas import WebsitePageSpeedInsightsRead
-from app.schemas import WebsiteRead
+from app.schemas import (
+    WebsitePageRead,
+    WebsitePageSpeedInsightsBase,
+    WebsitePageSpeedInsightsCreate,
+    WebsitePageSpeedInsightsRead,
+    WebsiteRead,
+)
 
 
 def generate_psi_base(device_strategy: str = "mobile") -> WebsitePageSpeedInsightsBase:

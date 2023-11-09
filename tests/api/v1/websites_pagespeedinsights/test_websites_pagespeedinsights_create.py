@@ -1,18 +1,18 @@
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 import pytest
-from httpx import AsyncClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from tests.utils.utils import random_boolean
 from tests.utils.website_pagespeedinsights import generate_psi_base
 
 from app.api.exceptions import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
-from app.schemas import WebsiteMapRead
-from app.schemas import WebsitePageRead
-from app.schemas import WebsitePageSpeedInsightsBase
-from app.schemas import WebsiteRead
+from app.schemas import (
+    WebsiteMapRead,
+    WebsitePageRead,
+    WebsitePageSpeedInsightsBase,
+    WebsiteRead,
+)
 
 pytestmark = pytest.mark.asyncio
 

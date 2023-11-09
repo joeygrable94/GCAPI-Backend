@@ -1,9 +1,7 @@
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 import pytest
-from httpx import AsyncClient
-from httpx import Response
+from httpx import AsyncClient, Response
 
 pytestmark = pytest.mark.asyncio
 

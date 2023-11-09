@@ -1,9 +1,7 @@
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 import pytest
-from httpx import AsyncClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.website_pages import create_random_website_page
 from tests.utils.website_pagespeedinsights import (
@@ -11,9 +9,7 @@ from tests.utils.website_pagespeedinsights import (
 )
 from tests.utils.websites import create_random_website
 
-from app.schemas import WebsitePageRead
-from app.schemas import WebsitePageSpeedInsightsRead
-from app.schemas import WebsiteRead
+from app.schemas import WebsitePageRead, WebsitePageSpeedInsightsRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 

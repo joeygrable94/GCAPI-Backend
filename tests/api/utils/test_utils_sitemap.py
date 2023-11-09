@@ -8,8 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.websites import create_random_website
 
 from app.api.utilities import save_sitemap_pages
-from app.schemas import WebsiteMapPage
-from app.schemas import WebsiteRead
+from app.schemas import WebsiteMapPage, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 

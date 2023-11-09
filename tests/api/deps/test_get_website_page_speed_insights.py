@@ -5,8 +5,7 @@ from tests.utils.website_pagespeedinsights import (
 )
 
 from app.api.deps import get_website_page_psi_or_404
-from app.api.exceptions.exceptions import InvalidID
-from app.api.exceptions.exceptions import WebsitePageSpeedInsightsNotExists
+from app.api.exceptions.exceptions import InvalidID, WebsitePageSpeedInsightsNotExists
 from app.models.website_pagespeedinsights import WebsitePageSpeedInsights
 from app.schemas import WebsitePageSpeedInsightsRead
 

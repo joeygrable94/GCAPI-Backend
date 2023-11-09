@@ -1,17 +1,14 @@
 # from typing import Any, Dict, List
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 import pytest
-from httpx import AsyncClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.pagination import Paginated
 
 # from app.schemas import UserRead, ClientRead
-from app.schemas.user import UserReadAsAdmin
-from app.schemas.user import UserReadAsManager
+from app.schemas.user import UserReadAsAdmin, UserReadAsManager
 
 # from tests.utils.clients import create_random_client
 

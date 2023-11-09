@@ -1,14 +1,16 @@
 import pytest
 from fastapi.exceptions import HTTPException
 
-from app.api.deps import ClientIdQueryParams
-from app.api.deps import DeviceStrategyQueryParams
-from app.api.deps import WebsiteIdQueryParams
-from app.api.deps import WebsiteMapIdQueryParams
-from app.api.deps import WebsitePageIdQueryParams
-from app.api.deps import get_async_db
-from app.api.deps import verify_content_length
-from app.api.deps import verify_content_type
+from app.api.deps import (
+    ClientIdQueryParams,
+    DeviceStrategyQueryParams,
+    WebsiteIdQueryParams,
+    WebsiteMapIdQueryParams,
+    WebsitePageIdQueryParams,
+    get_async_db,
+    verify_content_length,
+    verify_content_type,
+)
 from app.core.config import settings
 
 

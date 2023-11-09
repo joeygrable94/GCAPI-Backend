@@ -1,13 +1,11 @@
 from typing import Any
-from unittest.mock import Mock
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 from tests.utils.website_pagespeedinsights import generate_psi_base
 
 from app.core.utilities.uuids import get_uuid
-from app.schemas import PageSpeedInsightsDevice
-from app.schemas import WebsitePageSpeedInsightsProcessing
+from app.schemas import PageSpeedInsightsDevice, WebsitePageSpeedInsightsProcessing
 from app.worker import task_website_page_pagespeedinsights_fetch
 
 

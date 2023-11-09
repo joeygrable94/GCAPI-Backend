@@ -1,10 +1,7 @@
 import asyncio
 import json
 from os import path
-from typing import Any
-from typing import AsyncGenerator
-from typing import Dict
-from typing import Generator
+from typing import Any, AsyncGenerator, Dict, Generator
 
 import pytest
 from asgi_lifespan import LifespanManager
@@ -16,8 +13,7 @@ from tests.utils.auth0 import get_auth0_access_token
 from app.core.config import settings
 from app.db.base import Base
 from app.db.commands import create_init_data
-from app.db.session import async_engine
-from app.db.session import async_session
+from app.db.session import async_engine, async_session
 from app.main import create_app
 
 pytestmark = pytest.mark.asyncio

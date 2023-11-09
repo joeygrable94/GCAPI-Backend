@@ -6,10 +6,7 @@ from tests.utils.websites import create_random_website
 
 from app.crud import WebsitePageRepository
 from app.models import WebsitePage
-from app.schemas import WebsiteMapRead
-from app.schemas import WebsitePageCreate
-from app.schemas import WebsitePageRead
-from app.schemas import WebsiteRead
+from app.schemas import WebsiteMapRead, WebsitePageCreate, WebsitePageRead, WebsiteRead
 
 
 async def create_random_website_page(

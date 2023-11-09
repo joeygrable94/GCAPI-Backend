@@ -22,11 +22,11 @@ class LongText(types.UserDefinedType):
 
         return process
 
-    def load_dialect_impl(self, dialect: Dialect) -> types.TypeEngine[str]:
+    def load_dialect_impl(
+        self, dialect: Dialect
+    ) -> types.TypeEngine[str]:  # pragma: no cover
         if dialect.name == "mysql":
             return dialect.type_descriptor(LONGTEXT())
-        elif dialect.name == "sqlite":
-            return dialect.type_descriptor(Text(length=DB_STR_LONGTEXT_MAX_LEN))
         else:
             return dialect.type_descriptor(Text(length=DB_STR_LONGTEXT_MAX_LEN))
 

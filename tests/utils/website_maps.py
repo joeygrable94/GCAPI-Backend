@@ -1,5 +1,4 @@
-from typing import Any
-from typing import Iterator
+from typing import Any, Iterator
 
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,9 +8,7 @@ from usp.objects.page import SitemapPage  # type: ignore
 
 from app.crud import WebsiteMapRepository
 from app.models import WebsiteMap
-from app.schemas import WebsiteMapCreate
-from app.schemas import WebsiteMapRead
-from app.schemas import WebsiteRead
+from app.schemas import WebsiteMapCreate, WebsiteMapRead, WebsiteRead
 
 
 class MockSitemap:

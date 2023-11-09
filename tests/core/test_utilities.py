@@ -6,12 +6,14 @@ import pytest
 from pydantic import UUID4
 
 from app.api.exceptions import InvalidID
-from app.core.utilities import get_date
-from app.core.utilities import get_datetime_from_int
-from app.core.utilities import get_int_from_datetime
-from app.core.utilities import get_uuid
-from app.core.utilities import get_uuid_str
-from app.core.utilities import parse_id
+from app.core.utilities import (
+    get_date,
+    get_datetime_from_int,
+    get_int_from_datetime,
+    get_uuid,
+    get_uuid_str,
+    parse_id,
+)
 
 # pytestmark = pytest.mark.asyncio
 

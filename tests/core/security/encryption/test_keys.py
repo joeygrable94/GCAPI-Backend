@@ -4,8 +4,7 @@ from pathlib import Path
 from Crypto.PublicKey import RSA
 
 from app.core.config import settings
-from app.core.security.encryption.keys import generate_api_keys
-from app.core.security.encryption.keys import load_api_keys
+from app.core.security.encryption.keys import generate_api_keys, load_api_keys
 
 
 def test_generate_api_keys(tmp_path: Path) -> None:

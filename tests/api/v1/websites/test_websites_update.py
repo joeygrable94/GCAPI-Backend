@@ -1,17 +1,13 @@
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 import pytest
-from httpx import AsyncClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.utils import random_boolean
-from tests.utils.utils import random_lower_string
+from tests.utils.utils import random_boolean, random_lower_string
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions import ErrorCode
-from app.schemas import WebsiteRead
-from app.schemas import WebsiteUpdate
+from app.schemas import WebsiteRead, WebsiteUpdate
 
 pytestmark = pytest.mark.asyncio
 

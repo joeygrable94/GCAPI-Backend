@@ -1,11 +1,8 @@
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 import pytest
-from httpx import AsyncClient
-from httpx import Response
-from tests.utils.utils import random_boolean
-from tests.utils.utils import random_domain
+from httpx import AsyncClient, Response
+from tests.utils.utils import random_boolean, random_domain
 
 from app.api.exceptions import ErrorCode
 

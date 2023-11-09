@@ -1,9 +1,7 @@
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 import pytest
-from httpx import AsyncClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.notes import create_random_note
 from tests.utils.users import get_user_by_email
@@ -12,8 +10,7 @@ from app.api.exceptions.errors import ErrorCode
 from app.core.config import settings
 from app.core.utilities.uuids import get_uuid_str
 from app.crud import NoteRepository
-from app.models import Note
-from app.models import User
+from app.models import Note, User
 from app.schemas import NoteRead
 
 pytestmark = pytest.mark.asyncio

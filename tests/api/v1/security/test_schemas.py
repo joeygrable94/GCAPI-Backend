@@ -1,8 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from app.core.security.schemas import EncryptedMessage
-from app.core.security.schemas import PlainMessage
+from app.core.security.schemas import EncryptedMessage, PlainMessage
 
 
 def test_plain_message() -> None:
