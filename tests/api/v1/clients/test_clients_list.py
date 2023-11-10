@@ -10,7 +10,7 @@ from app.schemas import ClientRead
 pytestmark = pytest.mark.asyncio
 
 
-async def test_list_clients_as_superuser(
+async def test_list_all_clients_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
@@ -22,9 +22,9 @@ async def test_list_clients_as_superuser(
     data = response.json()
     assert 200 <= response.status_code < 300
     assert data["page"] == 1
-    assert data["total"] == 6
+    assert data["total"] == 7
     assert data["size"] == 100
-    assert len(data["results"]) == 6
+    assert len(data["results"]) == 7
     for entry in data["results"]:
         if entry["id"] == str(entry_1.id):
             assert entry["title"] == entry_1.title

@@ -5,10 +5,7 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.pagination import Paginated
-
 # from app.schemas import UserRead, ClientRead
-from app.schemas.user import UserReadAsAdmin, UserReadAsManager
 
 # from tests.utils.clients import create_random_client
 
@@ -16,7 +13,7 @@ from app.schemas.user import UserReadAsAdmin, UserReadAsManager
 pytestmark = pytest.mark.asyncio
 
 
-async def test_list_users_as_admin(
+async def test_list_all_users_as_admin(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
@@ -25,15 +22,23 @@ async def test_list_users_as_admin(
         "users/",
         headers=admin_token_headers,
     )
-    data: Paginated[UserReadAsAdmin] = Paginated(**response.json())
+    data = response.json()
     assert 200 <= response.status_code < 300
-    assert data.page == 1
-    assert data.total == 8
-    assert data.size == 100
-    assert len(data.results) == 8
+    assert data["page"] == 1
+    assert data["total"] == 10
+    assert data["size"] == 100
+    assert len(data["results"]) == 10
+    for entry in data["results"]:
+        assert "id" in entry
+        assert "auth_id" in entry
+        assert "email" in entry
+        assert "is_active" in entry
+        assert "is_verified" in entry
+        assert "is_superuser" in entry
+        assert "scopes" in entry
 
 
-async def test_list_users_as_manager(
+async def test_list_all_users_as_manager(
     client: AsyncClient,
     db_session: AsyncSession,
     manager_token_headers: Dict[str, str],
@@ -42,15 +47,23 @@ async def test_list_users_as_manager(
         "users/",
         headers=manager_token_headers,
     )
-    data: Paginated[UserReadAsManager] = Paginated(**response.json())
+    data = response.json()
     assert 200 <= response.status_code < 300
-    assert data.page == 1
-    assert data.total == 8
-    assert data.size == 100
-    assert len(data.results) == 8
+    assert data["page"] == 1
+    assert data["total"] == 10
+    assert data["size"] == 100
+    assert len(data["results"]) == 10
+    for entry in data["results"]:
+        assert "id" in entry
+        assert "auth_id" in entry
+        assert "email" in entry
+        assert "is_active" in entry
+        assert "is_verified" in entry
+        assert "scopes" in entry
+        assert "is_superuser" not in entry
 
 
-async def test_list_users_as_employee(
+async def test_list_all_users_as_employee(
     client: AsyncClient,
     db_session: AsyncSession,
     employee_token_headers: Dict[str, str],

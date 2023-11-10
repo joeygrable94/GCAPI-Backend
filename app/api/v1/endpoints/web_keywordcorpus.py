@@ -1,17 +1,26 @@
-from typing import List
-
 from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
+    CommonWebsiteKeywordCorpusQueryParams,
     CurrentUser,
     FetchWebsiteKeywordCorpusOr404,
     GetWebsiteKeywordCorpusQueryParams,
+    PermissionController,
     get_async_db,
+    get_current_user,
+    get_permission_controller,
     get_website_page_kwc_or_404,
 )
 from app.core.logger import logger
+from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
+from app.core.security.permissions import (
+    RoleAdmin,
+    RoleClient,
+    RoleEmployee,
+    RoleManager,
+)
 from app.crud import WebsiteKeywordCorpusRepository
 from app.models import WebsiteKeywordCorpus
 from app.schemas import WebsiteKeywordCorpusCreate, WebsiteKeywordCorpusRead
@@ -23,17 +32,20 @@ router: APIRouter = APIRouter()
     "/",
     name="website_page_keyword_corpus:list",
     dependencies=[
+        Depends(CommonWebsiteKeywordCorpusQueryParams),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
-    response_model=List[WebsiteKeywordCorpusRead],
+    response_model=Paginated[WebsiteKeywordCorpusRead],
 )
 async def website_page_keyword_corpus_list(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     query: GetWebsiteKeywordCorpusQueryParams,
-) -> List[WebsiteKeywordCorpusRead] | List:
-    """Retrieve a list of website keyword corpus.
+    db: AsyncDatabaseSession,
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> Paginated[WebsiteKeywordCorpusRead]:
+    """Retrieve a paginated list of website keyword corpus.
 
     Permissions:
     ------------
@@ -46,27 +58,31 @@ async def website_page_keyword_corpus_list(
         with a client's website via `client_website` table, associated with the user
         via `user_client`
 
-
     Returns:
     --------
-    `List[WebsiteKeywordCorpusRead] | List[None]` : a list of website keyword corpus,
-        optionally filtered, or returns an empty list
+    `Paginated[WebsiteKeywordCorpusRead]` : a paginated list of website keyword corpus,
+        optionally filtered
 
     """
     web_kwc_repo: WebsiteKeywordCorpusRepository
     web_kwc_repo = WebsiteKeywordCorpusRepository(session=db)
-    web_kwc_list: List[WebsiteKeywordCorpus] | List[
-        None
-    ] | None = await web_kwc_repo.list(
-        page=query.page,
-        website_id=query.website_id,
-        page_id=query.page_id,
+    response_out: Paginated[
+        WebsiteKeywordCorpusRead
+    ] = await permissions.get_paginated_resource_response(
+        table_name=WebsiteKeywordCorpus.__tablename__,
+        stmt=web_kwc_repo.query_list(
+            website_id=query.website_id,
+            page_id=query.page_id,
+        ),
+        page_params=PageParams(page=query.page, size=query.size),
+        responses={
+            RoleAdmin: WebsiteKeywordCorpusRead,
+            RoleManager: WebsiteKeywordCorpusRead,
+            RoleClient: WebsiteKeywordCorpusRead,
+            RoleEmployee: WebsiteKeywordCorpusRead,
+        },
     )
-    return (
-        [WebsiteKeywordCorpusRead.model_validate(wkwc) for wkwc in web_kwc_list]
-        if web_kwc_list
-        else []
-    )
+    return response_out
 
 
 @router.post(

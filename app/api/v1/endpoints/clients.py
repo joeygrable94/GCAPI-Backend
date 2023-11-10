@@ -14,7 +14,12 @@ from app.api.deps import (
 )
 from app.api.exceptions import ClientAlreadyExists
 from app.api.openapi import clients_read_responses
-from app.core.pagination import GetPaginatedQueryParams, PageParams, Paginated
+from app.core.pagination import (
+    GetPaginatedQueryParams,
+    PageParams,
+    PageParamsFromQuery,
+    Paginated,
+)
 from app.core.security import auth
 from app.core.security.permissions import (
     RoleAdmin,
@@ -33,7 +38,7 @@ router: APIRouter = APIRouter()
     "/",
     name="clients:list",
     dependencies=[
-        Depends(PageParams),
+        Depends(PageParamsFromQuery),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
@@ -57,8 +62,7 @@ async def clients_list(
 
     Returns:
     --------
-    `List[ClientRead] | List[None]` : a list of clients, optionally filtered,
-        or returns an empty list
+    `Paginated[ClientRead]` : a paginated list of clients, optionally filtered
 
     """
     clients_repo: ClientRepository = ClientRepository(session=db)

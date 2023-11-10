@@ -1,7 +1,12 @@
 import asyncio
 
 import typer
+from sqlalchemy_data_model_visualizer import (
+    add_web_font_and_interactivity,
+    generate_data_model_diagram,
+)
 
+from app.core.config import settings
 from app.core.logger import logger
 from app.db.commands import build_database, check_db_connected, create_init_data
 
@@ -36,6 +41,23 @@ def add_initial_data() -> None:
         await create_init_data()
 
     asyncio.run(_create_init_data())
+
+
+@app.command()
+def generate_schema_graph() -> None:
+    logger.info("Generating Schema Graph")
+    app_name = settings.api.name.lower()
+    from app import models
+
+    all_models = [getattr(models, m) for m in models.__all__]
+    output_file_name = f"./docs/{app_name}_schema_graph"
+    output_file_interactive = f"./docs/{output_file_name}_interactive.svg"
+    generate_data_model_diagram(  # type: ignore
+        all_models, output_file_name, view_diagram=False
+    )
+    add_web_font_and_interactivity(  # type: ignore
+        output_file_name, output_file_interactive
+    )
 
 
 if __name__ == "__main__":

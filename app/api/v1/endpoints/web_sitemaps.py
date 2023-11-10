@@ -1,17 +1,28 @@
-from typing import Any, List
+from typing import Any
 
 from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
+    CommonWebsiteMapQueryParams,
     CurrentUser,
     FetchSitemapOr404,
     GetWebsiteMapQueryParams,
+    PermissionController,
     get_async_db,
+    get_current_user,
+    get_permission_controller,
     get_website_map_or_404,
 )
 from app.api.exceptions import WebsiteMapAlreadyExists, WebsiteNotExists
+from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
+from app.core.security.permissions import (
+    RoleAdmin,
+    RoleClient,
+    RoleEmployee,
+    RoleManager,
+)
 from app.crud import WebsiteMapRepository, WebsiteRepository
 from app.models import Website, WebsiteMap
 from app.schemas import (
@@ -29,17 +40,20 @@ router: APIRouter = APIRouter()
     "/",
     name="website_sitemaps:list",
     dependencies=[
+        Depends(CommonWebsiteMapQueryParams),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
-    response_model=List[WebsiteMapRead],
+    response_model=Paginated[WebsiteMapRead],
 )
 async def sitemap_list(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     query: GetWebsiteMapQueryParams,
-) -> List[WebsiteMapRead] | List:
-    """Retrieve a list of website maps.
+    db: AsyncDatabaseSession,
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> Paginated[WebsiteMapRead]:
+    """Retrieve a paginated list of website maps.
 
     Permissions:
     ------------
@@ -53,16 +67,25 @@ async def sitemap_list(
 
     Returns:
     --------
-    `List[WebsiteMapRead] | List[None]` : a list of website maps, optionally filtered
-        or returns an empty list
+    `Paginated[WebsiteMapRead]` : a paginated list of website maps,
+        optionally filtered
 
     """
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
-    sitemaps: List[WebsiteMap] | List[None] | None = await sitemap_repo.list(
-        page=query.page,
-        website_id=query.website_id,
+    response_out: Paginated[
+        WebsiteMapRead
+    ] = await permissions.get_paginated_resource_response(
+        table_name=WebsiteMap.__tablename__,
+        stmt=sitemap_repo.query_list(website_id=query.website_id),
+        page_params=PageParams(page=query.page, size=query.size),
+        responses={
+            RoleAdmin: WebsiteMapRead,
+            RoleManager: WebsiteMapRead,
+            RoleClient: WebsiteMapRead,
+            RoleEmployee: WebsiteMapRead,
+        },
     )
-    return [WebsiteMapRead.model_validate(w) for w in sitemaps] if sitemaps else []
+    return response_out
 
 
 @router.post(

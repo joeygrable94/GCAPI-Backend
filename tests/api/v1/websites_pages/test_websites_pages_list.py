@@ -12,7 +12,7 @@ from app.schemas import WebsiteMapRead, WebsitePageRead, WebsiteRead
 pytestmark = pytest.mark.asyncio
 
 
-async def test_list_website_pages_as_superuser(
+async def test_list_all_website_pages_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
@@ -21,21 +21,27 @@ async def test_list_website_pages_as_superuser(
     entry_2: WebsitePageRead = await create_random_website_page(db_session)
     response: Response = await client.get("webpages/", headers=admin_token_headers)
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) >= 1
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 25
+    assert data["size"] == 100
+    assert len(data["results"]) == 25
+    for entry in data["results"]:
         assert "url" in entry
         assert "status" in entry
-        if entry["id"] == entry_1.id:
+        assert "priority" in entry
+        if entry["id"] == str(entry_1.id):
             assert entry["url"] == entry_1.url
             assert entry["status"] == entry_1.status
             assert entry["priority"] == entry_1.priority
-            assert entry["website_id"] == entry_1.website_id
-        if entry["id"] == entry_2.id:
+            assert entry["sitemap_id"] == str(entry_1.sitemap_id)
+            assert entry["website_id"] == str(entry_1.website_id)
+        if entry["id"] == str(entry_2.id):
             assert entry["url"] == entry_2.url
             assert entry["status"] == entry_2.status
             assert entry["priority"] == entry_2.priority
-            assert entry["website_id"] == entry_2.website_id
+            assert entry["sitemap_id"] == str(entry_2.sitemap_id)
+            assert entry["website_id"] == str(entry_2.website_id)
 
 
 async def test_list_website_pages_as_superuser_by_website_id_and_sitemap_id(
@@ -85,23 +91,29 @@ async def test_list_website_pages_as_superuser_by_website_id_and_sitemap_id(
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 2
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 2
+    assert data["size"] == 100
+    assert len(data["results"]) == 2
+    for entry in data["results"]:
         assert "url" in entry
         assert "status" in entry
-        if entry["id"] == entry_1.id:
+        assert "priority" in entry
+        assert "website_id" in entry
+        assert "sitemap_id" in entry
+        if entry["id"] == str(entry_1.id):
             assert entry["url"] == entry_1.url
             assert entry["status"] == entry_1.status
             assert entry["priority"] == entry_1.priority
-            assert entry["website_id"] == entry_1.website_id
-            assert entry["sitemap_id"] == entry_1.sitemap_id
-        if entry["id"] == entry_2.id:
+            assert entry["website_id"] == str(entry_1.website_id)
+            assert entry["sitemap_id"] == str(entry_1.sitemap_id)
+        if entry["id"] == str(entry_2.id):
             assert entry["url"] == entry_2.url
             assert entry["status"] == entry_2.status
             assert entry["priority"] == entry_2.priority
-            assert entry["website_id"] == entry_2.website_id
-            assert entry["sitemap_id"] == entry_2.sitemap_id
+            assert entry["website_id"] == str(entry_2.website_id)
+            assert entry["sitemap_id"] == str(entry_2.sitemap_id)
 
 
 async def test_list_website_pages_as_superuser_by_website_id(
@@ -150,29 +162,35 @@ async def test_list_website_pages_as_superuser_by_website_id(
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 3
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 3
+    assert data["size"] == 100
+    assert len(data["results"]) == 3
+    for entry in data["results"]:
         assert "url" in entry
         assert "status" in entry
-        if entry["id"] == entry_1.id:
+        assert "priority" in entry
+        assert "website_id" in entry
+        assert "sitemap_id" in entry
+        if entry["id"] == str(entry_1.id):
             assert entry["url"] == entry_1.url
             assert entry["status"] == entry_1.status
             assert entry["priority"] == entry_1.priority
-            assert entry["website_id"] == entry_1.website_id
-            assert entry["sitemap_id"] == entry_1.sitemap_id
-        if entry["id"] == entry_2.id:
+            assert entry["website_id"] == str(entry_1.website_id)
+            assert entry["sitemap_id"] == str(entry_1.sitemap_id)
+        if entry["id"] == str(entry_2.id):
             assert entry["url"] == entry_2.url
             assert entry["status"] == entry_2.status
             assert entry["priority"] == entry_2.priority
-            assert entry["website_id"] == entry_2.website_id
-            assert entry["sitemap_id"] == entry_2.sitemap_id
-        if entry["id"] == entry_5.id:
+            assert entry["website_id"] == str(entry_2.website_id)
+            assert entry["sitemap_id"] == str(entry_2.sitemap_id)
+        if entry["id"] == str(entry_5.id):
             assert entry["url"] == entry_5.url
             assert entry["status"] == entry_5.status
             assert entry["priority"] == entry_5.priority
-            assert entry["website_id"] == entry_5.website_id
-            assert entry["sitemap_id"] == entry_5.sitemap_id
+            assert entry["website_id"] == str(entry_5.website_id)
+            assert entry["sitemap_id"] == str(entry_5.sitemap_id)
 
 
 async def test_list_website_pages_as_superuser_by_sitemap_id(
@@ -221,26 +239,32 @@ async def test_list_website_pages_as_superuser_by_sitemap_id(
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 3
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 3
+    assert data["size"] == 100
+    assert len(data["results"]) == 3
+    for entry in data["results"]:
         assert "url" in entry
         assert "status" in entry
-        if entry["id"] == entry_1.id:
+        assert "priority" in entry
+        assert "website_id" in entry
+        assert "sitemap_id" in entry
+        if entry["id"] == str(entry_1.id):
             assert entry["url"] == entry_1.url
             assert entry["status"] == entry_1.status
             assert entry["priority"] == entry_1.priority
-            assert entry["website_id"] == entry_1.website_id
-            assert entry["sitemap_id"] == entry_1.sitemap_id
-        if entry["id"] == entry_2.id:
+            assert entry["website_id"] == str(entry_1.website_id)
+            assert entry["sitemap_id"] == str(entry_1.sitemap_id)
+        if entry["id"] == str(entry_2.id):
             assert entry["url"] == entry_2.url
             assert entry["status"] == entry_2.status
             assert entry["priority"] == entry_2.priority
-            assert entry["website_id"] == entry_2.website_id
-            assert entry["sitemap_id"] == entry_2.sitemap_id
-        if entry["id"] == entry_6.id:
+            assert entry["website_id"] == str(entry_2.website_id)
+            assert entry["sitemap_id"] == str(entry_2.sitemap_id)
+        if entry["id"] == str(entry_6.id):
             assert entry["url"] == entry_6.url
             assert entry["status"] == entry_6.status
             assert entry["priority"] == entry_6.priority
-            assert entry["website_id"] == entry_6.website_id
-            assert entry["sitemap_id"] == entry_6.sitemap_id
+            assert entry["website_id"] == str(entry_6.website_id)
+            assert entry["sitemap_id"] == str(entry_6.sitemap_id)

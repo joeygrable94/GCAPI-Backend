@@ -19,7 +19,7 @@ async def test_read_all_users_as_admin(
     admin_token_headers: Dict[str, str],
 ) -> None:
     user_repo: UserRepository = UserRepository(db_session)
-    users: List[User] | List[None] | None = await user_repo.list(1)
+    users: List[User] | List[None] | None = await user_repo.get_list(1)
     if users and len(users) > 0:
         for user in users:
             if user is not None:
@@ -40,7 +40,7 @@ async def test_read_all_users_as_manager(
     manager_token_headers: Dict[str, str],
 ) -> None:
     user_repo: UserRepository = UserRepository(db_session)
-    users: List[User] | List[None] | None = await user_repo.list(1)
+    users: List[User] | List[None] | None = await user_repo.get_list(1)
     if users and len(users) > 0:
         for user in users:
             if user is not None:

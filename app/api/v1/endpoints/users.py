@@ -14,7 +14,12 @@ from app.api.deps import (
 from app.api.exceptions import UserAlreadyExists
 
 # from app.api.openapi import users_read_responses
-from app.core.pagination import GetPaginatedQueryParams, PageParams, Paginated
+from app.core.pagination import (
+    GetPaginatedQueryParams,
+    PageParams,
+    PageParamsFromQuery,
+    Paginated,
+)
 from app.core.security import auth
 from app.core.security.permissions import (
     AccessDelete,
@@ -98,7 +103,7 @@ async def users_current(
     "/",
     name="users:list",
     dependencies=[
-        Depends(PageParams),
+        Depends(PageParamsFromQuery),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),

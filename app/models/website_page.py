@@ -52,11 +52,11 @@ class WebsitePage(Base):
 
     # relationships
     website_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("website.id"), nullable=False
+        UUIDType(binary=False), ForeignKey("website.id"), index=True, nullable=False
     )
     website: Mapped["Website"] = relationship("Website", back_populates="pages")
     sitemap_id: Mapped[Optional[UUID4]] = mapped_column(
-        UUIDType(binary=False), ForeignKey("website_map.id"), nullable=True
+        UUIDType(binary=False), ForeignKey("website_map.id"), index=True, nullable=True
     )
     sitemap: Mapped[Optional["WebsiteMap"]] = relationship(
         "WebsiteMap", back_populates="pages"

@@ -1,18 +1,27 @@
-from typing import List
-
 from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
+    CommonWebsitePageSpeedInsightsQueryParams,
     CurrentUser,
     FetchWebPageSpeedInsightOr404,
     GetWebsitePageSpeedInsightsQueryParams,
+    PermissionController,
     get_async_db,
+    get_current_user,
+    get_permission_controller,
     get_website_page_psi_or_404,
 )
 from app.api.exceptions import WebsiteNotExists, WebsitePageNotExists
 from app.core.logger import logger
+from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
+from app.core.security.permissions import (
+    RoleAdmin,
+    RoleClient,
+    RoleEmployee,
+    RoleManager,
+)
 from app.crud import (
     WebsitePageRepository,
     WebsitePageSpeedInsightsRepository,
@@ -32,17 +41,20 @@ router: APIRouter = APIRouter()
     "/",
     name="website_page_speed_insights:list",
     dependencies=[
+        Depends(CommonWebsitePageSpeedInsightsQueryParams),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
-    response_model=List[WebsitePageSpeedInsightsRead],
+    response_model=Paginated[WebsitePageSpeedInsightsRead],
 )
 async def website_page_speed_insights_list(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     query: GetWebsitePageSpeedInsightsQueryParams,
-) -> List[WebsitePageSpeedInsightsRead] | List:
-    """Retrieve a list of website page speed insights.
+    db: AsyncDatabaseSession,
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> Paginated[WebsitePageSpeedInsightsRead]:
+    """Retrieve a paginated list of website page speed insights.
 
     Permissions:
     ------------
@@ -57,24 +69,29 @@ async def website_page_speed_insights_list(
 
     Returns:
     --------
-    `List[WebsitePageSpeedInsightsRead] | List[None]` : a list of website page speed
-        insights, optionally filtered, or returns an empty list
+    `Paginated[WebsitePageSpeedInsightsRead]` : a paginated list of website page speed
+        insights, optionally filtered
     """
     web_psi_repo: WebsitePageSpeedInsightsRepository
     web_psi_repo = WebsitePageSpeedInsightsRepository(session=db)
-    web_psi_list: List[WebsitePageSpeedInsights] | List[
-        None
-    ] | None = await web_psi_repo.list(
-        page=query.page,
-        website_id=query.website_id,
-        page_id=query.page_id,
-        devices=query.strategy,
+    response_out: Paginated[
+        WebsitePageSpeedInsightsRead
+    ] = await permissions.get_paginated_resource_response(
+        table_name=WebsitePageSpeedInsights.__tablename__,
+        stmt=web_psi_repo.query_list(
+            website_id=query.website_id,
+            page_id=query.page_id,
+            devices=query.strategy,
+        ),
+        page_params=PageParams(page=query.page, size=query.size),
+        responses={
+            RoleAdmin: WebsitePageSpeedInsightsRead,
+            RoleManager: WebsitePageSpeedInsightsRead,
+            RoleClient: WebsitePageSpeedInsightsRead,
+            RoleEmployee: WebsitePageSpeedInsightsRead,
+        },
     )
-    return (
-        [WebsitePageSpeedInsightsRead.model_validate(wpsi) for wpsi in web_psi_list]
-        if web_psi_list
-        else []
-    )
+    return response_out
 
 
 @router.post(

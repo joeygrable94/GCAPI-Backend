@@ -1,12 +1,11 @@
 import abc
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
+from typing import Any, Dict, Generic, Optional, TypeVar, Union
 
 from pydantic import UUID4
-from sqlalchemy import Select, select as sql_select
+from sqlalchemy import Select, and_, select as sql_select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
-from app.core.utilities import get_uuid, paginate
+from app.core.utilities import get_uuid
 from app.db.base import Base
 from app.schemas.base import BaseSchema
 
@@ -43,25 +42,9 @@ class BaseRepository(
             return None
         return data[0]
 
-    async def _list(
-        self, skip: int = 0, limit: int = settings.api.query_limit_rows_default
-    ) -> Union[List[TABLE], List[None]]:
-        query: Any = sql_select(self._table).offset(skip).limit(limit)  # type: ignore
-        result: Any = await self._db.execute(query)
-        data: List[TABLE] = result.scalars().all()  # pragma: no cover
-        return data  # pragma: no cover
-
     def query_list(self) -> Select:
         stmt = sql_select(self._table)  # type: ignore
         return stmt
-
-    async def list(
-        self,
-        page: int = 1,
-    ) -> Optional[Union[List[TABLE], List[None]]]:
-        self._db.begin()
-        skip, limit = paginate(page)
-        return await self._list(skip=skip, limit=limit)
 
     async def create(self, schema: Union[SCHEMA_CREATE, Any]) -> TABLE:
         self._db.begin()
@@ -117,10 +100,13 @@ class BaseRepository(
         self._db.begin()
         check_val_a: Any = getattr(self._table, field_name_a)
         check_val_b: Any = getattr(self._table, field_name_b)
-        query: Any = sql_select(self._table).where(  # type: ignore
-            (check_val_a == field_value_a) & (check_val_b == field_value_b)
+        stmt: Select = sql_select(self._table).where(  # type: ignore
+            and_(
+                check_val_a == field_value_a,
+                check_val_b == field_value_b,
+            )
         )
-        entry: Any = await self._get(query)
+        entry: Any = await self._get(stmt)
         if not entry:
             return None
         return entry

@@ -55,7 +55,7 @@ class PermissionController(Generic[T]):
         db: AsyncDatabaseSession,
         user: CurrentUser,
         privileges: List[AclPrivilege],
-    ):  # pragma: no cover
+    ):  # TODO: test
         self.db = db
         self.current_user = user
         self.privileges = privileges

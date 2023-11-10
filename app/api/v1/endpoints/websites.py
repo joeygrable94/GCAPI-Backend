@@ -1,17 +1,26 @@
-from typing import List
-
 from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
+    CommonClientWebsiteQueryParams,
     CurrentUser,
     FetchWebsiteOr404,
     GetClientWebsiteQueryParams,
+    PermissionController,
     get_async_db,
+    get_current_user,
+    get_permission_controller,
     get_website_or_404,
 )
 from app.api.exceptions import WebsiteAlreadyExists, WebsiteDomainInvalid
+from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
+from app.core.security.permissions import (
+    RoleAdmin,
+    RoleClient,
+    RoleEmployee,
+    RoleManager,
+)
 from app.crud import WebsiteRepository
 from app.models import Website
 from app.schemas import (
@@ -29,17 +38,20 @@ router: APIRouter = APIRouter()
     "/",
     name="websites:list",
     dependencies=[
+        Depends(CommonClientWebsiteQueryParams),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
-    response_model=List[WebsiteRead],
+    response_model=Paginated[WebsiteRead],
 )
 async def website_list(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     query: GetClientWebsiteQueryParams,
-) -> List[WebsiteRead] | List:
-    """List websites.
+    db: AsyncDatabaseSession,
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> Paginated[WebsiteRead]:
+    """Retrieve a paginated list of websites.
 
     Permissions:
     ------------
@@ -52,15 +64,24 @@ async def website_list(
 
     Returns:
     --------
-    `List[WebsiteRead] | List[None]` : a list of websites, optionally filtered,
-        or returns an empty list
+    `Paginated[WebsiteRead]` : a paginated list of websites, optionally filtered
 
     """
     websites_repo: WebsiteRepository = WebsiteRepository(session=db)
-    websites: List[Website] | List[None] | None = await websites_repo.list(
-        page=query.page
+    response_out: Paginated[
+        WebsiteRead
+    ] = await permissions.get_paginated_resource_response(
+        table_name=Website.__tablename__,
+        stmt=websites_repo.query_list(),
+        page_params=PageParams(page=query.page, size=query.size),
+        responses={
+            RoleAdmin: WebsiteRead,
+            RoleManager: WebsiteRead,
+            RoleClient: WebsiteRead,
+            RoleEmployee: WebsiteRead,
+        },
     )
-    return [WebsiteRead.model_validate(w) for w in websites] if websites else []
+    return response_out
 
 
 @router.post(

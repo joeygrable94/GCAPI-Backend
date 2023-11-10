@@ -13,7 +13,7 @@ from app.schemas import NoteRead
 pytestmark = pytest.mark.asyncio
 
 
-async def test_list_notess_as_superuser(
+async def test_list_all_notes_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
@@ -27,23 +27,29 @@ async def test_list_notess_as_superuser(
     entry_4: NoteRead = await create_random_note(db_session, user_id=user.id)
     response: Response = await client.get("notes/", headers=admin_token_headers)
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) > 1
-    for entry in all_entries:
-        assert "title" in entry
-        assert "description" in entry
-        assert "is_active" in entry
-        assert "user_id" in entry
-        assert entry["user_id"] == str(user.id)
-        if entry["title"] == entry_1.title:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 6
+    assert data["size"] == 100
+    assert len(data["results"]) == 6
+    for entry in data["results"]:
+        if entry["id"] == str(entry_1.id):
             assert entry["title"] == entry_1.title
             assert entry["description"] == entry_1.description
-        if entry["title"] == entry_2.title:
+            assert entry["is_active"] == entry_1.is_active
+            assert entry["user_id"] == str(entry_1.user_id)
+        if entry["id"] == str(entry_2.id):
             assert entry["title"] == entry_2.title
             assert entry["description"] == entry_2.description
-        if entry["title"] == entry_3.title:
+            assert entry["is_active"] == entry_2.is_active
+            assert entry["user_id"] == str(entry_2.user_id)
+        if entry["id"] == str(entry_3.id):
             assert entry["title"] == entry_3.title
             assert entry["description"] == entry_3.description
-        if entry["title"] == entry_4.title:
+            assert entry["is_active"] == entry_3.is_active
+            assert entry["user_id"] == str(entry_3.user_id)
+        if entry["id"] == str(entry_4.id):
             assert entry["title"] == entry_4.title
             assert entry["description"] == entry_4.description
+            assert entry["is_active"] == entry_4.is_active
+            assert entry["user_id"] == str(entry_4.user_id)

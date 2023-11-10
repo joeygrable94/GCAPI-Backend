@@ -1,10 +1,8 @@
-from typing import Any, List, Optional, Type, Union
+from typing import Type
 from uuid import UUID
 
-from sqlalchemy import select as sql_select
+from sqlalchemy import Select, and_, select as sql_select
 
-from app.core.config import settings
-from app.core.utilities import paginate
 from app.crud.base import BaseRepository
 from app.models import WebsitePage
 from app.schemas import WebsitePageCreate, WebsitePageRead, WebsitePageUpdate
@@ -17,52 +15,26 @@ class WebsitePageRepository(
     def _table(self) -> Type[WebsitePage]:  # type: ignore
         return WebsitePage
 
-    async def _list(
+    def query_list(
         self,
-        skip: int = 0,
-        limit: int = settings.api.query_limit_rows_default,
         website_id: UUID | None = None,
         sitemap_id: UUID | None = None,
-    ) -> Union[List[WebsitePage], List[None]]:
-        query: Any | None = None
+    ) -> Select:
+        stmt: Select | None = None
+        # website_id and sitemap_id
         if website_id and sitemap_id:
-            query = (
-                sql_select(self._table)
-                .where(
-                    (self._table.website_id == website_id)
-                    & (self._table.sitemap_id == sitemap_id)
+            stmt = sql_select(self._table).where(
+                and_(
+                    self._table.website_id == website_id,
+                    self._table.sitemap_id == sitemap_id,
                 )
-                .offset(skip)
-                .limit(limit)
             )
+        # only website_id
         if website_id and not sitemap_id:
-            query = (
-                sql_select(self._table)
-                .where(self._table.website_id == website_id)
-                .offset(skip)
-                .limit(limit)
-            )
+            stmt = sql_select(self._table).where(self._table.website_id == website_id)
+        # only sitemap_id
         if not website_id and sitemap_id:
-            query = (
-                sql_select(self._table)
-                .where(self._table.sitemap_id == sitemap_id)
-                .offset(skip)
-                .limit(limit)
-            )
-        if query is None:
-            query = sql_select(self._table).offset(skip).limit(limit)  # type: ignore
-        result: Any = await self._db.execute(query)
-        data: List[WebsitePage] = result.scalars().all()  # pragma: no cover
-        return data  # pragma: no cover
-
-    async def list(
-        self,
-        page: int = 1,
-        website_id: UUID | None = None,
-        sitemap_id: UUID | None = None,
-    ) -> Optional[Union[List[WebsitePage], List[None]]]:
-        self._db.begin()
-        skip, limit = paginate(page)
-        return await self._list(
-            skip=skip, limit=limit, website_id=website_id, sitemap_id=sitemap_id
-        )
+            stmt = sql_select(self._table).where(self._table.sitemap_id == sitemap_id)
+        if stmt is None:
+            stmt = sql_select(self._table)
+        return stmt

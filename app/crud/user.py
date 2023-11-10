@@ -1,16 +1,30 @@
-from typing import Type
+from typing import Sequence, Type
 
-from app.core.security.permissions.scope import AclPrivilege
+from sqlalchemy import Result, Select, select as sql_select
+
+from app.core.security.permissions import AclPrivilege
+from app.core.utilities import paginate
 from app.crud.base import BaseRepository
 from app.models import User
-from app.schemas import UserCreate, UserRead, UserUpdate
-from app.schemas.user import UserUpdatePrivileges
+from app.schemas import UserCreate, UserRead, UserUpdate, UserUpdatePrivileges
 
 
 class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
     @property
     def _table(self) -> Type[User]:  # type: ignore
         return User
+
+    async def get_list(
+        self,
+        page: int = 1,
+    ) -> list[User] | list[None]:
+        self._db.begin()
+        skip, limit = paginate(page)
+        query: Select = sql_select(self._table).offset(skip).limit(limit)
+        result: Result = await self._db.execute(query)
+        data: Sequence[User] = result.scalars().all()  # pragma: no cover
+        data_list = list(data)
+        return data_list
 
     async def add_privileges(
         self,

@@ -10,7 +10,7 @@ from app.schemas import WebsiteRead
 pytestmark = pytest.mark.asyncio
 
 
-async def test_list_websites_as_superuser(
+async def test_list_all_websites_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
@@ -18,11 +18,12 @@ async def test_list_websites_as_superuser(
     entry_1: WebsiteRead = await create_random_website(db_session)
     response: Response = await client.get("websites/", headers=admin_token_headers)
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) >= 1
-    for entry in all_entries:
-        assert "domain" in entry
-        assert "is_secure" in entry
-        if entry["domain"] == entry_1.domain:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 13
+    assert data["size"] == 100
+    assert len(data["results"]) == 13
+    for entry in data["results"]:
+        if entry["id"] == str(entry_1.id):
             assert entry["domain"] == entry_1.domain
-            assert isinstance(entry["is_secure"], bool)
+            assert entry["is_secure"] == entry_1.is_secure

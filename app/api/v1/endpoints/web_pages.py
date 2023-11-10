@@ -1,26 +1,37 @@
-from typing import Any, List
+from typing import Any
 
 from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     AsyncDatabaseSession,
+    CommonWebsitePageQueryParams,
     CurrentUser,
     FetchWebPageOr404,
     GetWebsitePageQueryParams,
+    PermissionController,
     get_async_db,
+    get_current_user,
+    get_permission_controller,
     get_website_page_or_404,
 )
 from app.api.exceptions import WebsiteNotExists, WebsitePageAlreadyExists
+from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
+from app.core.security.permissions import (
+    RoleAdmin,
+    RoleClient,
+    RoleEmployee,
+    RoleManager,
+)
 from app.crud import WebsitePageRepository, WebsiteRepository
 from app.models import Website, WebsitePage
 from app.schemas import (
+    PSIDevice,
     WebsitePageCreate,
     WebsitePagePSIProcessing,
     WebsitePageRead,
     WebsitePageUpdate,
 )
-from app.schemas.website_pagespeedinsights import PSIDevice
 from app.worker import task_website_page_pagespeedinsights_fetch
 
 router: APIRouter = APIRouter()
@@ -30,17 +41,20 @@ router: APIRouter = APIRouter()
     "/",
     name="website_pages:list",
     dependencies=[
+        Depends(CommonWebsitePageQueryParams),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
-    response_model=List[WebsitePageRead],
+    response_model=Paginated[WebsitePageRead],
 )
 async def website_page_list(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     query: GetWebsitePageQueryParams,
-) -> List[WebsitePageRead] | List:
-    """Retrieve a list of website pages.
+    db: AsyncDatabaseSession,
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> Paginated[WebsitePageRead]:
+    """Retrieve a paginated list of website pages.
 
     Permissions:
     ------------
@@ -54,21 +68,28 @@ async def website_page_list(
 
     Returns:
     --------
-    `List[WebsitePageRead] | List[None]` : a list of website pages, optionally filtered,
-        or returns an empty list
+    `Paginated[WebsitePageRead]` : a paginated list of website pages,
+        optionally filtered
 
     """
     web_pages_repo: WebsitePageRepository = WebsitePageRepository(session=db)
-    website_list: List[WebsitePage] | List[None] | None = await web_pages_repo.list(
-        page=query.page,
-        website_id=query.website_id,
-        sitemap_id=query.sitemap_id,
+    response_out: Paginated[
+        WebsitePageRead
+    ] = await permissions.get_paginated_resource_response(
+        table_name=WebsitePage.__tablename__,
+        stmt=web_pages_repo.query_list(
+            website_id=query.website_id,
+            sitemap_id=query.sitemap_id,
+        ),
+        page_params=PageParams(page=query.page, size=query.size),
+        responses={
+            RoleAdmin: WebsitePageRead,
+            RoleManager: WebsitePageRead,
+            RoleClient: WebsitePageRead,
+            RoleEmployee: WebsitePageRead,
+        },
     )
-    return (
-        [WebsitePageRead.model_validate(w) for w in website_list]
-        if website_list
-        else []
-    )
+    return response_out
 
 
 @router.post(

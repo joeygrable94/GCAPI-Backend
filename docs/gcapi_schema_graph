@@ -1,0 +1,1262 @@
+// Interactive Data Models
+digraph {
+	graph [bgcolor="#EEEEEE" rankdir=TB splines=spline]
+	node [fontname=Roboto fontsize=12 shape=none]
+	edge [fontname=Roboto fontsize=10]
+	BdxFeed [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">BdxFeed</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">username</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">password</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">serverhost</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://BdxFeed_details.html"]
+	BdxFeed -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between BdxFeed and Client"]
+	BdxFeed -> FileAsset [label=file_assets color="#1E88E5" style=dashed tooltip="Relation between BdxFeed and FileAsset"]
+	Client [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Client</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">title</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(96) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">description</TD>
+                         <TD BGCOLOR="#BBDEFB">TEXT(5000) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_active</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR></TABLE>> URL="http://Client_details.html"]
+	Client -> User [label=users color="#1E88E5" style=dashed tooltip="Relation between Client and User"]
+	Client -> Website [label=websites color="#1E88E5" style=dashed tooltip="Relation between Client and Website"]
+	Client -> ClientReport [label=client_reports color="#1E88E5" style=dashed tooltip="Relation between Client and ClientReport"]
+	Client -> GoCloudProperty [label=gcloud_accounts color="#1E88E5" style=dashed tooltip="Relation between Client and GoCloudProperty"]
+	Client -> GoSearchConsoleProperty [label=gsc_accounts color="#1E88E5" style=dashed tooltip="Relation between Client and GoSearchConsoleProperty"]
+	Client -> GoAnalytics4Property [label=ga4_accounts color="#1E88E5" style=dashed tooltip="Relation between Client and GoAnalytics4Property"]
+	Client -> GoUniversalAnalyticsProperty [label=gua_accounts color="#1E88E5" style=dashed tooltip="Relation between Client and GoUniversalAnalyticsProperty"]
+	Client -> Sharpspring [label=sharpspring_accounts color="#1E88E5" style=dashed tooltip="Relation between Client and Sharpspring"]
+	Client -> ClientBucket [label=buckets color="#1E88E5" style=dashed tooltip="Relation between Client and ClientBucket"]
+	Client -> BdxFeed [label=bdx_feeds color="#1E88E5" style=dashed tooltip="Relation between Client and BdxFeed"]
+	Client -> FileAsset [label=file_assets color="#1E88E5" style=dashed tooltip="Relation between Client and FileAsset"]
+	Client -> Gcft [label=gcflytours color="#1E88E5" style=dashed tooltip="Relation between Client and Gcft"]
+	ClientBucket [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">ClientBucket</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">bucket_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(100) (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">object_key</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(2048) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">description</TD>
+                         <TD BGCOLOR="#BBDEFB">TEXT(5000) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://ClientBucket_details.html"]
+	ClientBucket -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between ClientBucket and Client"]
+	ClientBucket -> FileAsset [label=file_assets color="#1E88E5" style=dashed tooltip="Relation between ClientBucket and FileAsset"]
+	ClientReport [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">ClientReport</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">title</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(96) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">url</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(2048) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">description</TD>
+                         <TD BGCOLOR="#BBDEFB">TEXT(5000) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">keys</TD>
+                         <TD BGCOLOR="#BBDEFB">BLOB ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://ClientReport_details.html"]
+	ClientReport -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between ClientReport and Client"]
+	ClientReport -> Note [label=notes color="#1E88E5" style=dashed tooltip="Relation between ClientReport and Note"]
+	ClientReportNote [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">ClientReportNote</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_report_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">note_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK)</TD>
+                         </TR></TABLE>> URL="http://ClientReportNote_details.html"]
+	ClientWebsite [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">ClientWebsite</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">website_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK)</TD>
+                         </TR></TABLE>> URL="http://ClientWebsite_details.html"]
+	FileAsset [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">FileAsset</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">filename</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(96) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">extension</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">size_kb</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">title</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(96) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">caption</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(150) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">keys</TD>
+                         <TD BGCOLOR="#BBDEFB">BLOB ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_private</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">user_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">bucket_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">geocoord_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">bdx_feed_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://FileAsset_details.html"]
+	FileAsset -> User [label=user color="#1E88E5" style=dashed tooltip="Relation between FileAsset and User"]
+	FileAsset -> ClientBucket [label=client_bucket color="#1E88E5" style=dashed tooltip="Relation between FileAsset and ClientBucket"]
+	FileAsset -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between FileAsset and Client"]
+	FileAsset -> Geocoord [label=geotag color="#1E88E5" style=dashed tooltip="Relation between FileAsset and Geocoord"]
+	FileAsset -> BdxFeed [label=bdx_feed color="#1E88E5" style=dashed tooltip="Relation between FileAsset and BdxFeed"]
+	FileAsset -> GcftSnap [label=gcft_snap color="#1E88E5" style=dashed tooltip="Relation between FileAsset and GcftSnap"]
+	Gcft [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Gcft</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">group_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">group_slug</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(12) (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://Gcft_details.html"]
+	Gcft -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between Gcft and Client"]
+	Gcft -> GcftSnap [label=gcft_snaps color="#1E88E5" style=dashed tooltip="Relation between Gcft and GcftSnap"]
+	Gcft -> GcftSnapView [label=snap_views color="#1E88E5" style=dashed tooltip="Relation between Gcft and GcftSnapView"]
+	Gcft -> GcftSnapActiveduration [label=active_durations color="#1E88E5" style=dashed tooltip="Relation between Gcft and GcftSnapActiveduration"]
+	Gcft -> GcftSnapHotspotclick [label=hotspot_clicks color="#1E88E5" style=dashed tooltip="Relation between Gcft and GcftSnapHotspotclick"]
+	Gcft -> GcftSnapTrafficsource [label=traffic_sources color="#1E88E5" style=dashed tooltip="Relation between Gcft and GcftSnapTrafficsource"]
+	Gcft -> GcftSnapBrowserreport [label=browser_reports color="#1E88E5" style=dashed tooltip="Relation between Gcft and GcftSnapBrowserreport"]
+	GcftSnap [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GcftSnap</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">snap_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">snap_slug</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(12) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">altitude</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">file_asset_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">geocoord_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gcft_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GcftSnap_details.html"]
+	GcftSnap -> FileAsset [label=file_asset color="#1E88E5" style=dashed tooltip="Relation between GcftSnap and FileAsset"]
+	GcftSnap -> Geocoord [label=geotag color="#1E88E5" style=dashed tooltip="Relation between GcftSnap and Geocoord"]
+	GcftSnap -> Gcft [label=gcflytour color="#1E88E5" style=dashed tooltip="Relation between GcftSnap and Gcft"]
+	GcftSnap -> GcftSnapView [label=snap_views color="#1E88E5" style=dashed tooltip="Relation between GcftSnap and GcftSnapView"]
+	GcftSnap -> GcftSnapActiveduration [label=active_durations color="#1E88E5" style=dashed tooltip="Relation between GcftSnap and GcftSnapActiveduration"]
+	GcftSnap -> GcftSnapHotspotclick [label=hotspot_clicks color="#1E88E5" style=dashed tooltip="Relation between GcftSnap and GcftSnapHotspotclick"]
+	GcftSnap -> GcftSnapTrafficsource [label=traffic_sources color="#1E88E5" style=dashed tooltip="Relation between GcftSnap and GcftSnapTrafficsource"]
+	GcftSnap -> GcftSnapBrowserreport [label=browser_reports color="#1E88E5" style=dashed tooltip="Relation between GcftSnap and GcftSnapBrowserreport"]
+	GcftSnapActiveduration [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GcftSnapActiveduration</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">session_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">active_seconds</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">visit_date</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gcft_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">snap_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GcftSnapActiveduration_details.html"]
+	GcftSnapActiveduration -> Gcft [label=gcflytour color="#1E88E5" style=dashed tooltip="Relation between GcftSnapActiveduration and Gcft"]
+	GcftSnapActiveduration -> GcftSnap [label=gcft_snap color="#1E88E5" style=dashed tooltip="Relation between GcftSnapActiveduration and GcftSnap"]
+	GcftSnapBrowserreport [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GcftSnapBrowserreport</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">session_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">browser</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">browser_version</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">platform</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">platform_version</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">desktop</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">tablet</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">mobile</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">city</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">country</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">state</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">language</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">visit_date</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gcft_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">snap_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GcftSnapBrowserreport_details.html"]
+	GcftSnapBrowserreport -> Gcft [label=gcflytour color="#1E88E5" style=dashed tooltip="Relation between GcftSnapBrowserreport and Gcft"]
+	GcftSnapBrowserreport -> GcftSnap [label=gcft_snap color="#1E88E5" style=dashed tooltip="Relation between GcftSnapBrowserreport and GcftSnap"]
+	GcftSnapHotspotclick [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GcftSnapHotspotclick</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">session_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">reporting_id</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">hotspot_type_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">hotspot_content</TD>
+                         <TD BGCOLOR="#BBDEFB">BLOB ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">hotspot_icon_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">hotspot_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">hotspot_user_icon_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">linked_snap_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">snap_file_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">icon_color</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">bg_color</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">text_color</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">hotspot_update_date</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">click_date</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gcft_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">snap_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GcftSnapHotspotclick_details.html"]
+	GcftSnapHotspotclick -> Gcft [label=gcflytour color="#1E88E5" style=dashed tooltip="Relation between GcftSnapHotspotclick and Gcft"]
+	GcftSnapHotspotclick -> GcftSnap [label=gcft_snap color="#1E88E5" style=dashed tooltip="Relation between GcftSnapHotspotclick and GcftSnap"]
+	GcftSnapTrafficsource [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GcftSnapTrafficsource</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">session_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">referrer</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(2048) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">utm_campaign</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">utm_content</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">utm_medium</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">utm_source</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">utm_term</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">visit_date</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gcft_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">snap_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GcftSnapTrafficsource_details.html"]
+	GcftSnapTrafficsource -> Gcft [label=gcflytour color="#1E88E5" style=dashed tooltip="Relation between GcftSnapTrafficsource and Gcft"]
+	GcftSnapTrafficsource -> GcftSnap [label=gcft_snap color="#1E88E5" style=dashed tooltip="Relation between GcftSnapTrafficsource and GcftSnap"]
+	GcftSnapView [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GcftSnapView</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">session_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">view_date</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gcft_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">snap_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GcftSnapView_details.html"]
+	GcftSnapView -> Gcft [label=gcflytour color="#1E88E5" style=dashed tooltip="Relation between GcftSnapView and Gcft"]
+	GcftSnapView -> GcftSnap [label=gcft_snap color="#1E88E5" style=dashed tooltip="Relation between GcftSnapView and GcftSnap"]
+	Geocoord [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Geocoord</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">address</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">latitude</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">longitude</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR></TABLE>> URL="http://Geocoord_details.html"]
+	Geocoord -> FileAsset [label=file_assets color="#1E88E5" style=dashed tooltip="Relation between Geocoord and FileAsset"]
+	Geocoord -> GcftSnap [label=gcft_snaps color="#1E88E5" style=dashed tooltip="Relation between Geocoord and GcftSnap"]
+	Geocoord -> Ipaddress [label=ipaddresses color="#1E88E5" style=dashed tooltip="Relation between Geocoord and Ipaddress"]
+	GoAnalytics4Property [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GoAnalytics4Property</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">title</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">measurement_id</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">property_id</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) (Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">website_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GoAnalytics4Property_details.html"]
+	GoAnalytics4Property -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between GoAnalytics4Property and Client"]
+	GoAnalytics4Property -> Website [label=website color="#1E88E5" style=dashed tooltip="Relation between GoAnalytics4Property and Website"]
+	GoAnalytics4Property -> GoAnalytics4Stream [label=ga4_streams color="#1E88E5" style=dashed tooltip="Relation between GoAnalytics4Property and GoAnalytics4Stream"]
+	GoAnalytics4Stream [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GoAnalytics4Stream</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">title</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">stream_id</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ga4_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GoAnalytics4Stream_details.html"]
+	GoAnalytics4Stream -> GoAnalytics4Property [label=ga4_account color="#1E88E5" style=dashed tooltip="Relation between GoAnalytics4Stream and GoAnalytics4Property"]
+	GoCloudProperty [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GoCloudProperty</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">project_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">api_key</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">project_id</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">project_number</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">service_account</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GoCloudProperty_details.html"]
+	GoCloudProperty -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between GoCloudProperty and Client"]
+	GoSearchConsoleProperty [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GoSearchConsoleProperty</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">title</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">website_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GoSearchConsoleProperty_details.html"]
+	GoSearchConsoleProperty -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsoleProperty and Client"]
+	GoSearchConsoleProperty -> Website [label=website color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsoleProperty and Website"]
+	GoSearchConsoleProperty -> GoSearchConsoleCountry [label=gsc_countries color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsoleProperty and GoSearchConsoleCountry"]
+	GoSearchConsoleProperty -> GoSearchConsoleDevice [label=gsc_devices color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsoleProperty and GoSearchConsoleDevice"]
+	GoSearchConsoleProperty -> GoSearchConsolePage [label=gsc_pages color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsoleProperty and GoSearchConsolePage"]
+	GoSearchConsoleProperty -> GoSearchConsoleQuery [label=gsc_queries color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsoleProperty and GoSearchConsoleQuery"]
+	GoSearchConsoleProperty -> GoSearchConsoleSearchappearance [label=gsc_searchappearances color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsoleProperty and GoSearchConsoleSearchappearance"]
+	GoSearchConsoleCountry [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GoSearchConsoleCountry</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">keys</TD>
+                         <TD BGCOLOR="#BBDEFB">BLOB ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">clicks</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">impressions</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ctr</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">position</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">date_start</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">date_end</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gsc_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GoSearchConsoleCountry_details.html"]
+	GoSearchConsoleCountry -> GoSearchConsoleProperty [label=gsc_account color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsoleCountry and GoSearchConsoleProperty"]
+	GoSearchConsoleDevice [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GoSearchConsoleDevice</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">keys</TD>
+                         <TD BGCOLOR="#BBDEFB">BLOB ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">clicks</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">impressions</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ctr</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">position</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">date_start</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">date_end</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gsc_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GoSearchConsoleDevice_details.html"]
+	GoSearchConsoleDevice -> GoSearchConsoleProperty [label=gsc_account color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsoleDevice and GoSearchConsoleProperty"]
+	GoSearchConsolePage [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GoSearchConsolePage</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">keys</TD>
+                         <TD BGCOLOR="#BBDEFB">BLOB ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">clicks</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">impressions</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ctr</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">position</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">date_start</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">date_end</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gsc_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GoSearchConsolePage_details.html"]
+	GoSearchConsolePage -> GoSearchConsoleProperty [label=gsc_account color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsolePage and GoSearchConsoleProperty"]
+	GoSearchConsoleQuery [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GoSearchConsoleQuery</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">keys</TD>
+                         <TD BGCOLOR="#BBDEFB">BLOB ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">clicks</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">impressions</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ctr</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">position</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">date_start</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">date_end</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gsc_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GoSearchConsoleQuery_details.html"]
+	GoSearchConsoleQuery -> GoSearchConsoleProperty [label=gsc_account color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsoleQuery and GoSearchConsoleProperty"]
+	GoSearchConsoleSearchappearance [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GoSearchConsoleSearchappearance</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">keys</TD>
+                         <TD BGCOLOR="#BBDEFB">BLOB ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">clicks</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">impressions</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ctr</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">position</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">date_start</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">date_end</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gsc_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GoSearchConsoleSearchappearance_details.html"]
+	GoSearchConsoleSearchappearance -> GoSearchConsoleProperty [label=gsc_account color="#1E88E5" style=dashed tooltip="Relation between GoSearchConsoleSearchappearance and GoSearchConsoleProperty"]
+	GoUniversalAnalyticsProperty [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GoUniversalAnalyticsProperty</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">title</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">tracking_id</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">website_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GoUniversalAnalyticsProperty_details.html"]
+	GoUniversalAnalyticsProperty -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between GoUniversalAnalyticsProperty and Client"]
+	GoUniversalAnalyticsProperty -> Website [label=website color="#1E88E5" style=dashed tooltip="Relation between GoUniversalAnalyticsProperty and Website"]
+	GoUniversalAnalyticsProperty -> GoUniversalAnalyticsView [label=gua_views color="#1E88E5" style=dashed tooltip="Relation between GoUniversalAnalyticsProperty and GoUniversalAnalyticsView"]
+	GoUniversalAnalyticsView [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">GoUniversalAnalyticsView</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">title</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">view_id</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">gua_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://GoUniversalAnalyticsView_details.html"]
+	GoUniversalAnalyticsView -> GoUniversalAnalyticsProperty [label=gua_account color="#1E88E5" style=dashed tooltip="Relation between GoUniversalAnalyticsView and GoUniversalAnalyticsProperty"]
+	Ipaddress [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Ipaddress</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">address</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(40) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">isp</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">location</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">geocoord_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://Ipaddress_details.html"]
+	Ipaddress -> Geocoord [label=geotag color="#1E88E5" style=dashed tooltip="Relation between Ipaddress and Geocoord"]
+	Ipaddress -> User [label=users color="#1E88E5" style=dashed tooltip="Relation between Ipaddress and User"]
+	Note [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Note</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">title</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(96) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">description</TD>
+                         <TD BGCOLOR="#BBDEFB">TEXT(5000) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_active</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">user_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://Note_details.html"]
+	Note -> User [label=user color="#1E88E5" style=dashed tooltip="Relation between Note and User"]
+	Note -> ClientReport [label=client_reports color="#1E88E5" style=dashed tooltip="Relation between Note and ClientReport"]
+	Sharpspring [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Sharpspring</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">api_key</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">secret_key</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://Sharpspring_details.html"]
+	Sharpspring -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between Sharpspring and Client"]
+	User [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">User</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">auth_id</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">email</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(320) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">username</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_active</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_verified</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_superuser</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">scopes</TD>
+                         <TD BGCOLOR="#BBDEFB">JSON ()</TD>
+                         </TR></TABLE>> URL="http://User_details.html"]
+	User -> Client [label=clients color="#1E88E5" style=dashed tooltip="Relation between User and Client"]
+	User -> Note [label=notes color="#1E88E5" style=dashed tooltip="Relation between User and Note"]
+	User -> Ipaddress [label=ipaddresses color="#1E88E5" style=dashed tooltip="Relation between User and Ipaddress"]
+	User -> FileAsset [label=file_assets color="#1E88E5" style=dashed tooltip="Relation between User and FileAsset"]
+	UserClient [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">UserClient</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">user_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">client_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK)</TD>
+                         </TR></TABLE>> URL="http://UserClient_details.html"]
+	UserIpaddress [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">UserIpaddress</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">user_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ipaddress_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK)</TD>
+                         </TR></TABLE>> URL="http://UserIpaddress_details.html"]
+	Website [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Website</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">domain</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (PK,Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_secure</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_active</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR></TABLE>> URL="http://Website_details.html"]
+	Website -> Client [label=clients color="#1E88E5" style=dashed tooltip="Relation between Website and Client"]
+	Website -> WebsiteMap [label=sitemaps color="#1E88E5" style=dashed tooltip="Relation between Website and WebsiteMap"]
+	Website -> WebsitePage [label=pages color="#1E88E5" style=dashed tooltip="Relation between Website and WebsitePage"]
+	Website -> GoSearchConsoleProperty [label=gsc_accounts color="#1E88E5" style=dashed tooltip="Relation between Website and GoSearchConsoleProperty"]
+	Website -> GoAnalytics4Property [label=ga4_accounts color="#1E88E5" style=dashed tooltip="Relation between Website and GoAnalytics4Property"]
+	Website -> GoUniversalAnalyticsProperty [label=gua_accounts color="#1E88E5" style=dashed tooltip="Relation between Website and GoUniversalAnalyticsProperty"]
+	Website -> WebsiteKeywordCorpus [label=keywordcorpus color="#1E88E5" style=dashed tooltip="Relation between Website and WebsiteKeywordCorpus"]
+	Website -> WebsitePageSpeedInsights [label=pagespeedinsights color="#1E88E5" style=dashed tooltip="Relation between Website and WebsitePageSpeedInsights"]
+	WebsiteKeywordCorpus [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">WebsiteKeywordCorpus</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">corpus</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(4294967295) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">rawtext</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(4294967295) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">website_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">page_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://WebsiteKeywordCorpus_details.html"]
+	WebsiteKeywordCorpus -> Website [label=website color="#1E88E5" style=dashed tooltip="Relation between WebsiteKeywordCorpus and Website"]
+	WebsiteKeywordCorpus -> WebsitePage [label=page color="#1E88E5" style=dashed tooltip="Relation between WebsiteKeywordCorpus and WebsitePage"]
+	WebsiteMap [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">WebsiteMap</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">url</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(2048) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_active</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">website_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://WebsiteMap_details.html"]
+	WebsiteMap -> Website [label=website color="#1E88E5" style=dashed tooltip="Relation between WebsiteMap and Website"]
+	WebsiteMap -> WebsitePage [label=pages color="#1E88E5" style=dashed tooltip="Relation between WebsiteMap and WebsitePage"]
+	WebsitePage [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">WebsitePage</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">url</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(2048) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">status</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">priority</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">last_modified</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">change_frequency</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(64) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_active</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">website_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">sitemap_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (Index)</TD>
+                         </TR></TABLE>> URL="http://WebsitePage_details.html"]
+	WebsitePage -> Website [label=website color="#1E88E5" style=dashed tooltip="Relation between WebsitePage and Website"]
+	WebsitePage -> WebsiteMap [label=sitemap color="#1E88E5" style=dashed tooltip="Relation between WebsitePage and WebsiteMap"]
+	WebsitePage -> WebsiteKeywordCorpus [label=keywordcorpus color="#1E88E5" style=dashed tooltip="Relation between WebsitePage and WebsiteKeywordCorpus"]
+	WebsitePage -> WebsitePageSpeedInsights [label=pagespeedinsights color="#1E88E5" style=dashed tooltip="Relation between WebsitePage and WebsitePageSpeedInsights"]
+	WebsitePageSpeedInsights [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">WebsitePageSpeedInsights</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) (PK,Unique,Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">updated_on</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">strategy</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ps_weight</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ps_grade</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ps_value</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(4) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ps_unit</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">fcp_weight</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">fcp_grade</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">fcp_value</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">fcp_unit</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">lcp_weight</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">lcp_grade</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">lcp_value</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">lcp_unit</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">cls_weight</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">cls_grade</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">cls_value</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">cls_unit</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">si_weight</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">si_grade</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">si_value</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">si_unit</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">tbt_weight</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">tbt_grade</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">tbt_value</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">tbt_unit</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(16) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">website_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">page_id</TD>
+                         <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://WebsitePageSpeedInsights_details.html"]
+	WebsitePageSpeedInsights -> Website [label=website color="#1E88E5" style=dashed tooltip="Relation between WebsitePageSpeedInsights and Website"]
+	WebsitePageSpeedInsights -> WebsitePage [label=page color="#1E88E5" style=dashed tooltip="Relation between WebsitePageSpeedInsights and WebsitePage"]
+}

@@ -138,7 +138,6 @@ class CommonClientQueryParams(PageParamsFromQuery, ClientIdQueryParams):
         ] = settings.api.query_limit_rows_default,
         client_id: Annotated[Any | None, Query()] = None,
     ):
-        print(page, size)
         PageParamsFromQuery.__init__(self, page, size)
         ClientIdQueryParams.__init__(self, client_id)
 

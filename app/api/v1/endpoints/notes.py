@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 from fastapi import APIRouter, Depends
 
@@ -6,13 +6,26 @@ from app.api.deps import (
     AsyncDatabaseSession,
     CurrentUser,
     FetchNoteOr404,
+    PermissionController,
     get_async_db,
+    get_current_user,
     get_note_or_404,
+    get_permission_controller,
 )
 from app.api.exceptions import NoteAlreadyExists
-from app.core.pagination import GetPaginatedQueryParams
-# from app.core.pagination import GetPaginatedQueryParams, PageParams, Paginated
+from app.core.pagination import (
+    GetPaginatedQueryParams,
+    PageParams,
+    PageParamsFromQuery,
+    Paginated,
+)
 from app.core.security import auth
+from app.core.security.permissions import (
+    RoleAdmin,
+    RoleClient,
+    RoleEmployee,
+    RoleManager,
+)
 from app.crud import NoteRepository
 from app.models import Note
 from app.schemas import NoteCreate, NoteRead, NoteUpdate
@@ -24,17 +37,20 @@ router: APIRouter = APIRouter()
     "/",
     name="notes:list",
     dependencies=[
+        Depends(PageParamsFromQuery),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
-    response_model=list[NoteRead],
+    response_model=Paginated[NoteRead],
 )
 async def notes_list(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     query: GetPaginatedQueryParams,
-) -> list[NoteRead] | list:
-    """Retrieve a list of notes.
+    db: AsyncDatabaseSession,
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> Paginated[NoteRead]:
+    """Retrieve a paginated list of notes.
 
     Permissions:
     ------------
@@ -47,13 +63,24 @@ async def notes_list(
 
     Returns:
     --------
-    `List[NoteRead] | List[None]` : a list of notes, optionally filtered,
-        or returns an empty list
+    `Paginated[NoteRead]` : a paginated list of notes, optionally filtered
 
     """
     notes_repo: NoteRepository = NoteRepository(session=db)
-    notes: list[Note] | List[None] | None = await notes_repo.list(page=query.page)
-    return [NoteRead.model_validate(c) for c in notes] if notes else []
+    response_out: Paginated[
+        NoteRead
+    ] = await permissions.get_paginated_resource_response(
+        table_name=Note.__tablename__,
+        stmt=notes_repo.query_list(),
+        page_params=PageParams(page=query.page, size=query.size),
+        responses={
+            RoleAdmin: NoteRead,
+            RoleManager: NoteRead,
+            RoleClient: NoteRead,
+            RoleEmployee: NoteRead,
+        },
+    )
+    return response_out
 
 
 @router.post(

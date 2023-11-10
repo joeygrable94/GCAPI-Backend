@@ -14,21 +14,7 @@ from app.schemas import WebsitePageRead, WebsitePageSpeedInsightsRead, WebsiteRe
 pytestmark = pytest.mark.asyncio
 
 
-"""
-async def test_list_website_pagespeedinsights_as_superuser_none_found(
-    client: AsyncClient,
-    db_session: AsyncSession,
-    admin_token_headers: Dict[str, str],
-) -> None:
-    response: Response = await client.get("psi/", headers=admin_token_headers)
-    assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 0
-    assert isinstance(all_entries, list)
-"""
-
-
-async def test_list_website_pagespeedinsights_as_superuser(
+async def test_list_all_website_pagespeedinsights_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
@@ -41,9 +27,12 @@ async def test_list_website_pagespeedinsights_as_superuser(
     )
     response: Response = await client.get("psi/", headers=admin_token_headers)
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) >= 1
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 4
+    assert data["size"] == 100
+    assert len(data["results"]) == 4
+    for entry in data["results"]:
         if entry["id"] == entry_1.id:
             assert entry["strategy"] == entry_1.strategy
             assert entry["page_id"] == entry_1.page_id
@@ -148,9 +137,12 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 2
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 2
+    assert data["size"] == 100
+    assert len(data["results"]) == 2
+    for entry in data["results"]:
         if entry["id"] == entry_3.id:
             assert entry["strategy"] == entry_3.strategy
             assert entry["page_id"] == entry_3.page_id
@@ -255,9 +247,12 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 1
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 1
+    assert data["size"] == 100
+    assert len(data["results"]) == 1
+    for entry in data["results"]:
         if entry["id"] == entry_3.id:
             assert entry["strategy"] == entry_3.strategy
             assert entry["page_id"] == entry_3.page_id
@@ -358,9 +353,12 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 1
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 1
+    assert data["size"] == 100
+    assert len(data["results"]) == 1
+    for entry in data["results"]:
         if entry["id"] == entry_9.id:
             assert entry["strategy"] == entry_9.strategy
             assert entry["page_id"] == entry_9.page_id
@@ -460,9 +458,12 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 2
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 2
+    assert data["size"] == 100
+    assert len(data["results"]) == 2
+    for entry in data["results"]:
         if entry["id"] == entry_3.id:
             assert entry["strategy"] == entry_3.strategy
             assert entry["page_id"] == entry_3.page_id
@@ -566,9 +567,12 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 2
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 2
+    assert data["size"] == 100
+    assert len(data["results"]) == 2
+    for entry in data["results"]:
         if entry["id"] == entry_7.id:
             assert entry["strategy"] == entry_7.strategy
             assert entry["page_id"] == entry_7.page_id
@@ -672,9 +676,12 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 2
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 2
+    assert data["size"] == 100
+    assert len(data["results"]) == 2
+    for entry in data["results"]:
         if entry["id"] == entry_4.id:
             assert entry["strategy"] == entry_4.strategy
             assert entry["page_id"] == entry_4.page_id
@@ -777,9 +784,12 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 4
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 4
+    assert data["size"] == 100
+    assert len(data["results"]) == 4
+    for entry in data["results"]:
         if entry["id"] == entry_3.id:
             assert entry["strategy"] == entry_3.strategy
             assert entry["page_id"] == entry_3.page_id
@@ -890,9 +900,12 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) == 4
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 4
+    assert data["size"] == 100
+    assert len(data["results"]) == 4
+    for entry in data["results"]:
         if entry["id"] == entry_4.id:
             assert entry["strategy"] == entry_4.strategy
             assert entry["page_id"] == entry_4.page_id
@@ -1003,9 +1016,12 @@ async def test_list_website_pagespeedinsights_as_superuser_by_devices_all(
         },
     )
     assert 200 <= response.status_code < 300
-    all_entries: Any = response.json()
-    assert len(all_entries) >= 8
-    for entry in all_entries:
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 94
+    assert data["size"] == 100
+    assert len(data["results"]) == 94
+    for entry in data["results"]:
         if entry["id"] == entry_3.id:
             assert entry["strategy"] == entry_3.strategy
             assert entry["page_id"] == entry_3.page_id

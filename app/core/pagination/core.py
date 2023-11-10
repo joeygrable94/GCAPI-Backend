@@ -1,8 +1,8 @@
-from typing import Annotated, Generic, List, Type, TypeVar
+from typing import Annotated, Generic, List, Sequence, Type, TypeVar
 
 from fastapi import Depends, Query
 from pydantic import BaseModel, Field
-from sqlalchemy import Select, func, table
+from sqlalchemy import Result, Select, TableClause, func, table
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import column as sql_column, select as sql_select
 
@@ -55,8 +55,14 @@ class Paginated(BaseModel, Generic[T]):
     size: int
     results: List[T]
 
-    def __repr__(self) -> str:
-        return super().__repr__()
+    def __repr__(self) -> str:  # pragma: no cover
+        return "<{} total={} page={} size={} results={}>".format(
+            "Paginated",
+            self.total,
+            self.page,
+            self.size,
+            len(self.results),
+        )
 
 
 async def paginated_query(
@@ -67,18 +73,30 @@ async def paginated_query(
     response_schema: Type[T],
 ) -> Paginated[T]:
     """Paginate the query."""
-    count_table = table(table_name, sql_column("id"))
-    count_stmt: Select = sql_select(func.count()).select_from(count_table)
-    total_count: int = await db.scalar(count_stmt)
+    count_table: TableClause
+    count_stmt: Select
+    total_count: int | None = None
+    if stmt.whereclause is not None:
+        # TODO: THIS IS A HACK TO GET THE COUNT
+        # need to find a better way to get the count
+        # without having to do a subquery
+        total_query = stmt
+        total_result = await db.execute(total_query)
+        total_data = total_result.scalars().all()
+        total_count = len(total_data)
+    else:
+        count_table = table(table_name, sql_column("id"))
+        count_stmt = sql_select(func.count()).select_from(count_table)
+        total_count = await db.scalar(count_stmt)
 
     paginated_query = stmt.offset((page_params.page - 1) * page_params.size).limit(
         page_params.size
     )
-    result = await db.execute(paginated_query)
-    data = result.scalars().all()
+    result: Result = await db.execute(paginated_query)
+    data: Sequence = result.scalars().all()
 
     return Paginated(
-        total=total_count,
+        total=total_count or 0,
         page=page_params.page,
         size=page_params.size,
         results=[response_schema.model_validate(item) for item in data],
