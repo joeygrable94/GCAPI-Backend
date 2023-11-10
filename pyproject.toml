@@ -8,7 +8,7 @@ authors = ["Joey Grable <hello@joeygrable.com>"]
 python = "^3.10"
 uvicorn = {version = "0.23.2", extras = ["standard"]}
 gunicorn = "^20.1.0"
-greenlet = "2.0.2"
+greenlet = "3.0.1"
 requests = "^2.31.0"
 types-requests = "^2.31.0.10"
 cryptography = "41.0.4"
