@@ -11,7 +11,7 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_encrypt_secure_msg() -> None:
-    sm = SecureMessage(settings.api.encryption_key)
+    sm = SecureMessage(settings.api.encryption_key, settings.api.encryption_salt)
     assert sm.block_size == 16
     assert len(sm.aes_key) == 32
     assert type(sm.public_key) is RSA.RsaKey
@@ -19,7 +19,7 @@ async def test_encrypt_secure_msg() -> None:
 
 
 async def test_sign_and_encrypt() -> None:
-    sm = SecureMessage(settings.api.encryption_key)
+    sm = SecureMessage(settings.api.encryption_key, settings.api.encryption_salt)
     message = "Hello, world!"
     encrypted = sm.sign_and_encrypt(message)
     assert encrypted != message
@@ -29,7 +29,7 @@ async def test_sign_and_encrypt() -> None:
 
 
 async def test_sign_and_encryp_encryption_error() -> None:
-    sm = SecureMessage(settings.api.encryption_key)
+    sm = SecureMessage(settings.api.encryption_key, settings.api.encryption_salt)
     sm.block_size = 12
     message = "Hello, world!"
     with pytest.raises(EncryptionError):
@@ -37,7 +37,7 @@ async def test_sign_and_encryp_encryption_error() -> None:
 
 
 async def test_sign_and_encryp_signature_verification_error() -> None:
-    sm = SecureMessage(settings.api.encryption_key)
+    sm = SecureMessage(settings.api.encryption_key, settings.api.encryption_salt)
     message = "Hello, world!"
     encrypted = sm.sign_and_encrypt(message)
     assert encrypted != message
@@ -48,8 +48,8 @@ async def test_sign_and_encryp_signature_verification_error() -> None:
 
 
 async def test_sign_and_encryp_decryption_error() -> None:
-    sm = SecureMessage(settings.api.encryption_key)
-    sm_bad = SecureMessage("wrong_key")
+    sm = SecureMessage(settings.api.encryption_key, settings.api.encryption_salt)
+    sm_bad = SecureMessage("wrong_key", "wrong_salt")
     message = "Hello, world!"
     encrypted = sm.sign_and_encrypt(message)
     assert encrypted != message

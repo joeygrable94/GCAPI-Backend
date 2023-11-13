@@ -1,10 +1,11 @@
-import hashlib
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 
 from Crypto.Cipher import AES
-from Crypto.Cipher._mode_ecb import EcbMode
+from Crypto.Cipher._mode_cbc import CbcMode
 from Crypto.Hash import SHA256
+from Crypto.Protocol.KDF import PBKDF2
 from Crypto.PublicKey import RSA
+from Crypto.Random import get_random_bytes
 from Crypto.Signature import PKCS1_v1_5
 from Crypto.Util.Padding import pad, unpad
 
@@ -15,12 +16,13 @@ from .keys import load_api_keys
 
 
 class SecureMessage:
-    def __init__(self, aes_key: str) -> None:
+    def __init__(self, pass_key: str, salt: str) -> None:
         self.block_size: int = AES.block_size
-        self.aes_key: bytes = hashlib.sha256(aes_key.encode("utf-8")).digest()
+        self.aes_key: bytes = PBKDF2(pass_key, salt.encode("utf-8"), dkLen=32)
         self.public_key: RSA.RsaKey
         self.private_key: RSA.RsaKey
         self.public_key, self.private_key = load_api_keys()
+        self.salt = salt
 
     def sign_and_encrypt(self, message: str) -> str:
         try:
@@ -29,23 +31,26 @@ class SecureMessage:
             digest = SHA256.new()
             digest.update(message.encode("utf-8"))
             signature = signer.sign(digest)
+            # Generate a random IV
+            iv = get_random_bytes(16)
             # Encrypt the message and the signature
-            cipher: EcbMode = AES.new(self.aes_key, AES.MODE_ECB)
+            cipher: CbcMode = AES.new(self.aes_key, AES.MODE_CBC, iv)
             ciphertext = cipher.encrypt(
                 pad((message.encode("utf-8") + signature), self.block_size)
             )
-            return urlsafe_b64encode(ciphertext).decode("utf-8")
+            return urlsafe_b64encode(iv + ciphertext).decode("utf-8")
         except Exception as e:
             logger.exception(e)
             raise EncryptionError()
 
     def decrypt_and_verify(self, ciphertext: str) -> str:
         try:
+            # Decode the ciphertext and extract the IV
+            decoded = urlsafe_b64decode(ciphertext)
+            iv, deciphertext = decoded[:16], decoded[16:]
             # Decrypt the message and the signature
-            cipher: EcbMode = AES.new(self.aes_key, AES.MODE_ECB)
-            plaintext = unpad(
-                cipher.decrypt(urlsafe_b64decode(ciphertext)), self.block_size
-            )
+            cipher: CbcMode = AES.new(self.aes_key, AES.MODE_CBC, iv=iv)
+            plaintext = unpad(cipher.decrypt(deciphertext), self.block_size)
             message, signature = plaintext[:-256], plaintext[-256:]
             # Verify the signature
             verifier = PKCS1_v1_5.new(self.public_key)

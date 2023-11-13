@@ -44,9 +44,12 @@ class ApiSettings(BaseSettings):
         "API_CSRF_KEY",
         "fb4cd9547245b656a5a44441eebd5960432c95d9c45970be0d7442f91bf64366",
     )
+    encryption_salt: str = environ.get(
+        "API_ENCRYPTION_SALT", "aUW1+hREL5XAc3qFEJAR7trNW+yYAzOxoqvzsys0Zvs="
+    )
     encryption_key: str = environ.get(
         "API_ENCRYPTION_KEY",
-        "60432c95d9c45970be0d7442f91bf64366fb4cd9547245b656a5a44441eebd59",
+        "hNaZZH07R5yxXsbE1mEVPERNOJZwyb/O+jlhqonG2I0=",
     )
     # API Limitations
     payload_limit: int = 2048000  # 2MB

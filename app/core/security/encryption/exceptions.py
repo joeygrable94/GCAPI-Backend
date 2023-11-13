@@ -12,7 +12,7 @@ class CipherError(Exception):
 
 
 class SignatureVerificationError(CipherError):
-    def __init__(self, message: str = "error signing the message securely"):
+    def __init__(self, message: str = "encryption signature not valid"):
         super().__init__(message=message)
 
 
