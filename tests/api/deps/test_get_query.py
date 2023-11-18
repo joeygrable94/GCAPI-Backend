@@ -168,12 +168,12 @@ def test_common_client_query_params() -> None:
 
     query_params = CommonClientQueryParams()
     assert query_params.page == 1
-    assert query_params.size == 100
+    assert query_params.size == 1000
     assert query_params.client_id is None
 
     query_params = CommonClientQueryParams(page=None, size=None, client_id=None)
     assert query_params.page == 1
-    assert query_params.size == 100
+    assert query_params.size == 1000
     assert query_params.client_id is None
 
 
@@ -193,7 +193,7 @@ def test_common_user_client_query_params() -> None:
 
     query_params = CommonUserClientQueryParams()
     assert query_params.page == 1
-    assert query_params.size == 100
+    assert query_params.size == 1000
     assert query_params.user_id is None
     assert query_params.client_id is None
 
@@ -201,7 +201,7 @@ def test_common_user_client_query_params() -> None:
         page=None, size=None, user_id=None, client_id=None
     )
     assert query_params.page == 1
-    assert query_params.size == 100
+    assert query_params.size == 1000
     assert query_params.user_id is None
     assert query_params.client_id is None
 
@@ -215,12 +215,12 @@ def test_common_website_query_params() -> None:
 
     query_params = CommonWebsiteQueryParams()
     assert query_params.page == 1
-    assert query_params.size == 100
+    assert query_params.size == 1000
     assert query_params.website_id is None
 
     query_params = CommonWebsiteQueryParams(page=None, size=None, website_id=None)
     assert query_params.page == 1
-    assert query_params.size == 100
+    assert query_params.size == 1000
     assert query_params.website_id is None
 
 

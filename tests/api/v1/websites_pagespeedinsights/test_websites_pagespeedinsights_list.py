@@ -30,7 +30,7 @@ async def test_list_all_website_pagespeedinsights_as_superuser(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 4
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 4
     for entry in data["results"]:
         if entry["id"] == entry_1.id:
@@ -140,7 +140,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 2
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 2
     for entry in data["results"]:
         if entry["id"] == entry_3.id:
@@ -250,7 +250,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 1
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 1
     for entry in data["results"]:
         if entry["id"] == entry_3.id:
@@ -356,7 +356,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 1
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 1
     for entry in data["results"]:
         if entry["id"] == entry_9.id:
@@ -461,7 +461,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 2
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 2
     for entry in data["results"]:
         if entry["id"] == entry_3.id:
@@ -570,7 +570,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 2
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 2
     for entry in data["results"]:
         if entry["id"] == entry_7.id:
@@ -679,7 +679,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 2
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 2
     for entry in data["results"]:
         if entry["id"] == entry_4.id:
@@ -787,7 +787,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 4
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 4
     for entry in data["results"]:
         if entry["id"] == entry_3.id:
@@ -903,7 +903,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 4
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 4
     for entry in data["results"]:
         if entry["id"] == entry_4.id:
@@ -1019,7 +1019,7 @@ async def test_list_website_pagespeedinsights_as_superuser_by_devices_all(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 94
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 94
     for entry in data["results"]:
         if entry["id"] == entry_3.id:

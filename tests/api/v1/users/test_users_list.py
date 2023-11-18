@@ -26,7 +26,7 @@ async def test_list_all_users_as_admin(
     assert 200 <= response.status_code < 300
     assert data["page"] == 1
     assert data["total"] == 10
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 10
     for entry in data["results"]:
         assert "id" in entry
@@ -51,7 +51,7 @@ async def test_list_all_users_as_manager(
     assert 200 <= response.status_code < 300
     assert data["page"] == 1
     assert data["total"] == 10
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 10
     for entry in data["results"]:
         assert "id" in entry

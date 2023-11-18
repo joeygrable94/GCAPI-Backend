@@ -23,7 +23,7 @@ async def test_list_all_clients_as_superuser(
     assert 200 <= response.status_code < 300
     assert data["page"] == 1
     assert data["total"] == 7
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 7
     for entry in data["results"]:
         if entry["id"] == str(entry_1.id):

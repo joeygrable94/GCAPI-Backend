@@ -23,7 +23,7 @@ async def test_list_all_website_sitemaps_as_superuser(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 92
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 92
     for entry in data["results"]:
         assert "url" in entry
@@ -70,7 +70,7 @@ async def test_list_website_sitemaps_as_superuser_by_website_id(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 3
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 3
     for entry in data["results"]:
         assert "url" in entry

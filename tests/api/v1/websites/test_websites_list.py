@@ -21,7 +21,7 @@ async def test_list_all_websites_as_superuser(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 13
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 13
     for entry in data["results"]:
         if entry["id"] == str(entry_1.id):

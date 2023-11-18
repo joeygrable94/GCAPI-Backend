@@ -43,7 +43,7 @@ async def test_list_all_website_page_kwc_as_admin(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 4
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 4
     for entry in data["results"]:
         assert "corpus" in entry
@@ -108,7 +108,7 @@ async def test_list_all_website_page_kwc_as_admin_by_website_id_and_page_id(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 1
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 1
     for entry in data["results"]:
         assert "corpus" in entry
@@ -164,7 +164,7 @@ async def test_list_all_website_page_kwc_as_admin_by_website_id(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 2
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 2
     for entry in data["results"]:
         assert "corpus" in entry
@@ -225,7 +225,7 @@ async def test_list_all_website_page_kwc_as_admin_by_page_id(
     data: Any = response.json()
     assert data["page"] == 1
     assert data["total"] == 1
-    assert data["size"] == 100
+    assert data["size"] == 1000
     assert len(data["results"]) == 1
     for entry in data["results"]:
         assert "corpus" in entry

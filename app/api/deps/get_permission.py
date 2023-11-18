@@ -78,8 +78,9 @@ class PermissionController(Generic[T]):
             if perm in self.privileges:
                 return True
         # user_id and client_id was provided
-        if user_id and client_id:  # TODO: test
+        if user_id and client_id:
             # check if the requested user_id has a relationship with the client
+            # TODO: test
             user_client = await self.user_client_repo.exists_by_two(
                 field_name_a="user_id",
                 field_value_a=user_id,
@@ -89,8 +90,9 @@ class PermissionController(Generic[T]):
             if user_client:
                 return True
         # only client_id was provided
-        elif client_id:  # TODO: test
+        elif client_id:
             # check if the current user has a relationship with the client
+            # TODO: test
             user_client = await self.user_client_repo.exists_by_two(
                 field_name_a="user_id",
                 field_value_a=self.current_user.id,
@@ -109,7 +111,8 @@ class PermissionController(Generic[T]):
             user_client = await self.user_client_repo.read_by(
                 field_name="user_id", field_value=user_id
             )
-            if user_client:  # TODO: test
+            if user_client:
+                # TODO: test
                 current_user_client = await self.user_client_repo.exists_by_two(
                     field_name_a="user_id",
                     field_value_a=self.current_user.id,
