@@ -2,7 +2,7 @@ from os import environ
 from typing import Any, Optional, Union
 
 from dotenv import load_dotenv
-from pydantic import FieldValidationInfo, field_validator
+from pydantic import ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
@@ -35,7 +35,7 @@ class DatabaseSettings(BaseSettings):
     # pydantic field validators
     @field_validator("connector", mode="before")
     def validate_database_connector(
-        cls, v: Optional[str], info: FieldValidationInfo
+        cls, v: Optional[str], info: ValidationInfo
     ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
@@ -44,7 +44,7 @@ class DatabaseSettings(BaseSettings):
 
     @field_validator("connector_async", mode="before")
     def validate_database_async_connector(
-        cls, v: Optional[str], info: FieldValidationInfo
+        cls, v: Optional[str], info: ValidationInfo
     ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
@@ -53,7 +53,7 @@ class DatabaseSettings(BaseSettings):
 
     @field_validator("user", mode="before")
     def validate_database_user(
-        cls, v: Optional[str], info: FieldValidationInfo
+        cls, v: Optional[str], info: ValidationInfo
     ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
@@ -62,7 +62,7 @@ class DatabaseSettings(BaseSettings):
 
     @field_validator("password", mode="before")
     def validate_database_password(
-        cls, v: Optional[str], info: FieldValidationInfo
+        cls, v: Optional[str], info: ValidationInfo
     ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
@@ -71,7 +71,7 @@ class DatabaseSettings(BaseSettings):
 
     @field_validator("server", mode="before")
     def validate_database_server(
-        cls, v: Optional[str], info: FieldValidationInfo
+        cls, v: Optional[str], info: ValidationInfo
     ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
@@ -80,7 +80,7 @@ class DatabaseSettings(BaseSettings):
 
     @field_validator("port", mode="before")
     def validate_database_port(
-        cls, v: Optional[str], info: FieldValidationInfo
+        cls, v: Optional[str], info: ValidationInfo
     ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
@@ -89,7 +89,7 @@ class DatabaseSettings(BaseSettings):
 
     @field_validator("name", mode="before")
     def validate_database_name(
-        cls, v: Optional[str], info: FieldValidationInfo
+        cls, v: Optional[str], info: ValidationInfo
     ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
@@ -98,7 +98,7 @@ class DatabaseSettings(BaseSettings):
 
     @field_validator("charset", mode="before")
     def validate_database_charset(
-        cls, v: Optional[str], info: FieldValidationInfo
+        cls, v: Optional[str], info: ValidationInfo
     ) -> Any:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
@@ -107,7 +107,7 @@ class DatabaseSettings(BaseSettings):
 
     @field_validator("uri", mode="before")
     def assemble_db_connection(
-        cls, v: Optional[str], info: FieldValidationInfo
+        cls, v: Optional[str], info: ValidationInfo
     ) -> str:  # pragma: no cover
         if environ.get("API_MODE", "development") == "test":
             return TEST_URI
@@ -126,7 +126,7 @@ class DatabaseSettings(BaseSettings):
 
     @field_validator("uri_async", mode="before")
     def assemble_async_db_connection(
-        cls, v: Optional[str], info: FieldValidationInfo
+        cls, v: Optional[str], info: ValidationInfo
     ) -> str:  # pragma: no cover
         if environ.get("API_MODE", "development") == "test":
             return TEST_URI_ASYNC

@@ -2,7 +2,7 @@ from os import environ
 from typing import Any, List, Optional, Union
 
 from dotenv import load_dotenv
-from pydantic import FieldValidationInfo, field_validator
+from pydantic import ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .utilities import get_root_directory
@@ -87,7 +87,7 @@ class ApiSettings(BaseSettings):
     # pydantic field validators
     @field_validator("allowed_cors", mode="before")
     def assemble_cors_origins(
-        cls: Any, v: Union[str, List[str]], info: FieldValidationInfo
+        cls: Any, v: Union[str, List[str]], info: ValidationInfo
     ) -> List[str]:  # pragma: no cover
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]

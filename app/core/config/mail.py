@@ -2,7 +2,7 @@ from os import environ
 from typing import Any, List, Optional
 
 from dotenv import load_dotenv
-from pydantic import EmailStr, FieldValidationInfo, field_validator
+from pydantic import EmailStr, ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .utilities import get_root_directory
@@ -38,7 +38,7 @@ class EmailSettings(BaseSettings):
     # pydantic field validators
     @field_validator("enabled", mode="before")
     def assemble_emails_enabled(
-        cls: Any, v: Optional[bool], info: FieldValidationInfo
+        cls: Any, v: Optional[bool], info: ValidationInfo
     ) -> bool:  # pragma: no cover
         if v:
             return v

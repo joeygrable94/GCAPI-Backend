@@ -2,7 +2,7 @@ from os import environ
 from typing import Any, Optional
 
 from dotenv import load_dotenv
-from pydantic import FieldValidationInfo, field_validator
+from pydantic import ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
@@ -26,7 +26,7 @@ class CelerySettings(BaseSettings):
     # pydantic field validators
     @field_validator("sentry_dsn", mode="before")
     def validate_database_user(
-        cls: Any, v: Optional[str], info: FieldValidationInfo
+        cls: Any, v: Optional[str], info: ValidationInfo
     ) -> str | None:  # pragma: no cover
         if isinstance(v, str):
             if len(v) > 0:
