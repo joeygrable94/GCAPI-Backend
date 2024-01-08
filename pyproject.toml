@@ -46,7 +46,7 @@ aiofiles = "23.2.1"
 ultimate-sitemap-parser = "^0.5"
 tenacity = "^8.2.2"
 sentry-sdk = {version = "^1.35.0", extras = ["fastapi"]}
-ruff = "^0.1.5"
+ruff = "^0.1.11"
 typer = "^0.9.0"
 sqlalchemy-data-model-visualizer = "^0.1.3"
 
