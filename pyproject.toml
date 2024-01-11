@@ -36,7 +36,7 @@ celery = "^5.3.6"
 redis = "^5.0.0"
 types-redis = "^4.6.0.20240106"
 aioredis = "^2.0.1"
-Jinja2 = "3.1.2"
+Jinja2 = "3.1.3"
 anyio = {version = "3.7.1", extras = ["trio"]}
 asyncio = "3.4.3"
 aiohttp = "3.9.1"
