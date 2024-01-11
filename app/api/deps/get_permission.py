@@ -116,7 +116,7 @@ class PermissionController(Generic[T]):
         for privilege, response_schema in responses.items():
             if privilege in self.privileges:
                 return response_schema.model_validate(resource)
-        raise AuthPermissionException(  # TODO: test
+        raise AuthPermissionException(  # pragma: no cover
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             message="You do not have permission to access the output of this resource",
         )
