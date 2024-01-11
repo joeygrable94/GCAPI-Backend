@@ -1,10 +1,11 @@
-from typing import Any, Callable, Optional
+from typing import Any, Callable, List, Optional
 
 from sqlalchemy import Text, types
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.engine.interfaces import Dialect
 
-from app.db.constants import DB_STR_LONGTEXT_MAX_LEN
+from app.core.utilities import scope_regex
+from app.db.constants import DB_STR_BLOB_MAX_LEN, DB_STR_LONGTEXT_MAX_LEN
 
 
 class LongText(types.UserDefinedType):
@@ -14,7 +15,7 @@ class LongText(types.UserDefinedType):
         self.length = length
 
     def get_col_spec(self, **kw: Any) -> str:
-        return "VARCHAR(%d)" % self.length
+        return "BLOB(%d)" % self.length
 
     def bind_processor(self, dialect: Dialect) -> Optional[Callable[[Any], Any]]:
         def process(value: Any) -> Any:
@@ -37,3 +38,21 @@ class LongText(types.UserDefinedType):
             return value
 
         return process
+
+
+class Scopes(types.TypeDecorator):
+    impl = types.BLOB(DB_STR_BLOB_MAX_LEN)
+
+    def process_bind_param(self, value: List[str] | None, dialect: Dialect) -> bytes:
+        if value is not None:
+            for scope in value:
+                if not scope_regex.fullmatch(scope.lower()):
+                    raise ValueError("invalid scope format")
+            return ",".join(value).encode("utf-8")
+        return "".encode("utf-8")
+
+    def process_result_value(self, value: Any | None, dialect: Dialect) -> List[str]:
+        if value is not None:
+            if isinstance(value, bytes) and len(value) > 0:
+                return value.decode("utf-8").split(",")
+        return []

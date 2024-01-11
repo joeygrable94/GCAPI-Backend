@@ -106,5 +106,5 @@ class UserReadAsAdmin(UserBase, BaseSchemaRead):
 
 class UserDelete(BaseSchema):
     message: str
-    user_id: UUID4 | None = None
+    user_id: UUID4
     task_id: UUID4 | None = None

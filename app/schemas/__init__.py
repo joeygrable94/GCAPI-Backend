@@ -1,7 +1,7 @@
 from typing import List
 
 from .bdx_feed import BdxFeedCreate, BdxFeedRead, BdxFeedUpdate
-from .client import ClientCreate, ClientRead, ClientUpdate
+from .client import ClientCreate, ClientDelete, ClientRead, ClientUpdate
 from .client_bucket import ClientBucketCreate, ClientBucketRead, ClientBucketUpdate
 from .client_report import ClientReportCreate, ClientReportRead, ClientReportUpdate
 from .client_report_note import (
@@ -139,6 +139,7 @@ __all__: List[str] = [
     "BdxFeedRead",
     "BdxFeedUpdate",
     "ClientCreate",
+    "ClientDelete",
     "ClientRead",
     "ClientUpdate",
     "ClientBucketCreate",

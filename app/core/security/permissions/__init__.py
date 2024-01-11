@@ -11,6 +11,7 @@ from .access import (
     AccessReadRelated,
     AccessReadSelf,
     AccessUpdate,
+    AccessUpdateRelated,
     AccessUpdateSelf,
     Authenticated,
     Everyone,
@@ -56,6 +57,8 @@ __all__: List[str] = [
     "AccessReadRelated",
     "AccessUpdate",
     "AccessUpdateSelf",
+    "AccessUpdateRelated",
     "AccessDelete",
     "AccessDeleteSelf",
+    "AccessDeleteRelated",
 ]

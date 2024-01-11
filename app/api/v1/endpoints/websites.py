@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy import Select
 
 from app.api.deps import (
-    AsyncDatabaseSession,
     CommonClientWebsiteQueryParams,
-    CurrentUser,
-    FetchWebsiteOr404,
     GetClientWebsiteQueryParams,
+    Permission,
     PermissionController,
     get_async_db,
     get_current_user,
@@ -16,10 +15,12 @@ from app.api.exceptions import WebsiteAlreadyExists, WebsiteDomainInvalid
 from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
 from app.core.security.permissions import (
+    AccessDelete,
+    AccessRead,
+    AccessUpdate,
     RoleAdmin,
-    RoleClient,
-    RoleEmployee,
     RoleManager,
+    RoleUser,
 )
 from app.crud import WebsiteRepository
 from app.models import Website
@@ -48,7 +49,6 @@ router: APIRouter = APIRouter()
 )
 async def website_list(
     query: GetClientWebsiteQueryParams,
-    db: AsyncDatabaseSession,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> Paginated[WebsiteRead]:
     """Retrieve a paginated list of websites.
@@ -57,9 +57,7 @@ async def website_list(
     ------------
     `role=admin|manager` : all websites
 
-    `role=client` : only websites associated with the client via `client_website` table
-
-    `role=employee` : only websites associated with the clients via `client_website`
+    `role=user` : only websites associated with the clients via `client_website`
         that belong to the user via `user_client` table
 
     Returns:
@@ -67,18 +65,22 @@ async def website_list(
     `Paginated[WebsiteRead]` : a paginated list of websites, optionally filtered
 
     """
-    websites_repo: WebsiteRepository = WebsiteRepository(session=db)
+    websites_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
+    select_stmt: Select
+    if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
+        select_stmt = websites_repo.query_list(client_id=query.client_id)
+    else:  # TODO: test
+        select_stmt = websites_repo.query_list(
+            client_id=query.client_id, user_id=permissions.current_user.id
+        )
     response_out: Paginated[
         WebsiteRead
     ] = await permissions.get_paginated_resource_response(
         table_name=Website.__tablename__,
-        stmt=websites_repo.query_list(),
+        stmt=select_stmt,
         page_params=PageParams(page=query.page, size=query.size),
         responses={
-            RoleAdmin: WebsiteRead,
-            RoleManager: WebsiteRead,
-            RoleClient: WebsiteRead,
-            RoleEmployee: WebsiteRead,
+            RoleUser: WebsiteRead,
         },
     )
     return response_out
@@ -90,13 +92,14 @@ async def website_list(
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=WebsiteCreateProcessing,
 )
 async def website_create(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     website_in: WebsiteCreate,
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsiteCreateProcessing:
     """Create a new website.
 
@@ -104,18 +107,15 @@ async def website_create(
     ------------
     `role=admin|manager` : create a new website
 
-    `role=client` : create a new website associated with the client via `client_website`
-
-    `role=employee` : create a new website only for clients associated with the user via
-        `user_client` table, and associated with the client via `client_website` table
-
     Returns:
     --------
     `WebsiteCreateProcessing` : the newly created website and the task id for the
         background task that will fetch the sitemap pages
 
     """
-    websites_repo: WebsiteRepository = WebsiteRepository(session=db)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(privileges=[RoleAdmin, RoleManager])
+    websites_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
     a_site: Website | None = await websites_repo.read_by(
         field_name="domain",
         field_value=website_in.domain,
@@ -139,12 +139,14 @@ async def website_create(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=WebsiteRead,
 )
 async def website_read(
-    current_user: CurrentUser,
-    website: FetchWebsiteOr404,
+    website: Website = Permission(AccessRead, get_website_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsiteRead:
     """Retrieve a single website by id.
 
@@ -162,7 +164,19 @@ async def website_read(
     `WebsiteRead` : the website matching the website_id
 
     """
-    return WebsiteRead.model_validate(website)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=website.id,
+    )
+    # return role based response
+    response_out: WebsiteRead = permissions.get_resource_response(
+        resource=website,
+        responses={
+            RoleUser: WebsiteRead,
+        },
+    )
+    return response_out
 
 
 @router.patch(
@@ -172,14 +186,15 @@ async def website_read(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=WebsiteRead,
 )
 async def website_update(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    website: FetchWebsiteOr404,
     website_in: WebsiteUpdate,
+    website: Website = Permission(AccessUpdate, get_website_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsiteRead:
     """Update a website by id.
 
@@ -197,7 +212,19 @@ async def website_update(
     `WebsiteRead` : the updated website
 
     """
-    websites_repo: WebsiteRepository = WebsiteRepository(session=db)
+    # verify the input schema is valid for the current user's role
+    permissions.verify_input_schema_by_role(
+        input_object=website_in,
+        schema_privileges={
+            RoleUser: WebsiteUpdate,
+        },
+    )
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=website.id,
+    )
+    websites_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
     if website_in.domain is not None:
         domain_found: Website | None = await websites_repo.read_by(
             field_name="domain",
@@ -208,11 +235,14 @@ async def website_update(
     updated_website: Website | None = await websites_repo.update(
         entry=website, schema=website_in
     )
-    return (
-        WebsiteRead.model_validate(updated_website)
-        if updated_website
-        else WebsiteRead.model_validate(website)
+    # return role based response
+    response_out: WebsiteRead = permissions.get_resource_response(
+        resource=updated_website if updated_website else website,
+        responses={
+            RoleUser: WebsiteRead,
+        },
     )
+    return response_out
 
 
 @router.delete(
@@ -222,13 +252,14 @@ async def website_update(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=None,
 )
 async def website_delete(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    website: FetchWebsiteOr404,
+    website: Website = Permission(AccessDelete, get_website_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> None:
     """Delete a website by id.
 
@@ -236,11 +267,19 @@ async def website_delete(
     ------------
     `role=admin|manager` : all websites
 
+    `role=client` : only websites associated with the client via `client_website` table
+
+    `role=employee` : only websites associated with clients they are associated with via
+        `user_client` table, and associated with the client via `client_website` table
+
     Returns:
     --------
     `None`
 
     """
-    websites_repo: WebsiteRepository = WebsiteRepository(session=db)
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager], website_id=website.id
+    )
+    websites_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
     await websites_repo.delete(entry=website)
     return None

@@ -1,14 +1,6 @@
-from re import Pattern, compile
+from typing import NewType
 
-# from typing import Annotated
-
-# https://pydantic-docs.helpmanual.io/usage/types/#custom-data-types
-# first str before ':' should only be in a-z, 0-9, -, _
-# second or after str after first ':' should only be in a-z, 0-9, -, _, @, .
-# ':some_str' should appear at least 1, and can appear more than 1
-scope_regex: Pattern = compile(r"^[a-z0-9-_]+(:[a-z0-9-_@.]+)+$")
-
-
+"""
 class Scope(str):
     def __new__(self, value: str) -> "Scope":
         m = scope_regex.fullmatch(value.lower())
@@ -23,3 +15,8 @@ class AclPermission(Scope):
 
 class AclPrivilege(Scope):
     pass
+"""
+
+Scope = NewType("Scope", str)
+AclPermission = NewType("AclPermission", str)
+AclPrivilege = NewType("AclPrivilege", str)

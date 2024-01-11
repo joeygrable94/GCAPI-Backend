@@ -997,7 +997,7 @@ digraph {
                          <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
                          </TR><TR>
                          <TD BGCOLOR="#BBDEFB">scopes</TD>
-                         <TD BGCOLOR="#BBDEFB">JSON ()</TD>
+                         <TD BGCOLOR="#BBDEFB">BLOB ()</TD>
                          </TR></TABLE>> URL="http://User_details.html"]
 	User -> Client [label=clients color="#1E88E5" style=dashed tooltip="Relation between User and Client"]
 	User -> Note [label=notes color="#1E88E5" style=dashed tooltip="Relation between User and Note"]
@@ -1085,10 +1085,10 @@ digraph {
                          <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
                          </TR><TR>
                          <TD BGCOLOR="#BBDEFB">corpus</TD>
-                         <TD BGCOLOR="#BBDEFB">VARCHAR(4294967295) ()</TD>
+                         <TD BGCOLOR="#BBDEFB">BLOB(4294967295) ()</TD>
                          </TR><TR>
                          <TD BGCOLOR="#BBDEFB">rawtext</TD>
-                         <TD BGCOLOR="#BBDEFB">VARCHAR(4294967295) ()</TD>
+                         <TD BGCOLOR="#BBDEFB">BLOB(4294967295) ()</TD>
                          </TR><TR>
                          <TD BGCOLOR="#BBDEFB">website_id</TD>
                          <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>

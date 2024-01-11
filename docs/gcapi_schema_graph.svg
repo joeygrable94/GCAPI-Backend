@@ -311,7 +311,7 @@
 <text text-anchor="start" x="2132.88" y="-424.1" font-family="Roboto" font-size="12.00">scopes</text>
 <polygon fill="#bbdefb" stroke="none" points="2189.5,-420.5 2189.5,-438.5 2351.5,-438.5 2351.5,-420.5 2189.5,-420.5"/>
 <polygon fill="none" stroke="black" points="2189.5,-420.5 2189.5,-438.5 2351.5,-438.5 2351.5,-420.5 2189.5,-420.5"/>
-<text text-anchor="start" x="2249.12" y="-424.1" font-family="Roboto" font-size="12.00">JSON ()</text>
+<text text-anchor="start" x="2249.12" y="-424.1" font-family="Roboto" font-size="12.00">BLOB ()</text>
 </a>
 </g>
 </g>
@@ -1409,13 +1409,13 @@
 <text text-anchor="start" x="3637.5" y="-1237.85" font-family="Roboto" font-size="12.00">corpus</text>
 <polygon fill="#bbdefb" stroke="none" points="3690,-1234.25 3690,-1252.25 3853,-1252.25 3853,-1234.25 3690,-1234.25"/>
 <polygon fill="none" stroke="black" points="3690,-1234.25 3690,-1252.25 3853,-1252.25 3853,-1234.25 3690,-1234.25"/>
-<text text-anchor="start" x="3699.12" y="-1237.85" font-family="Roboto" font-size="12.00">VARCHAR(4294967295) ()</text>
+<text text-anchor="start" x="3712.62" y="-1237.85" font-family="Roboto" font-size="12.00">BLOB(4294967295) ()</text>
 <polygon fill="#bbdefb" stroke="none" points="3621,-1216.25 3621,-1234.25 3690,-1234.25 3690,-1216.25 3621,-1216.25"/>
 <polygon fill="none" stroke="black" points="3621,-1216.25 3621,-1234.25 3690,-1234.25 3690,-1216.25 3621,-1216.25"/>
 <text text-anchor="start" x="3636.38" y="-1219.85" font-family="Roboto" font-size="12.00">rawtext</text>
 <polygon fill="#bbdefb" stroke="none" points="3690,-1216.25 3690,-1234.25 3853,-1234.25 3853,-1216.25 3690,-1216.25"/>
 <polygon fill="none" stroke="black" points="3690,-1216.25 3690,-1234.25 3853,-1234.25 3853,-1216.25 3690,-1216.25"/>
-<text text-anchor="start" x="3699.12" y="-1219.85" font-family="Roboto" font-size="12.00">VARCHAR(4294967295) ()</text>
+<text text-anchor="start" x="3712.62" y="-1219.85" font-family="Roboto" font-size="12.00">BLOB(4294967295) ()</text>
 <polygon fill="#bbdefb" stroke="none" points="3621,-1198.25 3621,-1216.25 3690,-1216.25 3690,-1198.25 3621,-1198.25"/>
 <polygon fill="none" stroke="black" points="3621,-1198.25 3621,-1216.25 3690,-1216.25 3690,-1198.25 3621,-1198.25"/>
 <text text-anchor="start" x="3626.62" y="-1201.85" font-family="Roboto" font-size="12.00">website_id</text>

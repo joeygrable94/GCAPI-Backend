@@ -63,13 +63,13 @@ class CsrfProtect(CsrfConfig):
         if not header_type:
             # <HeaderName>: <Token>
             if len(header_parts) != 1:
-                raise InvalidHeaderError(  # TODO: test
+                raise InvalidHeaderError(
                     f'Bad {header_name} header. Expected value "<Token>"'
                 )
             token = header_parts[0]
         else:
             # <HeaderName>: <HeaderType> <Token>
-            if (  # TODO: test
+            if (
                 not re.match(r"{}\s".format(header_type), headers[header_name])
                 or len(header_parts) != 2
             ):
@@ -165,7 +165,7 @@ class CsrfProtect(CsrfConfig):
                 raise TokenValidationError(
                     "The CSRF signatures submitted do not match."
                 )
-        except SignatureExpired:  # TODO: test
+        except SignatureExpired:  # pragma: no cover
             raise TokenValidationError("The CSRF token has expired.")
-        except BadData:
+        except BadData:  # pragma: no cover
             raise TokenValidationError("The CSRF token is invalid.")

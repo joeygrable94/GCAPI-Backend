@@ -1,11 +1,27 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING, Any, List, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
+from app.core.security.permissions import (
+    AccessCreate,
+    AccessDelete,
+    AccessDeleteSelf,
+    AccessList,
+    AccessRead,
+    AccessReadSelf,
+    AccessUpdate,
+    AccessUpdateSelf,
+    AclAction,
+    AclPermission,
+    AclPrivilege,
+    RoleAdmin,
+    RoleManager,
+    RoleUser,
+)
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
@@ -50,6 +66,29 @@ class Note(Base):
     client_reports: Mapped[List["ClientReport"]] = relationship(
         "ClientReport", secondary="client_report_note", back_populates="notes"
     )
+
+    # ACL
+    def __acl__(
+        self,
+    ) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
+        return [
+            # list
+            (AclAction.allow, RoleUser, AccessList),
+            # create
+            (AclAction.allow, RoleUser, AccessCreate),
+            # read
+            (AclAction.allow, RoleAdmin, AccessRead),
+            (AclAction.allow, RoleManager, AccessRead),
+            (AclAction.allow, RoleUser, AccessReadSelf),
+            # update
+            (AclAction.allow, RoleAdmin, AccessUpdate),
+            (AclAction.allow, RoleManager, AccessUpdate),
+            (AclAction.allow, RoleUser, AccessUpdateSelf),
+            # delete
+            (AclAction.allow, RoleAdmin, AccessDelete),
+            (AclAction.allow, RoleManager, AccessDelete),
+            (AclAction.allow, RoleUser, AccessDeleteSelf),
+        ]
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover

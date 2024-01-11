@@ -24,9 +24,7 @@ def get_tasks_status(
 
     Permissions:
     ------------
-    `role=admin|manager` : all tasks
-
-    `role=user` : only tasks associated with the user via other models
+    `role=user` : all tasks
 
     Returns:
     --------

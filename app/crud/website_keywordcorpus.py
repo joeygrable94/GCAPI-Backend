@@ -1,10 +1,18 @@
-from typing import Type
+from typing import List, Type
 from uuid import UUID
 
-from sqlalchemy import Select, and_, select as sql_select
+from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
 
 from app.crud.base import BaseRepository
-from app.models import WebsiteKeywordCorpus
+from app.models import (
+    Client,
+    ClientWebsite,
+    User,
+    UserClient,
+    Website,
+    WebsiteKeywordCorpus,
+    WebsitePage,
+)
 from app.schemas import (
     WebsiteKeywordCorpusCreate,
     WebsiteKeywordCorpusRead,
@@ -26,23 +34,31 @@ class WebsiteKeywordCorpusRepository(
 
     def query_list(
         self,
+        user_id: UUID | None = None,
         website_id: UUID | None = None,
         page_id: UUID | None = None,
     ) -> Select:
-        stmt: Select | None = None
-        # website_id and page_id
-        if website_id and page_id:
-            stmt = sql_select(self._table).where(
-                and_(
-                    self._table.website_id == website_id, self._table.page_id == page_id
-                )
+        # create statement joins
+        stmt: Select = sql_select(self._table)
+        # create conditions
+        conditions: List[BinaryExpression[bool]] = []
+        # append conditions
+        if user_id:  # TODO: test
+            stmt = (
+                stmt.join(Website, self._table.website_id == Website.id)
+                .join(ClientWebsite, Website.id == ClientWebsite.website_id)
+                .join(Client, ClientWebsite.client_id == Client.id)
+                .join(UserClient, Client.id == UserClient.client_id)
+                .join(User, UserClient.user_id == User.id)
             )
-        # website_id only
-        if website_id and page_id is None:
-            stmt = sql_select(self._table).where(self._table.website_id == website_id)
-        # page_id only
-        if website_id is None and page_id:
-            stmt = sql_select(self._table).where(self._table.page_id == page_id)
-        if stmt is None:
-            stmt = sql_select(self._table)
+            conditions.append(User.id.like(user_id))
+        if website_id:
+            stmt = stmt.join(Website, self._table.website_id == Website.id)
+            conditions.append(self._table.website_id.like(website_id))
+        if page_id:
+            stmt = stmt.join(WebsitePage, self._table.page_id == WebsitePage.id)
+            conditions.append(self._table.page_id.like(page_id))
+        # apply conditions
+        if len(conditions) > 0:
+            stmt = stmt.where(and_(*conditions))
         return stmt

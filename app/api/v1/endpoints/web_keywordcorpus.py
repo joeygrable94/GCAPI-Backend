@@ -1,28 +1,35 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy import Select
 
 from app.api.deps import (
-    AsyncDatabaseSession,
     CommonWebsiteKeywordCorpusQueryParams,
-    CurrentUser,
-    FetchWebsiteKeywordCorpusOr404,
     GetWebsiteKeywordCorpusQueryParams,
+    Permission,
     PermissionController,
     get_async_db,
     get_current_user,
     get_permission_controller,
     get_website_page_kwc_or_404,
 )
+from app.api.exceptions.exceptions import WebsiteNotExists, WebsitePageNotExists
 from app.core.logger import logger
 from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
 from app.core.security.permissions import (
+    AccessDelete,
+    AccessRead,
     RoleAdmin,
     RoleClient,
     RoleEmployee,
     RoleManager,
+    RoleUser,
 )
 from app.crud import WebsiteKeywordCorpusRepository
+from app.crud.website import WebsiteRepository
+from app.crud.website_page import WebsitePageRepository
 from app.models import WebsiteKeywordCorpus
+from app.models.website import Website
+from app.models.website_page import WebsitePage
 from app.schemas import WebsiteKeywordCorpusCreate, WebsiteKeywordCorpusRead
 
 router: APIRouter = APIRouter()
@@ -42,7 +49,6 @@ router: APIRouter = APIRouter()
 )
 async def website_page_keyword_corpus_list(
     query: GetWebsiteKeywordCorpusQueryParams,
-    db: AsyncDatabaseSession,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> Paginated[WebsiteKeywordCorpusRead]:
     """Retrieve a paginated list of website keyword corpus.
@@ -65,15 +71,24 @@ async def website_page_keyword_corpus_list(
 
     """
     web_kwc_repo: WebsiteKeywordCorpusRepository
-    web_kwc_repo = WebsiteKeywordCorpusRepository(session=db)
+    web_kwc_repo = WebsiteKeywordCorpusRepository(session=permissions.db)
+    select_stmt: Select
+    if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
+        select_stmt = web_kwc_repo.query_list(
+            website_id=query.website_id,
+            page_id=query.page_id,
+        )
+    else:  # TODO: test
+        select_stmt = web_kwc_repo.query_list(
+            user_id=permissions.current_user.id,
+            website_id=query.website_id,
+            page_id=query.page_id,
+        )
     response_out: Paginated[
         WebsiteKeywordCorpusRead
     ] = await permissions.get_paginated_resource_response(
         table_name=WebsiteKeywordCorpus.__tablename__,
-        stmt=web_kwc_repo.query_list(
-            website_id=query.website_id,
-            page_id=query.page_id,
-        ),
+        stmt=select_stmt,
         page_params=PageParams(page=query.page, size=query.size),
         responses={
             RoleAdmin: WebsiteKeywordCorpusRead,
@@ -91,14 +106,14 @@ async def website_page_keyword_corpus_list(
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=WebsiteKeywordCorpusRead,
 )
 async def website_page_keyword_corpus_create(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    query: GetWebsiteKeywordCorpusQueryParams,
     kwc_in: WebsiteKeywordCorpusCreate,
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsiteKeywordCorpusRead:
     """Create a new website keyword corpus.
 
@@ -118,11 +133,23 @@ async def website_page_keyword_corpus_create(
     `WebsiteKeywordCorpusRead` : the newly created website keyword corpus
 
     """
-    # TODO: check if website exists?
-    # TODO: check if page exists?
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=kwc_in.website_id,
+    )
+    # check if website exists
+    website_repo: WebsiteRepository = WebsiteRepository(permissions.db)
+    a_website: Website | None = await website_repo.read(entry_id=kwc_in.website_id)
+    if a_website is None:  # TODO: test
+        raise WebsiteNotExists()
+    web_page_repo: WebsitePageRepository = WebsitePageRepository(permissions.db)
+    a_web_page: WebsitePage | None = await web_page_repo.read(entry_id=kwc_in.page_id)
+    if a_web_page is None:  # TODO: test
+        raise WebsitePageNotExists()
     # create website keyword corpus
     web_kwc_repo: WebsiteKeywordCorpusRepository
-    web_kwc_repo = WebsiteKeywordCorpusRepository(db)
+    web_kwc_repo = WebsiteKeywordCorpusRepository(permissions.db)
     kwc_in_db: WebsiteKeywordCorpus = await web_kwc_repo.create(schema=kwc_in)
     logger.info(
         "Created Website Keyword Corpus:",
@@ -139,12 +166,16 @@ async def website_page_keyword_corpus_create(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_page_kwc_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=WebsiteKeywordCorpusRead,
 )
 async def website_page_keyword_corpus_read(
-    current_user: CurrentUser,
-    web_page_kwc: FetchWebsiteKeywordCorpusOr404,
+    web_page_kwc: WebsiteKeywordCorpus = Permission(
+        AccessRead, get_website_page_kwc_or_404
+    ),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsiteKeywordCorpusRead:
     """Retrieve a single website keyword corpus by id.
 
@@ -164,7 +195,19 @@ async def website_page_keyword_corpus_read(
     `WebsiteKeywordCorpusRead` : the website keyword corpus requested by kwc_id
 
     """
-    return WebsiteKeywordCorpusRead.model_validate(web_page_kwc)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=web_page_kwc.website_id,
+    )
+    # return role based response
+    response_out: WebsiteKeywordCorpusRead = permissions.get_resource_response(
+        resource=web_page_kwc,
+        responses={
+            RoleUser: WebsiteKeywordCorpusRead,
+        },
+    )
+    return response_out
 
 
 @router.delete(
@@ -174,13 +217,16 @@ async def website_page_keyword_corpus_read(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_page_kwc_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=None,
 )
 async def website_page_keyword_corpus_delete(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    web_page_kwc: FetchWebsiteKeywordCorpusOr404,
+    web_page_kwc: WebsiteKeywordCorpus = Permission(
+        AccessDelete, get_website_page_kwc_or_404
+    ),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> None:
     """Delete a single website keyword corpus by id.
 
@@ -200,7 +246,12 @@ async def website_page_keyword_corpus_delete(
     `None`
 
     """
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=web_page_kwc.website_id,
+    )
     web_kwc_repo: WebsiteKeywordCorpusRepository
-    web_kwc_repo = WebsiteKeywordCorpusRepository(session=db)
+    web_kwc_repo = WebsiteKeywordCorpusRepository(session=permissions.db)
     await web_kwc_repo.delete(entry=web_page_kwc)
     return None

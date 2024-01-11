@@ -1,10 +1,18 @@
 from typing import List, Type
 from uuid import UUID
 
-from sqlalchemy import Select, and_, select as sql_select
+from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
 
 from app.crud.base import BaseRepository
-from app.models import WebsitePageSpeedInsights
+from app.models import (
+    Client,
+    ClientWebsite,
+    User,
+    UserClient,
+    Website,
+    WebsitePage,
+    WebsitePageSpeedInsights,
+)
 from app.schemas import (
     WebsitePageSpeedInsightsCreate,
     WebsitePageSpeedInsightsRead,
@@ -26,55 +34,34 @@ class WebsitePageSpeedInsightsRepository(
 
     def query_list(
         self,
+        user_id: UUID | None = None,
         website_id: UUID | None = None,
         page_id: UUID | None = None,
         devices: List[str] | None = None,
     ) -> Select:
-        stmt: Select | None = None
-        # website_id, page_id and device strategy
-        if website_id and page_id and devices:
-            stmt = sql_select(self._table).where(
-                and_(
-                    self._table.website_id == website_id,
-                    self._table.page_id == page_id,
-                    self._table.strategy.in_(iter(devices)),
-                )
+        # create statement joins
+        stmt: Select = sql_select(self._table)
+        # create conditions
+        conditions: List[BinaryExpression[bool]] = []
+        # append conditions
+        if user_id:  # TODO: test
+            stmt = (
+                stmt.join(Website, self._table.website_id == Website.id)
+                .join(ClientWebsite, Website.id == ClientWebsite.website_id)
+                .join(Client, ClientWebsite.client_id == Client.id)
+                .join(UserClient, Client.id == UserClient.client_id)
+                .join(User, UserClient.user_id == User.id)
             )
-        # website_id and page_id only
-        if website_id and page_id and devices is None:
-            stmt = sql_select(self._table).where(
-                and_(
-                    self._table.website_id == website_id,
-                    self._table.page_id == page_id,
-                )
-            )
-        # website_id and strategy only
-        if website_id and page_id is None and devices:
-            stmt = sql_select(self._table).where(
-                and_(
-                    self._table.website_id == website_id,
-                    self._table.strategy.in_(iter(devices)),
-                )
-            )
-        # page_id and strategy only
-        if website_id is None and page_id and devices:
-            stmt = sql_select(self._table).where(
-                and_(
-                    self._table.page_id == page_id,
-                    self._table.strategy.in_(iter(devices)),
-                )
-            )
-        # website_id only
-        if website_id and page_id is None and devices is None:
-            stmt = sql_select(self._table).where(self._table.website_id == website_id)
-        # page_id only
-        if website_id is None and page_id and devices is None:
-            stmt = sql_select(self._table).where(self._table.page_id == page_id)
-        # strategy only
-        if website_id is None and page_id is None and devices:
-            stmt = sql_select(self._table).where(
-                self._table.strategy.in_(iter(devices))
-            )
-        if stmt is None:
-            stmt = sql_select(self._table)
+            conditions.append(User.id.like(user_id))
+        if website_id:
+            stmt = stmt.join(Website, self._table.website_id == Website.id)
+            conditions.append(self._table.website_id.like(website_id))
+        if page_id:
+            stmt = stmt.join(WebsitePage, self._table.page_id == WebsitePage.id)
+            conditions.append(self._table.page_id.like(page_id))
+        if devices:
+            conditions.append(self._table.strategy.in_(iter(devices)))
+        # apply conditions
+        if len(conditions) > 0:
+            stmt = stmt.where(and_(*conditions))
         return stmt

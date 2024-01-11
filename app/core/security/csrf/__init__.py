@@ -14,7 +14,7 @@ FastAPI extension that provides Csrf Protection Token support
 
 __version__ = "0.3.2"
 
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, StrictStr
 
@@ -27,6 +27,7 @@ from .exceptions import CsrfProtectError
 class CsrfSettings(BaseModel):
     cookie_key: StrictStr = settings.api.csrf_name_key
     header_name: StrictStr = settings.api.csrf_header_key
+    header_type: Optional[StrictStr] = None
     secret_key: StrictStr = settings.api.secret_key
     token_key: StrictStr = settings.api.csrf_name_key
 

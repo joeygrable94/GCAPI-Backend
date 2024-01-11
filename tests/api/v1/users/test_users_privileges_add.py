@@ -29,7 +29,7 @@ async def test_add_user_priv_as_admin(
     data: Dict[str, Any] = response.json()
     user1_new: UserReadAsAdmin = UserReadAsAdmin.model_validate(data)
     assert 200 <= response.status_code < 300
-    sleep(3)
+    sleep(1)
     response2: Response = await client.get(
         f"users/{user1_new.id}",
         headers=admin_token_headers,
@@ -56,7 +56,7 @@ async def test_add_user_priv_as_manager(
     data: Dict[str, Any] = response.json()
     user1_new: UserReadAsManager = UserReadAsManager.model_validate(data)
     assert 200 <= response.status_code < 300
-    sleep(3)
+    sleep(1)
     response2: Response = await client.get(
         f"users/{user1_new.id}",
         headers=manager_token_headers,

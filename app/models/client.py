@@ -7,11 +7,23 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.security.permissions import (
+    AccessCreate,
+    AccessDelete,
+    AccessDeleteSelf,
     AccessList,
+    AccessRead,
+    AccessReadRelated,
+    AccessReadSelf,
+    AccessUpdate,
+    AccessUpdateRelated,
+    AccessUpdateSelf,
     AclAction,
     AclPermission,
     AclPrivilege,
-    Authenticated,
+    RoleAdmin,
+    RoleClient,
+    RoleEmployee,
+    RoleManager,
 )
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
@@ -102,12 +114,26 @@ class Client(Base):
     ) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
         return [
             # list
-            (AclAction.deny, Authenticated, AccessList),
+            (AclAction.allow, RoleAdmin, AccessList),
+            (AclAction.allow, RoleManager, AccessList),
+            (AclAction.allow, RoleClient, AccessList),
+            (AclAction.allow, RoleEmployee, AccessList),
             # create
+            (AclAction.allow, RoleAdmin, AccessCreate),
+            (AclAction.allow, RoleManager, AccessCreate),
             # read
-            # read_relations
+            (AclAction.allow, RoleAdmin, AccessRead),
+            (AclAction.allow, RoleManager, AccessRead),
+            (AclAction.allow, RoleClient, AccessReadSelf),
+            (AclAction.allow, RoleEmployee, AccessReadRelated),
             # update
+            (AclAction.allow, RoleAdmin, AccessUpdate),
+            (AclAction.allow, RoleManager, AccessUpdate),
+            (AclAction.allow, RoleClient, AccessUpdateSelf),
+            (AclAction.allow, RoleEmployee, AccessUpdateRelated),
             # delete
+            (AclAction.allow, RoleAdmin, AccessDelete),
+            (AclAction.allow, RoleClient, AccessDeleteSelf),
         ]
 
     # representation

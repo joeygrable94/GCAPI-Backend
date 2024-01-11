@@ -1,11 +1,22 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
+from app.core.security.permissions import (
+    AccessCreate,
+    AccessDelete,
+    AccessList,
+    AccessRead,
+    AccessUpdate,
+    AclAction,
+    AclPermission,
+    AclPrivilege,
+    RoleUser,
+)
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
@@ -52,6 +63,23 @@ class WebsiteMap(Base):
     pages: Mapped[Optional[List["WebsitePage"]]] = relationship(
         "WebsitePage", back_populates="sitemap"
     )
+
+    # ACL
+    def __acl__(
+        self,
+    ) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
+        return [
+            # list
+            (AclAction.allow, RoleUser, AccessList),
+            # create
+            (AclAction.allow, RoleUser, AccessCreate),
+            # read
+            (AclAction.allow, RoleUser, AccessRead),
+            # update
+            (AclAction.allow, RoleUser, AccessUpdate),
+            # delete
+            (AclAction.allow, RoleUser, AccessDelete),
+        ]
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover

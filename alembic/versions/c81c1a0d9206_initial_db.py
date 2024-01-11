@@ -1,17 +1,18 @@
-"""initial build
+"""initial db
 
-Revision ID: adde86a4bbbe
+Revision ID: c81c1a0d9206
 Revises:
-Create Date: 2023-10-24 21:31:14.239242
+Create Date: 2024-01-10 15:17:54.964508
 
 """
 from alembic import op
 import sqlalchemy as sa
-import sqlalchemy_utils
+import sqlalchemy_utils  # type: ignore
 
+from app.db.custom_types import LongText, Scopes
 
 # revision identifiers, used by Alembic.
-revision = 'adde86a4bbbe'
+revision = 'c81c1a0d9206'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -53,7 +54,7 @@ def upgrade() -> None:
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('is_verified', sa.Boolean(), nullable=False),
     sa.Column('is_superuser', sa.Boolean(), nullable=False),
-    sa.Column('scopes', sa.JSON(), nullable=False),
+    sa.Column('scopes', Scopes(length=65535), nullable=False),
     sa.PrimaryKeyConstraint('auth_id'),
     sa.UniqueConstraint('auth_id'),
     sa.UniqueConstraint('username'),
@@ -444,6 +445,8 @@ def upgrade() -> None:
     mysql_engine='InnoDB'
     )
     op.create_index(op.f('ix_website_page_id'), 'website_page', ['id'], unique=True)
+    op.create_index(op.f('ix_website_page_sitemap_id'), 'website_page', ['sitemap_id'], unique=False)
+    op.create_index(op.f('ix_website_page_website_id'), 'website_page', ['website_id'], unique=False)
     op.create_table('gcft_snap',
     sa.Column('id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('created_on', sa.DateTime(timezone=True), nullable=False),
@@ -466,8 +469,8 @@ def upgrade() -> None:
     sa.Column('id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('created_on', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_on', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('corpus', sa.Text(length=4294967295), nullable=False),
-    sa.Column('rawtext', sa.Text(length=4294967295), nullable=False),
+    sa.Column('corpus', LongText(), nullable=False),
+    sa.Column('rawtext', LongText(), nullable=False),
     sa.Column('website_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('page_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.ForeignKeyConstraint(['page_id'], ['website_page.id'], ),
@@ -634,6 +637,8 @@ def downgrade() -> None:
     op.drop_table('website_keywordcorpus')
     op.drop_index(op.f('ix_gcft_snap_id'), table_name='gcft_snap')
     op.drop_table('gcft_snap')
+    op.drop_index(op.f('ix_website_page_website_id'), table_name='website_page')
+    op.drop_index(op.f('ix_website_page_sitemap_id'), table_name='website_page')
     op.drop_index(op.f('ix_website_page_id'), table_name='website_page')
     op.drop_table('website_page')
     op.drop_index(op.f('ix_user_ipaddress_id'), table_name='user_ipaddress')

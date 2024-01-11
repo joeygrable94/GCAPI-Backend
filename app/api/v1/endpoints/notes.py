@@ -1,11 +1,12 @@
 from typing import Dict
 
 from fastapi import APIRouter, Depends
+from sqlalchemy import Select
 
 from app.api.deps import (
-    AsyncDatabaseSession,
-    CurrentUser,
-    FetchNoteOr404,
+    CommonUserQueryParams,
+    GetUserQueryParams,
+    Permission,
     PermissionController,
     get_async_db,
     get_current_user,
@@ -13,18 +14,20 @@ from app.api.deps import (
     get_permission_controller,
 )
 from app.api.exceptions import NoteAlreadyExists
-from app.core.pagination import (
-    GetPaginatedQueryParams,
-    PageParams,
-    PageParamsFromQuery,
-    Paginated,
-)
+from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
 from app.core.security.permissions import (
+    AccessDelete,
+    AccessDeleteSelf,
+    AccessRead,
+    AccessReadSelf,
+    AccessUpdate,
+    AccessUpdateSelf,
     RoleAdmin,
     RoleClient,
     RoleEmployee,
     RoleManager,
+    RoleUser,
 )
 from app.crud import NoteRepository
 from app.models import Note
@@ -37,7 +40,7 @@ router: APIRouter = APIRouter()
     "/",
     name="notes:list",
     dependencies=[
-        Depends(PageParamsFromQuery),
+        Depends(CommonUserQueryParams),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
@@ -46,8 +49,7 @@ router: APIRouter = APIRouter()
     response_model=Paginated[NoteRead],
 )
 async def notes_list(
-    query: GetPaginatedQueryParams,
-    db: AsyncDatabaseSession,
+    query: GetUserQueryParams,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> Paginated[NoteRead]:
     """Retrieve a paginated list of notes.
@@ -56,22 +58,25 @@ async def notes_list(
     ------------
     `role=admin|manager` : all notes
 
-    `role=client` : notes they created or notes created in association with their
-        client id
-
-    `role=employee|user` : only notes that belong to the user
+    `role=user` : only notes that belong to the user
 
     Returns:
     --------
     `Paginated[NoteRead]` : a paginated list of notes, optionally filtered
 
     """
-    notes_repo: NoteRepository = NoteRepository(session=db)
+    # formulate the select statement based on the current user's role
+    notes_repo: NoteRepository = NoteRepository(session=permissions.db)
+    select_stmt: Select
+    if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
+        select_stmt = notes_repo.query_list(user_id=query.user_id)
+    else:  # TODO: test
+        select_stmt = notes_repo.query_list(user_id=permissions.current_user.id)
     response_out: Paginated[
         NoteRead
     ] = await permissions.get_paginated_resource_response(
         table_name=Note.__tablename__,
-        stmt=notes_repo.query_list(),
+        stmt=select_stmt,
         page_params=PageParams(page=query.page, size=query.size),
         responses={
             RoleAdmin: NoteRead,
@@ -89,13 +94,14 @@ async def notes_list(
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=NoteRead,
 )
 async def notes_create(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     note_in: NoteCreate,
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> NoteRead:
     """Create a new note.
 
@@ -108,7 +114,7 @@ async def notes_create(
     `NoteRead` : the newly created note
 
     """
-    notes_repo: NoteRepository = NoteRepository(session=db)
+    notes_repo: NoteRepository = NoteRepository(session=permissions.db)
     data: Dict = note_in.model_dump()
     check_title: str | None = data.get("title")
     if check_title:
@@ -119,7 +125,14 @@ async def notes_create(
         if a_note:
             raise NoteAlreadyExists()
     new_note: Note = await notes_repo.create(note_in)
-    return NoteRead.model_validate(new_note)
+    # return role based response
+    response_out: NoteRead = permissions.get_resource_response(
+        resource=new_note,
+        responses={
+            RoleUser: NoteRead,
+        },
+    )
+    return response_out
 
 
 @router.get(
@@ -129,21 +142,20 @@ async def notes_create(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_note_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=NoteRead,
 )
 async def notes_read(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    note: FetchNoteOr404,
+    note: Note = Permission([AccessRead, AccessReadSelf], get_note_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> NoteRead:
     """Retrieve a single note by id.
 
     Permissions:
     ------------
-    `role=admin` : read all notes
-
-    `role=manager` : read notes of users with `role=manager|client|employee|user`
+    `role=admin|manager` : read all notes
 
     `role=user` : read only notes that belong to the user
 
@@ -152,7 +164,19 @@ async def notes_read(
     `NoteRead` : the note matching the note_id
 
     """
-    return NoteRead.model_validate(note)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        user_id=note.user_id,
+    )
+    # return role based response
+    response_out: NoteRead = permissions.get_resource_response(
+        resource=note,
+        responses={
+            RoleUser: NoteRead,
+        },
+    )
+    return response_out
 
 
 @router.patch(
@@ -162,22 +186,21 @@ async def notes_read(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_note_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=NoteRead,
 )
 async def notes_update(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    note: FetchNoteOr404,
     note_in: NoteUpdate,
+    note: Note = Permission([AccessUpdate, AccessUpdateSelf], get_note_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> NoteRead:
     """Update a note by id.
 
     Permissions:
     ------------
-    `role=admin` : update all notes
-
-    `role=manager` : update notes of users with `role=manager|client|employee|user`
+    `role=admin|manager` : update all notes
 
     `role=user` : update only notes that belong to the user
 
@@ -186,7 +209,19 @@ async def notes_update(
     `NoteRead` : the updated note
 
     """
-    notes_repo: NoteRepository = NoteRepository(session=db)
+    # verify the input schema is valid for the current user's role
+    permissions.verify_input_schema_by_role(
+        input_object=note_in,
+        schema_privileges={
+            RoleUser: NoteUpdate,
+        },
+    )
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        user_id=note.user_id,
+    )
+    notes_repo: NoteRepository = NoteRepository(session=permissions.db)
     if note_in.title is not None:
         a_note: Note | None = await notes_repo.read_by(
             field_name="title", field_value=note_in.title
@@ -194,11 +229,14 @@ async def notes_update(
         if a_note:
             raise NoteAlreadyExists()
     updated_note: Note | None = await notes_repo.update(entry=note, schema=note_in)
-    return (
-        NoteRead.model_validate(updated_note)
-        if updated_note
-        else NoteRead.model_validate(note)
+    # return role based response
+    response_out: NoteRead = permissions.get_resource_response(
+        resource=updated_note if updated_note else note,
+        responses={
+            RoleUser: NoteRead,
+        },
     )
+    return response_out
 
 
 @router.delete(
@@ -208,21 +246,20 @@ async def notes_update(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_note_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=None,
 )
 async def notes_delete(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    note: FetchNoteOr404,
+    note: Note = Permission([AccessDelete, AccessDeleteSelf], get_note_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> None:
     """Delete a note by id.
 
     Permissions:
     ------------
-    `role=admin` : delete all notes
-
-    `role=manager` : delete notes of users with `role=manager|client|employee|user`
+    `role=admin|manager` : delete all notes
 
     `role=user` : delete only notes that belong to the user
 
@@ -231,6 +268,10 @@ async def notes_delete(
     `None`
 
     """
-    notes_repo: NoteRepository = NoteRepository(session=db)
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        user_id=note.user_id,
+    )
+    notes_repo: NoteRepository = NoteRepository(session=permissions.db)
     await notes_repo.delete(entry=note)
     return None

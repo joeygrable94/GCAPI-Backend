@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy import Select
 
 from app.api.deps import (
-    AsyncDatabaseSession,
     CommonWebsitePageSpeedInsightsQueryParams,
-    CurrentUser,
-    FetchWebPageSpeedInsightOr404,
     GetWebsitePageSpeedInsightsQueryParams,
+    Permission,
     PermissionController,
     get_async_db,
     get_current_user,
@@ -17,10 +16,13 @@ from app.core.logger import logger
 from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
 from app.core.security.permissions import (
+    AccessDelete,
+    AccessRead,
     RoleAdmin,
     RoleClient,
     RoleEmployee,
     RoleManager,
+    RoleUser,
 )
 from app.crud import (
     WebsitePageRepository,
@@ -51,7 +53,6 @@ router: APIRouter = APIRouter()
 )
 async def website_page_speed_insights_list(
     query: GetWebsitePageSpeedInsightsQueryParams,
-    db: AsyncDatabaseSession,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> Paginated[WebsitePageSpeedInsightsRead]:
     """Retrieve a paginated list of website page speed insights.
@@ -73,16 +74,26 @@ async def website_page_speed_insights_list(
         insights, optionally filtered
     """
     web_psi_repo: WebsitePageSpeedInsightsRepository
-    web_psi_repo = WebsitePageSpeedInsightsRepository(session=db)
+    web_psi_repo = WebsitePageSpeedInsightsRepository(session=permissions.db)
+    select_stmt: Select
+    if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
+        select_stmt = web_psi_repo.query_list(
+            website_id=query.website_id,
+            page_id=query.page_id,
+            devices=query.strategy,
+        )
+    else:  # TODO: test
+        select_stmt = web_psi_repo.query_list(
+            user_id=permissions.current_user.id,
+            website_id=query.website_id,
+            page_id=query.page_id,
+            devices=query.strategy,
+        )
     response_out: Paginated[
         WebsitePageSpeedInsightsRead
     ] = await permissions.get_paginated_resource_response(
         table_name=WebsitePageSpeedInsights.__tablename__,
-        stmt=web_psi_repo.query_list(
-            website_id=query.website_id,
-            page_id=query.page_id,
-            devices=query.strategy,
-        ),
+        stmt=select_stmt,
         page_params=PageParams(page=query.page, size=query.size),
         responses={
             RoleAdmin: WebsitePageSpeedInsightsRead,
@@ -100,14 +111,15 @@ async def website_page_speed_insights_list(
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=WebsitePageSpeedInsightsRead,
 )
 async def website_page_speed_insights_create(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     query: GetWebsitePageSpeedInsightsQueryParams,
     psi_in: WebsitePageSpeedInsightsBase,
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsitePageSpeedInsightsRead:
     """Create a new website page speed insights.
 
@@ -127,22 +139,28 @@ async def website_page_speed_insights_create(
     `WebsitePageSpeedInsightsRead` : the newly created website page speed insights
 
     """
-    # check if website exists
+    # check if website_id provided
     if query.website_id is None:
         raise WebsiteNotExists()
-    website_repo: WebsiteRepository = WebsiteRepository(db)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=query.website_id,
+    )
+    # check if website exists
+    website_repo: WebsiteRepository = WebsiteRepository(permissions.db)
     a_website: Website | None = await website_repo.read(entry_id=query.website_id)
     if a_website is None:
         raise WebsiteNotExists()
     # check if page exists
     if query.page_id is None:
         raise WebsitePageNotExists()
-    web_page_repo: WebsitePageRepository = WebsitePageRepository(db)
+    web_page_repo: WebsitePageRepository = WebsitePageRepository(permissions.db)
     a_web_page: WebsitePage | None = await web_page_repo.read(entry_id=query.page_id)
     if a_web_page is None:
         raise WebsitePageNotExists()
     web_psi_repo: WebsitePageSpeedInsightsRepository
-    web_psi_repo = WebsitePageSpeedInsightsRepository(db)
+    web_psi_repo = WebsitePageSpeedInsightsRepository(permissions.db)
     psi_create: WebsitePageSpeedInsightsCreate = WebsitePageSpeedInsightsCreate(
         **psi_in.model_dump(),
         page_id=query.page_id,
@@ -164,12 +182,16 @@ async def website_page_speed_insights_create(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_page_psi_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=WebsitePageSpeedInsightsRead,
 )
 async def website_page_speed_insights_read(
-    current_user: CurrentUser,
-    web_page_psi: FetchWebPageSpeedInsightOr404,
+    web_page_psi: WebsitePageSpeedInsights = Permission(
+        AccessRead, get_website_page_psi_or_404
+    ),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsitePageSpeedInsightsRead:
     """Retrieve a single website page speed insights by id.
 
@@ -189,7 +211,19 @@ async def website_page_speed_insights_read(
     `WebsitePageSpeedInsightsRead` : the website page speed insights requested by psi_id
 
     """
-    return WebsitePageSpeedInsightsRead.model_validate(web_page_psi)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=web_page_psi.website_id,
+    )
+    # return role based response
+    response_out: WebsitePageSpeedInsightsRead = permissions.get_resource_response(
+        resource=web_page_psi,
+        responses={
+            RoleUser: WebsitePageSpeedInsightsRead,
+        },
+    )
+    return response_out
 
 
 @router.delete(
@@ -199,13 +233,16 @@ async def website_page_speed_insights_read(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_page_psi_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=None,
 )
 async def website_page_speed_insights_delete(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    web_page_psi: FetchWebPageSpeedInsightOr404,
+    web_page_psi: WebsitePageSpeedInsights = Permission(
+        AccessDelete, get_website_page_psi_or_404
+    ),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> None:
     """Delete a single website page speed insights by id.
 
@@ -225,7 +262,12 @@ async def website_page_speed_insights_delete(
     `None`
 
     """
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=web_page_psi.website_id,
+    )
     web_psi_repo: WebsitePageSpeedInsightsRepository
-    web_psi_repo = WebsitePageSpeedInsightsRepository(session=db)
+    web_psi_repo = WebsitePageSpeedInsightsRepository(session=permissions.db)
     await web_psi_repo.delete(entry=web_page_psi)
     return None

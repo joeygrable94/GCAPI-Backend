@@ -119,9 +119,7 @@ async def users_list(
 
     Permissions:
     ------------
-    `role=admin` : all users
-
-    `role=manager` : all users
+    `role=admin|manager` : all users
 
     Returns:
     --------
@@ -132,6 +130,9 @@ async def users_list(
         manager role
 
     """
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(privileges=[RoleAdmin, RoleManager])
+    # return role based response
     response_out: Paginated[UserReadAsAdmin] | Paginated[
         UserReadAsManager
     ] = await permissions.get_paginated_resource_response(
@@ -361,14 +362,9 @@ async def users_update_add_privileges(
 
     """
     # verify current user has permission to take this action
-    await permissions.verify_user_can_access(
-        privileges=[RoleAdmin, RoleManager], user_id=user.id
-    )
+    await permissions.verify_user_can_access(privileges=[RoleAdmin, RoleManager])
     # update the user data
-    await permissions.add_privileges(to_user=user, schema=user_in)
-    updated_user: User | None = await permissions.user_repo.read(user.id)
-    if updated_user is None:  # pragma: no cover
-        updated_user = user
+    updated_user: User = await permissions.add_privileges(to_user=user, schema=user_in)
     # return role based response
     response_out: UserReadAsAdmin | UserReadAsManager = (
         permissions.get_resource_response(
@@ -414,14 +410,11 @@ async def users_update_remove_privileges(
 
     """
     # verify current user has permission to take this action
-    await permissions.verify_user_can_access(
-        privileges=[RoleAdmin, RoleManager], user_id=user.id
-    )
+    await permissions.verify_user_can_access(privileges=[RoleAdmin, RoleManager])
     # update the user data
-    await permissions.remove_privileges(to_user=user, schema=user_in)
-    updated_user: User | None = await permissions.user_repo.read(user.id)
-    if updated_user is None:  # pragma: no cover
-        updated_user = user
+    updated_user: User = await permissions.remove_privileges(
+        to_user=user, schema=user_in
+    )
     # return role based response
     response_out: UserReadAsAdmin | UserReadAsManager = (
         permissions.get_resource_response(

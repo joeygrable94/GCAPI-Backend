@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Tuple
 
 from pydantic import UUID4
-from sqlalchemy import JSON, Boolean, DateTime, String, func
+from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -25,6 +25,7 @@ from app.core.security.permissions import (
 from app.core.utilities.uuids import get_random_username  # type: ignore
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
+from app.db.custom_types import Scopes
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
@@ -69,7 +70,7 @@ class User(Base):
     is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     scopes: Mapped[list[AclPrivilege]] = mapped_column(
-        JSON,
+        Scopes,
         nullable=False,
         default=[RoleUser],
     )

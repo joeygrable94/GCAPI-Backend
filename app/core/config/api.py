@@ -39,7 +39,7 @@ class ApiSettings(BaseSettings):
     )
     csrf_header_key: str = "x-csrf-token"
     csrf_name_key: str = "gcapi-csrf-token"
-    csrf_salt: str = "gcap!-cSrf-$@aLtJv2-lXB*IUFLCcbz45Swnda92laS-DJG{rUX^ASz5Wzz;5sP"
+    csrf_salt: str = "lXB*IUFLCcbz45Swnda92laS-DJG{rUX^ASz5Wzz;5sP"
     csrf_secret_key: str = environ.get(
         "API_CSRF_KEY",
         "fb4cd9547245b656a5a44441eebd5960432c95d9c45970be0d7442f91bf64366",

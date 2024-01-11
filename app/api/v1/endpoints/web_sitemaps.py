@@ -1,13 +1,12 @@
 from typing import Any
 
 from fastapi import APIRouter, Depends
+from sqlalchemy import Select
 
 from app.api.deps import (
-    AsyncDatabaseSession,
     CommonWebsiteMapQueryParams,
-    CurrentUser,
-    FetchSitemapOr404,
     GetWebsiteMapQueryParams,
+    Permission,
     PermissionController,
     get_async_db,
     get_current_user,
@@ -18,10 +17,12 @@ from app.api.exceptions import WebsiteMapAlreadyExists, WebsiteNotExists
 from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
 from app.core.security.permissions import (
+    AccessDelete,
+    AccessRead,
+    AccessUpdate,
     RoleAdmin,
-    RoleClient,
-    RoleEmployee,
     RoleManager,
+    RoleUser,
 )
 from app.crud import WebsiteMapRepository, WebsiteRepository
 from app.models import Website, WebsiteMap
@@ -50,7 +51,6 @@ router: APIRouter = APIRouter()
 )
 async def sitemap_list(
     query: GetWebsiteMapQueryParams,
-    db: AsyncDatabaseSession,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> Paginated[WebsiteMapRead]:
     """Retrieve a paginated list of website maps.
@@ -59,10 +59,7 @@ async def sitemap_list(
     ------------
     `role=admin|manager` : all website maps
 
-    `role=client` : only website maps with a website_id associated with the client
-        via `client_website` table
-
-    `role=employee` : only website maps with a website_id associated with the clients
+    `role=user` : only website maps with a website_id associated with the clients
         via `client_website` table, associated with the user via `user_client` table
 
     Returns:
@@ -71,18 +68,25 @@ async def sitemap_list(
         optionally filtered
 
     """
-    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
+    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=permissions.db)
+    select_stmt: Select
+    if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
+        select_stmt = sitemap_repo.query_list(
+            website_id=query.website_id,
+        )
+    else:  # TODO: test
+        select_stmt = sitemap_repo.query_list(
+            user_id=permissions.current_user.id,
+            website_id=query.website_id,
+        )
     response_out: Paginated[
         WebsiteMapRead
     ] = await permissions.get_paginated_resource_response(
         table_name=WebsiteMap.__tablename__,
-        stmt=sitemap_repo.query_list(website_id=query.website_id),
+        stmt=select_stmt,
         page_params=PageParams(page=query.page, size=query.size),
         responses={
-            RoleAdmin: WebsiteMapRead,
-            RoleManager: WebsiteMapRead,
-            RoleClient: WebsiteMapRead,
-            RoleEmployee: WebsiteMapRead,
+            RoleUser: WebsiteMapRead,
         },
     )
     return response_out
@@ -94,13 +98,14 @@ async def sitemap_list(
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=WebsiteMapRead,
 )
 async def sitemap_create(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
     sitemap_in: WebsiteMapCreate,
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsiteMapRead:
     """Create a new website map.
 
@@ -108,10 +113,7 @@ async def sitemap_create(
     ------------
     `role=admin|manager` : create a new website map
 
-    `role=client` : create a new website map that belongs to a website associated with
-        the client via `client_website` table
-
-    `role=employee` : create a new website map associated with a website that belongs to
+    `role=user` : create a new website map associated with a website that belongs to
         a client the user belongs to via `user_client` table
 
     Returns:
@@ -119,8 +121,18 @@ async def sitemap_create(
     `WebsiteMapRead` : the newly created website map
 
     """
-    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=sitemap_in.website_id,
+    )
+    # check website being assigned a sitemap exists
+    website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
+    a_website: Website | None = await website_repo.read(sitemap_in.website_id)
+    if a_website is None:
+        raise WebsiteNotExists()
     # check website map url is unique to website_id
+    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=permissions.db)
     a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_two(
         field_name_a="url",
         field_value_a=sitemap_in.url,
@@ -129,14 +141,16 @@ async def sitemap_create(
     )
     if a_sitemap is not None:
         raise WebsiteMapAlreadyExists()
-    # check website map is assigned to a website
-    website_repo: WebsiteRepository = WebsiteRepository(session=db)
-    a_website: Website | None = await website_repo.read(sitemap_in.website_id)
-    if a_website is None:
-        raise WebsiteNotExists()
     # create website map
     sitemap: WebsiteMap = await sitemap_repo.create(sitemap_in)
-    return WebsiteMapRead.model_validate(sitemap)
+    # return role based response
+    response_out: WebsiteMapRead = permissions.get_resource_response(
+        resource=sitemap,
+        responses={
+            RoleUser: WebsiteMapRead,
+        },
+    )
+    return response_out
 
 
 @router.get(
@@ -146,12 +160,14 @@ async def sitemap_create(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_map_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=WebsiteMapRead,
 )
 async def sitemap_read(
-    current_user: CurrentUser,
-    sitemap: FetchSitemapOr404,
+    sitemap: WebsiteMap = Permission(AccessRead, get_website_map_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsiteMapRead:
     """Retrieve a single website map by id.
 
@@ -159,9 +175,7 @@ async def sitemap_read(
     ------------
     `role=admin|manager` : all website maps
 
-    `role=client` : only website maps belonging to a website associated with the client
-
-    `role=employee` : only website maps belonging to a website that belongs to a client
+    `role=user` : only website maps belonging to a website that belongs to a client
         the user is associated with to via `user_client` table
 
     Returns:
@@ -169,7 +183,19 @@ async def sitemap_read(
     `WebsiteMapRead` : the website map
 
     """
-    return WebsiteMapRead.model_validate(sitemap)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=sitemap.website_id,
+    )
+    # return role based response
+    response_out: WebsiteMapRead = permissions.get_resource_response(
+        resource=sitemap,
+        responses={
+            RoleUser: WebsiteMapRead,
+        },
+    )
+    return response_out
 
 
 @router.patch(
@@ -179,14 +205,15 @@ async def sitemap_read(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_map_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=WebsiteMapRead,
 )
 async def sitemap_update(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    sitemap: FetchSitemapOr404,
     sitemap_in: WebsiteMapUpdate,
+    sitemap: WebsiteMap = Permission(AccessUpdate, get_website_map_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsiteMapRead:
     """Update a website map by id.
 
@@ -194,9 +221,7 @@ async def sitemap_update(
     ------------
     `role=admin|manager` : all website maps
 
-    `role=client` : only website maps belonging to a website associated with the client
-
-    `role=employee` : only website maps belonging to a website that belongs to a client
+    `role=user` : only website maps belonging to a website that belongs to a client
         the user is associated with to via `user_client` table
 
     Returns:
@@ -204,15 +229,23 @@ async def sitemap_update(
     `WebsiteMapRead` : the updated website map
 
     """
-    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=sitemap.website_id,
+    )
+    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=permissions.db)
     updated_sitemap: WebsiteMap | None = await sitemap_repo.update(
         entry=sitemap, schema=sitemap_in
     )
-    return (
-        WebsiteMapRead.model_validate(updated_sitemap)
-        if updated_sitemap
-        else WebsiteMapRead.model_validate(sitemap)
+    # return role based response
+    response_out: WebsiteMapRead = permissions.get_resource_response(
+        resource=updated_sitemap if updated_sitemap else sitemap,
+        responses={
+            RoleUser: WebsiteMapRead,
+        },
     )
+    return response_out
 
 
 @router.delete(
@@ -222,13 +255,14 @@ async def sitemap_update(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_map_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=None,
 )
 async def sitemap_delete(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    sitemap: FetchSitemapOr404,
+    sitemap: WebsiteMap = Permission(AccessDelete, get_website_map_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> None:
     """Delete a website map by id.
 
@@ -236,9 +270,7 @@ async def sitemap_delete(
     ------------
     `role=admin|manager` : all website maps
 
-    `role=client` : only website maps belonging to a website associated with the client
-
-    `role=employee` : only website maps belonging to a website that belongs to a client
+    `role=user` : only website maps belonging to a website that belongs to a client
         the user is associated with to via `user_client` table
 
     Returns:
@@ -246,7 +278,12 @@ async def sitemap_delete(
     `None`
 
     """
-    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=sitemap.website_id,
+    )
+    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=permissions.db)
     await sitemap_repo.delete(entry=sitemap)
     return None
 
@@ -258,13 +295,14 @@ async def sitemap_delete(
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_map_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=WebsiteMapProcessing,
 )
 async def sitemap_process_sitemap_pages(
-    current_user: CurrentUser,
-    db: AsyncDatabaseSession,
-    sitemap: FetchSitemapOr404,
+    sitemap: WebsiteMap = Permission(AccessUpdate, get_website_map_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsiteMapProcessing:
     """A webhook to initiate processing a sitemap's pages.
 
@@ -272,9 +310,7 @@ async def sitemap_process_sitemap_pages(
     ------------
     `role=admin|manager` : all website maps
 
-    `role=client` : only website maps belonging to a website associated with the client
-
-    `role=employee` : only website maps belonging to a website that belongs to a client
+    `role=user` : only website maps belonging to a website that belongs to a client
         the user is associated with to via `user_client` table
 
     Returns:
@@ -282,6 +318,11 @@ async def sitemap_process_sitemap_pages(
     `WebsiteMapProcessing` : the task_id of the worker task
 
     """
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        website_id=sitemap.website_id,
+    )
     website_map_processing_pages: Any = task_website_sitemap_fetch_pages.delay(
         website_id=sitemap.website_id, sitemap_url=sitemap.url
     )

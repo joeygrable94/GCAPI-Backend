@@ -19,7 +19,7 @@ from app.core.security.permissions import (
 )
 from app.crud import ClientRepository, UserClientRepository, UserRepository
 from app.db.base_class import Base
-from app.models import User, UserClient
+from app.models import User
 from app.schemas import UserUpdatePrivileges
 
 from .get_auth import CurrentUser, get_current_user
@@ -55,7 +55,7 @@ class PermissionController(Generic[T]):
         db: AsyncDatabaseSession,
         user: CurrentUser,
         privileges: List[AclPrivilege],
-    ):  # TODO: test
+    ):
         self.db = db
         self.current_user = user
         self.privileges = privileges
@@ -68,59 +68,28 @@ class PermissionController(Generic[T]):
         privileges: List[AclPrivilege] = [],
         user_id: UUID4 | None = None,
         client_id: UUID4 | None = None,
+        website_id: UUID4 | None = None,
     ) -> bool:
-        user_client: UserClient | None
-        # admins can access all users and clients
+        # admins can access all resources
         if self.current_user.is_superuser or RoleAdmin in self.privileges:
             return True
         # current user with these privileges can access
         for perm in privileges:
             if perm in self.privileges:
                 return True
-        # user_id and client_id was provided
-        if user_id and client_id:
-            # check if the requested user_id has a relationship with the client
-            # TODO: test
-            user_client = await self.user_client_repo.exists_by_two(
-                field_name_a="user_id",
-                field_value_a=user_id,
-                field_name_b="client_id",
-                field_value_b=client_id,
-            )
-            if user_client:
-                return True
-        # only client_id was provided
-        elif client_id:
-            # check if the current user has a relationship with the client
-            # TODO: test
-            user_client = await self.user_client_repo.exists_by_two(
-                field_name_a="user_id",
-                field_value_a=self.current_user.id,
-                field_name_b="client_id",
-                field_value_b=client_id,
-            )
-            if user_client:
-                return True
-        # only user_id was provided
-        elif user_id:
-            # check if the current user is the same as the user_id
-            if user_id == self.current_user.id:
-                return True
-            # check if the current user is associated with
-            # the same client as the user_id
-            user_client = await self.user_client_repo.read_by(
-                field_name="user_id", field_value=user_id
-            )
-            if user_client:
-                # TODO: test
-                current_user_client = await self.user_client_repo.exists_by_two(
-                    field_name_a="user_id",
-                    field_value_a=self.current_user.id,
-                    field_name_b="client_id",
-                    field_value_b=user_client.client_id,
-                )
-                if current_user_client:
-                    return True
+        # current user can access their own resources
+        if user_id and user_id == self.current_user.id:
+            return True
+        # count the current user relationships with resource
+        users_access: int = await self.user_repo.verify_relationship(
+            current_user_id=self.current_user.id,
+            user_id=user_id,
+            client_id=client_id,
+            website_id=website_id,
+        )
+        if users_access:
+            return True
+        # deny access by default
         raise AuthPermissionException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             message="You do not have permission to access this resource",
@@ -217,25 +186,21 @@ class PermissionController(Generic[T]):
         # manager can only remove user based access
         return True
 
-    async def add_privileges(
-        self, to_user: User, schema: UserUpdatePrivileges
-    ) -> list[AclPrivilege]:
-        # TODO: add validation to ensure that the scopes are valid
+    async def add_privileges(self, to_user: User, schema: UserUpdatePrivileges) -> User:
         self.verify_user_add_scopes(schema=schema)
-        user_scopes: list[AclPrivilege] = await self.user_repo.add_privileges(
+        updated_user: User = await self.user_repo.add_privileges(
             entry=to_user, schema=schema
         )
-        return user_scopes
+        return updated_user
 
     async def remove_privileges(
         self, to_user: User, schema: UserUpdatePrivileges
-    ) -> list[AclPrivilege]:
-        # TODO: add validation to ensure that the scopes are valid
+    ) -> User:
         self.verify_user_remove_scopes(schema=schema)
-        user_scopes: list[AclPrivilege] = await self.user_repo.remove_privileges(
+        updated_user: User = await self.user_repo.remove_privileges(
             entry=to_user, schema=schema
         )
-        return user_scopes
+        return updated_user
 
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"PermissionControl(User={self.current_user.auth_id})"

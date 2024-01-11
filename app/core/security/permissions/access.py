@@ -27,6 +27,8 @@ AccessReadRelated: AclPermission = AclPermission("read:related")
 # update
 AccessUpdate: AclPermission = AclPermission("update:all")
 AccessUpdateSelf: AclPermission = AclPermission("update:self")
+AccessUpdateRelated: AclPermission = AclPermission("update:related")
 # delete
 AccessDelete: AclPermission = AclPermission("delete:all")
 AccessDeleteSelf: AclPermission = AclPermission("delete:self")
+AccessDeleteRelated: AclPermission = AclPermission("delete:related")

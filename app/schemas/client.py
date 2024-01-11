@@ -43,3 +43,10 @@ class ClientUpdate(BaseSchema):
 
 class ClientRead(ClientBase, BaseSchemaRead):
     id: UUID4
+
+
+class ClientDelete(BaseSchema):
+    message: str
+    user_id: UUID4
+    client_id: UUID4
+    task_id: UUID4 | None = None

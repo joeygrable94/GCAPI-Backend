@@ -1,9 +1,12 @@
 import socket
-from typing import Optional, Type
+from typing import List, Optional, Type
+from uuid import UUID
+
+from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
 
 from app.core.logger import logger
 from app.crud.base import BaseRepository
-from app.models import Website
+from app.models import Client, ClientWebsite, User, UserClient, Website
 from app.schemas import WebsiteCreate, WebsiteRead, WebsiteUpdate
 
 
@@ -13,6 +16,34 @@ class WebsiteRepository(
     @property
     def _table(self) -> Type[Website]:  # type: ignore
         return Website
+
+    def query_list(
+        self,
+        user_id: UUID | None = None,
+        client_id: UUID | None = None,
+    ) -> Select:
+        # create statement joins
+        stmt: Select = sql_select(self._table)
+        # create conditions
+        conditions: List[BinaryExpression[bool]] = []
+        # append conditions
+        if user_id:  # TODO: test
+            stmt = (
+                stmt.join(ClientWebsite, self._table.id == ClientWebsite.website_id)
+                .join(Client, ClientWebsite.client_id == Client.id)
+                .join(UserClient, Client.id == UserClient.client_id)
+                .join(User, UserClient.user_id == User.id)
+            )
+            conditions.append(User.id.like(user_id))
+        if client_id:  # TODO: test
+            stmt = stmt.join(
+                ClientWebsite, self._table.id == ClientWebsite.website_id
+            ).join(Client, ClientWebsite.client_id == Client.id)
+            conditions.append(Client.id.like(client_id))
+        # apply conditions
+        if len(conditions) > 0:  # TODO: test
+            stmt = stmt.where(and_(*conditions))
+        return stmt
 
     async def validate(
         self,
