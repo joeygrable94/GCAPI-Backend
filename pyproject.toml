@@ -31,7 +31,7 @@ python-dotenv = "1.0.0"
 PyMySQL = "1.1.0"
 SQLAlchemy = {version = "2.0.23", extras = ["mypy", "asyncio"]}
 SQLAlchemy-Utils = "0.41.1"
-alembic = "1.12.1"
+alembic = "1.13.1"
 celery = "^5.3.6"
 redis = "^5.0.0"
 types-redis = "^4.6.0.20240106"
