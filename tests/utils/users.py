@@ -38,6 +38,7 @@ async def create_random_user(
             auth_id=auth_id,
             email=email,
             username=username,
+            picture="https://www.gravatar.com/avatar/?d=identicon",
             is_active=is_active,
             is_verified=is_verified,
             is_superuser=is_superuser,

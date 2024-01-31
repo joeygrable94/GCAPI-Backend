@@ -66,6 +66,11 @@ class User(Base):
     username: Mapped[str] = mapped_column(
         String(255), unique=True, nullable=False, default=get_random_username()
     )
+    picture: Mapped[str] = mapped_column(
+        String(1024),
+        nullable=False,
+        default="https://www.gravatar.com/avatar/?d=identicon",
+    )
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)

@@ -6,6 +6,8 @@ from app.core.security.permissions import AclPrivilege
 from app.db.validators import (
     validate_auth_id_required,
     validate_email_required,
+    validate_picture_optional,
+    validate_picture_required,
     validate_scopes_optional,
     validate_scopes_required,
     validate_username_optional,
@@ -19,6 +21,7 @@ class UserBase(BaseSchema):
     auth_id: str
     email: str
     username: str
+    picture: str
 
     _validate_auth_id = field_validator("auth_id", mode="before")(
         validate_auth_id_required
@@ -26,6 +29,9 @@ class UserBase(BaseSchema):
     _validate_email = field_validator("email", mode="before")(validate_email_required)
     _validate_username = field_validator("username", mode="before")(
         validate_username_required
+    )
+    _validate_picture = field_validator("picture", mode="before")(
+        validate_picture_required
     )
 
 
@@ -42,30 +48,42 @@ class UserCreate(UserBase):
 
 class UserUpdate(BaseSchema):
     username: str | None = None
+    picture: str | None = None
 
     _validate_username = field_validator("username", mode="before")(
         validate_username_optional
+    )
+    _validate_picture = field_validator("picture", mode="before")(
+        validate_picture_optional
     )
 
 
 class UserUpdateAsManager(BaseSchema):
     username: str | None = None
+    picture: str | None = None
     is_active: bool | None = None
     is_verified: bool | None = None
 
     _validate_username = field_validator("username", mode="before")(
         validate_username_optional
     )
+    _validate_picture = field_validator("picture", mode="before")(
+        validate_picture_optional
+    )
 
 
 class UserUpdateAsAdmin(BaseSchema):
     username: str | None = None
+    picture: str | None = None
     is_active: bool | None = None
     is_verified: bool | None = None
     is_superuser: bool | None = None
 
     _validate_username = field_validator("username", mode="before")(
         validate_username_optional
+    )
+    _validate_picture = field_validator("picture", mode="before")(
+        validate_picture_optional
     )
 
 

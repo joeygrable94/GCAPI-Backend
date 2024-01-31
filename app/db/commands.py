@@ -27,6 +27,7 @@ wait_seconds = 3
 async def check_db_connected() -> None:  # pragma: no cover
     try:
         dburl: str = str(settings.db.uri_async)
+        print(dburl)
         stmt: Any = text("select 1")
         if not dburl.__contains__("sqlite"):
             with engine.connect() as connection:
@@ -98,6 +99,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     username=settings.auth.first_admin,
                     email=settings.auth.first_admin,
                     auth_id=settings.auth.first_admin_auth_id,
+                    picture=settings.auth.first_admin_picture,
                     is_active=True,
                     is_verified=True,
                     is_superuser=True,
@@ -118,6 +120,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     username=settings.auth.first_manager,
                     email=settings.auth.first_manager,
                     auth_id=settings.auth.first_manager_auth_id,
+                    picture=settings.auth.first_manager_picture,
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
@@ -138,6 +141,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     username=settings.auth.first_employee,
                     email=settings.auth.first_employee,
                     auth_id=settings.auth.first_employee_auth_id,
+                    picture=settings.auth.first_employee_picture,
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
@@ -158,6 +162,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     username=settings.auth.first_client_a,
                     email=settings.auth.first_client_a,
                     auth_id=settings.auth.first_client_a_auth_id,
+                    picture=settings.auth.first_client_a_picture,
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
@@ -175,6 +180,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     username=settings.auth.first_client_b,
                     email=settings.auth.first_client_b,
                     auth_id=settings.auth.first_client_b_auth_id,
+                    picture=settings.auth.first_client_b_picture,
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
@@ -195,6 +201,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     username=settings.auth.first_user_verified,
                     email=settings.auth.first_user_verified,
                     auth_id=settings.auth.first_user_verified_auth_id,
+                    picture="https://www.gravatar.com/avatar/?d=identicon",
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
@@ -215,6 +222,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     username=settings.auth.first_user_unverified,
                     email=settings.auth.first_user_unverified,
                     auth_id=settings.auth.first_user_unverified_auth_id,
+                    picture="https://www.gravatar.com/avatar/?d=identicon",
                     is_active=True,
                     is_verified=False,
                     is_superuser=False,

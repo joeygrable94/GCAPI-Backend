@@ -29,9 +29,7 @@ from .exceptions import (
 
 logger = logging.getLogger("fastapi_auth0")
 
-auth0_rule_namespace: str = os.getenv(
-    "AUTH0_RULE_NAMESPACE", "https://github.com/dorinclisu/fastapi-auth0"
-)
+auth0_rule_namespace: str = os.getenv("AUTH0_RULE_NAMESPACE", "gcapi_oauth2")
 
 unauthenticated_response: Dict = {401: {"model": HTTPAuth0Error}}
 unauthorized_response: Dict = {403: {"model": HTTPAuth0Error}}
@@ -40,6 +38,9 @@ security_responses: Dict = {**unauthenticated_response, **unauthorized_response}
 
 class Auth0User(BaseModel):
     auth_id: str = Field(..., alias="sub")
+    picture: Optional[str] = Field(  # type: ignore [literal-required]
+        None, alias=f"{auth0_rule_namespace}/picture"
+    )
     permissions: List[str] = []  # type: ignore [literal-required]
     roles: List[str] = Field(  # type: ignore [literal-required]
         [], alias=f"{auth0_rule_namespace}/roles"

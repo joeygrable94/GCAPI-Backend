@@ -52,6 +52,8 @@ async def get_current_user(
                 auth_id=auth0_user.auth_id,
                 email=auth0_user.email,
                 username=auth0_user.email,
+                picture=auth0_user.picture
+                or "https://www.gravatar.com/avatar/?d=identicon",
                 scopes=auth0_scopes,
                 is_active=True,
                 is_verified=auth0_user.is_verified or False,

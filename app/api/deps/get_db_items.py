@@ -39,7 +39,7 @@ from app.models import (
 
 async def get_user_or_404(
     db: AsyncDatabaseSession,
-    user_id: Any | None = None,
+    user_id: Any,
 ) -> User | None:
     """Parses uuid/int and fetches user by id."""
     parsed_id: UUID = parse_id(user_id)
@@ -55,7 +55,7 @@ FetchUserOr404 = Annotated[User, Depends(get_user_or_404)]
 
 async def get_client_or_404(
     db: AsyncDatabaseSession,
-    client_id: Any | None = None,
+    client_id: Any,
 ) -> Client | None:
     """Parses uuid/int and fetches client by id."""
     parsed_id: UUID = parse_id(client_id)
@@ -71,7 +71,7 @@ FetchClientOr404 = Annotated[Client, Depends(get_client_or_404)]
 
 async def get_note_or_404(
     db: AsyncDatabaseSession,
-    note_id: Any | None = None,
+    note_id: Any,
 ) -> Note | None:
     """Parses uuid/int and fetches note by id."""
     parsed_id: UUID = parse_id(note_id)

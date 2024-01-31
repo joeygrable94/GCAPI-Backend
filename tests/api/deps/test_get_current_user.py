@@ -33,8 +33,8 @@ def auth() -> MockAuth:
     mock_auth.set_user(
         {
             "sub": get_uuid_str(),
-            "https://github.com/dorinclisu/fastapi-auth0/email": random_email(),
-            "https://github.com/dorinclisu/fastapi-auth0/roles": [
+            "gcapi_oauth2/email": random_email(),
+            "gcapi_oauth2/roles": [
                 "role:user",
                 "role:employee",
             ],

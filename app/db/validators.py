@@ -383,6 +383,15 @@ def validate_username_required(cls: Any, value: str) -> str:
     )
 
 
+def validate_picture_required(cls: Any, value: str) -> str:
+    return require_string_name_min_max_len(
+        v=value,
+        name="picture",
+        min_len=0,
+        max_len=1024,
+    )
+
+
 def validate_password_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
@@ -398,6 +407,14 @@ def validate_username_optional(cls: Any, value: str | None) -> str | None:
         name="username",
         min_len=5,
         max_len=255,
+    )
+
+
+def validate_picture_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="picture",
+        max_len=1024,
     )
 
 
