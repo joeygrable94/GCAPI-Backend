@@ -3,11 +3,12 @@ from typing import Annotated, List
 from fastapi import Depends, HTTPException, Security, status
 
 from app.api.exceptions import ErrorCode
+from app.core import logger
 from app.core.security import Auth0User, auth
 from app.core.security.permissions import AclPrivilege, RoleUser
 from app.crud import UserRepository
 from app.models import User
-from app.schemas import UserCreate
+from app.schemas import UserCreate, UserUpdatePrivileges
 
 from .get_db import AsyncDatabaseSession
 
@@ -60,21 +61,22 @@ async def get_current_user(
                 is_superuser=False,
             )
         )
-    # update_scopes = False
-    # new_scopes = user.scopes
-    # for scope in auth0_scopes:
-    #     if scope not in user.scopes:
-    #         update_scopes = True
-    #         new_scopes.append(scope)
-    # if update_scopes:
-    #     new_scopes = list(set(new_scopes))
-    #     update_user = await users_repo.add_privileges(
-    #         entry=user,
-    #         schema=UserUpdatePrivileges(scopes=new_scopes),
-    #     )
-    #     logger.info(f"Updated user scopes: {user.id} {new_scopes}")
-    #     if update_user:
-    #         return update_user
+        logger.info(f"Created user from Auth0: {user.id}")
+    update_scopes = False
+    new_scopes = user.scopes
+    for scope in auth0_scopes:
+        if scope not in user.scopes:
+            update_scopes = True
+            new_scopes.append(scope)
+    if update_scopes:
+        new_scopes = list(set(new_scopes))
+        update_user = await users_repo.add_privileges(
+            entry=user,
+            schema=UserUpdatePrivileges(scopes=new_scopes),
+        )
+        logger.info(f"Updated user scopes: {user.id}")
+        if update_user:
+            return update_user
     return user
 
 
