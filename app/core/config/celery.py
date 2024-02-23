@@ -21,6 +21,7 @@ class CelerySettings(BaseSettings):
         env_file_encoding="utf-8",
         env_prefix="CELERY_",
         case_sensitive=False,
+        extra="ignore",
     )
 
     # pydantic field validators

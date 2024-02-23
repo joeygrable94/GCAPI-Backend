@@ -82,6 +82,7 @@ class ApiSettings(BaseSettings):
         env_file_encoding="utf-8",
         env_prefix="API_",
         case_sensitive=False,
+        extra="ignore",
     )
 
     # pydantic field validators

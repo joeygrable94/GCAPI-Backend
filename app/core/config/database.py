@@ -30,6 +30,7 @@ class DatabaseSettings(BaseSettings):
         env_file_encoding="utf-8",
         env_prefix="DATABASE_",
         case_sensitive=False,
+        extra="ignore",
     )
 
     # pydantic field validators

@@ -15,4 +15,5 @@ class RedisSettings(BaseSettings):
         env_file_encoding="utf-8",
         env_prefix="REDIS_",
         case_sensitive=False,
+        extra="ignore",
     )
