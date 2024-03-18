@@ -27,7 +27,6 @@ wait_seconds = 3
 async def check_db_connected() -> None:  # pragma: no cover
     try:
         dburl: str = str(settings.db.uri_async)
-        print(dburl)
         stmt: Any = text("select 1")
         if not dburl.__contains__("sqlite"):
             with engine.connect() as connection:

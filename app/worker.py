@@ -8,7 +8,7 @@ from usp.tree import AbstractSitemap  # type: ignore
 from usp.tree import sitemap_tree_for_homepage  # type: ignore
 
 from app.api.monitoring import configure_monitoring
-from app.api.utilities import fetch_pagespeedinsights
+from app.api.utilities import create_or_update_website_page, fetch_pagespeedinsights
 from app.core.celery import create_celery_worker
 from app.core.config import settings
 from app.core.logger import logger
@@ -19,6 +19,7 @@ from app.schemas import (
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsProcessing,
 )
+from app.schemas.website_page import WebsitePageRead
 from app.schemas.website_pagespeedinsights import PSIDevice
 
 celery_app: Celery = create_celery_worker()
@@ -74,11 +75,15 @@ def task_request_to_delete_client(user_id: UUID4, client_id: UUID4) -> None:
     name="sitemaps:task_website_sitemap_fetch_pages",
     acks_late=True,
 )
-def task_website_sitemap_fetch_pages(
+async def task_website_sitemap_fetch_pages(
     website_id: UUID4,
+    sitemap_id: UUID4,
     sitemap_url: AnyHttpUrl,
 ) -> WebsiteMapProcessedResult:
-    logger.info(f"Fetching sitemap pages for website_id {website_id}")
+    logger.info(
+        f"Fetching sitemap pages for website_id {website_id} \
+            from {sitemap_id} at {sitemap_url}"
+    )
     sitemap: AbstractSitemap = sitemap_tree_for_homepage(sitemap_url)
     sitemap_pages: List[WebsiteMapPage] = []
     for pg in sitemap.all_pages():
@@ -87,10 +92,19 @@ def task_website_sitemap_fetch_pages(
                 url=pg.url, priority=pg.priority, last_modified=pg.last_modified
             )
         )
+    website_map_pages: list[WebsitePageRead] = []
+    for sm_page in sitemap_pages:
+        tmp_page: WebsitePageRead = await create_or_update_website_page(
+            website_id=website_id,
+            sitemap_id=website_id,
+            page=sm_page,
+        )
+        website_map_pages.append(tmp_page)
     return WebsiteMapProcessedResult(
         url=sitemap.url,
         website_id=website_id,
-        website_map_pages=sitemap_pages,
+        sitemap_id=sitemap_id,
+        website_map_pages=website_map_pages,
     )
 
 

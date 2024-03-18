@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from pydantic import UUID4, BaseModel, field_validator
 from usp.objects.page import SitemapPageChangeFrequency  # type: ignore
@@ -55,10 +55,10 @@ class WebsitePageRead(WebsitePageBase, BaseSchemaRead):
 # tasks
 class WebsitePagePSIProcessing(BaseModel):
     page: WebsitePageRead
-    psi_mobile_task_id: UUID4
-    psi_desktop_task_id: UUID4
+    psi_mobile_task_id: UUID4 | str | Any | None
+    psi_desktop_task_id: UUID4 | str | Any | None
 
 
 class WebsitePageKWCProcessing(BaseModel):
     page: WebsitePageRead
-    kwc_task_id: UUID4
+    kwc_task_id: UUID4 | str | Any | None

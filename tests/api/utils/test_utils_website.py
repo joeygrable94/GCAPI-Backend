@@ -11,6 +11,7 @@ from usp.objects.page import SitemapPage  # type: ignore
 from app.api.utilities import create_or_update_website_page
 from app.schemas.website import WebsiteRead
 from app.schemas.website_map import WebsiteMapRead
+from app.schemas.website_page import WebsitePageRead
 
 pytestmark = pytest.mark.asyncio
 
@@ -35,7 +36,7 @@ async def test_create_or_update_website_page_create(
     ) as mock_create_or_update_website_page_url_response:
         mock_create_or_update_website_page_url_response.return_value = MockRequestUrlopenResponse()  # type: ignore  # noqa: E501
         output = await create_or_update_website_page(website.id, sitemap.id, page)  # type: ignore  # noqa: E501
-        assert output is None
+        assert isinstance(output, WebsitePageRead)
 
 
 async def test_create_or_update_website_page_create_then_update(
@@ -52,10 +53,10 @@ async def test_create_or_update_website_page_create_then_update(
     ) as mock_create_or_update_website_page_url_response:
         mock_create_or_update_website_page_url_response.return_value = MockRequestUrlopenResponse()  # type: ignore  # noqa: E501
         output_a = await create_or_update_website_page(website.id, sitemap.id, page)  # type: ignore  # noqa: E501
-        assert output_a is None
+        assert isinstance(output_a, WebsitePageRead)
     with patch(
         "app.api.utilities.request.urlopen"
     ) as mock_create_or_update_website_page_url_response:
         mock_create_or_update_website_page_url_response.return_value = MockRequestUrlopenResponse()  # type: ignore  # noqa: E501
         output_b = await create_or_update_website_page(website.id, sitemap.id, page_b)  # type: ignore  # noqa: E501
-        assert output_b is None
+        assert isinstance(output_b, WebsitePageRead)

@@ -22,11 +22,13 @@ from app.core.security.permissions import (
     RoleManager,
     RoleUser,
 )
-from app.crud import WebsiteRepository
-from app.models import Website
+from app.crud import WebsiteMapRepository, WebsiteRepository
+from app.models import Website, WebsiteMap
 from app.schemas import (
     WebsiteCreate,
     WebsiteCreateProcessing,
+    WebsiteMapCreate,
+    WebsiteMapRead,
     WebsiteRead,
     WebsiteUpdate,
 )
@@ -125,10 +127,32 @@ async def website_create(
     if not await websites_repo.validate(domain=website_in.domain):
         raise WebsiteDomainInvalid()
     new_site: Website = await websites_repo.create(website_in)
-    a_sitemap_url = new_site.get_link()
-    sitemap_task = task_website_sitemap_fetch_pages.delay(new_site.id, a_sitemap_url)
+    website_sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(
+        session=permissions.db
+    )
+    a_sitemap_base_url = new_site.get_link()
+    a_sitemap_url = "/"
+    a_sitemap: WebsiteMap | None = await website_sitemap_repo.exists_by_two(
+        field_name_a="url",
+        field_value_a=a_sitemap_url,
+        field_name_b="website_id",
+        field_value_b=new_site.id,
+    )
+    if a_sitemap is None:
+        a_sitemap = await website_sitemap_repo.create(
+            WebsiteMapCreate(
+                url=new_site.get_link(),
+                is_active=True,
+                website_id=new_site.id,
+            )
+        )
+    sitemap_task = task_website_sitemap_fetch_pages.delay(
+        new_site.id, a_sitemap.id, f"{a_sitemap_base_url}/"
+    )
     return WebsiteCreateProcessing(
-        website=WebsiteRead.model_validate(new_site), task_id=sitemap_task.task_id
+        website=WebsiteRead.model_validate(new_site),
+        sitemap=WebsiteMapRead.model_validate(a_sitemap),
+        task_id=sitemap_task.task_id,
     )
 
 

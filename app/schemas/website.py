@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import UUID4, BaseModel, field_validator
 
@@ -46,4 +46,4 @@ class WebsiteRead(WebsiteBase, BaseSchemaRead):
 # tasks
 class WebsiteCreateProcessing(BaseModel):
     website: WebsiteRead
-    task_id: UUID4
+    task_id: UUID4 | str | Any | None = None

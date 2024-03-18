@@ -75,7 +75,7 @@ class BaseRepository(
         self,
         entry: TABLE,
         schema: Union[SCHEMA_UPDATE, Any],
-    ) -> Optional[TABLE]:
+    ) -> TABLE:
         self._db.begin()
         for k, v in schema.model_dump(exclude_unset=True, exclude_none=True).items():
             setattr(entry, k, v)

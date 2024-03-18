@@ -13,7 +13,12 @@ from app.api.deps import (
     get_current_user,
     get_permission_controller,
 )
-from app.api.exceptions import ClientAlreadyExists
+from app.api.exceptions import (
+    ClientAlreadyExists,
+    ClientNotExists,
+    UserNotExists,
+    WebsiteNotExists,
+)
 from app.api.openapi import clients_read_responses
 from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
@@ -32,9 +37,22 @@ from app.core.security.permissions import (
     RoleManager,
     RoleUser,
 )
-from app.crud import ClientRepository
-from app.models import Client
-from app.schemas import ClientCreate, ClientDelete, ClientRead, ClientUpdate
+from app.crud import (
+    ClientRepository,
+    ClientWebsiteRepository,
+    UserClientRepository,
+    UserRepository,
+    WebsiteRepository,
+)
+from app.models import Client, ClientWebsite, User, UserClient, Website
+from app.schemas import (
+    ClientCreate,
+    ClientDelete,
+    ClientRead,
+    ClientUpdate,
+    ClientWebsiteCreate,
+    UserClientCreate,
+)
 from app.worker import task_request_to_delete_client
 
 router: APIRouter = APIRouter()
@@ -308,3 +326,288 @@ async def clients_delete(
             task_id=delete_client_task.task_id,
         )
     return client_delete
+
+
+# client relationships
+
+
+@router.post(
+    "/{client_id}/user",
+    name="clients:assign_user",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_client_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
+    ],
+    response_model=ClientRead,
+)
+async def clients_assign_user(
+    user_client_in: UserClientCreate,
+    client: Client = Permission([AccessUpdate], get_client_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> ClientRead:
+    """Assigns a user to a client.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : ...
+
+    Returns:
+    --------
+    `ClientRead` : the updated client
+
+    """
+    # verify the input schema is valid for the current user's role
+    permissions.verify_input_schema_by_role(
+        input_object=user_client_in,
+        schema_privileges={
+            RoleAdmin: UserClientCreate,
+            RoleManager: UserClientCreate,
+        },
+    )
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        client_id=client.id,
+    )
+    # check if client and user exists
+    if user_client_in.client_id != client.id:
+        raise ClientNotExists()
+    user_repo: UserRepository = UserRepository(session=permissions.db)
+    user_exists: User | None = await user_repo.read(entry_id=user_client_in.user_id)
+    if user_exists is None:
+        raise UserNotExists()
+    user_client_repo: UserClientRepository = UserClientRepository(
+        session=permissions.db
+    )
+    user_client_exists: UserClient | None = await user_client_repo.exists_by_two(
+        "user_id", user_client_in.user_id, "client_id", user_client_in.client_id
+    )
+    if user_client_exists is None:
+        user_client_exists = await user_client_repo.create(schema=user_client_in)
+    client_repo: ClientRepository = ClientRepository(session=permissions.db)
+    client_out: Client | None = await client_repo.read(user_client_exists.client_id)
+    # return role based response
+    response_out: ClientRead = permissions.get_resource_response(
+        resource=client_out if client_out else client,
+        responses={
+            RoleUser: ClientRead,
+        },
+    )
+    return response_out
+
+
+@router.delete(
+    "/{client_id}/user",
+    name="clients:remove_user",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_client_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
+    ],
+    response_model=ClientRead,
+)
+async def clients_remove_user(
+    user_client_in: UserClientCreate,
+    client: Client = Permission([AccessUpdate], get_client_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> ClientRead:
+    """Removes a user from a client.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : ...
+
+    Returns:
+    --------
+    `ClientRead` : the updated client
+
+    """
+    # verify the input schema is valid for the current user's role
+    permissions.verify_input_schema_by_role(
+        input_object=user_client_in,
+        schema_privileges={
+            RoleAdmin: UserClientCreate,
+            RoleManager: UserClientCreate,
+        },
+    )
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        client_id=client.id,
+    )
+    # check if client and user exists
+    if user_client_in.client_id != client.id:
+        raise ClientNotExists()
+    user_repo: UserRepository = UserRepository(session=permissions.db)
+    user_exists: User | None = await user_repo.read(entry_id=user_client_in.user_id)
+    if user_exists is None:
+        raise UserNotExists()
+    user_client_repo: UserClientRepository = UserClientRepository(
+        session=permissions.db
+    )
+    user_client_exists: UserClient | None = await user_client_repo.exists_by_two(
+        "user_id", user_client_in.user_id, "client_id", user_client_in.client_id
+    )
+    if user_client_exists is not None:
+        await user_client_repo.delete(user_client_exists)
+    # return role based response
+    response_out: ClientRead = permissions.get_resource_response(
+        resource=client,
+        responses={
+            RoleUser: ClientRead,
+        },
+    )
+    return response_out
+
+
+@router.post(
+    "/{client_id}/website",
+    name="clients:assign_website",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_client_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
+    ],
+    response_model=ClientRead,
+)
+async def clients_assign_website(
+    client_website_in: ClientWebsiteCreate,
+    client: Client = Permission([AccessUpdate], get_client_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> ClientRead:
+    """Assigns a website to a client.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : ...
+
+    Returns:
+    --------
+    `ClientRead` : the updated client
+
+    """
+    # verify the input schema is valid for the current user's role
+    permissions.verify_input_schema_by_role(
+        input_object=client_website_in,
+        schema_privileges={
+            RoleAdmin: ClientWebsiteCreate,
+            RoleManager: ClientWebsiteCreate,
+        },
+    )
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager], website_id=client_website_in.website_id
+    )
+    # check if client and user exists
+    if client_website_in.client_id != client.id:
+        raise ClientNotExists()
+    website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
+    website_exists: Website | None = await website_repo.read(
+        entry_id=client_website_in.website_id
+    )
+    if website_exists is None:
+        raise WebsiteNotExists()
+    client_website_repo: ClientWebsiteRepository = ClientWebsiteRepository(
+        session=permissions.db
+    )
+    client_website_exists: ClientWebsite | None = (
+        await client_website_repo.exists_by_two(
+            "website_id",
+            client_website_in.website_id,
+            "client_id",
+            client_website_in.client_id,
+        )
+    )
+    if client_website_exists is None:
+        client_website_exists = await client_website_repo.create(
+            schema=client_website_in
+        )
+    client_repo: ClientRepository = ClientRepository(session=permissions.db)
+    client_out: Client | None = await client_repo.read(client_website_exists.client_id)
+    # return role based response
+    response_out: ClientRead = permissions.get_resource_response(
+        resource=client_out if client_out else client,
+        responses={
+            RoleUser: ClientRead,
+        },
+    )
+    return response_out
+
+
+@router.delete(
+    "/{client_id}/website",
+    name="clients:remove_website",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_client_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
+    ],
+    response_model=ClientRead,
+)
+async def clients_remove_website(
+    client_website_in: ClientWebsiteCreate,
+    client: Client = Permission([AccessUpdate], get_client_or_404),
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> ClientRead:
+    """Removes a website from a client.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : ...
+
+    Returns:
+    --------
+    `ClientRead` : the updated client
+
+    """
+    # verify the input schema is valid for the current user's role
+    permissions.verify_input_schema_by_role(
+        input_object=client_website_in,
+        schema_privileges={
+            RoleAdmin: ClientWebsiteCreate,
+            RoleManager: ClientWebsiteCreate,
+        },
+    )
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager], website_id=client_website_in.website_id
+    )
+    # check if client and user exists
+    if client_website_in.client_id != client.id:
+        raise ClientNotExists()
+    website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
+    website_exists: Website | None = await website_repo.read(
+        entry_id=client_website_in.website_id
+    )
+    if website_exists is None:
+        raise WebsiteNotExists()
+    client_website_repo: ClientWebsiteRepository = ClientWebsiteRepository(
+        session=permissions.db
+    )
+    client_website_exists: ClientWebsite | None = (
+        await client_website_repo.exists_by_two(
+            "website_id",
+            client_website_in.website_id,
+            "client_id",
+            client_website_in.client_id,
+        )
+    )
+    if client_website_exists is not None:
+        await client_website_repo.delete(client_website_exists)
+    # return role based response
+    response_out: ClientRead = permissions.get_resource_response(
+        resource=client,
+        responses={
+            RoleUser: ClientRead,
+        },
+    )
+    return response_out

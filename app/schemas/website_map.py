@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 
 from pydantic import UUID4, BaseModel, field_validator
 from usp.objects.page import SITEMAP_PAGE_DEFAULT_PRIORITY  # type: ignore
@@ -9,6 +10,7 @@ from usp.objects.page import SitemapPageChangeFrequency
 
 from app.db.validators import validate_url_optional, validate_url_required
 from app.schemas.base import BaseSchema, BaseSchemaRead
+from app.schemas.website_page import WebsitePageRead
 
 
 # generics
@@ -61,10 +63,11 @@ class WebsiteMapRead(WebsiteMapBase, BaseSchemaRead):
 class WebsiteMapProcessing(BaseModel):
     url: str
     website_id: UUID4
-    task_id: str
+    task_id: UUID4 | str | Any | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_required)
 
 
 class WebsiteMapProcessedResult(WebsiteMapCreate):
-    website_map_pages: list[WebsiteMapPage]
+    sitemap_id: UUID4
+    website_map_pages: list[WebsitePageRead]

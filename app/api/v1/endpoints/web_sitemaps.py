@@ -324,7 +324,7 @@ async def sitemap_process_sitemap_pages(
         website_id=sitemap.website_id,
     )
     website_map_processing_pages: Any = task_website_sitemap_fetch_pages.delay(
-        website_id=sitemap.website_id, sitemap_url=sitemap.url
+        website_id=sitemap.website_id, sitemap_id=sitemap.id, sitemap_url=sitemap.url
     )
     return WebsiteMapProcessing(
         url=sitemap.url,

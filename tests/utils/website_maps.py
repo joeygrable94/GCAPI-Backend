@@ -40,6 +40,6 @@ async def create_random_website_map(
     else:
         domain = random_domain()
     website_map: WebsiteMap = await repo.create(
-        schema=WebsiteMapCreate(url=f"{domain}/sitemap.xml", website_id=website_id)
+        schema=WebsiteMapCreate(url=f"{domain}/", website_id=website_id)
     )
     return WebsiteMapRead.model_validate(website_map)

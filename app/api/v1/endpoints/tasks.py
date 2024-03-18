@@ -3,7 +3,7 @@ from typing import Any
 from celery.result import AsyncResult  # type: ignore
 from fastapi import APIRouter, Depends
 
-from app.api.deps import CurrentUser
+from app.api.deps import CurrentUser, get_current_user
 from app.core.security import auth
 from app.schemas import TaskState
 
@@ -13,7 +13,10 @@ router: APIRouter = APIRouter()
 @router.get(
     "/{task_id}",
     name="tasks:get_status",
-    dependencies=[Depends(auth.implicit_scheme)],
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_current_user),
+    ],
     response_model=TaskState,
 )
 def get_tasks_status(

@@ -27,7 +27,7 @@ async def test_create_website_as_superuser(
     assert entry["task_id"] is not None
     assert entry["website"]["domain"] == domain
     assert entry["website"]["is_secure"] == is_secure
-    task_id = entry["task_id"]
+    task_id = str(entry["task_id"])
     response: Response = await client.get(
         f"tasks/{task_id}",
         headers=admin_token_headers,
