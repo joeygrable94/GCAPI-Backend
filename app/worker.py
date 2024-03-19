@@ -19,7 +19,6 @@ from app.schemas import (
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsProcessing,
 )
-from app.schemas.website_page import WebsitePageRead
 from app.schemas.website_pagespeedinsights import PSIDevice
 
 celery_app: Celery = create_celery_worker()
@@ -92,19 +91,16 @@ async def task_website_sitemap_fetch_pages(
                 url=pg.url, priority=pg.priority, last_modified=pg.last_modified
             )
         )
-    website_map_pages: list[WebsitePageRead] = []
     for sm_page in sitemap_pages:
-        tmp_page: WebsitePageRead = await create_or_update_website_page(
+        await create_or_update_website_page(
             website_id=website_id,
             sitemap_id=website_id,
             page=sm_page,
         )
-        website_map_pages.append(tmp_page)
     return WebsiteMapProcessedResult(
         url=sitemap.url,
         website_id=website_id,
         sitemap_id=sitemap_id,
-        website_map_pages=website_map_pages,
     )
 
 
