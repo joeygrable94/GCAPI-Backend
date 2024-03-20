@@ -43,6 +43,4 @@ async def test_save_sitemap_pages(db_session: AsyncSession) -> None:
         "app.api.utilities.create_or_update_website_page"
     ) as mock_create_or_update_website_page:
         mock_create_or_update_website_page.return_value = None
-        webpages = await save_sitemap_pages(website.id, sitemap_url, sitemap_pages)
-        assert webpages is not None
-        assert len(webpages) == 4
+        await save_sitemap_pages(website.id, sitemap_url, sitemap_pages)

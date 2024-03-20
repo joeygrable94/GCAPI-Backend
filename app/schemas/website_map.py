@@ -62,6 +62,7 @@ class WebsiteMapRead(WebsiteMapBase, BaseSchemaRead):
 class WebsiteMapProcessing(BaseModel):
     url: str
     website_id: UUID4
+    sitemap_id: UUID4
     task_id: UUID4 | str | Any | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_required)

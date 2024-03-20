@@ -14,12 +14,12 @@ from app.core.config import settings
 from app.core.logger import logger
 from app.schemas import (
     PageSpeedInsightsDevice,
+    PSIDevice,
     WebsiteMapPage,
     WebsiteMapProcessedResult,
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsProcessing,
 )
-from app.schemas.website_pagespeedinsights import PSIDevice
 
 celery_app: Celery = create_celery_worker()
 sentry_client: Client | None = configure_monitoring()
@@ -80,8 +80,7 @@ async def task_website_sitemap_fetch_pages(
     sitemap_url: AnyHttpUrl,
 ) -> WebsiteMapProcessedResult:
     logger.info(
-        f"Fetching sitemap pages for website_id {website_id} \
-            from {sitemap_id} at {sitemap_url}"
+        f"Fetching sitemap pages for website_id {website_id} from {sitemap_id} at {sitemap_url}"  # noqa: E501
     )
     sitemap: AbstractSitemap = sitemap_tree_for_homepage(sitemap_url)
     sitemap_pages: List[WebsiteMapPage] = []

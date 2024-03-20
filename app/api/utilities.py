@@ -1,15 +1,17 @@
 import json
-from typing import List, Optional
+from typing import Any, List, Optional
 from urllib import request
 from urllib.parse import urlparse
 
 from pydantic import UUID4, AnyHttpUrl
+from sqlalchemy import Result, Select, and_, select as sql_select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.logger import logger
+from app.core.utilities.uuids import get_uuid
 from app.crud import WebsiteMapRepository, WebsitePageRepository
-from app.db.session import get_db_session
+from app.db.session import get_db_session, get_sync_db_session
 from app.models import WebsiteMap, WebsitePage
 from app.schemas import (
     PageSpeedInsightsDevice,
@@ -22,11 +24,80 @@ from app.schemas import (
 from app.schemas.website_page import WebsitePageRead
 
 
-async def create_or_update_website_page(
+def create_or_update_website_page_sync(
     website_id: UUID4,
     sitemap_id: UUID4,
     page: WebsiteMapPage,
 ) -> WebsitePageRead:
+    website_page: WebsitePage | None = None
+    # check website page status
+    status_code: int
+    parsed_url = urlparse(page.url)
+    req_status = request.urlopen(page.url)
+    if req_status is None:
+        status_code = 404
+    else:
+        status_code = req_status.getcode()
+    # check if page exists
+    with get_sync_db_session() as session:
+        session.begin_nested()
+        check_val_a: Any = getattr(WebsitePage, "url")
+        check_val_b: Any = getattr(WebsitePage, "website_id")
+        stmt: Select = sql_select(WebsitePage).where(  # type: ignore
+            and_(
+                check_val_a == parsed_url.path,
+                check_val_b == website_id,
+            )
+        )
+        results: Result = session.execute(stmt)
+        result_data = results.first()
+        if result_data is not None:
+            website_page = result_data[0]
+        else:
+            website_page = None
+        session.close()
+    # create or update page
+    with get_sync_db_session() as session:
+        session.begin_nested()
+        if website_page is None:
+            website_page = WebsitePage(
+                id=get_uuid(),
+                **WebsitePageCreate(
+                    url=parsed_url.path,
+                    status=status_code,
+                    priority=page.priority,
+                    last_modified=page.last_modified,
+                    change_frequency=page.change_frequency,
+                    website_id=website_id,
+                    sitemap_id=sitemap_id,
+                ).model_dump()
+            )
+        else:
+            for k, v in (
+                WebsitePageUpdate(
+                    url=parsed_url.path,
+                    status=status_code,
+                    priority=page.priority,
+                    last_modified=page.last_modified,
+                    change_frequency=page.change_frequency,
+                    website_id=website_id,
+                    sitemap_id=sitemap_id,
+                )
+                .model_dump(exclude_unset=True, exclude_none=True)
+                .items()
+            ):
+                setattr(website_page, k, v)
+        session.add(website_page)
+        session.commit()
+        session.close()
+    return WebsitePageRead.model_validate(website_page)
+
+
+async def create_or_update_website_page(
+    website_id: UUID4,
+    sitemap_id: UUID4,
+    page: WebsiteMapPage,
+) -> None:
     parsed_url = urlparse(page.url)
     req_status = request.urlopen(page.url)
     if req_status is None:
@@ -67,14 +138,14 @@ async def create_or_update_website_page(
                     sitemap_id=sitemap_id,
                 )
             )
-    return WebsitePageRead.model_validate(website_page)
+    return None
 
 
 async def save_sitemap_pages(
     website_id: UUID4,
     sitemap_url: AnyHttpUrl,
     sitemap_pages: List[WebsiteMapPage],
-) -> list[WebsitePageRead]:
+) -> None:
     session: AsyncSession
     sitemap: WebsiteMap | None
     async with get_db_session() as session:
@@ -91,11 +162,9 @@ async def save_sitemap_pages(
                 WebsiteMapCreate(url=parsed_url.path, website_id=website_id)
             )
     page: WebsiteMapPage
-    web_pages: list[WebsitePageRead] = []
     for page in sitemap_pages:
-        tmp_page = await create_or_update_website_page(website_id, sitemap.id, page)
-        web_pages.append(tmp_page)
-    return web_pages
+        await create_or_update_website_page(website_id, sitemap.id, page)
+    return None
 
 
 def fetch_pagespeedinsights(

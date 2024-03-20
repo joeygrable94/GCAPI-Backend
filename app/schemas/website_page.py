@@ -43,6 +43,7 @@ class WebsitePageUpdate(BaseSchema):
     last_modified: Optional[datetime] = None
     change_frequency: Optional[SitemapPageChangeFrequency] = None
     is_active: Optional[bool] = True
+    website_id: Optional[UUID4] = None
     sitemap_id: Optional[UUID4] = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_optional)

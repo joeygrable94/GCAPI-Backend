@@ -329,5 +329,6 @@ async def sitemap_process_sitemap_pages(
     return WebsiteMapProcessing(
         url=sitemap.url,
         website_id=sitemap.website_id,
+        sitemap_id=sitemap.id,
         task_id=website_map_processing_pages.task_id,
     )
