@@ -17,7 +17,6 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_create_website_page_as_superuser(
-    celery_worker: Any,
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
@@ -118,7 +117,6 @@ async def test_create_website_page_as_superuser_url_too_long(
 
 
 async def test_create_website_page_as_superuser_website_not_exists(
-    celery_worker: Any,
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],

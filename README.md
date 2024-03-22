@@ -45,7 +45,7 @@ Create a virtual environment, activate it, then install the backend python pip `
 
 ```bash
 main.py                 # Main entry point for the application
-worker.py               # Celery worker entry point
+broker.py               # Taskiq worker entry point
 cli/                    # Command line interface
     db.py                   # Manages database operations
     secure.py               # Manages secure cipher operations
@@ -61,7 +61,6 @@ core/                   # Core application code shared
         rate_limiter/           # Rate limiting protocols
         schemas.py              # Security models
     utilities/              # Core service layer utilities
-    celery.py               # Celery worker setting
     email.py                # FastAPI email service
     redis.py                # Redis connection settings
     templates.py            # Jinja2 templates
@@ -69,6 +68,7 @@ db/                     # Database operations layer
 crud/                   # CRUD Layer for data models
 models/                 # Database models
 schemas/                # Pydantic models for data validation
+tasks/                  # Taskiq task definitions
 api/                    # API Layer
     v1/endpoints/           # Version controlled endpoints
     deps/                   # Dependencies injected into endpoints

@@ -19,6 +19,11 @@ from app.main import create_app
 pytestmark = pytest.mark.asyncio
 
 
+@pytest.fixture
+def anyio_backend() -> str:
+    return "asyncio"
+
+
 @pytest.fixture(scope="session")
 def event_loop() -> Generator:
     try:
@@ -27,11 +32,6 @@ def event_loop() -> Generator:
         loop = asyncio.new_event_loop()
     yield loop
     loop.close()
-
-
-@pytest.fixture(scope="session")
-def celery_config() -> Any:
-    return {"broker_url": "memory://", "result_backend": "rpc"}
 
 
 @pytest.fixture(scope="session")

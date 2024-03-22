@@ -6,10 +6,10 @@ from app.core.config import settings
 def configure_monitoring() -> Client | None:
     sentry_client: Client | None = None
     if (
-        settings.celery.sentry_dsn and settings.api.mode == "prodcution"
+        settings.worker.sentry_dsn and settings.api.mode == "prodcution"
     ):  # pragma: no cover
         sentry_client = init(
-            settings.celery.sentry_dsn,
+            settings.worker.sentry_dsn,
             # Set traces_sample_rate to 1.0 to capture 100%
             # of transactions for performance monitoring.
             traces_sample_rate=1.0,

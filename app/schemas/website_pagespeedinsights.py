@@ -87,8 +87,8 @@ class WebsitePageSpeedInsightsBase(BaseSchema):
 
 
 class WebsitePageSpeedInsightsProcessing(BaseModel):
-    website_id: UUID4
-    page_id: UUID4
+    website_id: str
+    page_id: str
     insights: Optional[WebsitePageSpeedInsightsBase] = None
 
 

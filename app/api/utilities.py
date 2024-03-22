@@ -1,103 +1,32 @@
 import json
-from typing import Any, List, Optional
+from typing import Optional
 from urllib import request
 from urllib.parse import urlparse
 
-from pydantic import UUID4, AnyHttpUrl
-from sqlalchemy import Result, Select, and_, select as sql_select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.logger import logger
-from app.core.utilities.uuids import get_uuid
-from app.crud import WebsiteMapRepository, WebsitePageRepository
-from app.db.session import get_db_session, get_sync_db_session
-from app.models import WebsiteMap, WebsitePage
+from app.core.utilities import parse_id
+from app.crud import WebsitePageRepository
+from app.db.session import get_db_session
+from app.models import WebsitePage
 from app.schemas import (
     PageSpeedInsightsDevice,
-    WebsiteMapCreate,
     WebsiteMapPage,
     WebsitePageCreate,
     WebsitePageSpeedInsightsBase,
     WebsitePageUpdate,
 )
-from app.schemas.website_page import WebsitePageRead
-
-
-def create_or_update_website_page_sync(
-    website_id: UUID4,
-    sitemap_id: UUID4,
-    page: WebsiteMapPage,
-) -> WebsitePageRead:
-    website_page: WebsitePage | None = None
-    # check website page status
-    status_code: int
-    parsed_url = urlparse(page.url)
-    req_status = request.urlopen(page.url)
-    if req_status is None:
-        status_code = 404
-    else:
-        status_code = req_status.getcode()
-    # check if page exists
-    with get_sync_db_session() as session:
-        session.begin_nested()
-        check_val_a: Any = getattr(WebsitePage, "url")
-        check_val_b: Any = getattr(WebsitePage, "website_id")
-        stmt: Select = sql_select(WebsitePage).where(  # type: ignore
-            and_(
-                check_val_a == parsed_url.path,
-                check_val_b == website_id,
-            )
-        )
-        results: Result = session.execute(stmt)
-        result_data = results.first()
-        if result_data is not None:
-            website_page = result_data[0]
-        else:
-            website_page = None
-        session.close()
-    # create or update page
-    with get_sync_db_session() as session:
-        session.begin_nested()
-        if website_page is None:
-            website_page = WebsitePage(
-                id=get_uuid(),
-                **WebsitePageCreate(
-                    url=parsed_url.path,
-                    status=status_code,
-                    priority=page.priority,
-                    last_modified=page.last_modified,
-                    change_frequency=page.change_frequency,
-                    website_id=website_id,
-                    sitemap_id=sitemap_id,
-                ).model_dump()
-            )
-        else:
-            for k, v in (
-                WebsitePageUpdate(
-                    url=parsed_url.path,
-                    status=status_code,
-                    priority=page.priority,
-                    last_modified=page.last_modified,
-                    change_frequency=page.change_frequency,
-                    website_id=website_id,
-                    sitemap_id=sitemap_id,
-                )
-                .model_dump(exclude_unset=True, exclude_none=True)
-                .items()
-            ):
-                setattr(website_page, k, v)
-        session.add(website_page)
-        session.commit()
-        session.close()
-    return WebsitePageRead.model_validate(website_page)
 
 
 async def create_or_update_website_page(
-    website_id: UUID4,
-    sitemap_id: UUID4,
+    website_id: str,
+    sitemap_id: str,
     page: WebsiteMapPage,
 ) -> None:
+    website_uuid = parse_id(website_id)
+    sitemap_uuid = parse_id(sitemap_id)
     parsed_url = urlparse(page.url)
     req_status = request.urlopen(page.url)
     if req_status is None:
@@ -112,7 +41,7 @@ async def create_or_update_website_page(
             field_name_a="url",
             field_value_a=parsed_url.path,
             field_name_b="website_id",
-            field_value_b=website_id,
+            field_value_b=website_uuid,
         )
         if website_page is not None:
             website_page = await pages_repo.update(
@@ -123,7 +52,6 @@ async def create_or_update_website_page(
                     priority=page.priority,
                     last_modified=page.last_modified,
                     change_frequency=page.change_frequency,
-                    sitemap_id=sitemap_id,
                 ),
             )
         else:
@@ -134,41 +62,15 @@ async def create_or_update_website_page(
                     priority=page.priority,
                     last_modified=page.last_modified,
                     change_frequency=page.change_frequency,
-                    website_id=website_id,
-                    sitemap_id=sitemap_id,
+                    website_id=website_uuid,
+                    sitemap_id=sitemap_uuid,
                 )
             )
     return None
 
 
-async def save_sitemap_pages(
-    website_id: UUID4,
-    sitemap_url: AnyHttpUrl,
-    sitemap_pages: List[WebsiteMapPage],
-) -> None:
-    session: AsyncSession
-    sitemap: WebsiteMap | None
-    async with get_db_session() as session:
-        parsed_url = urlparse(url=str(sitemap_url))
-        sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session)
-        sitemap = await sitemap_repo.exists_by_two(
-            field_name_a="url",
-            field_value_a=parsed_url.path,
-            field_name_b="website_id",
-            field_value_b=website_id,
-        )
-        if sitemap is None:
-            sitemap = await sitemap_repo.create(
-                WebsiteMapCreate(url=parsed_url.path, website_id=website_id)
-            )
-    page: WebsiteMapPage
-    for page in sitemap_pages:
-        await create_or_update_website_page(website_id, sitemap.id, page)
-    return None
-
-
 def fetch_pagespeedinsights(
-    fetch_url: AnyHttpUrl, device: PageSpeedInsightsDevice
+    fetch_url: str, device: PageSpeedInsightsDevice
 ) -> Optional[WebsitePageSpeedInsightsBase]:
     try:
         api_key: Optional[str] = settings.cloud.googleapi

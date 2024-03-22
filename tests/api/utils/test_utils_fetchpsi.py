@@ -2,15 +2,13 @@ import json
 from typing import Any, Dict
 from unittest.mock import MagicMock, patch
 
-from pydantic import AnyHttpUrl
-
 from app.api.utilities import fetch_pagespeedinsights
 from app.core.config import settings
 from app.schemas import PageSpeedInsightsDevice
 
 
 def test_fetch_pagespeedinsights(mock_fetch_psi: Dict[str, Any]) -> None:
-    fetch_url: AnyHttpUrl = "https://getcommunity.com"  # type: ignore
+    fetch_url: str = "https://getcommunity.com"  # type: ignore
     strategy: PageSpeedInsightsDevice = PageSpeedInsightsDevice(device="mobile")
     api_key: str | None = settings.cloud.googleapi
     if api_key is None:

@@ -1,5 +1,5 @@
-from contextlib import asynccontextmanager, contextmanager
-from typing import Any, AsyncGenerator, Generator
+from contextlib import asynccontextmanager
+from typing import Any, AsyncGenerator
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
@@ -49,17 +49,3 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, Any]:
             raise
         finally:
             await session.close()
-
-
-@contextmanager
-def get_sync_db_session() -> Generator[Session, None, None]:
-    with session() as s:
-        try:
-            s.begin()
-            yield s
-        except Exception as e:  # pragma: no cover
-            logger.warning(e)
-            s.rollback()
-            raise
-        finally:
-            s.close()

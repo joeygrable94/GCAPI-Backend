@@ -8,18 +8,18 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 load_dotenv()
 
 
-class CelerySettings(BaseSettings):
-    broker_url: str = environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+class WorkerSettings(BaseSettings):
+    broker_url: str = environ.get("WORKER_BROKER_URL", "redis://localhost:6379/0")
     result_backend: str = environ.get(
-        "CELERY_RESULT_BACKEND", "redis://localhost:6379/0"
+        "WORKER_RESULT_BACKEND", "redis://localhost:6379/0"
     )
-    sentry_dsn: Optional[str] = environ.get("CELERY_SENTRY_DSN", None)
+    sentry_dsn: Optional[str] = environ.get("WORKER_SENTRY_DSN", None)
 
     # pydantic settings config
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        env_prefix="CELERY_",
+        env_prefix="WORKER_",
         case_sensitive=False,
         extra="ignore",
     )

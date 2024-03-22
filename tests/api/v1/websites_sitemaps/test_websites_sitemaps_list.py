@@ -22,9 +22,9 @@ async def test_list_all_website_sitemaps_as_superuser(
     assert 200 <= response.status_code < 300
     data: Any = response.json()
     assert data["page"] == 1
-    assert data["total"] == 98
+    assert data["total"] == 97
     assert data["size"] == 1000
-    assert len(data["results"]) == 98
+    assert len(data["results"]) == 97
     for entry in data["results"]:
         assert "url" in entry
         assert "website_id" in entry

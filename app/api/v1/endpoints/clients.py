@@ -1,7 +1,8 @@
-from typing import Any, Dict
+from typing import Dict
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import Select
+from taskiq import AsyncTaskiqTask
 
 from app.api.deps import (
     CommonUserQueryParams,
@@ -53,7 +54,7 @@ from app.schemas import (
     ClientWebsiteCreate,
     UserClientCreate,
 )
-from app.worker import task_request_to_delete_client
+from app.tasks import task_request_to_delete_client
 
 router: APIRouter = APIRouter()
 
@@ -316,8 +317,8 @@ async def clients_delete(
             client_id=client.id,
         )
     else:  # TODO: test
-        delete_client_task: Any = task_request_to_delete_client.delay(
-            user_id=permissions.current_user.id, client_id=client.id
+        delete_client_task: AsyncTaskiqTask = await task_request_to_delete_client.kiq(
+            user_id=str(permissions.current_user.id), client_id=str(client.id)
         )
         client_delete = ClientDelete(
             message="Client requested to be deleted",

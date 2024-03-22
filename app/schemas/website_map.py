@@ -69,4 +69,4 @@ class WebsiteMapProcessing(BaseModel):
 
 
 class WebsiteMapProcessedResult(WebsiteMapCreate):
-    sitemap_id: UUID4
+    sitemap_id: str

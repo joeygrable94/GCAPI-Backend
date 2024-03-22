@@ -10,7 +10,6 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_create_website_as_superuser(
-    celery_worker: Any,
     client: AsyncClient,
     admin_token_headers: Dict[str, str],
 ) -> None:
@@ -34,11 +33,10 @@ async def test_create_website_as_superuser(
     )
     response_json = response.json()
     assert response.status_code == 200
-    assert response_json == {
-        "task_id": task_id,
-        "task_status": "PENDING",
-        "task_result": None,
-    }
+    assert response_json["task_id"] == task_id
+    assert response_json["task_status"] == "PENDING"
+    assert response_json["task_result"] is None
+    assert isinstance(response_json["task_time"], float)
 
 
 async def test_create_website_as_superuser_website_already_exists(

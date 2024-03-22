@@ -1,7 +1,6 @@
-from typing import Any
-
 from fastapi import APIRouter, Depends
 from sqlalchemy import Select
+from taskiq import AsyncTaskiqTask
 
 from app.api.deps import (
     CommonWebsiteMapQueryParams,
@@ -32,7 +31,7 @@ from app.schemas import (
     WebsiteMapRead,
     WebsiteMapUpdate,
 )
-from app.worker import task_website_sitemap_fetch_pages
+from app.tasks import task_website_sitemap_fetch_pages
 
 router: APIRouter = APIRouter()
 
@@ -323,8 +322,13 @@ async def sitemap_process_sitemap_pages(
         privileges=[RoleAdmin, RoleManager],
         website_id=sitemap.website_id,
     )
-    website_map_processing_pages: Any = task_website_sitemap_fetch_pages.delay(
-        website_id=sitemap.website_id, sitemap_id=sitemap.id, sitemap_url=sitemap.url
+    # Send the task to the broker.
+    website_map_processing_pages: AsyncTaskiqTask = (
+        await task_website_sitemap_fetch_pages.kiq(
+            website_id=str(sitemap.website_id),
+            sitemap_id=str(sitemap.id),
+            sitemap_url=str(sitemap.url),
+        )
     )
     return WebsiteMapProcessing(
         url=sitemap.url,

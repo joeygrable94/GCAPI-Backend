@@ -1,6 +1,5 @@
-from typing import Any
-
 from fastapi import APIRouter, Depends, Request
+from taskiq import AsyncTaskiqTask
 
 from app.api.deps import (
     Permission,
@@ -43,7 +42,7 @@ from app.schemas import (
     UserUpdateAsManager,
     UserUpdatePrivileges,
 )
-from app.worker import task_request_to_delete_user
+from app.tasks import task_request_to_delete_user
 
 router: APIRouter = APIRouter()
 
@@ -316,7 +315,9 @@ async def users_delete(
     await permissions.verify_user_can_access(privileges=[RoleAdmin], user_id=user.id)
     user_delete: UserDelete
     if permissions.current_user.id == user.id:
-        delete_user_task: Any = task_request_to_delete_user.delay(user_id=user.id)
+        delete_user_task: AsyncTaskiqTask = await task_request_to_delete_user.kiq(
+            user_id=str(user.id)
+        )
         user_delete = UserDelete(
             message="User requested to be deleted",
             user_id=user.id,

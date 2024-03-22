@@ -5,11 +5,11 @@ from pydantic_settings import BaseSettings
 
 from .api import ApiSettings
 from .auth import AuthSettings
-from .celery import CelerySettings
 from .cloud import CloudKeySettings
 from .database import DatabaseSettings
 from .mail import EmailSettings
 from .redis import RedisSettings
+from .worker import WorkerSettings
 
 load_dotenv()
 
@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     db: DatabaseSettings
     email: EmailSettings
     redis: RedisSettings
-    celery: CelerySettings
+    worker: WorkerSettings
     cloud: CloudKeySettings
 
 
@@ -32,7 +32,7 @@ def get_settings() -> Settings:
         db=DatabaseSettings(),
         email=EmailSettings(),
         redis=RedisSettings(),
-        celery=CelerySettings(),
+        worker=WorkerSettings(),
         cloud=CloudKeySettings(),
     )
 

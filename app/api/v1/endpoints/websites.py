@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import Select
+from taskiq import AsyncTaskiqTask
 
 from app.api.deps import (
     CommonClientWebsiteQueryParams,
@@ -32,7 +33,7 @@ from app.schemas import (
     WebsiteRead,
     WebsiteUpdate,
 )
-from app.worker import task_website_sitemap_fetch_pages
+from app.tasks import task_website_sitemap_fetch_pages
 
 router: APIRouter = APIRouter()
 
@@ -146,8 +147,11 @@ async def website_create(
                 website_id=new_site.id,
             )
         )
-    sitemap_task = task_website_sitemap_fetch_pages.delay(
-        new_site.id, a_sitemap.id, f"{a_sitemap_base_url}/"
+    # send task to fetch sitemap pages to broker
+    sitemap_task: AsyncTaskiqTask = await task_website_sitemap_fetch_pages.kiq(
+        website_id=str(new_site.id),
+        sitemap_id=str(a_sitemap.id),
+        sitemap_url=f"{a_sitemap_base_url}/",
     )
     return WebsiteCreateProcessing(
         website=WebsiteRead.model_validate(new_site),
