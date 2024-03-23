@@ -19,6 +19,8 @@ jobs:
         python-version: ["3.11"]
         redis-version: ["7"]
     env:
+      API_MODE: "test"
+      ENVIRONMENT: "pytest"
       API_CSRF_KEY: ${{ secrets.API_CSRF_KEY }}
       API_ENCRYPTION_KEY: ${{ secrets.API_ENCRYPTION_KEY }}
       API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
