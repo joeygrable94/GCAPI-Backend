@@ -22,9 +22,9 @@ async def test_list_all_website_sitemaps_as_superuser(
     assert 200 <= response.status_code < 300
     data: Any = response.json()
     assert data["page"] == 1
-    assert data["total"] == 97
+    assert data["total"] == 99
     assert data["size"] == 1000
-    assert len(data["results"]) == 97
+    assert len(data["results"]) == 99
     for entry in data["results"]:
         assert "url" in entry
         assert "website_id" in entry
@@ -96,3 +96,17 @@ async def test_list_website_sitemaps_as_superuser_by_website_id(
             assert entry["url"] == entry_5.url
             assert entry["is_active"] == entry_5.is_active
             assert entry["website_id"] == str(entry_5.website_id)
+
+
+async def test_list_all_website_sitemaps_as_employee(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    employee_token_headers: Dict[str, str],
+) -> None:
+    response: Response = await client.get("sitemaps/", headers=employee_token_headers)
+    assert 200 <= response.status_code < 300
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 0
+    assert data["size"] == 1000
+    assert len(data["results"]) == 0

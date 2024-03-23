@@ -23,9 +23,9 @@ async def test_list_all_website_pages_as_superuser(
     assert 200 <= response.status_code < 300
     data: Any = response.json()
     assert data["page"] == 1
-    assert data["total"] == 25
+    assert data["total"] == 27
     assert data["size"] == 1000
-    assert len(data["results"]) == 25
+    assert len(data["results"]) == 27
     for entry in data["results"]:
         assert "url" in entry
         assert "status" in entry
@@ -268,3 +268,17 @@ async def test_list_website_pages_as_superuser_by_sitemap_id(
             assert entry["priority"] == entry_6.priority
             assert entry["website_id"] == str(entry_6.website_id)
             assert entry["sitemap_id"] == str(entry_6.sitemap_id)
+
+
+async def test_list_all_website_pages_as_employee(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    employee_token_headers: Dict[str, str],
+) -> None:
+    response: Response = await client.get("webpages/", headers=employee_token_headers)
+    assert 200 <= response.status_code < 300
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 0
+    assert data["size"] == 1000
+    assert len(data["results"]) == 0

@@ -1054,3 +1054,17 @@ async def test_list_website_pagespeedinsights_as_superuser_by_devices_all(
             assert entry["strategy"] == entry_10.strategy
             assert entry["page_id"] == entry_10.page_id
             assert entry["website_id"] == entry_10.website_id
+
+
+async def test_list_all_website_pagespeedinsights_as_employee(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    employee_token_headers: Dict[str, str],
+) -> None:
+    response: Response = await client.get("psi/", headers=employee_token_headers)
+    assert 200 <= response.status_code < 300
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 0
+    assert data["size"] == 1000
+    assert len(data["results"]) == 0

@@ -14,7 +14,7 @@ from app.schemas.website_page import WebsitePageRead
 pytestmark = pytest.mark.asyncio
 
 
-async def test_list_all_website_page_kwc_as_admin(
+async def test_list_all_website_page_kwc_as_superadmin(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
@@ -235,3 +235,17 @@ async def test_list_all_website_page_kwc_as_admin_by_page_id(
         if entry["id"] == str(entry_1.id):
             assert entry["corpus"] == entry_1.corpus
             assert entry["rawtext"] == entry_1.rawtext
+
+
+async def test_list_all_website_page_kwc_as_employee(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    employee_token_headers: Dict[str, str],
+) -> None:
+    response: Response = await client.get("kwc/", headers=employee_token_headers)
+    assert 200 <= response.status_code < 300
+    data: Any = response.json()
+    assert data["page"] == 1
+    assert data["total"] == 0
+    assert data["size"] == 1000
+    assert len(data["results"]) == 0
