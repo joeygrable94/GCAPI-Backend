@@ -19,14 +19,8 @@ class WebsiteBase(BaseSchema):
     )
 
 
-class WebsiteCreate(BaseSchema):
-    domain: str
-    is_secure: bool = False
-    is_active: bool = True
-
-    _validate_domain = field_validator("domain", mode="before")(
-        validate_domain_required
-    )
+class WebsiteCreate(WebsiteBase):
+    pass
 
 
 class WebsiteUpdate(BaseSchema):

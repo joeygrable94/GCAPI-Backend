@@ -4,7 +4,11 @@ from typing import List, Optional
 from usp.tree import AbstractSitemap  # type: ignore
 from usp.tree import sitemap_tree_for_homepage  # type: ignore
 
-from app.api.utilities import create_or_update_website_page, fetch_pagespeedinsights
+from app.api.utilities import (
+    create_or_update_website_page,
+    create_website_pagespeedinsights,
+    fetch_pagespeedinsights,
+)
 from app.broker import broker
 from app.core.logger import logger
 from app.schemas import (
@@ -48,7 +52,7 @@ async def task_website_sitemap_fetch_pages(
 
 
 @broker.task(task_name="webpages:task_website_page_pagespeedinsights_fetch")
-def task_website_page_pagespeedinsights_fetch(
+async def task_website_page_pagespeedinsights_fetch(
     website_id: str,
     page_id: str,
     fetch_url: str,
@@ -62,6 +66,12 @@ def task_website_page_pagespeedinsights_fetch(
         fetch_url=fetch_url,
         device=PageSpeedInsightsDevice(device=device),
     )
+    if insights is not None:
+        await create_website_pagespeedinsights(
+            website_id=website_id,
+            page_id=page_id,
+            insights=insights,
+        )
     return WebsitePageSpeedInsightsProcessing(
         website_id=website_id,
         page_id=page_id,

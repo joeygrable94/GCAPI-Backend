@@ -37,6 +37,11 @@ class ClientNotExists(ApiException):
         super().__init__(status.HTTP_404_NOT_FOUND, message)
 
 
+class ClientRelationshipNotExists(ApiException):
+    def __init__(self, message: str = ErrorCode.CLIENT_RELATIONSHOP_NOT_FOUND):
+        super().__init__(status.HTTP_404_NOT_FOUND, message)
+
+
 # Notes
 class NoteAlreadyExists(ApiException):
     def __init__(self, message: str = ErrorCode.NOTE_EXISTS):

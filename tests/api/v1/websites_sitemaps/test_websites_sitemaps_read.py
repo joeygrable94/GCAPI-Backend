@@ -40,6 +40,7 @@ async def test_read_website_sitemaps_by_id_as_superuser(
 
 async def test_read_website_sitemaps_by_id_as_superuser_page_not_found(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     entry_id: str = get_uuid_str()

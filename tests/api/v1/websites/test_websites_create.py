@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 import pytest
 from httpx import AsyncClient, Response
+from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_boolean, random_domain
 
 from app.api.exceptions import ErrorCode
@@ -11,6 +12,7 @@ pytestmark = pytest.mark.asyncio
 
 async def test_create_website_as_superuser(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = "joeygrable.com"
@@ -41,6 +43,7 @@ async def test_create_website_as_superuser(
 
 async def test_create_website_as_superuser_website_already_exists(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = "oceanbrightconsulting.com"
@@ -70,6 +73,7 @@ async def test_create_website_as_superuser_website_already_exists(
 
 async def test_create_website_as_superuser_domain_invalid(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     bad_domain: str = random_domain(16, "co")
@@ -87,6 +91,7 @@ async def test_create_website_as_superuser_domain_invalid(
 
 async def test_create_website_as_superuser_domain_too_short(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = random_domain(1, "co")
@@ -106,6 +111,7 @@ async def test_create_website_as_superuser_domain_too_short(
 
 async def test_create_website_as_superuser_domain_too_long(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = random_domain(255, "com")
@@ -126,6 +132,7 @@ async def test_create_website_as_superuser_domain_too_long(
 
 async def test_create_website_as_superuser_domain_is_not_valid_domain(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = "https://" + random_domain(3, "pub")

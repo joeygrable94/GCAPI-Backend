@@ -7,15 +7,15 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 
 # schemas
 class UserClientBase(BaseSchema):
-    pass
-
-
-class UserClientCreate(UserClientBase):
     user_id: UUID4
     client_id: UUID4
 
 
-class UserClientUpdate(UserClientBase):
+class UserClientCreate(UserClientBase):
+    pass
+
+
+class UserClientUpdate(BaseSchema):
     user_id: Optional[UUID4] = None
     client_id: Optional[UUID4] = None
 

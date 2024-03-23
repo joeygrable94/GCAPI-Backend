@@ -23,9 +23,9 @@ async def test_list_all_website_pages_as_superuser(
     assert 200 <= response.status_code < 300
     data: Any = response.json()
     assert data["page"] == 1
-    assert data["total"] == 27
+    assert data["total"] == 2
     assert data["size"] == 1000
-    assert len(data["results"]) == 27
+    assert len(data["results"]) == 2
     for entry in data["results"]:
         assert "url" in entry
         assert "status" in entry

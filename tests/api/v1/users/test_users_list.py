@@ -1,14 +1,8 @@
-# from typing import Any, Dict, List
 from typing import Any, Dict
 
 import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
-
-# from app.schemas import UserRead, ClientRead
-
-# from tests.utils.clients import create_random_client
-
 
 pytestmark = pytest.mark.asyncio
 
@@ -25,9 +19,9 @@ async def test_list_all_users_as_admin(
     data = response.json()
     assert 200 <= response.status_code < 300
     assert data["page"] == 1
-    assert data["total"] == 10
+    assert data["total"] == 7
     assert data["size"] == 1000
-    assert len(data["results"]) == 10
+    assert len(data["results"]) == 7
     for entry in data["results"]:
         assert "id" in entry
         assert "auth_id" in entry
@@ -50,9 +44,9 @@ async def test_list_all_users_as_manager(
     data = response.json()
     assert 200 <= response.status_code < 300
     assert data["page"] == 1
-    assert data["total"] == 10
+    assert data["total"] == 7
     assert data["size"] == 1000
-    assert len(data["results"]) == 10
+    assert len(data["results"]) == 7
     for entry in data["results"]:
         assert "id" in entry
         assert "auth_id" in entry

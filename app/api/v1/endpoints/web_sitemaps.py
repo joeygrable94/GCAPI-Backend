@@ -73,7 +73,7 @@ async def sitemap_list(
         select_stmt = sitemap_repo.query_list(
             website_id=query.website_id,
         )
-    else:  # TODO: test
+    else:
         select_stmt = sitemap_repo.query_list(
             user_id=permissions.current_user.id,
             website_id=query.website_id,

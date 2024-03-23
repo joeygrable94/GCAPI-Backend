@@ -72,7 +72,7 @@ async def website_list(
     select_stmt: Select
     if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
         select_stmt = websites_repo.query_list(client_id=query.client_id)
-    else:  # TODO: test
+    else:
         select_stmt = websites_repo.query_list(
             client_id=query.client_id, user_id=permissions.current_user.id
         )

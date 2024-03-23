@@ -23,9 +23,9 @@ async def test_list_all_websites_as_superuser(
     assert 200 <= response.status_code < 300
     data: Any = response.json()
     assert data["page"] == 1
-    assert data["total"] == 12
+    assert data["total"] == 1
     assert data["size"] == 1000
-    assert len(data["results"]) == 12
+    assert len(data["results"]) == 1
     for entry in data["results"]:
         if entry["id"] == str(entry_1.id):
             assert entry["domain"] == entry_1.domain
@@ -39,6 +39,7 @@ async def test_list_websites_by_client_id_as_superuser(
 ) -> None:
     # 1 make a client
     client_a: ClientRead = await create_random_client(db_session)
+    client_b: ClientRead = await create_random_client(db_session)
     # 2 make a website
     website_a: WebsiteRead = await create_random_website(db_session)
     website_b: WebsiteRead = await create_random_website(db_session)
@@ -49,15 +50,20 @@ async def test_list_websites_by_client_id_as_superuser(
     client_website_b: ClientWebsite = await assign_website_to_client(  # noqa: F841
         db_session, website_b, client_a
     )
+    client_website_c: ClientWebsite = await assign_website_to_client(  # noqa: F841
+        db_session, website_b, client_b
+    )
     # 4 list websites by client id
-    response: Response = await client.get("websites/", headers=admin_token_headers)
+    response: Response = await client.get(
+        "websites/", params={"client_id": str(client_a.id)}, headers=admin_token_headers
+    )
     assert 200 <= response.status_code < 300
     # 5 assert website is in list
     data: Any = response.json()
     assert data["page"] == 1
-    assert data["total"] == 14
+    assert data["total"] == 2
     assert data["size"] == 1000
-    assert len(data["results"]) == 14
+    assert len(data["results"]) == 2
     for entry in data["results"]:
         if entry["id"] == str(website_a.id):
             assert entry["domain"] == website_a.domain

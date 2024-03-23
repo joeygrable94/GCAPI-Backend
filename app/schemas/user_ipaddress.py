@@ -7,15 +7,15 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 
 # schemas
 class UserIpaddressBase(BaseSchema):
-    pass
-
-
-class UserIpaddressCreate(UserIpaddressBase):
     user_id: UUID4
     ipaddress_id: UUID4
 
 
-class UserIpaddressUpdate(UserIpaddressBase):
+class UserIpaddressCreate(UserIpaddressBase):
+    pass
+
+
+class UserIpaddressUpdate(BaseSchema):
     user_id: Optional[UUID4] = None
     ipaddress_id: Optional[UUID4] = None
 

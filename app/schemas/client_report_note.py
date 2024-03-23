@@ -7,15 +7,15 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 
 # schemas
 class ClientReportNoteBase(BaseSchema):
-    pass
-
-
-class ClientReportNoteCreate(ClientReportNoteBase):
     client_report_id: UUID4
     note_id: UUID4
 
 
-class ClientReportNoteUpdate(ClientReportNoteBase):
+class ClientReportNoteCreate(ClientReportNoteBase):
+    pass
+
+
+class ClientReportNoteUpdate(BaseSchema):
     client_report_id: Optional[UUID4] = None
     note_id: Optional[UUID4] = None
 

@@ -29,9 +29,9 @@ async def test_list_all_notes_as_superuser(
     assert 200 <= response.status_code < 300
     data: Any = response.json()
     assert data["page"] == 1
-    assert data["total"] == 6
+    assert data["total"] == 4
     assert data["size"] == 1000
-    assert len(data["results"]) == 6
+    assert len(data["results"]) == 4
     for entry in data["results"]:
         if entry["id"] == str(entry_1.id):
             assert entry["title"] == entry_1.title

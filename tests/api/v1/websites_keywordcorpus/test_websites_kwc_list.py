@@ -42,9 +42,9 @@ async def test_list_all_website_page_kwc_as_superadmin(
     assert 200 <= response.status_code < 300
     data: Any = response.json()
     assert data["page"] == 1
-    assert data["total"] == 4
+    assert data["total"] == 3
     assert data["size"] == 1000
-    assert len(data["results"]) == 4
+    assert len(data["results"]) == 3
     for entry in data["results"]:
         assert "corpus" in entry
         assert "rawtext" in entry

@@ -29,9 +29,9 @@ async def test_list_all_website_pagespeedinsights_as_superuser(
     assert 200 <= response.status_code < 300
     data: Any = response.json()
     assert data["page"] == 1
-    assert data["total"] == 4
+    assert data["total"] == 2
     assert data["size"] == 1000
-    assert len(data["results"]) == 4
+    assert len(data["results"]) == 2
     for entry in data["results"]:
         if entry["id"] == entry_1.id:
             assert entry["strategy"] == entry_1.strategy
@@ -1018,9 +1018,9 @@ async def test_list_website_pagespeedinsights_as_superuser_by_devices_all(
     assert 200 <= response.status_code < 300
     data: Any = response.json()
     assert data["page"] == 1
-    assert data["total"] == 94
+    assert data["total"] == 10
     assert data["size"] == 1000
-    assert len(data["results"]) == 94
+    assert len(data["results"]) == 10
     for entry in data["results"]:
         if entry["id"] == entry_3.id:
             assert entry["strategy"] == entry_3.strategy

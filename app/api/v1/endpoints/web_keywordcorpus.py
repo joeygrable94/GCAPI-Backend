@@ -78,7 +78,7 @@ async def website_page_keyword_corpus_list(
             website_id=query.website_id,
             page_id=query.page_id,
         )
-    else:  # TODO: test
+    else:
         select_stmt = web_kwc_repo.query_list(
             user_id=permissions.current_user.id,
             website_id=query.website_id,
@@ -141,11 +141,11 @@ async def website_page_keyword_corpus_create(
     # check if website exists
     website_repo: WebsiteRepository = WebsiteRepository(permissions.db)
     a_website: Website | None = await website_repo.read(entry_id=kwc_in.website_id)
-    if a_website is None:  # TODO: test
+    if a_website is None:
         raise WebsiteNotExists()
     web_page_repo: WebsitePageRepository = WebsitePageRepository(permissions.db)
     a_web_page: WebsitePage | None = await web_page_repo.read(entry_id=kwc_in.page_id)
-    if a_web_page is None:  # TODO: test
+    if a_web_page is None:
         raise WebsitePageNotExists()
     # create website keyword corpus
     web_kwc_repo: WebsiteKeywordCorpusRepository

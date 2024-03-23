@@ -25,7 +25,7 @@ class WebsiteMapRepository(
         # create conditions
         conditions: List[BinaryExpression[bool]] = []
         # append conditions
-        if user_id:  # TODO: test
+        if user_id:
             stmt = (
                 stmt.join(Website, self._table.website_id == Website.id)
                 .join(ClientWebsite, Website.id == ClientWebsite.website_id)

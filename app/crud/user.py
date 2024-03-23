@@ -66,7 +66,7 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
                 .where(UserClient.client_id.in_(current_user_clients))
             )
         # 2
-        if client_id:  # TODO: test
+        if client_id:
             # get all clients of the current user
             current_user_clients = sql_select(UserClient.client_id).where(
                 UserClient.user_id == current_user_id
@@ -78,7 +78,7 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
                 .where(UserClient.client_id.in_(current_user_clients))
             )
         # 3
-        if website_id:  # TODO: test
+        if website_id:
             # get all clients of the website_id
             website_clients = sql_select(ClientWebsite.client_id).where(
                 ClientWebsite.website_id == website_id

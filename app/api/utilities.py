@@ -5,12 +5,16 @@ from urllib.parse import urlparse
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.exceptions.exceptions import WebsiteNotExists, WebsitePageNotExists
 from app.core.config import settings
 from app.core.logger import logger
 from app.core.utilities import parse_id
 from app.crud import WebsitePageRepository
+from app.crud.website import WebsiteRepository
+from app.crud.website_pagespeedinsights import WebsitePageSpeedInsightsRepository
 from app.db.session import get_db_session
 from app.models import WebsitePage
+from app.models.website import Website
 from app.schemas import (
     PageSpeedInsightsDevice,
     WebsiteMapPage,
@@ -18,6 +22,7 @@ from app.schemas import (
     WebsitePageSpeedInsightsBase,
     WebsitePageUpdate,
 )
+from app.schemas.website_pagespeedinsights import WebsitePageSpeedInsightsCreate
 
 
 async def create_or_update_website_page(
@@ -154,4 +159,76 @@ def fetch_pagespeedinsights(
         return psi_base
     except Exception as e:  # pragma: no cover
         logger.info("Error Fetching Page Speed Insights: %s", e)
+        return None
+
+
+async def create_website_pagespeedinsights(
+    website_id: str,
+    page_id: str,
+    insights: WebsitePageSpeedInsightsBase,
+) -> None:
+    try:
+        website_uuid = parse_id(website_id)
+        page_uuid = parse_id(page_id)
+        session: AsyncSession
+        website: Website | None
+        website_page: WebsitePage | None
+        # check if website exists
+        async with get_db_session() as session:
+            websites_repo: WebsiteRepository = WebsiteRepository(session)
+            website = await websites_repo.read(
+                entry_id=website_uuid,
+            )
+        if website is None:
+            raise WebsiteNotExists()
+        # check if page exists
+        async with get_db_session() as session:
+            pages_repo: WebsitePageRepository = WebsitePageRepository(session)
+            website_page = await pages_repo.read(
+                entry_id=page_uuid,
+            )
+        if website_page is None:
+            raise WebsitePageNotExists()
+        # create website page speed insights
+        async with get_db_session() as session:
+            psi_repo: WebsitePageSpeedInsightsRepository = (
+                WebsitePageSpeedInsightsRepository(session)
+            )
+            website_page_psi = await psi_repo.create(
+                schema=WebsitePageSpeedInsightsCreate(
+                    page_id=website_page.id,
+                    website_id=website.id,
+                    strategy=insights.strategy,
+                    ps_weight=insights.ps_weight,
+                    ps_grade=insights.ps_grade,
+                    ps_value=insights.ps_value,
+                    ps_unit=insights.ps_unit,
+                    fcp_weight=insights.fcp_weight,
+                    fcp_grade=insights.fcp_grade,
+                    fcp_value=insights.fcp_value,
+                    fcp_unit=insights.fcp_unit,
+                    lcp_weight=insights.lcp_weight,
+                    lcp_grade=insights.lcp_grade,
+                    lcp_value=insights.lcp_value,
+                    lcp_unit=insights.lcp_unit,
+                    cls_weight=insights.cls_weight,
+                    cls_grade=insights.cls_grade,
+                    cls_value=insights.cls_value,
+                    cls_unit=insights.cls_unit,
+                    si_weight=insights.si_weight,
+                    si_grade=insights.si_grade,
+                    si_value=insights.si_value,
+                    si_unit=insights.si_unit,
+                    tbt_weight=insights.tbt_weight,
+                    tbt_grade=insights.tbt_grade,
+                    tbt_value=insights.tbt_value,
+                    tbt_unit=insights.tbt_unit,
+                )
+            )
+            logger.info(
+                f"Created Website Page Speed Insights for Website[{website_page_psi.website_id}] and Page[{website_page_psi.page_id}]"  # noqa: E501
+            )  # noqa: E501
+    except Exception as e:
+        logger.warning("Error Creating or Updating Website Page Speed Insights: %s", e)
+    finally:
         return None

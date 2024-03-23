@@ -116,7 +116,7 @@ def has_permission(
     user_privileges: List[AclPrivilege],
     requested_permission: AclPermission,
     resource: Any,
-) -> bool:  # TODO: test
+) -> bool:
     """checks if a user has the permission for a resource
 
     The order of the function parameters can be remembered like "Joe eat apple"
@@ -138,7 +138,7 @@ def has_permission(
 
 def list_permissions(
     user_privileges: List[AclPrivilege], resource: Any
-) -> Dict[AclPermission, bool]:  # TODO: test
+) -> Dict[AclPermission, bool]:
     """lists all permissions of a user for a resouce
 
     user_privileges: the privileges of a user
@@ -160,7 +160,7 @@ def list_permissions(
 
 def normalize_acl(
     resource: Any,
-) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:  # TODO: test
+) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:
     """returns the access controll list for a resource
 
     If the resource is not an acl list itself it needs to have an "__acl__"
@@ -180,7 +180,7 @@ def normalize_acl(
     return [DENY_ALL]
 
 
-def is_like_list(something: Any) -> bool:  # TODO: test
+def is_like_list(something: Any) -> bool:
     """checks if something is iterable but not a string"""
     if isinstance(something, str):
         return False

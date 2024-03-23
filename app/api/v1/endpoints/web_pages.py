@@ -80,7 +80,7 @@ async def website_page_list(
             website_id=query.website_id,
             sitemap_id=query.sitemap_id,
         )
-    else:  # TODO: test
+    else:
         select_stmt = web_pages_repo.query_list(
             user_id=permissions.current_user.id,
             website_id=query.website_id,

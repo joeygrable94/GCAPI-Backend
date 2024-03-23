@@ -27,7 +27,7 @@ class WebsiteRepository(
         # create conditions
         conditions: List[BinaryExpression[bool]] = []
         # append conditions
-        if user_id:  # TODO: test
+        if user_id:
             stmt = (
                 stmt.join(ClientWebsite, self._table.id == ClientWebsite.website_id)
                 .join(Client, ClientWebsite.client_id == Client.id)
@@ -35,13 +35,13 @@ class WebsiteRepository(
                 .join(User, UserClient.user_id == User.id)
             )
             conditions.append(User.id.like(user_id))
-        if client_id:  # TODO: test
+        if client_id:
             stmt = stmt.join(
                 ClientWebsite, self._table.id == ClientWebsite.website_id
             ).join(Client, ClientWebsite.client_id == Client.id)
             conditions.append(Client.id.like(client_id))
         # apply conditions
-        if len(conditions) > 0:  # TODO: test
+        if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
         return stmt
 

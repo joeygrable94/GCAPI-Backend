@@ -22,12 +22,12 @@ class ClientRepository(BaseRepository[ClientCreate, ClientRead, ClientUpdate, Cl
         # create conditions
         conditions: List[BinaryExpression[bool]] = []
         # append conditions
-        if user_id:  # TODO: test
+        if user_id:
             stmt = stmt.join(UserClient, Client.id == UserClient.client_id).join(
                 User, UserClient.user_id == User.id
             )
             conditions.append(User.id.like(user_id))
         # apply conditions
-        if len(conditions) > 0:  # TODO: test
+        if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
         return stmt

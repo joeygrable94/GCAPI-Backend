@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 import pytest
 from httpx import AsyncClient, Response
+from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_boolean
 from tests.utils.website_pagespeedinsights import generate_psi_base
 
@@ -19,6 +20,7 @@ pytestmark = pytest.mark.asyncio
 
 async def test_create_website_pagespeedinsights_as_superuser(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     # create a website
@@ -82,6 +84,7 @@ async def test_create_website_pagespeedinsights_as_superuser(
 
 async def test_create_website_pagespeedinsights_as_superuser_query_website_not_exists(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     webpage_id = get_uuid_str()
@@ -102,6 +105,7 @@ async def test_create_website_pagespeedinsights_as_superuser_query_website_not_e
 
 async def test_create_website_pagespeedinsights_as_superuser_website_not_exists(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     website_id = get_uuid_str()
@@ -123,6 +127,7 @@ async def test_create_website_pagespeedinsights_as_superuser_website_not_exists(
 
 async def test_create_website_pagespeedinsights_as_superuser_webaite_page_not_exists(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = "gcembed.getcommunity.com"
@@ -154,6 +159,7 @@ async def test_create_website_pagespeedinsights_as_superuser_webaite_page_not_ex
 
 async def test_create_website_pagespeedinsights_as_superuser_query_website_page_not_exists(  # noqa: E501
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     domain: str = "giftgurugal.com"

@@ -82,7 +82,7 @@ async def website_page_speed_insights_list(
             page_id=query.page_id,
             devices=query.strategy,
         )
-    else:  # TODO: test
+    else:
         select_stmt = web_psi_repo.query_list(
             user_id=permissions.current_user.id,
             website_id=query.website_id,

@@ -70,7 +70,7 @@ async def notes_list(
     select_stmt: Select
     if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
         select_stmt = notes_repo.query_list(user_id=query.user_id)
-    else:  # TODO: test
+    else:
         select_stmt = notes_repo.query_list(user_id=permissions.current_user.id)
     response_out: Paginated[NoteRead] = (
         await permissions.get_paginated_resource_response(

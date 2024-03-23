@@ -34,7 +34,7 @@ def event_loop() -> Generator:
     loop.close()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

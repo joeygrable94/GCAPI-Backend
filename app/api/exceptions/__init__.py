@@ -4,16 +4,16 @@ from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
 
+from app.core.security import DecryptionError  # noqa: F401
+from app.core.security import EncryptionError  # noqa: F401
+from app.core.security import SignatureVerificationError  # noqa: F401
 from app.core.security import (
     Auth0UnauthenticatedException,
     Auth0UnauthorizedException,
     AuthPermissionException,
     CipherError,
     CsrfProtectError,
-    DecryptionError,
-    EncryptionError,
     RateLimitedRequestException,
-    SignatureVerificationError,
 )
 
 from .errors import ErrorCode, ErrorCodeReasonModel, ErrorModel
@@ -21,6 +21,7 @@ from .exceptions import (
     ApiException,
     ClientAlreadyExists,
     ClientNotExists,
+    ClientRelationshipNotExists,
     InvalidID,
     NoteAlreadyExists,
     NoteNotExists,
@@ -218,6 +219,19 @@ def configure_exceptions(app: FastAPI) -> None:
     @app.exception_handler(ClientNotExists)
     async def client_not_exists_exception_handler(
         request: Request, exc: ClientNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(ClientRelationshipNotExists)
+    async def client_relationship_not_exists_exception_handler(
+        request: Request, exc: ClientRelationshipNotExists
     ) -> Response:  # noqa: E501
         return await http_exception_handler(
             request,

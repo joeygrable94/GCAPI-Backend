@@ -34,6 +34,7 @@ async def test_read_client_by_id_as_superuser(
 
 async def test_read_client_by_id_as_superuser_client_not_found(
     client: AsyncClient,
+    db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     entry_id: str = get_uuid_str()
