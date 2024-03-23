@@ -56,6 +56,8 @@ class GoSearchConsoleQuery(Base):
 
     # represenation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoSearchConsoleQuery(GSCID[{self.gsc_id}], \
+        repr_str: str = (
+            f"GoSearchConsoleQuery(GSCID[{self.gsc_id}], \
             C={self.clicks} I={self.impressions} CTR={self.ctr} Pos={self.position})"
+        )
         return repr_str

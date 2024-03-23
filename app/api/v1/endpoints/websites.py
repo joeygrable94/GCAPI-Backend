@@ -76,15 +76,15 @@ async def website_list(
         select_stmt = websites_repo.query_list(
             client_id=query.client_id, user_id=permissions.current_user.id
         )
-    response_out: Paginated[
-        WebsiteRead
-    ] = await permissions.get_paginated_resource_response(
-        table_name=Website.__tablename__,
-        stmt=select_stmt,
-        page_params=PageParams(page=query.page, size=query.size),
-        responses={
-            RoleUser: WebsiteRead,
-        },
+    response_out: Paginated[WebsiteRead] = (
+        await permissions.get_paginated_resource_response(
+            table_name=Website.__tablename__,
+            stmt=select_stmt,
+            page_params=PageParams(page=query.page, size=query.size),
+            responses={
+                RoleUser: WebsiteRead,
+            },
+        )
     )
     return response_out
 

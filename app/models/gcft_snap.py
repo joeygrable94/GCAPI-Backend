@@ -81,6 +81,8 @@ class GcftSnap(Base):
 
     # represenation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GcftSnap({self.snap_name}[{self.snap_slug}], \
+        repr_str: str = (
+            f"GcftSnap({self.snap_name}[{self.snap_slug}], \
             Tour[{self.gcft_id}], Coords[{self.geocoord_id}])"
+        )
         return repr_str

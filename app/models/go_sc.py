@@ -65,12 +65,14 @@ class GoSearchConsoleProperty(Base):
     gsc_queries: Mapped[List["GoSearchConsoleQuery"]] = relationship(
         "GoSearchConsoleQuery", back_populates="gsc_account"
     )
-    gsc_searchappearances: Mapped[
-        List["GoSearchConsoleSearchappearance"]
-    ] = relationship("GoSearchConsoleSearchappearance", back_populates="gsc_account")
+    gsc_searchappearances: Mapped[List["GoSearchConsoleSearchappearance"]] = (
+        relationship("GoSearchConsoleSearchappearance", back_populates="gsc_account")
+    )
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoSearchConsoleProperty({self.title}, \
+        repr_str: str = (
+            f"GoSearchConsoleProperty({self.title}, \
             Client[{self.client_id}] Website[{self.website_id}])"
+        )
         return repr_str

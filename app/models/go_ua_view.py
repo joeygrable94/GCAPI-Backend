@@ -49,6 +49,8 @@ class GoUniversalAnalyticsView(Base):
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoUniversalAnalyticsView({self.title} \
+        repr_str: str = (
+            f"GoUniversalAnalyticsView({self.title} \
             View[{self.view_id}] for GUA Property[{self.gua_id}])"
+        )
         return repr_str

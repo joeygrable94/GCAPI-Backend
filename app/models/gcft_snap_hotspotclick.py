@@ -66,6 +66,8 @@ class GcftSnapHotspotclick(Base):
 
     # represenation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GcftSnapHotspotclick({self.session_id} \
+        repr_str: str = (
+            f"GcftSnapHotspotclick({self.session_id} \
             on {self.click_date}, type={self.hotspot_type_name})"
+        )
         return repr_str

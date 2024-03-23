@@ -78,15 +78,15 @@ async def sitemap_list(
             user_id=permissions.current_user.id,
             website_id=query.website_id,
         )
-    response_out: Paginated[
-        WebsiteMapRead
-    ] = await permissions.get_paginated_resource_response(
-        table_name=WebsiteMap.__tablename__,
-        stmt=select_stmt,
-        page_params=PageParams(page=query.page, size=query.size),
-        responses={
-            RoleUser: WebsiteMapRead,
-        },
+    response_out: Paginated[WebsiteMapRead] = (
+        await permissions.get_paginated_resource_response(
+            table_name=WebsiteMap.__tablename__,
+            stmt=select_stmt,
+            page_params=PageParams(page=query.page, size=query.size),
+            responses={
+                RoleUser: WebsiteMapRead,
+            },
+        )
     )
     return response_out
 

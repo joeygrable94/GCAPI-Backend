@@ -64,6 +64,8 @@ class GcftSnapTrafficsource(Base):
 
     # represenation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GcftSnapTrafficsource({self.session_id} \
+        repr_str: str = (
+            f"GcftSnapTrafficsource({self.session_id} \
             on {self.visit_date}, referrer={self.referrer})"
+        )
         return repr_str

@@ -58,8 +58,10 @@ class GoAnalytics4Property(Base):
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoAnalytics4Property(\
+        repr_str: str = (
+            f"GoAnalytics4Property(\
             MeasurementID[{self.measurement_id}] for \
             Client[{self.client_id}] \
             Website[{self.website_id}])"
+        )
         return repr_str

@@ -84,18 +84,18 @@ async def website_page_keyword_corpus_list(
             website_id=query.website_id,
             page_id=query.page_id,
         )
-    response_out: Paginated[
-        WebsiteKeywordCorpusRead
-    ] = await permissions.get_paginated_resource_response(
-        table_name=WebsiteKeywordCorpus.__tablename__,
-        stmt=select_stmt,
-        page_params=PageParams(page=query.page, size=query.size),
-        responses={
-            RoleAdmin: WebsiteKeywordCorpusRead,
-            RoleManager: WebsiteKeywordCorpusRead,
-            RoleClient: WebsiteKeywordCorpusRead,
-            RoleEmployee: WebsiteKeywordCorpusRead,
-        },
+    response_out: Paginated[WebsiteKeywordCorpusRead] = (
+        await permissions.get_paginated_resource_response(
+            table_name=WebsiteKeywordCorpus.__tablename__,
+            stmt=select_stmt,
+            page_params=PageParams(page=query.page, size=query.size),
+            responses={
+                RoleAdmin: WebsiteKeywordCorpusRead,
+                RoleManager: WebsiteKeywordCorpusRead,
+                RoleClient: WebsiteKeywordCorpusRead,
+                RoleEmployee: WebsiteKeywordCorpusRead,
+            },
+        )
     )
     return response_out
 

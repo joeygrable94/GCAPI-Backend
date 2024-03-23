@@ -86,15 +86,15 @@ async def website_page_list(
             website_id=query.website_id,
             sitemap_id=query.sitemap_id,
         )
-    response_out: Paginated[
-        WebsitePageRead
-    ] = await permissions.get_paginated_resource_response(
-        table_name=WebsitePage.__tablename__,
-        stmt=select_stmt,
-        page_params=PageParams(page=query.page, size=query.size),
-        responses={
-            RoleUser: WebsitePageRead,
-        },
+    response_out: Paginated[WebsitePageRead] = (
+        await permissions.get_paginated_resource_response(
+            table_name=WebsitePage.__tablename__,
+            stmt=select_stmt,
+            page_params=PageParams(page=query.page, size=query.size),
+            responses={
+                RoleUser: WebsitePageRead,
+            },
+        )
     )
     return response_out
 

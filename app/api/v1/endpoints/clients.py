@@ -98,18 +98,18 @@ async def clients_list(
             user_id=permissions.current_user.id
         )
     # return role based response
-    response_out: Paginated[
-        ClientRead
-    ] = await permissions.get_paginated_resource_response(
-        table_name=Client.__tablename__,
-        stmt=select_stmt,
-        page_params=PageParams(page=query.page, size=query.size),
-        responses={
-            RoleAdmin: ClientRead,
-            RoleManager: ClientRead,
-            RoleClient: ClientRead,
-            RoleEmployee: ClientRead,
-        },
+    response_out: Paginated[ClientRead] = (
+        await permissions.get_paginated_resource_response(
+            table_name=Client.__tablename__,
+            stmt=select_stmt,
+            page_params=PageParams(page=query.page, size=query.size),
+            responses={
+                RoleAdmin: ClientRead,
+                RoleManager: ClientRead,
+                RoleClient: ClientRead,
+                RoleEmployee: ClientRead,
+            },
+        )
     )
     return response_out
 

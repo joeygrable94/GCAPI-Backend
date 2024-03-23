@@ -49,6 +49,8 @@ class GoAnalytics4Stream(Base):
     )
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoAnalytics4Stream({self.title} \
+        repr_str: str = (
+            f"GoAnalytics4Stream({self.title} \
             Stream[{self.stream_id}] for GA4 Property[{self.ga4_id}])"
+        )
         return repr_str

@@ -132,16 +132,16 @@ async def users_list(
     # verify current user has permission to take this action
     await permissions.verify_user_can_access(privileges=[RoleAdmin, RoleManager])
     # return role based response
-    response_out: Paginated[UserReadAsAdmin] | Paginated[
-        UserReadAsManager
-    ] = await permissions.get_paginated_resource_response(
-        table_name=permissions.user_repo._table.__tablename__,
-        stmt=permissions.user_repo.query_list(),
-        page_params=PageParams(page=query.page, size=query.size),
-        responses={
-            RoleAdmin: UserReadAsAdmin,
-            RoleManager: UserReadAsManager,
-        },
+    response_out: Paginated[UserReadAsAdmin] | Paginated[UserReadAsManager] = (
+        await permissions.get_paginated_resource_response(
+            table_name=permissions.user_repo._table.__tablename__,
+            stmt=permissions.user_repo.query_list(),
+            page_params=PageParams(page=query.page, size=query.size),
+            responses={
+                RoleAdmin: UserReadAsAdmin,
+                RoleManager: UserReadAsManager,
+            },
+        )
     )
     return response_out
 

@@ -117,6 +117,8 @@ class FileAsset(Base):
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"FileAsset({self.title} | {self.filename}.{self.extension} \
+        repr_str: str = (
+            f"FileAsset({self.title} | {self.filename}.{self.extension} \
             [{self.size_kb} kb]: created {self.created_on}, updated {self.updated_on})"
+        )
         return repr_str

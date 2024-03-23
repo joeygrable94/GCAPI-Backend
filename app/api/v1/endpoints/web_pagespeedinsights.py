@@ -89,18 +89,18 @@ async def website_page_speed_insights_list(
             page_id=query.page_id,
             devices=query.strategy,
         )
-    response_out: Paginated[
-        WebsitePageSpeedInsightsRead
-    ] = await permissions.get_paginated_resource_response(
-        table_name=WebsitePageSpeedInsights.__tablename__,
-        stmt=select_stmt,
-        page_params=PageParams(page=query.page, size=query.size),
-        responses={
-            RoleAdmin: WebsitePageSpeedInsightsRead,
-            RoleManager: WebsitePageSpeedInsightsRead,
-            RoleClient: WebsitePageSpeedInsightsRead,
-            RoleEmployee: WebsitePageSpeedInsightsRead,
-        },
+    response_out: Paginated[WebsitePageSpeedInsightsRead] = (
+        await permissions.get_paginated_resource_response(
+            table_name=WebsitePageSpeedInsights.__tablename__,
+            stmt=select_stmt,
+            page_params=PageParams(page=query.page, size=query.size),
+            responses={
+                RoleAdmin: WebsitePageSpeedInsightsRead,
+                RoleManager: WebsitePageSpeedInsightsRead,
+                RoleClient: WebsitePageSpeedInsightsRead,
+                RoleEmployee: WebsitePageSpeedInsightsRead,
+            },
+        )
     )
     return response_out
 

@@ -57,6 +57,8 @@ class GoUniversalAnalyticsProperty(Base):
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoUniversalAnalytics(TrackingID[{self.tracking_id}] \
+        repr_str: str = (
+            f"GoUniversalAnalytics(TrackingID[{self.tracking_id}] \
             for Client[{self.client_id}] Website[{self.website_id}])"
+        )
         return repr_str

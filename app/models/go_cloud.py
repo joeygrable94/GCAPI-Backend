@@ -60,6 +60,8 @@ class GoCloudProperty(Base):
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoCloudProperty(Project[{self.project_name}] \
+        repr_str: str = (
+            f"GoCloudProperty(Project[{self.project_name}] \
             for Client[{self.client_id}])"
+        )
         return repr_str

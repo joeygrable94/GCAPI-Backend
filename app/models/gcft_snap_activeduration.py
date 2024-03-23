@@ -55,6 +55,8 @@ class GcftSnapActiveduration(Base):
 
     # represenation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GcftSnapActiveduration({self.session_id} \
+        repr_str: str = (
+            f"GcftSnapActiveduration({self.session_id} \
             on {self.visit_date}, seconds={self.active_seconds})"
+        )
         return repr_str

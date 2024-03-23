@@ -72,18 +72,18 @@ async def notes_list(
         select_stmt = notes_repo.query_list(user_id=query.user_id)
     else:  # TODO: test
         select_stmt = notes_repo.query_list(user_id=permissions.current_user.id)
-    response_out: Paginated[
-        NoteRead
-    ] = await permissions.get_paginated_resource_response(
-        table_name=Note.__tablename__,
-        stmt=select_stmt,
-        page_params=PageParams(page=query.page, size=query.size),
-        responses={
-            RoleAdmin: NoteRead,
-            RoleManager: NoteRead,
-            RoleClient: NoteRead,
-            RoleEmployee: NoteRead,
-        },
+    response_out: Paginated[NoteRead] = (
+        await permissions.get_paginated_resource_response(
+            table_name=Note.__tablename__,
+            stmt=select_stmt,
+            page_params=PageParams(page=query.page, size=query.size),
+            responses={
+                RoleAdmin: NoteRead,
+                RoleManager: NoteRead,
+                RoleClient: NoteRead,
+                RoleEmployee: NoteRead,
+            },
+        )
     )
     return response_out
 
