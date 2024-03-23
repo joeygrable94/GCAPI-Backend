@@ -19,7 +19,7 @@ from app.main import create_app
 pytestmark = pytest.mark.asyncio
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def anyio_backend() -> str:
     return "asyncio"
 
