@@ -3,6 +3,13 @@ from uuid import UUID
 
 from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
 
+from app.core import logger
+from app.core.utilities import (
+    check_is_xml_valid_sitemap,
+    fetch_url_page_text,
+    fetch_url_status_code,
+    parse_sitemap_xml,
+)
 from app.crud.base import BaseRepository
 from app.models import Client, ClientWebsite, User, UserClient, Website, WebsiteMap
 from app.schemas import WebsiteMapCreate, WebsiteMapRead, WebsiteMapUpdate
@@ -41,3 +48,23 @@ class WebsiteMapRepository(
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
         return stmt
+
+    async def is_sitemap_url_xml_valid(
+        self,
+        url: str,
+    ) -> bool:
+        is_valid: bool = False
+        try:
+            # check if the URL is valid
+            status_code: int = await fetch_url_status_code(url)
+            if status_code != 200:
+                return is_valid
+            page_text: str = await fetch_url_page_text(url)
+            page_xml = await parse_sitemap_xml(page_text)
+            is_valid = await check_is_xml_valid_sitemap(page_xml)
+            if not is_valid:  # pragma: no cover
+                raise Exception("Invalid Sitemap XML")
+        except Exception as e:  # pragma: no cover
+            logger.info("Error Fetching Sitemap Url: %s" % e)
+        finally:
+            return is_valid

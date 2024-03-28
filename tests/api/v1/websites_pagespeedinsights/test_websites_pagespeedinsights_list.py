@@ -9,6 +9,7 @@ from tests.utils.website_pagespeedinsights import (
 )
 from tests.utils.websites import create_random_website
 
+from app.models.website import Website
 from app.schemas import WebsitePageRead, WebsitePageSpeedInsightsRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
@@ -48,8 +49,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
@@ -158,8 +159,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
@@ -264,8 +265,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
@@ -370,8 +371,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_page_id
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
@@ -479,8 +480,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id_devices
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
@@ -588,8 +589,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id_devices(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
@@ -697,8 +698,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_website_id(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
@@ -813,8 +814,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_page_id(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )
@@ -929,8 +930,8 @@ async def test_list_website_pagespeedinsights_as_superuser_by_devices_all(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     webpage_a: WebsitePageRead = await create_random_website_page(
         db_session, website_id=website_a.id
     )

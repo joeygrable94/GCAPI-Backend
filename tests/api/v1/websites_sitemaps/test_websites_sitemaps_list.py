@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.website_maps import create_random_website_map
 from tests.utils.websites import create_random_website
 
+from app.models.website import Website
 from app.schemas import WebsiteMapRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
@@ -44,8 +45,8 @@ async def test_list_website_sitemaps_as_superuser_by_website_id(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     entry_1: WebsiteMapRead = await create_random_website_map(
         db_session, website_id=website_a.id
     )

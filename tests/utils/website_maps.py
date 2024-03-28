@@ -4,11 +4,11 @@ from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_domain
 from tests.utils.websites import create_random_website
-from usp.objects.page import SitemapPage  # type: ignore
 
 from app.crud import WebsiteMapRepository
 from app.models import WebsiteMap
-from app.schemas import WebsiteMapCreate, WebsiteMapRead, WebsiteRead
+from app.models.website import Website
+from app.schemas import WebsiteMapCreate, WebsiteMapPage, WebsiteMapRead, WebsiteRead
 
 
 class MockSitemap:
@@ -16,10 +16,12 @@ class MockSitemap:
         self.url = url
         self.pages = pages
 
-    def all_pages(self) -> Iterator[SitemapPage]:
+    def all_pages(self) -> Iterator[WebsiteMapPage]:
         for pg in self.pages:
-            yield SitemapPage(
-                pg.get("url"), pg.get("priority"), pg.get("last_modified")
+            yield WebsiteMapPage(
+                url=pg.get("url"),
+                priority=pg.get("priority"),
+                last_modified=pg.get("last_modified"),
             )
 
 
@@ -34,12 +36,12 @@ async def create_random_website_map(
     repo: WebsiteMapRepository = WebsiteMapRepository(session=db_session)
     domain: str
     if website_id is None:
-        website: WebsiteRead = await create_random_website(db_session)
+        website: Website | WebsiteRead = await create_random_website(db_session)
         website_id = website.id
         domain = website.domain
     else:
         domain = random_domain()
     website_map: WebsiteMap = await repo.create(
-        schema=WebsiteMapCreate(url=f"{domain}/", website_id=website_id)
+        schema=WebsiteMapCreate(url=f"{domain}/sitemap.xml", website_id=website_id)
     )
     return WebsiteMapRead.model_validate(website_map)

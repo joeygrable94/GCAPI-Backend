@@ -12,7 +12,11 @@ from app.api.deps import (
     get_permission_controller,
     get_website_map_or_404,
 )
-from app.api.exceptions import WebsiteMapAlreadyExists, WebsiteNotExists
+from app.api.exceptions import (
+    WebsiteMapAlreadyExists,
+    WebsiteMapUrlXmlInvalid,
+    WebsiteNotExists,
+)
 from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
 from app.core.security.permissions import (
@@ -31,7 +35,7 @@ from app.schemas import (
     WebsiteMapRead,
     WebsiteMapUpdate,
 )
-from app.tasks import task_website_sitemap_fetch_pages
+from app.tasks import task_website_sitemap_process_xml
 
 router: APIRouter = APIRouter()
 
@@ -130,8 +134,14 @@ async def sitemap_create(
     a_website: Website | None = await website_repo.read(sitemap_in.website_id)
     if a_website is None:
         raise WebsiteNotExists()
-    # check website map url is unique to website_id
+    # check website map url is a valid XML document
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=permissions.db)
+    sitemap_url_valid: bool = await sitemap_repo.is_sitemap_url_xml_valid(
+        sitemap_in.url
+    )
+    if not sitemap_url_valid:
+        raise WebsiteMapUrlXmlInvalid()
+    # check website map url is unique to website_id
     a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_two(
         field_name_a="url",
         field_value_a=sitemap_in.url,
@@ -322,9 +332,14 @@ async def sitemap_process_sitemap_pages(
         privileges=[RoleAdmin, RoleManager],
         website_id=sitemap.website_id,
     )
+    # check website map url is a valid XML document
+    sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=permissions.db)
+    sitemap_url_valid: bool = await sitemap_repo.is_sitemap_url_xml_valid(sitemap.url)
+    if not sitemap_url_valid:
+        raise WebsiteMapUrlXmlInvalid()
     # Send the task to the broker.
     website_map_processing_pages: AsyncTaskiqTask = (
-        await task_website_sitemap_fetch_pages.kiq(
+        await task_website_sitemap_process_xml.kiq(
             website_id=str(sitemap.website_id),
             sitemap_id=str(sitemap.id),
             sitemap_url=str(sitemap.url),

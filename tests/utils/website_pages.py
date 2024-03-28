@@ -6,6 +6,7 @@ from tests.utils.websites import create_random_website
 
 from app.crud import WebsitePageRepository
 from app.models import WebsitePage
+from app.models.website import Website
 from app.schemas import WebsiteMapRead, WebsitePageCreate, WebsitePageRead, WebsiteRead
 
 
@@ -17,7 +18,7 @@ async def create_random_website_page(
     repo: WebsitePageRepository = WebsitePageRepository(session=db_session)
     page_path = "/%s/" % random_lower_string()
     if website_id is None:
-        website: WebsiteRead = await create_random_website(db_session)
+        website: Website | WebsiteRead = await create_random_website(db_session)
         website_id = website.id
     if sitemap_id is None:
         website_map: WebsiteMapRead = await create_random_website_map(

@@ -90,6 +90,7 @@ class WebsitePageSpeedInsightsProcessing(BaseModel):
     website_id: str
     page_id: str
     insights: Optional[WebsitePageSpeedInsightsBase] = None
+    is_created: bool = False
 
 
 class WebsitePageSpeedInsightsCreate(WebsitePageSpeedInsightsBase):

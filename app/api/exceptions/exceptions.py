@@ -80,6 +80,11 @@ class WebsiteMapNotExists(ApiException):
         super().__init__(status.HTTP_404_NOT_FOUND, message)
 
 
+class WebsiteMapUrlXmlInvalid(ApiException):
+    def __init__(self, message: str = ErrorCode.WEBSITE_MAP_URL_XML_INVALID):
+        super().__init__(status.HTTP_400_BAD_REQUEST, message)
+
+
 # Website Pages
 class WebsitePageAlreadyExists(ApiException):
     def __init__(self, message: str = ErrorCode.WEBSITE_PAGE_URL_EXISTS):

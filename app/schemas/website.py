@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Optional
 
-from pydantic import UUID4, BaseModel, field_validator
+from pydantic import UUID4, field_validator
 
 from app.db.validators import validate_domain_optional, validate_domain_required
 from app.schemas.base import BaseSchema, BaseSchemaRead
@@ -38,6 +38,3 @@ class WebsiteRead(WebsiteBase, BaseSchemaRead):
 
 
 # tasks
-class WebsiteCreateProcessing(BaseModel):
-    website: WebsiteRead
-    task_id: UUID4 | str | Any | None = None

@@ -103,13 +103,14 @@ from .user import (
 )
 from .user_client import UserClientCreate, UserClientRead, UserClientUpdate
 from .user_ipaddress import UserIpaddressCreate, UserIpaddressRead, UserIpaddressUpdate
-from .website import WebsiteCreate, WebsiteCreateProcessing, WebsiteRead, WebsiteUpdate
+from .website import WebsiteCreate, WebsiteRead, WebsiteUpdate
 from .website_keywordcorpus import (
     WebsiteKeywordCorpusCreate,
     WebsiteKeywordCorpusRead,
     WebsiteKeywordCorpusUpdate,
 )
 from .website_map import (
+    SitemapPageChangeFrequency,
     WebsiteMapCreate,
     WebsiteMapPage,
     WebsiteMapProcessedResult,
@@ -242,7 +243,6 @@ __all__: List[str] = [
     "UserIpaddressRead",
     "UserIpaddressUpdate",
     "WebsiteCreate",
-    "WebsiteCreateProcessing",
     "WebsiteRead",
     "WebsiteUpdate",
     "WebsiteKeywordCorpusCreate",
@@ -254,6 +254,7 @@ __all__: List[str] = [
     "WebsiteMapProcessing",
     "WebsiteMapRead",
     "WebsiteMapUpdate",
+    "SitemapPageChangeFrequency",
     "WebsitePageCreate",
     "WebsitePageKWCProcessing",
     "WebsitePagePSIProcessing",

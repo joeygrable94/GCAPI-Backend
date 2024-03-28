@@ -33,11 +33,10 @@ async def test_create_website_pagespeedinsights_as_superuser(
         json=w_data,
     )
     assert 200 <= response.status_code < 300
-    w_entry = response.json()
-    a_website: WebsiteRead = WebsiteRead(**w_entry["website"])
+    a_website: WebsiteRead = WebsiteRead(**response.json())
     # create a website map
     s_data = {
-        "url": "/sitemap_index.xml",
+        "url": "https://aestheticclimbinggym.com/sitemap_index.xml",
         "website_id": str(a_website.id),
     }
     response: Response = await client.post(
@@ -139,8 +138,7 @@ async def test_create_website_pagespeedinsights_as_superuser_webaite_page_not_ex
         json=w_data,
     )
     assert 200 <= response.status_code < 300
-    w_entry = response.json()
-    a_website: WebsiteRead = WebsiteRead(**w_entry["website"])
+    a_website: WebsiteRead = WebsiteRead(**response.json())
     webpage_id = get_uuid_str()
     d_strategy: str = "mobile"
     psi_base: WebsitePageSpeedInsightsBase = generate_psi_base(
@@ -171,8 +169,7 @@ async def test_create_website_pagespeedinsights_as_superuser_query_website_page_
         json=w_data,
     )
     assert 200 <= response.status_code < 300
-    w_entry = response.json()
-    a_website: WebsiteRead = WebsiteRead(**w_entry["website"])
+    a_website: WebsiteRead = WebsiteRead(**response.json())
     d_strategy: str = "mobile"
     psi_base: WebsitePageSpeedInsightsBase = generate_psi_base(
         device_strategy=d_strategy

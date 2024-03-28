@@ -1,5 +1,6 @@
 import asyncio
 import json
+import xml.etree.ElementTree as ET
 from os import path
 from typing import Any, AsyncGenerator, Dict, Generator
 
@@ -78,12 +79,39 @@ def mock_fetch_psi() -> Dict[str, Any]:
 
 
 @pytest.fixture(scope="session")
-def mock_fetch_sitemap() -> Dict[str, Any]:
-    mocked_response = {}
+def mock_fetch_sitemap_index() -> str:
+    mocked_response = ""
     here = path.dirname(path.abspath(__file__))
-    with open(f"{here}/utils/sitemap.json") as f:
-        mocked_response = json.load(f)
+    with open(f"{here}/utils/sitemap-index.xml") as f:
+        mocked_response = f.read()
     return mocked_response
+
+
+@pytest.fixture(scope="session")
+def mock_fetch_sitemap_page() -> str:
+    mocked_response = ""
+    here = path.dirname(path.abspath(__file__))
+    with open(f"{here}/utils/sitemap-page.xml") as f:
+        mocked_response = f.read()
+    return mocked_response
+
+
+@pytest.fixture(scope="session")
+def mock_invalid_sitemap_xml() -> ET.Element:
+    mocked_response = ""
+    here = path.dirname(path.abspath(__file__))
+    with open(f"{here}/utils/sitemap-invalid.xml") as f:
+        mocked_response = f.read()
+    return ET.fromstring(mocked_response)
+
+
+@pytest.fixture(scope="session")
+def mock_valid_sitemap_urlset_xml() -> ET.Element:
+    mocked_response = ""
+    here = path.dirname(path.abspath(__file__))
+    with open(f"{here}/utils/sitemap-urlset.xml") as f:
+        mocked_response = f.read()
+    return ET.fromstring(mocked_response)
 
 
 @pytest.fixture(scope="session")

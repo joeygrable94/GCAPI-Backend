@@ -2,17 +2,37 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
+from enum import Enum, unique
 from typing import Any
 
 from pydantic import UUID4, BaseModel, field_validator
-from usp.objects.page import SITEMAP_PAGE_DEFAULT_PRIORITY  # type: ignore
-from usp.objects.page import SitemapPageChangeFrequency
 
 from app.db.validators import validate_url_optional, validate_url_required
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
-
 # generics
+
+SITEMAP_PAGE_DEFAULT_PRIORITY = Decimal("0.5")
+
+
+@unique
+class SitemapPageChangeFrequency(Enum):
+    """Change frequency of a sitemap URL."""
+
+    ALWAYS = "always"
+    HOURLY = "hourly"
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
+    NEVER = "never"
+
+    @classmethod
+    def has_value(cls, value: str) -> bool:  # pragma: no cover
+        """Test if enum has specified value."""
+        return any(value == item.value for item in cls)
+
+
 class GoogleNewsStory(BaseModel):
     title: str
     publish_date: datetime
@@ -69,4 +89,4 @@ class WebsiteMapProcessing(BaseModel):
 
 
 class WebsiteMapProcessedResult(WebsiteMapCreate):
-    sitemap_id: str
+    sitemap_id: UUID4

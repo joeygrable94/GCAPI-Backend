@@ -1,7 +1,6 @@
 import json
 from typing import Optional
 from urllib import request
-from urllib.parse import urlparse
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,12 +8,15 @@ from app.api.exceptions.exceptions import WebsiteNotExists, WebsitePageNotExists
 from app.core.config import settings
 from app.core.logger import logger
 from app.core.utilities import parse_id
+from app.core.utilities.websites import fetch_url_status_code
 from app.crud import WebsitePageRepository
 from app.crud.website import WebsiteRepository
+from app.crud.website_map import WebsiteMapRepository
 from app.crud.website_pagespeedinsights import WebsitePageSpeedInsightsRepository
 from app.db.session import get_db_session
 from app.models import WebsitePage
 from app.models.website import Website
+from app.models.website_map import WebsiteMap
 from app.schemas import (
     PageSpeedInsightsDevice,
     WebsiteMapPage,
@@ -22,7 +24,38 @@ from app.schemas import (
     WebsitePageSpeedInsightsBase,
     WebsitePageUpdate,
 )
+from app.schemas.website_map import WebsiteMapCreate, WebsiteMapUpdate
 from app.schemas.website_pagespeedinsights import WebsitePageSpeedInsightsCreate
+
+
+async def create_or_update_website_map(
+    website_id: str,
+    sitemap_url: str,
+) -> None:
+    try:
+        website_uuid = parse_id(website_id)
+        session: AsyncSession
+        sitemap: WebsiteMap | None
+        async with get_db_session() as session:
+            sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session)
+            sitemap = await sitemap_repo.exists_by_two(
+                field_name_a="url",
+                field_value_a=sitemap_url,
+                field_name_b="website_id",
+                field_value_b=website_uuid,
+            )
+            if sitemap is not None:
+                sitemap = await sitemap_repo.update(
+                    sitemap, WebsiteMapUpdate(url=sitemap_url)
+                )
+            else:
+                sitemap = await sitemap_repo.create(
+                    WebsiteMapCreate(url=sitemap_url, website_id=website_uuid)
+                )
+    except Exception as e:  # pragma: no cover
+        logger.warning("Error Creating or Updating Website Sitemap: %s" % e)
+    finally:
+        return None
 
 
 async def create_or_update_website_page(
@@ -33,24 +66,23 @@ async def create_or_update_website_page(
     try:
         website_uuid = parse_id(website_id)
         sitemap_uuid = parse_id(sitemap_id)
-        parsed_url = urlparse(page.url)
-        req_status = request.urlopen(page.url)
-        status_code: int = req_status.getcode() if req_status is not None else 404
+        status_code: int = await fetch_url_status_code(page.url)
         session: AsyncSession
         website_page: WebsitePage | None
         async with get_db_session() as session:
             pages_repo: WebsitePageRepository = WebsitePageRepository(session)
             website_page = await pages_repo.exists_by_two(
                 field_name_a="url",
-                field_value_a=parsed_url.path,
+                field_value_a=page.url,
                 field_name_b="website_id",
                 field_value_b=website_uuid,
             )
+            print(website_page)
             if website_page is not None:
                 website_page = await pages_repo.update(
                     entry=website_page,
                     schema=WebsitePageUpdate(
-                        url=parsed_url.path,
+                        url=page.url,
                         status=status_code,
                         priority=page.priority,
                         last_modified=page.last_modified,
@@ -60,7 +92,7 @@ async def create_or_update_website_page(
             else:
                 website_page = await pages_repo.create(
                     schema=WebsitePageCreate(
-                        url=parsed_url.path,
+                        url=page.url,
                         status=status_code,
                         priority=page.priority,
                         last_modified=page.last_modified,
@@ -70,7 +102,7 @@ async def create_or_update_website_page(
                     )
                 )
     except Exception as e:  # pragma: no cover
-        logger.warning("Error Creating or Updating Website Page: %s", e)
+        logger.warning("Error Creating or Updating Website Page: %s" % e)
     finally:
         return None
 
@@ -158,7 +190,7 @@ def fetch_pagespeedinsights(
         logger.info("Finished Fetching Page Speed Insights")
         return psi_base
     except Exception as e:  # pragma: no cover
-        logger.info("Error Fetching Page Speed Insights: %s", e)
+        logger.info("Error Fetching Page Speed Insights: %s" % e)
         return None
 
 
@@ -229,6 +261,6 @@ async def create_website_pagespeedinsights(
                 f"Created Website Page Speed Insights for Website[{website_page_psi.website_id}] and Page[{website_page_psi.page_id}]"  # noqa: E501
             )  # noqa: E501
     except Exception as e:
-        logger.warning("Error Creating or Updating Website Page Speed Insights: %s", e)
+        logger.warning("Error Creating or Updating Website Page Speed Insights: %s" % e)
     finally:
         return None

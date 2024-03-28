@@ -1,3 +1,4 @@
+import xml.etree.ElementTree as ET
 from datetime import datetime
 from typing import Any
 from uuid import UUID
@@ -14,8 +15,11 @@ from app.core.utilities import (
     get_uuid_str,
     parse_id,
 )
-
-# pytestmark = pytest.mark.asyncio
+from app.core.utilities.websites import (
+    check_is_sitemap_page,
+    check_is_sitemap_urlset,
+    check_is_xml_valid_sitemap,
+)
 
 
 def test_get_date() -> None:
@@ -56,3 +60,35 @@ def test_parse_id_uuid_invalid() -> None:
     not_uuid: str = "1829319274-53128309123"
     with pytest.raises(InvalidID):
         parsed_id: UUID = parse_id(not_uuid)  # noqa: F841
+
+
+@pytest.mark.asyncio
+async def test_check_is_xml_valid_sitemap_false(
+    mock_invalid_sitemap_xml: ET.Element,
+) -> None:
+    result = await check_is_xml_valid_sitemap(mock_invalid_sitemap_xml)
+    assert result is False
+
+
+@pytest.mark.asyncio
+async def test_check_is_sitemap_page_false(
+    mock_invalid_sitemap_xml: ET.Element,
+) -> None:
+    result = await check_is_sitemap_page(mock_invalid_sitemap_xml)
+    assert result is False
+
+
+@pytest.mark.asyncio
+async def test_check_is_sitemap_urlset_false(
+    mock_invalid_sitemap_xml: ET.Element,
+) -> None:
+    result = await check_is_sitemap_urlset(mock_invalid_sitemap_xml)
+    assert result is False
+
+
+@pytest.mark.asyncio
+async def test_check_is_sitemap_urlset_true(
+    mock_valid_sitemap_urlset_xml: ET.Element,
+) -> None:
+    result = await check_is_sitemap_urlset(mock_valid_sitemap_urlset_xml)
+    assert result is True

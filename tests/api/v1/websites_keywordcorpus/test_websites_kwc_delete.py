@@ -7,6 +7,7 @@ from tests.utils.website_keywordcorpus import create_random_website_keywordcorpu
 from tests.utils.website_pages import create_random_website_page
 from tests.utils.websites import create_random_website
 
+from app.models.website import Website
 from app.schemas.website import WebsiteRead
 from app.schemas.website_keywordcorpus import WebsiteKeywordCorpusRead
 from app.schemas.website_page import WebsitePageRead
@@ -19,7 +20,7 @@ async def test_website_page_kwc_delete_as_admin(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website: WebsiteRead = await create_random_website(db_session=db_session)
+    website: Website | WebsiteRead = await create_random_website(db_session=db_session)
     page: WebsitePageRead = await create_random_website_page(
         db_session=db_session, website_id=website.id
     )

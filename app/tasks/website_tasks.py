@@ -1,51 +1,62 @@
-from typing import List, Optional
-
-# from pydantic import UUID4, AnyHttpUrl
-from usp.tree import AbstractSitemap  # type: ignore
-from usp.tree import sitemap_tree_for_homepage  # type: ignore
+import xml.etree.ElementTree as ET
+from typing import Optional
 
 from app.api.utilities import (
+    create_or_update_website_map,
     create_or_update_website_page,
     create_website_pagespeedinsights,
     fetch_pagespeedinsights,
 )
 from app.broker import broker
 from app.core.logger import logger
+from app.core.utilities.websites import (
+    check_is_sitemap_index,
+    check_is_sitemap_page,
+    check_is_sitemap_urlset,
+    fetch_url_page_text,
+    parse_sitemap_xml,
+    process_sitemap_index,
+    process_sitemap_page_urlset,
+)
 from app.schemas import (
     PageSpeedInsightsDevice,
     PSIDevice,
-    WebsiteMapPage,
     WebsiteMapProcessedResult,
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsProcessing,
 )
 
 
-@broker.task(task_name="sitemaps:task_website_sitemap_fetch_pages")
-async def task_website_sitemap_fetch_pages(
+@broker.task(task_name="sitemaps:task_website_sitemap_process_xml")
+async def task_website_sitemap_process_xml(
     website_id: str,
     sitemap_id: str,
     sitemap_url: str,
 ) -> WebsiteMapProcessedResult:
-    logger.info(
-        f"Fetching sitemap pages for website_id {website_id} from {sitemap_id} at {sitemap_url}"  # noqa: E501
-    )
-    sitemap: AbstractSitemap = sitemap_tree_for_homepage(sitemap_url)
-    sitemap_pages: List[WebsiteMapPage] = []
-    for pg in sitemap.all_pages():
-        sitemap_pages.append(
-            WebsiteMapPage(
-                url=pg.url, priority=pg.priority, last_modified=pg.last_modified
-            )
+    sitemap_text: str = await fetch_url_page_text(sitemap_url)
+    sitemap_root: ET.Element = await parse_sitemap_xml(sitemap_text)
+    # Check if the sitemap is a sitemap index
+    if await check_is_sitemap_index(sitemap_root):
+        logger.info(
+            f"Processing sitemap index for website_id {website_id} from {sitemap_id} at {sitemap_url}"  # noqa: E501
         )
-    for sm_page in sitemap_pages:
-        await create_or_update_website_page(
-            website_id=website_id,
-            sitemap_id=sitemap_id,
-            page=sm_page,
+        sitemap_urls = await process_sitemap_index(sitemap_root)
+        for sm_url in sitemap_urls:
+            await create_or_update_website_map(website_id, sm_url)
+        logger.info(f"Discovered {len(sitemap_urls)} sitemap pages")
+    # Check if the sitemap is a sitemap page
+    elif await check_is_sitemap_page(sitemap_root) or await check_is_sitemap_urlset(
+        sitemap_root
+    ):
+        logger.info(
+            f"Processing sitemap urlset for website_id {website_id} from {sitemap_id} at {sitemap_url}"  # noqa: E501
         )
+        sitemap_webpages = await process_sitemap_page_urlset(sitemap_root)
+        for sm_page in sitemap_webpages:
+            await create_or_update_website_page(website_id, sitemap_id, page=sm_page)
+        logger.info(f"Processed {len(sitemap_webpages)} sitemap website page urls")
     return WebsiteMapProcessedResult(
-        url=sitemap.url,
+        url=sitemap_url,
         website_id=website_id,
         sitemap_id=sitemap_id,
     )
@@ -62,6 +73,7 @@ async def task_website_page_pagespeedinsights_fetch(
         f"Fetching PageSpeedInsights for website {website_id}, \
             page {page_id}, URL[{fetch_url}]"
     )
+    is_created: bool = False
     insights: Optional[WebsitePageSpeedInsightsBase] = fetch_pagespeedinsights(
         fetch_url=fetch_url,
         device=PageSpeedInsightsDevice(device=device),
@@ -72,8 +84,10 @@ async def task_website_page_pagespeedinsights_fetch(
             page_id=page_id,
             insights=insights,
         )
+        is_created = True
     return WebsitePageSpeedInsightsProcessing(
         website_id=website_id,
         page_id=page_id,
         insights=insights,
+        is_created=is_created,
     )

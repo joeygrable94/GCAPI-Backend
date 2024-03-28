@@ -11,6 +11,18 @@ from .regex import (
     scope_regex,
 )
 from .uuids import get_uuid, get_uuid_str, parse_id
+from .websites import (
+    check_is_sitemap_index,
+    check_is_sitemap_page,
+    check_is_sitemap_urlset,
+    check_is_xml_valid_sitemap,
+    fetch_url_page_text,
+    fetch_url_status_code,
+    parse_sitemap_xml,
+    process_sitemap_index,
+    process_sitemap_page_urlset,
+    process_sitemap_website_page,
+)
 
 __all__: List[str] = [
     "get_date",
@@ -26,4 +38,14 @@ __all__: List[str] = [
     "get_uuid",
     "get_uuid_str",
     "parse_id",
+    "fetch_url_status_code",
+    "fetch_url_page_text",
+    "parse_sitemap_xml",
+    "check_is_xml_valid_sitemap",
+    "check_is_sitemap_index",
+    "check_is_sitemap_page",
+    "check_is_sitemap_urlset",
+    "process_sitemap_index",
+    "process_sitemap_page_urlset",
+    "process_sitemap_website_page",
 ]

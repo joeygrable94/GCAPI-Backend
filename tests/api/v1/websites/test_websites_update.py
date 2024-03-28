@@ -7,6 +7,7 @@ from tests.utils.utils import random_boolean, random_lower_string
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions import ErrorCode
+from app.models.website import Website
 from app.schemas import WebsiteRead, WebsiteUpdate
 
 pytestmark = pytest.mark.asyncio
@@ -17,7 +18,7 @@ async def test_update_website_as_superuser(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry_a: WebsiteRead = await create_random_website(db_session)
+    entry_a: Website | WebsiteRead = await create_random_website(db_session)
     new_is_secure: bool = random_boolean()
     update_dict = WebsiteUpdate(is_secure=new_is_secure)
     response: Response = await client.patch(
@@ -37,8 +38,8 @@ async def test_update_website_already_exists(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry_a: WebsiteRead = await create_random_website(db_session)
-    entry_b: WebsiteRead = await create_random_website(db_session)
+    entry_a: Website | WebsiteRead = await create_random_website(db_session)
+    entry_b: Website | WebsiteRead = await create_random_website(db_session)
     update_dict = WebsiteUpdate(domain=entry_b.domain, is_secure=random_boolean())
     response: Response = await client.patch(
         f"websites/{entry_a.id}",
@@ -55,7 +56,7 @@ async def test_update_website_as_superuser_domain_too_short(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry_a: WebsiteRead = await create_random_website(db_session)
+    entry_a: Website | WebsiteRead = await create_random_website(db_session)
     new_domain: str = "a.co"
     data: Dict[str, Any] = {"domain": new_domain, "is_secure": random_boolean()}
     response: Response = await client.patch(
@@ -75,7 +76,7 @@ async def test_update_website_as_superuser_domain_too_long(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry_a: WebsiteRead = await create_random_website(db_session)
+    entry_a: Website | WebsiteRead = await create_random_website(db_session)
     new_domain: str = random_lower_string() * 10 + ".com"
     data: Dict[str, Any] = {"domain": new_domain, "is_secure": random_boolean()}
     response: Response = await client.patch(
@@ -96,7 +97,7 @@ async def test_update_website_as_superuser_domain_invalid(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry_a: WebsiteRead = await create_random_website(db_session)
+    entry_a: Website | WebsiteRead = await create_random_website(db_session)
     new_domain: str = "https://" + random_lower_string() + ".com"
     data: Dict[str, Any] = {"domain": new_domain, "is_secure": random_boolean()}
     response: Response = await client.patch(

@@ -7,6 +7,7 @@ from tests.utils.website_maps import create_random_website_map
 from tests.utils.website_pages import create_random_website_page
 from tests.utils.websites import create_random_website
 
+from app.models.website import Website
 from app.schemas import WebsiteMapRead, WebsitePageRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
@@ -49,8 +50,8 @@ async def test_list_website_pages_as_superuser_by_website_id_and_sitemap_id(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     sitemap_a: WebsiteMapRead = await create_random_website_map(
         db_session, website_id=website_a.id
     )
@@ -121,8 +122,8 @@ async def test_list_website_pages_as_superuser_by_website_id(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     sitemap_a: WebsiteMapRead = await create_random_website_map(
         db_session, website_id=website_a.id
     )
@@ -198,8 +199,8 @@ async def test_list_website_pages_as_superuser_by_sitemap_id(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     sitemap_a: WebsiteMapRead = await create_random_website_map(
         db_session, website_id=website_a.id
     )

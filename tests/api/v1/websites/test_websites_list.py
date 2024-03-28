@@ -7,6 +7,7 @@ from tests.utils.clients import assign_website_to_client, create_random_client
 from tests.utils.websites import create_random_website
 
 from app.models.client_website import ClientWebsite
+from app.models.website import Website
 from app.schemas import WebsiteRead
 from app.schemas.client import ClientRead
 
@@ -18,7 +19,7 @@ async def test_list_all_websites_as_superuser(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry_1: WebsiteRead = await create_random_website(db_session)
+    entry_1: Website | WebsiteRead = await create_random_website(db_session)
     response: Response = await client.get("websites/", headers=admin_token_headers)
     assert 200 <= response.status_code < 300
     data: Any = response.json()
@@ -41,8 +42,8 @@ async def test_list_websites_by_client_id_as_superuser(
     client_a: ClientRead = await create_random_client(db_session)
     client_b: ClientRead = await create_random_client(db_session)
     # 2 make a website
-    website_a: WebsiteRead = await create_random_website(db_session)
-    website_b: WebsiteRead = await create_random_website(db_session)
+    website_a: Website | WebsiteRead = await create_random_website(db_session)
+    website_b: Website | WebsiteRead = await create_random_website(db_session)
     # 3 associate website with client
     client_website_a: ClientWebsite = await assign_website_to_client(  # noqa: F841
         db_session, website_a, client_a

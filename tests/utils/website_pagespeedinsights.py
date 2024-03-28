@@ -5,6 +5,7 @@ from tests.utils.websites import create_random_website
 
 from app.crud import WebsitePageSpeedInsightsRepository
 from app.models import WebsitePageSpeedInsights
+from app.models.website import Website
 from app.schemas import (
     WebsitePageRead,
     WebsitePageSpeedInsightsBase,
@@ -53,7 +54,7 @@ async def create_random_website_page_speed_insights(
     repo: WebsitePageSpeedInsightsRepository
     repo = WebsitePageSpeedInsightsRepository(db_session)
     if website_id is None:
-        website: WebsiteRead = await create_random_website(db_session)
+        website: Website | WebsiteRead = await create_random_website(db_session)
         website_id = website.id
     if page_id is None:
         website_page: WebsitePageRead = await create_random_website_page(db_session)

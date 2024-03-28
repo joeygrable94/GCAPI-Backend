@@ -33,8 +33,7 @@ async def test_read_website_by_id_as_superuser(
         headers=admin_token_headers,
         json=data,
     )
-    new_website: Dict[str, Any] = response.json()
-    entry = WebsiteRead(**new_website["website"])
+    entry = WebsiteRead(**response.json())
     response: Response = await client.get(
         f"websites/{entry.id}",
         headers=admin_token_headers,

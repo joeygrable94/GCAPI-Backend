@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions import ErrorCode
+from app.models.website import Website
 from app.schemas import WebsiteRead
 
 pytestmark = pytest.mark.asyncio
@@ -16,7 +17,7 @@ async def test_delete_website_by_id_as_superuser(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    entry: WebsiteRead = await create_random_website(db_session)
+    entry: Website | WebsiteRead = await create_random_website(db_session)
     response: Response = await client.delete(
         f"websites/{entry.id}",
         headers=admin_token_headers,

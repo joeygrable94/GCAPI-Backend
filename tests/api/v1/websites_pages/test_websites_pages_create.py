@@ -11,6 +11,7 @@ from tests.utils.websites import create_random_website
 
 from app.api.exceptions import ErrorCode
 from app.core.utilities.uuids import get_uuid
+from app.models.website import Website
 from app.schemas import WebsiteMapRead, WebsitePageRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
@@ -21,7 +22,7 @@ async def test_create_website_page_as_superuser(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website: WebsiteRead = await create_random_website(db_session)
+    website: Website | WebsiteRead = await create_random_website(db_session)
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
     data = {
         "url": "/",
@@ -121,7 +122,9 @@ async def test_create_website_page_as_superuser_website_not_exists(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website: WebsiteRead = await create_random_website(db_session)  # noqa: F841
+    website: Website | WebsiteRead = await create_random_website(  # noqa: F841
+        db_session
+    )
     web_fake_id: UUID4 = get_uuid()
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
     data = {

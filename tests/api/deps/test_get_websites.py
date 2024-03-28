@@ -11,7 +11,7 @@ from app.schemas.website import WebsiteRead
 
 async def test_get_website_or_404(db_session: AsyncSession) -> None:
     # Test with valid website_id
-    test_website: WebsiteRead = await create_random_website(db_session)
+    test_website: Website | WebsiteRead = await create_random_website(db_session)
     result: Website | None = await get_website_or_404(db_session, test_website.id)
     assert isinstance(result, Website)
     assert result.id == test_website.id

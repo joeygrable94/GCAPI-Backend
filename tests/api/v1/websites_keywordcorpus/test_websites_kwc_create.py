@@ -10,6 +10,7 @@ from tests.utils.websites import create_random_website
 
 from app.api.exceptions.errors import ErrorCode
 from app.core.utilities.uuids import get_uuid
+from app.models.website import Website
 from app.schemas.website import WebsiteRead
 from app.schemas.website_page import WebsitePageRead
 
@@ -21,7 +22,7 @@ async def test_website_page_kwc_create_as_admin(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website: WebsiteRead = await create_random_website(db_session=db_session)
+    website: Website | WebsiteRead = await create_random_website(db_session=db_session)
     page: WebsitePageRead = await create_random_website_page(
         db_session=db_session, website_id=website.id
     )
@@ -74,7 +75,7 @@ async def test_website_page_kwc_create_website_page_not_exists(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    website: WebsiteRead = await create_random_website(db_session=db_session)
+    website: Website | WebsiteRead = await create_random_website(db_session=db_session)
     website_id: UUID4 = get_uuid()
     page: WebsitePageRead = await create_random_website_page(  # noqa: F841
         db_session=db_session, website_id=website_id

@@ -5,10 +5,10 @@ from decimal import Decimal
 from typing import Any, Optional, Union
 
 from pydantic import UUID4, BaseModel, field_validator
-from usp.objects.page import SitemapPageChangeFrequency  # type: ignore
 
 from app.db.validators import validate_url_optional, validate_url_required
 from app.schemas.base import BaseSchema, BaseSchemaRead
+from app.schemas.website_map import SitemapPageChangeFrequency
 
 
 # schemas

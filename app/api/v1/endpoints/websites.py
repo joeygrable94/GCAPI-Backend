@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import Select
-from taskiq import AsyncTaskiqTask
 
 from app.api.deps import (
     CommonClientWebsiteQueryParams,
@@ -23,17 +22,9 @@ from app.core.security.permissions import (
     RoleManager,
     RoleUser,
 )
-from app.crud import WebsiteMapRepository, WebsiteRepository
-from app.models import Website, WebsiteMap
-from app.schemas import (
-    WebsiteCreate,
-    WebsiteCreateProcessing,
-    WebsiteMapCreate,
-    WebsiteMapRead,
-    WebsiteRead,
-    WebsiteUpdate,
-)
-from app.tasks import task_website_sitemap_fetch_pages
+from app.crud import WebsiteRepository
+from app.models import Website
+from app.schemas import WebsiteCreate, WebsiteRead, WebsiteUpdate
 
 router: APIRouter = APIRouter()
 
@@ -98,12 +89,12 @@ async def website_list(
         Depends(get_current_user),
         Depends(get_permission_controller),
     ],
-    response_model=WebsiteCreateProcessing,
+    response_model=WebsiteRead,
 )
 async def website_create(
     website_in: WebsiteCreate,
     permissions: PermissionController = Depends(get_permission_controller),
-) -> WebsiteCreateProcessing:
+) -> WebsiteRead:
     """Create a new website.
 
     Permissions:
@@ -112,8 +103,7 @@ async def website_create(
 
     Returns:
     --------
-    `WebsiteCreateProcessing` : the newly created website and the task id for the
-        background task that will fetch the sitemap pages
+    `WebsiteRead` : the newly created website
 
     """
     # verify current user has permission to take this action
@@ -127,37 +117,15 @@ async def website_create(
         raise WebsiteAlreadyExists()
     if not await websites_repo.validate(domain=website_in.domain):
         raise WebsiteDomainInvalid()
-    new_site: Website = await websites_repo.create(website_in)
-    website_sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(
-        session=permissions.db
+    website: Website = await websites_repo.create(website_in)
+    # return role based response
+    response_out: WebsiteRead = permissions.get_resource_response(
+        resource=website,
+        responses={
+            RoleUser: WebsiteRead,
+        },
     )
-    a_sitemap_base_url = new_site.get_link()
-    a_sitemap_url = "/"
-    a_sitemap: WebsiteMap | None = await website_sitemap_repo.exists_by_two(
-        field_name_a="url",
-        field_value_a=a_sitemap_url,
-        field_name_b="website_id",
-        field_value_b=new_site.id,
-    )
-    if a_sitemap is None:
-        a_sitemap = await website_sitemap_repo.create(
-            WebsiteMapCreate(
-                url=new_site.get_link(),
-                is_active=True,
-                website_id=new_site.id,
-            )
-        )
-    # send task to fetch sitemap pages to broker
-    sitemap_task: AsyncTaskiqTask = await task_website_sitemap_fetch_pages.kiq(
-        website_id=str(new_site.id),
-        sitemap_id=str(a_sitemap.id),
-        sitemap_url=f"{a_sitemap_base_url}/",
-    )
-    return WebsiteCreateProcessing(
-        website=WebsiteRead.model_validate(new_site),
-        sitemap=WebsiteMapRead.model_validate(a_sitemap),
-        task_id=sitemap_task.task_id,
-    )
+    return response_out
 
 
 @router.get(

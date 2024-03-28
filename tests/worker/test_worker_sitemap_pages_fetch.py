@@ -2,38 +2,57 @@ import unittest.mock
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.website_maps import generate_mock_sitemap
 
 from app.core.utilities.uuids import get_uuid
 from app.schemas import WebsiteMapProcessedResult
-from app.tasks import task_website_sitemap_fetch_pages
+from app.tasks import task_website_sitemap_process_xml
 
 
 @pytest.mark.anyio
-async def test_task_website_sitemap_fetch_pages(
-    mock_fetch_sitemap: list,
+async def test_task_website_sitemap_process_xml_index(
+    mock_fetch_sitemap_index: str,
     db_session: AsyncSession,
 ) -> None:
     website_id = get_uuid()
     sitemap_id = get_uuid()
-    sitemap_url = "https://getcommunity.com/"
-    mock_sitemap = generate_mock_sitemap(sitemap_url, mock_fetch_sitemap)
-
+    sitemap_url = "https://getcommunity.com/sitemap.xml"
     with unittest.mock.patch(
-        "app.tasks.website_tasks.sitemap_tree_for_homepage"
-    ) as mock_sitemap_tree:
-        mock_sitemap_tree.return_value = mock_sitemap
+        "app.tasks.website_tasks.fetch_url_page_text"
+    ) as mock_fetch_url_page_text:
+        mock_fetch_url_page_text.return_value = mock_fetch_sitemap_index
         sitemap_task: WebsiteMapProcessedResult = (
-            await task_website_sitemap_fetch_pages(
+            await task_website_sitemap_process_xml(
                 str(website_id), str(sitemap_id), sitemap_url
             )
         )
         assert sitemap_task.url == sitemap_url
-        assert str(sitemap_task.website_id) == str(website_id)
-        assert str(sitemap_task.sitemap_id) == str(sitemap_id)
-        # assert isinstance(sitemap_task.website_map_pages, list)
-        # assert len(sitemap_task.website_map_pages) == len(mock_sitemap.pages)
+        assert sitemap_task.website_id == website_id
+        assert sitemap_task.sitemap_id == sitemap_id
+        assert sitemap_task.is_active is True
 
-        # Check that the sitemap and sitemap saving functions
-        # were called with the correct arguments
-        mock_sitemap_tree.assert_called_once_with(sitemap_url)
+
+@pytest.mark.anyio
+async def test_task_website_sitemap_process_xml_page(
+    mock_fetch_sitemap_page: str,
+    db_session: AsyncSession,
+) -> None:
+    website_id = get_uuid()
+    sitemap_id = get_uuid()
+    sitemap_url = "https://getcommunity.com/page-sitemap.xml"
+    with unittest.mock.patch(
+        "app.tasks.website_tasks.fetch_url_page_text"
+    ) as mock_fetch_url_page_text:
+        mock_fetch_url_page_text.return_value = mock_fetch_sitemap_page
+        with unittest.mock.patch(
+            "app.api.utilities.fetch_url_status_code"
+        ) as mock_fetch_url_page_status_code:
+            mock_fetch_url_page_status_code.return_value = 200
+            sitemap_task: WebsiteMapProcessedResult = (
+                await task_website_sitemap_process_xml(
+                    str(website_id), str(sitemap_id), sitemap_url
+                )
+            )
+            assert sitemap_task.url == sitemap_url
+            assert sitemap_task.website_id == website_id
+            assert sitemap_task.sitemap_id == sitemap_id
+            assert sitemap_task.is_active is True

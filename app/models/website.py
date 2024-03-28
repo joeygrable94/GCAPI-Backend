@@ -111,5 +111,5 @@ class Website(Base):
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"Website({self.id}, URL[{self.domain}])"
+        repr_str: str = f"Website({self.id}, Domain[{self.domain}])"
         return repr_str

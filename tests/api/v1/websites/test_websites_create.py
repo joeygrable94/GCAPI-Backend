@@ -25,20 +25,8 @@ async def test_create_website_as_superuser(
     )
     assert 200 <= response.status_code < 300
     entry: Dict[str, Any] = response.json()
-    assert entry["task_id"] is not None
-    assert entry["website"]["domain"] == domain
-    assert entry["website"]["is_secure"] == is_secure
-    task_id = str(entry["task_id"])
-    response: Response = await client.get(
-        f"tasks/{task_id}",
-        headers=admin_token_headers,
-    )
-    response_json = response.json()
-    assert response.status_code == 200
-    assert response_json["task_id"] == task_id
-    assert response_json["task_status"] == "PENDING"
-    assert response_json["task_result"] is None
-    assert isinstance(response_json["task_time"], float)
+    assert entry["domain"] == domain
+    assert entry["is_secure"] == is_secure
 
 
 async def test_create_website_as_superuser_website_already_exists(
@@ -56,9 +44,8 @@ async def test_create_website_as_superuser_website_already_exists(
     )
     assert 200 <= response.status_code < 300
     entry: Dict[str, Any] = response.json()
-    assert entry["task_id"] is not None
-    assert entry["website"]["domain"] == domain
-    assert entry["website"]["is_secure"] == is_secure
+    assert entry["domain"] == domain
+    assert entry["is_secure"] == is_secure
     is_secure_2: bool = random_boolean()
     data_2: Dict[str, Any] = {"domain": domain, "is_secure": is_secure_2}
     response_2: Response = await client.post(

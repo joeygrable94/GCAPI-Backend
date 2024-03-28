@@ -31,6 +31,7 @@ from .exceptions import (
     WebsiteDomainInvalid,
     WebsiteMapAlreadyExists,
     WebsiteMapNotExists,
+    WebsiteMapUrlXmlInvalid,
     WebsiteNotExists,
     WebsitePageAlreadyExists,
     WebsitePageKeywordCorpusNotExists,
@@ -323,6 +324,19 @@ def configure_exceptions(app: FastAPI) -> None:
     @app.exception_handler(WebsiteMapNotExists)
     async def website_map_not_exists_exception_handler(
         request: Request, exc: WebsiteMapNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(WebsiteMapUrlXmlInvalid)
+    async def website_map_url_xml_invalid_exception_handler(
+        request: Request, exc: WebsiteMapUrlXmlInvalid
     ) -> Response:  # noqa: E501
         return await http_exception_handler(
             request,
