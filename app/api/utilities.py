@@ -69,15 +69,15 @@ async def create_or_update_website_page(
         status_code: int = await fetch_url_status_code(page.url)
         session: AsyncSession
         website_page: WebsitePage | None
+        pages_repo: WebsitePageRepository
         async with get_db_session() as session:
-            pages_repo: WebsitePageRepository = WebsitePageRepository(session)
+            pages_repo = WebsitePageRepository(session)
             website_page = await pages_repo.exists_by_two(
                 field_name_a="url",
                 field_value_a=page.url,
                 field_name_b="website_id",
                 field_value_b=website_uuid,
             )
-            print(website_page)
             if website_page is not None:
                 website_page = await pages_repo.update(
                     entry=website_page,
