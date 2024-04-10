@@ -64,7 +64,7 @@ mypy = "1.7.0"
 isort = "5.13.2"
 black = "24.3.0"
 flake8 = "7.0.0"
-autoflake = "2.2.1"
+autoflake = "2.3.1"
 makefun = "^1.15.1"
 asgi-lifespan = "^2.0.0"
 
