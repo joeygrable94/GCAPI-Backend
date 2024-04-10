@@ -27,7 +27,7 @@ email-validator = "2.1.0.post1"
 pydantic = {version = "2.6.4", extras = ["email"]}
 pydantic-settings = "^2.0.3"
 python-multipart = "0.0.9"
-python-dotenv = "1.0.0"
+python-dotenv = "1.0.1"
 PyMySQL = "1.1.0"
 SQLAlchemy = {version = "2.0.23", extras = ["mypy", "asyncio"]}
 SQLAlchemy-Utils = "0.41.1"
