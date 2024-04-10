@@ -66,10 +66,10 @@ class Website(Base):
         "Client", secondary="client_website", back_populates="websites"
     )
     sitemaps: Mapped[List["WebsiteMap"]] = relationship(
-        "WebsiteMap", back_populates="website"
+        "WebsiteMap", back_populates="website", cascade="all, delete-orphan"
     )
     pages: Mapped[List["WebsitePage"]] = relationship(
-        "WebsitePage", back_populates="website"
+        "WebsitePage", back_populates="website", cascade="all, delete-orphan"
     )
     gsc_accounts: Mapped[List["GoSearchConsoleProperty"]] = relationship(
         "GoSearchConsoleProperty", back_populates="website"

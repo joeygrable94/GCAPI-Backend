@@ -5,10 +5,10 @@ from taskiq import AsyncTaskiqTask, TaskiqResult
 from taskiq_redis.exceptions import ResultIsMissingError
 
 from app.api.deps import CurrentUser, get_current_user
-from app.broker import broker
 from app.core.security import auth
 from app.schemas import TaskState
 from app.schemas.task import TaskStatus
+from app.worker import task_broker
 
 router: APIRouter = APIRouter()
 
@@ -43,7 +43,7 @@ async def get_tasks_status(
     task_return_value: Any | None = None
     task_execution_time: float = 0.0
     try:
-        task = AsyncTaskiqTask(task_id, result_backend=broker.result_backend)
+        task = AsyncTaskiqTask(task_id, result_backend=task_broker.result_backend)
         task_result = await task.get_result()
         if task_result is None:
             raise ResultIsMissingError()

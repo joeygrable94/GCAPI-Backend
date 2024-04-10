@@ -2,7 +2,7 @@
 
 python cli.py secure load-keys
 
-python cli.py db check-connection
+python cli.py db check-db-connection
 
 python cli.py db create-db
 

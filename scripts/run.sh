@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Check DB connection
-python cli.py db check-connection
+python cli.py db check-db-connection
 
 # Upgrade DB
 echo "Running Backend DB Migrations..."

@@ -1,15 +1,32 @@
-from app.broker import broker
 from app.core.logger import logger
+from app.worker import task_broker
+
+"""
+======== DEMO ONLY ========
 
 
-@broker.task(task_name="tasks:task_speak")
+from datetime import datetime
+
+@task_broker.task(
+    schedule=[
+        {"cron": "*/1 * * * *", "args": [1]}
+    ]
+)
+async def task_test_log_schedule(value: int) -> int:
+    cur_date = datetime.now().isoformat()
+    logger.info(f"Task test_log_schedule({value}) at {cur_date}")
+    return value + 1
+"""
+
+
+@task_broker.task(task_name="tasks:task_speak")
 def task_speak(
     word: str,
 ) -> str:
     return f"I say, {word}!"
 
 
-@broker.task(task_name="tasks:task_request_to_delete_user")
+@task_broker.task(task_name="tasks:task_request_to_delete_user")
 def task_request_to_delete_user(user_id: str) -> None:
     # TODO: Send email to user to confirm deletion
     # TODO: flag user as pending delete.
@@ -18,7 +35,7 @@ def task_request_to_delete_user(user_id: str) -> None:
     )  # pragma: no cover
 
 
-@broker.task(task_name="tasks:task_request_to_delete_client")
+@task_broker.task(task_name="tasks:task_request_to_delete_client")
 def task_request_to_delete_client(user_id: str, client_id: str) -> None:
     # TODO: Send email to user to confirm deletion
     # TODO: flag client as pending delete.

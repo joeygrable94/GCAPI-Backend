@@ -45,7 +45,8 @@ Create a virtual environment, activate it, then install the backend python pip `
 
 ```bash
 main.py                 # Main entry point for the application
-broker.py               # Taskiq worker entry point
+worker.py               # Taskiq worker entry point
+tasks/                  # Taskiq task definitions
 cli/                    # Command line interface
     db.py                   # Manages database operations
     secure.py               # Manages secure cipher operations
@@ -68,7 +69,6 @@ db/                     # Database operations layer
 crud/                   # CRUD Layer for data models
 models/                 # Database models
 schemas/                # Pydantic models for data validation
-tasks/                  # Taskiq task definitions
 api/                    # API Layer
     v1/endpoints/           # Version controlled endpoints
     deps/                   # Dependencies injected into endpoints

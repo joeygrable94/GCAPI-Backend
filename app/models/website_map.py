@@ -61,7 +61,7 @@ class WebsiteMap(Base):
     )
     website: Mapped["Website"] = relationship("Website", back_populates="sitemaps")
     pages: Mapped[Optional[List["WebsitePage"]]] = relationship(
-        "WebsitePage", back_populates="sitemap"
+        "WebsitePage", back_populates="sitemap", cascade="all, delete-orphan"
     )
 
     # ACL

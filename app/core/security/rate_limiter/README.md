@@ -60,7 +60,7 @@ There are some config in `FastAPILimiter.init`.
 
 ### redis
 
-The `redis` instance of `aioredis`.
+The `redis` instance of `redis.asyncio`.
 
 ### prefix
 

@@ -22,7 +22,7 @@ pycryptodome = "^3.19.1"
 asgi-correlation-id = "^4.1.0"
 asgi-lifespan = "^2.0.0"
 fastapi = "0.109.2"
-fastapi-mail = {extras = ["aioredis"], version = "^1.4.1"}
+fastapi-mail = {version = "^1.4.1"}
 email-validator = "2.1.0.post1"
 pydantic = {version = "2.6.4", extras = ["email"]}
 pydantic-settings = "^2.0.3"
@@ -34,7 +34,6 @@ SQLAlchemy-Utils = "0.41.1"
 alembic = "1.13.1"
 redis = "^5.0.0"
 types-redis = "^4.6.0.20240106"
-aioredis = "^2.0.1"
 Jinja2 = "3.1.3"
 anyio = {version = "3.7.1", extras = ["trio"]}
 asyncio = "3.4.3"
@@ -76,9 +75,6 @@ combine_as_imports = true
 line_length = 88
 
 [tool.black]
-profile = "black"
-src_paths = ["app"]
-combine_as_imports = true
 line_length = 88
 
 [tool.mypy]

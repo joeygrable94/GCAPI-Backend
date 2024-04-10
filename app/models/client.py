@@ -76,37 +76,41 @@ class Client(Base):
         "User", secondary="user_client", back_populates="clients", lazy="selectin"
     )
     websites: Mapped[List["Website"]] = relationship(
-        secondary="client_website", back_populates="clients"
+        secondary="client_website", back_populates="clients", cascade="all, delete"
     )
     client_reports: Mapped[List["ClientReport"]] = relationship(
         "ClientReport", back_populates="client"
     )
     gcloud_accounts: Mapped[List["GoCloudProperty"]] = relationship(
-        "GoCloudProperty", back_populates="client"
+        "GoCloudProperty", back_populates="client", cascade="all, delete-orphan"
     )
     gsc_accounts: Mapped[List["GoSearchConsoleProperty"]] = relationship(
-        "GoSearchConsoleProperty", back_populates="client"
+        "GoSearchConsoleProperty", back_populates="client", cascade="all, delete-orphan"
     )
     ga4_accounts: Mapped[List["GoAnalytics4Property"]] = relationship(
-        "GoAnalytics4Property", back_populates="client"
+        "GoAnalytics4Property", back_populates="client", cascade="all, delete-orphan"
     )
     gua_accounts: Mapped[List["GoUniversalAnalyticsProperty"]] = relationship(
-        "GoUniversalAnalyticsProperty", back_populates="client"
+        "GoUniversalAnalyticsProperty",
+        back_populates="client",
+        cascade="all, delete-orphan",
     )
     sharpspring_accounts: Mapped[List["Sharpspring"]] = relationship(
-        "Sharpspring", back_populates="client"
+        "Sharpspring", back_populates="client", cascade="all, delete-orphan"
+    )
+    bdx_feeds: Mapped[List["BdxFeed"]] = relationship(
+        "BdxFeed", back_populates="client", cascade="all, delete-orphan"
     )
     buckets: Mapped[List["ClientBucket"]] = relationship(
         "ClientBucket", back_populates="client"
-    )
-    bdx_feeds: Mapped[List["BdxFeed"]] = relationship(
-        "BdxFeed", back_populates="client"
     )
     file_assets: Mapped[List["FileAsset"]] = relationship(
         "FileAsset",
         back_populates="client",
     )
-    gcflytours: Mapped[List["Gcft"]] = relationship("Gcft", back_populates="client")
+    gcflytours: Mapped[List["Gcft"]] = relationship(
+        "Gcft", back_populates="client", cascade="all, delete-orphan"
+    )
 
     # ACL
     def __acl__(

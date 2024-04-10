@@ -7,7 +7,6 @@ from app.api.utilities import (
     create_website_pagespeedinsights,
     fetch_pagespeedinsights,
 )
-from app.broker import broker
 from app.core.logger import logger
 from app.core.utilities.websites import (
     check_is_sitemap_index,
@@ -25,9 +24,10 @@ from app.schemas import (
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsProcessing,
 )
+from app.worker import task_broker
 
 
-@broker.task(task_name="sitemaps:task_website_sitemap_process_xml")
+@task_broker.task(task_name="sitemaps:task_website_sitemap_process_xml")
 async def task_website_sitemap_process_xml(
     website_id: str,
     sitemap_id: str,
@@ -62,7 +62,7 @@ async def task_website_sitemap_process_xml(
     )
 
 
-@broker.task(task_name="webpages:task_website_page_pagespeedinsights_fetch")
+@task_broker.task(task_name="webpages:task_website_page_pagespeedinsights_fetch")
 async def task_website_page_pagespeedinsights_fetch(
     website_id: str,
     page_id: str,

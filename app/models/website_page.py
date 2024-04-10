@@ -73,10 +73,10 @@ class WebsitePage(Base):
         "WebsiteMap", back_populates="pages"
     )
     keywordcorpus: Mapped[List["WebsiteKeywordCorpus"]] = relationship(
-        "WebsiteKeywordCorpus", back_populates="page"
+        "WebsiteKeywordCorpus", back_populates="page", cascade="all, delete-orphan"
     )
     pagespeedinsights: Mapped[List["WebsitePageSpeedInsights"]] = relationship(
-        "WebsitePageSpeedInsights", back_populates="page"
+        "WebsitePageSpeedInsights", back_populates="page", cascade="all, delete-orphan"
     )
 
     # ACL

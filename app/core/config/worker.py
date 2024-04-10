@@ -13,6 +13,9 @@ class WorkerSettings(BaseSettings):
     result_backend: str = environ.get(
         "WORKER_RESULT_BACKEND", "redis://localhost:6379/0"
     )
+    schedule_src: str = environ.get(
+        "WORKER_SCHEDULE_SOURCE", "redis://localhost:6379/0"
+    )
     sentry_dsn: Optional[str] = environ.get("WORKER_SENTRY_DSN", None)
 
     # pydantic settings config
