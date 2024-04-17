@@ -4,11 +4,8 @@ from typing import TYPE_CHECKING, Any, List, Tuple
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import StringEncryptedType  # type: ignore
-from sqlalchemy_utils import UUIDType
-from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
+from sqlalchemy_utils import UUIDType  # type: ignore
 
-from app.core.config import settings
 from app.core.security.permissions import (
     AccessCreate,
     AccessDelete,
@@ -29,6 +26,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
     from .go_a4 import GoAnalytics4Property  # noqa: F401
     from .go_sc import GoSearchConsoleProperty  # noqa: F401
+    from .go_ua import GoUniversalAnalyticsProperty  # noqa: F401
     from .website_keywordcorpus import WebsiteKeywordCorpus  # noqa: F401
     from .website_map import WebsiteMap  # noqa: F401
     from .website_page import WebsitePage  # noqa: F401
@@ -58,37 +56,10 @@ class Website(Base):
         onupdate=func.current_timestamp(),
     )
     domain: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            key=settings.api.encryption_key,
-            engine=AesEngine,
-            padding="pkcs5",
-            length=255,
-        ),
-        nullable=False,
-        unique=True,
-        primary_key=True,
+        String(255), nullable=False, unique=True, primary_key=True
     )
-    is_secure: Mapped[bool] = mapped_column(
-        StringEncryptedType(
-            Boolean,
-            key=settings.api.encryption_key,
-            engine=AesEngine,
-            padding="zeroes",
-        ),
-        nullable=False,
-        default=False,
-    )
-    is_active: Mapped[bool] = mapped_column(
-        StringEncryptedType(
-            Boolean,
-            key=settings.api.encryption_key,
-            engine=AesEngine,
-            padding="zeroes",
-        ),
-        nullable=False,
-        default=True,
-    )
+    is_secure: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
 
     # relationships
     clients: Mapped[List["Client"]] = relationship(
@@ -105,6 +76,9 @@ class Website(Base):
     )
     ga4_accounts: Mapped[List["GoAnalytics4Property"]] = relationship(
         "GoAnalytics4Property", back_populates="website"
+    )
+    gua_accounts: Mapped[List["GoUniversalAnalyticsProperty"]] = relationship(
+        "GoUniversalAnalyticsProperty", back_populates="website"
     )
     keywordcorpus: Mapped[List["WebsiteKeywordCorpus"]] = relationship(
         "WebsiteKeywordCorpus", back_populates="website"

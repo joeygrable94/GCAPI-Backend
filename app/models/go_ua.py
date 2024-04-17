@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
-from sqlalchemy import BLOB, DateTime, ForeignKey, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType  # type: ignore
 
@@ -11,11 +11,12 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
-    from .note import Note  # noqa: F401
+    from .go_ua_view import GoUniversalAnalyticsView  # noqa: F401
+    from .website import Website  # noqa: F401
 
 
-class ClientReport(Base):
-    __tablename__: str = "client_report"
+class GoUniversalAnalyticsProperty(Base):
+    __tablename__: str = "go_ua"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
@@ -36,23 +37,28 @@ class ClientReport(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    title: Mapped[str] = mapped_column(
-        String(96), nullable=False, unique=True, primary_key=True
+    title: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    tracking_id: Mapped[str] = mapped_column(
+        String(16), nullable=False, unique=True, primary_key=True
     )
-    url: Mapped[str] = mapped_column(String(2048), nullable=False)
-    description: Mapped[str] = mapped_column(Text(5000), nullable=True)
-    keys: Mapped[str] = mapped_column(BLOB, nullable=True)
 
     # relationships
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("client.id"), nullable=False
     )
-    client: Mapped["Client"] = relationship("Client", back_populates="client_reports")
-    notes: Mapped[List["Note"]] = relationship(
-        "Note", secondary="client_report_note", back_populates="client_reports"
+    client: Mapped["Client"] = relationship(back_populates="gua_accounts")
+    website_id: Mapped[UUID4] = mapped_column(
+        UUIDType(binary=False), ForeignKey("website.id"), nullable=False
+    )
+    website: Mapped["Website"] = relationship(back_populates="gua_accounts")
+    gua_views: Mapped[List["GoUniversalAnalyticsView"]] = relationship(
+        "GoUniversalAnalyticsView", back_populates="gua_account"
     )
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"ClientReport({self.title}, created {self.created_on})"
+        repr_str: str = (
+            f"GoUniversalAnalytics(TrackingID[{self.tracking_id}] \
+            for Client[{self.client_id}] Website[{self.website_id}])"
+        )
         return repr_str

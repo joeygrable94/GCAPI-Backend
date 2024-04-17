@@ -4,11 +4,8 @@ from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import StringEncryptedType  # type: ignore
-from sqlalchemy_utils import UUIDType
-from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
+from sqlalchemy_utils import UUIDType  # type: ignore
 
-from app.core.config import settings
 from app.core.security.permissions import (
     AccessCreate,
     AccessDelete,
@@ -52,26 +49,11 @@ class WebsiteMap(Base):
         onupdate=func.current_timestamp(),
     )
     url: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            key=settings.api.encryption_key,
-            engine=AesEngine,
-            padding="pkcs5",
-            length=2048,
-        ),
+        String(2048),
         nullable=False,
         default="https://getcommunity.com/sitemap_index.xml",
     )
-    is_active: Mapped[bool] = mapped_column(
-        StringEncryptedType(
-            Boolean,
-            key=settings.api.encryption_key,
-            engine=AesEngine,
-            padding="zeroes",
-        ),
-        nullable=False,
-        default=True,
-    )
+    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
 
     # relationships
     website_id: Mapped[UUID4] = mapped_column(

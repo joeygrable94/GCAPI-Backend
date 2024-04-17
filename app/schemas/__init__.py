@@ -76,6 +76,16 @@ from .go_sc_searchappearance import (
     GoSearchConsoleSearchappearanceRead,
     GoSearchConsoleSearchappearanceUpdate,
 )
+from .go_ua import (
+    GoUniversalAnalyticsPropertyCreate,
+    GoUniversalAnalyticsPropertyRead,
+    GoUniversalAnalyticsPropertyUpdate,
+)
+from .go_ua_view import (
+    GoUniversalAnalyticsViewCreate,
+    GoUniversalAnalyticsViewRead,
+    GoUniversalAnalyticsViewUpdate,
+)
 from .ipaddress import IpaddressCreate, IpaddressRead, IpaddressUpdate
 from .note import NoteCreate, NoteRead, NoteUpdate
 from .sharpspring import SharpspringCreate, SharpspringRead, SharpspringUpdate
@@ -199,6 +209,12 @@ __all__: List[str] = [
     "GoSearchConsoleSearchappearanceCreate",
     "GoSearchConsoleSearchappearanceRead",
     "GoSearchConsoleSearchappearanceUpdate",
+    "GoUniversalAnalyticsPropertyCreate",
+    "GoUniversalAnalyticsPropertyRead",
+    "GoUniversalAnalyticsPropertyUpdate",
+    "GoUniversalAnalyticsViewCreate",
+    "GoUniversalAnalyticsViewRead",
+    "GoUniversalAnalyticsViewUpdate",
     "IpaddressCreate",
     "IpaddressRead",
     "IpaddressUpdate",

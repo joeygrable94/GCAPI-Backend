@@ -16,7 +16,8 @@ venv
 
 # Security
 *.pem
-!app_*.pem
+!app_cert.pem
+!app_key.pem
 
 # PyTest / Coverage / Lint
 htmlcov

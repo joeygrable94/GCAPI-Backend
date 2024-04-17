@@ -24,6 +24,8 @@ from .go_sc_query import GoSearchConsoleQueryRepository  # noqa: F401
 from .go_sc_searchappearance import (  # noqa: F401, E501
     GoSearchConsoleSearchappearanceRepository,
 )
+from .go_ua import GoUniversalAnalyticsPropertyRepository  # noqa: F401
+from .go_ua_view import GoUniversalAnalyticsViewRepository  # noqa: F401
 from .ipaddress import IpaddressRepository  # noqa: F401
 from .note import NoteRepository  # noqa: F401
 from .sharpspring import SharpspringRepository  # noqa: F401

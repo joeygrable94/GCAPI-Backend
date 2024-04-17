@@ -4,11 +4,8 @@ from typing import TYPE_CHECKING, Any
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import StringEncryptedType  # type: ignore
-from sqlalchemy_utils import UUIDType
-from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
+from sqlalchemy_utils import UUIDType  # type: ignore
 
-from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 from app.db.constants import DB_STR_TINYTEXT_MAX_LEN
@@ -41,24 +38,10 @@ class Sharpspring(Base):
         onupdate=func.current_timestamp(),
     )
     api_key: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            key=settings.api.encryption_key,
-            engine=AesEngine,
-            padding="pkcs5",
-            length=DB_STR_TINYTEXT_MAX_LEN,
-        ),
-        nullable=False,
+        String(DB_STR_TINYTEXT_MAX_LEN), nullable=False
     )
     secret_key: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            key=settings.api.encryption_key + settings.api.encryption_salt,
-            engine=AesEngine,
-            padding="pkcs5",
-            length=DB_STR_TINYTEXT_MAX_LEN,
-        ),
-        nullable=False,
+        String(DB_STR_TINYTEXT_MAX_LEN), nullable=False
     )
 
     # relationships

@@ -1,7 +1,6 @@
 import json
 from typing import Optional
 from urllib import request
-from urllib.parse import urlparse
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -67,7 +66,6 @@ async def create_or_update_website_page(
     try:
         website_uuid = parse_id(website_id)
         sitemap_uuid = parse_id(sitemap_id)
-        parsed_url = urlparse(page.url)
         status_code: int = await fetch_url_status_code(page.url)
         session: AsyncSession
         website_page: WebsitePage | None
@@ -76,7 +74,7 @@ async def create_or_update_website_page(
             pages_repo = WebsitePageRepository(session)
             website_page = await pages_repo.exists_by_two(
                 field_name_a="url",
-                field_value_a=parsed_url.path,
+                field_value_a=page.url,
                 field_name_b="website_id",
                 field_value_b=website_uuid,
             )
@@ -84,7 +82,7 @@ async def create_or_update_website_page(
                 website_page = await pages_repo.update(
                     entry=website_page,
                     schema=WebsitePageUpdate(
-                        url=parsed_url.path,
+                        url=page.url,
                         status=status_code,
                         priority=page.priority,
                         last_modified=page.last_modified,
@@ -94,7 +92,7 @@ async def create_or_update_website_page(
             else:
                 website_page = await pages_repo.create(
                     schema=WebsitePageCreate(
-                        url=parsed_url.path,
+                        url=page.url,
                         status=status_code,
                         priority=page.priority,
                         last_modified=page.last_modified,
