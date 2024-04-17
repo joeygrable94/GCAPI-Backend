@@ -26,7 +26,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
     from .go_a4 import GoAnalytics4Property  # noqa: F401
     from .go_sc import GoSearchConsoleProperty  # noqa: F401
-    from .go_ua import GoUniversalAnalyticsProperty  # noqa: F401
     from .website_keywordcorpus import WebsiteKeywordCorpus  # noqa: F401
     from .website_map import WebsiteMap  # noqa: F401
     from .website_page import WebsitePage  # noqa: F401
@@ -76,9 +75,6 @@ class Website(Base):
     )
     ga4_accounts: Mapped[List["GoAnalytics4Property"]] = relationship(
         "GoAnalytics4Property", back_populates="website"
-    )
-    gua_accounts: Mapped[List["GoUniversalAnalyticsProperty"]] = relationship(
-        "GoUniversalAnalyticsProperty", back_populates="website"
     )
     keywordcorpus: Mapped[List["WebsiteKeywordCorpus"]] = relationship(
         "WebsiteKeywordCorpus", back_populates="website"

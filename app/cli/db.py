@@ -22,40 +22,44 @@ app = typer.Typer()
 def check_db_connection() -> None:
     try:
         logger.info("Check Database Connection")
-        current_loop = asyncio.get_event_loop()
-        asyncio.run_coroutine_threadsafe(check_db_connected(), loop=current_loop)
+        asyncio.run(check_db_connected())
     except Exception as e:
         logger.warning(f"Error checking DB connection: {e}")
+    except RuntimeError:
+        logger.warning("Error building database: RuntimeError")
 
 
 @app.command()
 def check_redis_connection() -> None:
     try:
         logger.info("Check Redis Connection")
-        current_loop = asyncio.get_event_loop()
-        asyncio.run_coroutine_threadsafe(check_redis_connected(), loop=current_loop)
+        asyncio.run(check_redis_connected())
     except Exception as e:
         logger.warning(f"Error checking redis connection: {e}")
+    except RuntimeError:
+        logger.warning("Error building database: RuntimeError")
 
 
 @app.command()
 def create_db() -> None:
     try:
         logger.info("Create Database")
-        current_loop = asyncio.get_event_loop()
-        asyncio.run_coroutine_threadsafe(build_database(), loop=current_loop)
+        asyncio.run(build_database())
     except Exception as e:
         logger.warning(f"Error building database: {e}")
+    except RuntimeError:
+        logger.warning("Error building database: RuntimeError")
 
 
 @app.command()
 def add_initial_data() -> None:
     try:
         logger.info("Load Initial Data")
-        current_loop = asyncio.get_event_loop()
-        asyncio.run_coroutine_threadsafe(create_init_data(), loop=current_loop)
+        asyncio.run(create_init_data())
     except Exception as e:
         logger.warning(f"Error adding initial DB data: {e}")
+    except RuntimeError:
+        logger.warning("Error building database: RuntimeError")
 
 
 @app.command()
@@ -76,6 +80,8 @@ def generate_schema_graph() -> None:
         )
     except Exception as e:
         logger.warning(f"Error creating schema graph: {e}")
+    except RuntimeError:
+        logger.warning("Error building database: RuntimeError")
 
 
 if __name__ == "__main__":

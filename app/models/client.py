@@ -37,7 +37,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from .go_a4 import GoAnalytics4Property  # noqa: F401
     from .go_cloud import GoCloudProperty  # noqa: F401
     from .go_sc import GoSearchConsoleProperty  # noqa: F401
-    from .go_ua import GoUniversalAnalyticsProperty  # noqa: F401
     from .sharpspring import Sharpspring  # noqa: F401
     from .user import User  # noqa: F401
     from .website import Website  # noqa: F401
@@ -89,11 +88,6 @@ class Client(Base):
     )
     ga4_accounts: Mapped[List["GoAnalytics4Property"]] = relationship(
         "GoAnalytics4Property", back_populates="client", cascade="all, delete-orphan"
-    )
-    gua_accounts: Mapped[List["GoUniversalAnalyticsProperty"]] = relationship(
-        "GoUniversalAnalyticsProperty",
-        back_populates="client",
-        cascade="all, delete-orphan",
     )
     sharpspring_accounts: Mapped[List["Sharpspring"]] = relationship(
         "Sharpspring", back_populates="client", cascade="all, delete-orphan"

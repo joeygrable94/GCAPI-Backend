@@ -1,18 +1,18 @@
 """initial db
 
-Revision ID: c81c1a0d9206
+Revision ID: 78751290f43d
 Revises:
-Create Date: 2024-01-10 15:17:54.964508
+Create Date: 2024-04-16 20:16:49.273743
 
 """
 from alembic import op
 import sqlalchemy as sa
 import sqlalchemy_utils  # type: ignore
+from app.db.custom_types import Scopes, LongText
 
-from app.db.custom_types import LongText, Scopes
 
 # revision identifiers, used by Alembic.
-revision = 'c81c1a0d9206'
+revision = '78751290f43d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -51,6 +51,7 @@ def upgrade() -> None:
     sa.Column('auth_id', sa.String(length=255), nullable=False),
     sa.Column('email', sa.String(length=320), nullable=False),
     sa.Column('username', sa.String(length=255), nullable=False),
+    sa.Column('picture', sa.String(length=1024), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('is_verified', sa.Boolean(), nullable=False),
     sa.Column('is_superuser', sa.Boolean(), nullable=False),
@@ -185,22 +186,6 @@ def upgrade() -> None:
     mysql_engine='InnoDB'
     )
     op.create_index(op.f('ix_go_sc_id'), 'go_sc', ['id'], unique=True)
-    op.create_table('go_ua',
-    sa.Column('id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
-    sa.Column('created_on', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('updated_on', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('title', sa.String(length=255), nullable=False),
-    sa.Column('tracking_id', sa.String(length=16), nullable=False),
-    sa.Column('client_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
-    sa.Column('website_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
-    sa.ForeignKeyConstraint(['client_id'], ['client.id'], ),
-    sa.ForeignKeyConstraint(['website_id'], ['website.id'], ),
-    sa.PrimaryKeyConstraint('tracking_id'),
-    sa.UniqueConstraint('title'),
-    sa.UniqueConstraint('tracking_id'),
-    mysql_engine='InnoDB'
-    )
-    op.create_index(op.f('ix_go_ua_id'), 'go_ua', ['id'], unique=True)
     op.create_table('ipaddress',
     sa.Column('id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('created_on', sa.DateTime(timezone=True), nullable=False),
@@ -402,20 +387,6 @@ def upgrade() -> None:
     mysql_engine='InnoDB'
     )
     op.create_index(op.f('ix_go_sc_searchappearance_id'), 'go_sc_searchappearance', ['id'], unique=True)
-    op.create_table('go_ua_view',
-    sa.Column('id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
-    sa.Column('created_on', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('updated_on', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('title', sa.String(length=255), nullable=False),
-    sa.Column('view_id', sa.String(length=16), nullable=False),
-    sa.Column('gua_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
-    sa.ForeignKeyConstraint(['gua_id'], ['go_ua.id'], ),
-    sa.PrimaryKeyConstraint('view_id'),
-    sa.UniqueConstraint('title'),
-    sa.UniqueConstraint('view_id'),
-    mysql_engine='InnoDB'
-    )
-    op.create_index(op.f('ix_go_ua_view_id'), 'go_ua_view', ['id'], unique=True)
     op.create_table('user_ipaddress',
     sa.Column('id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('created_on', sa.DateTime(timezone=True), nullable=False),
@@ -643,8 +614,6 @@ def downgrade() -> None:
     op.drop_table('website_page')
     op.drop_index(op.f('ix_user_ipaddress_id'), table_name='user_ipaddress')
     op.drop_table('user_ipaddress')
-    op.drop_index(op.f('ix_go_ua_view_id'), table_name='go_ua_view')
-    op.drop_table('go_ua_view')
     op.drop_index(op.f('ix_go_sc_searchappearance_id'), table_name='go_sc_searchappearance')
     op.drop_table('go_sc_searchappearance')
     op.drop_index(op.f('ix_go_sc_query_id'), table_name='go_sc_query')
@@ -673,8 +642,6 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_ipaddress_isp'), table_name='ipaddress')
     op.drop_index(op.f('ix_ipaddress_id'), table_name='ipaddress')
     op.drop_table('ipaddress')
-    op.drop_index(op.f('ix_go_ua_id'), table_name='go_ua')
-    op.drop_table('go_ua')
     op.drop_index(op.f('ix_go_sc_id'), table_name='go_sc')
     op.drop_table('go_sc')
     op.drop_index(op.f('ix_go_cloud_id'), table_name='go_cloud')

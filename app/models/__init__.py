@@ -24,8 +24,6 @@ from .go_sc_device import GoSearchConsoleDevice
 from .go_sc_page import GoSearchConsolePage
 from .go_sc_query import GoSearchConsoleQuery
 from .go_sc_searchappearance import GoSearchConsoleSearchappearance
-from .go_ua import GoUniversalAnalyticsProperty
-from .go_ua_view import GoUniversalAnalyticsView
 from .ipaddress import Ipaddress
 from .note import Note
 from .sharpspring import Sharpspring
@@ -63,8 +61,6 @@ __all__: List[str] = [
     "GoSearchConsolePage",
     "GoSearchConsoleQuery",
     "GoSearchConsoleSearchappearance",
-    "GoUniversalAnalyticsProperty",
-    "GoUniversalAnalyticsView",
     "Ipaddress",
     "Note",
     "Sharpspring",
