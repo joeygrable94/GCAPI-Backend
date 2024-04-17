@@ -4,8 +4,11 @@ from typing import TYPE_CHECKING, Any, List, Tuple
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import StringEncryptedType  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
 
+from app.core.config import settings
 from app.core.security.permissions import (
     AccessCreate,
     AccessDelete,
@@ -53,10 +56,37 @@ class Note(Base):
         onupdate=func.current_timestamp(),
     )
     title: Mapped[str] = mapped_column(
-        String(96), nullable=False, unique=True, primary_key=True
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=96,
+        ),
+        nullable=False,
+        unique=True,
+        primary_key=True,
     )
-    description: Mapped[str] = mapped_column(Text(5000), nullable=False)
-    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
+    description: Mapped[str] = mapped_column(
+        StringEncryptedType(
+            Text,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=5000,
+        ),
+        nullable=False,
+    )
+    is_active: Mapped[bool] = mapped_column(
+        StringEncryptedType(
+            Boolean,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="zeroes",
+        ),
+        nullable=False,
+        default=True,
+    )
 
     # relationships
     user_id: Mapped[UUID4] = mapped_column(

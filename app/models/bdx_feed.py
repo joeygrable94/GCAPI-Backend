@@ -4,8 +4,11 @@ from typing import TYPE_CHECKING, Any, List
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import StringEncryptedType  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
 
+from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
@@ -37,10 +40,37 @@ class BdxFeed(Base):
         onupdate=func.current_timestamp(),
     )
     username: Mapped[str] = mapped_column(
-        String(255), nullable=False, unique=True, primary_key=True
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=255,
+        ),
+        nullable=False,
+        unique=True,
+        primary_key=True,
     )
-    password: Mapped[str] = mapped_column(String(255), nullable=False)
-    serverhost: Mapped[str] = mapped_column(String(255), nullable=False)
+    password: Mapped[str] = mapped_column(
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key + settings.api.encryption_salt,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=255,
+        ),
+        nullable=False,
+    )
+    serverhost: Mapped[str] = mapped_column(
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=255,
+        ),
+        nullable=False,
+    )
 
     # relationships
     client_id: Mapped[UUID4] = mapped_column(

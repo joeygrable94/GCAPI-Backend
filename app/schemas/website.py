@@ -35,6 +35,3 @@ class WebsiteUpdate(BaseSchema):
 
 class WebsiteRead(WebsiteBase, BaseSchemaRead):
     id: UUID4
-
-
-# tasks

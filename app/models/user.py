@@ -4,8 +4,11 @@ from typing import TYPE_CHECKING, Any, Tuple
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import StringEncryptedType  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
 
+from app.core.config import settings
 from app.core.security.permissions import (
     AccessCreate,
     AccessDelete,
@@ -57,23 +60,80 @@ class User(Base):
         onupdate=func.current_timestamp(),
     )
     auth_id: Mapped[str] = mapped_column(
-        String(255), unique=True, primary_key=True, nullable=False
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=255,
+        ),
+        unique=True,
+        primary_key=True,
+        nullable=False,
     )
     email: Mapped[str] = mapped_column(
-        String(320),
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=320,
+        ),
         nullable=False,
     )
     username: Mapped[str] = mapped_column(
-        String(255), unique=True, nullable=False, default=get_random_username()
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=255,
+        ),
+        unique=True,
+        nullable=False,
+        default=get_random_username(),
     )
     picture: Mapped[str] = mapped_column(
-        String(1024),
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=1024,
+        ),
         nullable=False,
         default="https://www.gravatar.com/avatar/?d=identicon",
     )
-    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
-    is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
-    is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
+    is_active: Mapped[bool] = mapped_column(
+        StringEncryptedType(
+            Boolean,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="zeroes",
+        ),
+        nullable=False,
+        default=True,
+    )
+    is_verified: Mapped[bool] = mapped_column(
+        StringEncryptedType(
+            Boolean,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="zeroes",
+        ),
+        nullable=False,
+        default=False,
+    )
+    is_superuser: Mapped[bool] = mapped_column(
+        StringEncryptedType(
+            Boolean,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="zeroes",
+        ),
+        nullable=False,
+        default=False,
+    )
     scopes: Mapped[list[AclPrivilege]] = mapped_column(
         Scopes,
         nullable=False,

@@ -1,3 +1,0 @@
-[allowlist]
-description = "ignore # allowinsecure lines"
-regexes = ['''# allowinsecure''']

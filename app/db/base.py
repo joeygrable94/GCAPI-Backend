@@ -25,8 +25,6 @@ from app.models.go_sc_query import GoSearchConsoleQuery  # noqa: F401
 from app.models.go_sc_searchappearance import (  # noqa: F401
     GoSearchConsoleSearchappearance,
 )
-from app.models.go_ua import GoUniversalAnalyticsProperty  # noqa: F401
-from app.models.go_ua_view import GoUniversalAnalyticsView  # noqa: F401
 from app.models.ipaddress import Ipaddress  # noqa: F401
 from app.models.note import Note  # noqa: F401
 from app.models.sharpspring import Sharpspring  # noqa: F401

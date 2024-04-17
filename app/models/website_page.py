@@ -4,8 +4,11 @@ from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import StringEncryptedType  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
 
+from app.core.config import settings
 from app.core.security.permissions import (
     AccessCreate,
     AccessDelete,
@@ -51,15 +54,39 @@ class WebsitePage(Base):
         onupdate=func.current_timestamp(),
     )
     url: Mapped[str] = mapped_column(
-        String(2048),
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=2048,
+        ),
         nullable=False,
         default="/",
     )
-    status: Mapped[int] = mapped_column(Integer, nullable=False, default=200)
+    status: Mapped[int] = mapped_column(
+        StringEncryptedType(
+            Integer,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="oneandzeroes",
+        ),
+        nullable=False,
+        default=200,
+    )
     priority: Mapped[float] = mapped_column(Float, nullable=False, default=0.5)
     last_modified: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
     change_frequency: Mapped[str] = mapped_column(String(64), nullable=True)
-    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
+    is_active: Mapped[bool] = mapped_column(
+        StringEncryptedType(
+            Boolean,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="zeroes",
+        ),
+        nullable=False,
+        default=True,
+    )
 
     # relationships
     website_id: Mapped[UUID4] = mapped_column(

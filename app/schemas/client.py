@@ -10,6 +10,8 @@ from app.db.validators import (
     validate_title_required,
 )
 from app.schemas.base import BaseSchema, BaseSchemaRead
+from app.schemas.user import UserRead, UserReadAsAdmin, UserReadAsManager
+from app.schemas.website import WebsiteRead
 
 
 # schemas
@@ -43,6 +45,12 @@ class ClientUpdate(BaseSchema):
 
 class ClientRead(ClientBase, BaseSchemaRead):
     id: UUID4
+    users: list[UserReadAsAdmin | UserReadAsManager | UserRead] = []
+    websites: list[WebsiteRead] = []
+
+
+# update forward ref
+ClientRead.model_rebuild()
 
 
 class ClientDelete(BaseSchema):

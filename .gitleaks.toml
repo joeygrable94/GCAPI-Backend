@@ -1,0 +1,14 @@
+title = "gitleaks config"
+
+[whitelist]
+files = [
+    "gitleaks.toml",
+    "app/app_cert.pem",
+    "app/app_key.pem",
+]
+
+[rules.allowlist]
+description = "ignore # allowinsecure lines"
+regexes = [
+    '''# allowinsecure'''
+]

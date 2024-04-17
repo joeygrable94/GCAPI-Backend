@@ -31,6 +31,8 @@ class ApiSettings(BaseSettings):
     logging_level: str = environ.get("API_LOG_LEVEL", "debug").upper()
     logger_name: str = environ.get("API_NAME", "GCAPI")
     # Security
+    tls_cert_path: str = environ.get("API_TLS_CERT_PATH", "./app_cert.pem")
+    tls_key_path: str = environ.get("API_TLS_KEY_PATH", "./app_key.pem")
     asgi_header_key: str = "x-request-id"
     allowed_cors: Optional[Union[str, List[str]]] = environ.get("API_ALLOWED_CORS")
     secret_key: str = environ.get(

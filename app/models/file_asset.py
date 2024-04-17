@@ -4,8 +4,11 @@ from typing import TYPE_CHECKING, Any, Optional
 from pydantic import UUID4
 from sqlalchemy import BLOB, Boolean, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import StringEncryptedType  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
 
+from app.core.config import settings
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
 
@@ -75,14 +78,51 @@ class FileAsset(Base):
         onupdate=func.current_timestamp(),
     )
     filename: Mapped[str] = mapped_column(
-        String(96), nullable=False, unique=True, primary_key=True, default="default"
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=96,
+        ),
+        nullable=False,
+        unique=True,
+        primary_key=True,
+        default="default",
     )
     extension: Mapped[str] = mapped_column(String(255), nullable=False, default="jpg")
     size_kb: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    title: Mapped[str] = mapped_column(String(96), nullable=False)
-    caption: Mapped[str] = mapped_column(String(150), nullable=True)
+    title: Mapped[str] = mapped_column(
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=96,
+        ),
+        nullable=False,
+    )
+    caption: Mapped[str] = mapped_column(
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=150,
+        ),
+        nullable=True,
+    )
     keys: Mapped[str] = mapped_column(BLOB, nullable=True)
-    is_private: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
+    is_private: Mapped[bool] = mapped_column(
+        StringEncryptedType(
+            Boolean,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="zeroes",
+        ),
+        nullable=False,
+        default=False,
+    )
 
     # relationships
     user_id: Mapped[UUID4] = mapped_column(

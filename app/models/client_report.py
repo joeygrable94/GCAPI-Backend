@@ -4,8 +4,11 @@ from typing import TYPE_CHECKING, Any, List
 from pydantic import UUID4
 from sqlalchemy import BLOB, DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import StringEncryptedType  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
 
+from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
@@ -37,10 +40,37 @@ class ClientReport(Base):
         onupdate=func.current_timestamp(),
     )
     title: Mapped[str] = mapped_column(
-        String(96), nullable=False, unique=True, primary_key=True
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=96,
+        ),
+        nullable=False,
+        unique=True,
+        primary_key=True,
     )
-    url: Mapped[str] = mapped_column(String(2048), nullable=False)
-    description: Mapped[str] = mapped_column(Text(5000), nullable=True)
+    url: Mapped[str] = mapped_column(
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=2048,
+        ),
+        nullable=False,
+    )
+    description: Mapped[str] = mapped_column(
+        StringEncryptedType(
+            Text,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=5000,
+        ),
+        nullable=True,
+    )
     keys: Mapped[str] = mapped_column(BLOB, nullable=True)
 
     # relationships

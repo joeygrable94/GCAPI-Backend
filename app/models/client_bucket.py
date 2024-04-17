@@ -4,8 +4,11 @@ from typing import TYPE_CHECKING, List
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import StringEncryptedType  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
 
+from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
@@ -41,10 +44,36 @@ class ClientBucket(Base):
         onupdate=func.current_timestamp(),
     )
     bucket_name: Mapped[str] = mapped_column(
-        String(100), nullable=False, primary_key=True
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=100,
+        ),
+        nullable=False,
+        primary_key=True,
     )
-    object_key: Mapped[str] = mapped_column(String(2048), nullable=False)
-    description: Mapped[str] = mapped_column(Text(5000), nullable=True)
+    object_key: Mapped[str] = mapped_column(
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=2048,
+        ),
+        nullable=False,
+    )
+    description: Mapped[str] = mapped_column(
+        StringEncryptedType(
+            Text,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=5000,
+        ),
+        nullable=True,
+    )
 
     # relationships
     client_id: Mapped[UUID4] = mapped_column(

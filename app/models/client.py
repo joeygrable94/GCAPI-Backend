@@ -4,8 +4,11 @@ from typing import TYPE_CHECKING, Any, List, Tuple
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import StringEncryptedType  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
 
+from app.core.config import settings
 from app.core.security.permissions import (
     AccessCreate,
     AccessDelete,
@@ -37,7 +40,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from .go_a4 import GoAnalytics4Property  # noqa: F401
     from .go_cloud import GoCloudProperty  # noqa: F401
     from .go_sc import GoSearchConsoleProperty  # noqa: F401
-    from .go_ua import GoUniversalAnalyticsProperty  # noqa: F401
     from .sharpspring import Sharpspring  # noqa: F401
     from .user import User  # noqa: F401
     from .website import Website  # noqa: F401
@@ -66,17 +68,47 @@ class Client(Base):
         onupdate=func.current_timestamp(),
     )
     title: Mapped[str] = mapped_column(
-        String(96), nullable=False, unique=True, primary_key=True
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=96,
+        ),
+        nullable=False,
+        unique=True,
+        primary_key=True,
     )
-    description: Mapped[str] = mapped_column(Text(5000), nullable=True)
-    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
+    description: Mapped[str] = mapped_column(
+        StringEncryptedType(
+            Text,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=5000,
+        ),
+        nullable=True,
+    )
+    is_active: Mapped[bool] = mapped_column(
+        StringEncryptedType(
+            Boolean,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="zeroes",
+        ),
+        nullable=False,
+        default=True,
+    )
 
     # relationships
     users: Mapped[List["User"]] = relationship(
         "User", secondary="user_client", back_populates="clients", lazy="selectin"
     )
     websites: Mapped[List["Website"]] = relationship(
-        secondary="client_website", back_populates="clients", cascade="all, delete"
+        secondary="client_website",
+        back_populates="clients",
+        cascade="all, delete",
+        lazy="selectin",
     )
     client_reports: Mapped[List["ClientReport"]] = relationship(
         "ClientReport", back_populates="client"
@@ -89,11 +121,6 @@ class Client(Base):
     )
     ga4_accounts: Mapped[List["GoAnalytics4Property"]] = relationship(
         "GoAnalytics4Property", back_populates="client", cascade="all, delete-orphan"
-    )
-    gua_accounts: Mapped[List["GoUniversalAnalyticsProperty"]] = relationship(
-        "GoUniversalAnalyticsProperty",
-        back_populates="client",
-        cascade="all, delete-orphan",
     )
     sharpspring_accounts: Mapped[List["Sharpspring"]] = relationship(
         "Sharpspring", back_populates="client", cascade="all, delete-orphan"

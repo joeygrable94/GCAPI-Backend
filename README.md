@@ -4,6 +4,7 @@
 
 - [GCAPI Backend](#gcapi-backend)
   - [Getting Started](#getting-started)
+    - [Generate SSL Certificates](#generate-ssl-certificates)
   - [Application Structure](#application-structure)
   - [Security Resources](#security-resources)
     - [Hashing and Encrypting Data](#hashing-and-encrypting-data)
@@ -38,6 +39,10 @@ Create a virtual environment, activate it, then install the backend python pip `
     > ... App Running at 0.0.0.0:8888
     > :q
     source venv/bin/deactivate
+
+### Generate SSL Certificates
+
+    openssl req -x509 -newkey rsa:4096 -nodes -out ./app/gcapi_cert.pem -keyout ./app/gcapi_key.pem -days 365 -addext "subjectAltName = IP:127.0.0.1"
 
 ---
 

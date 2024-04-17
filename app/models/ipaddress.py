@@ -4,8 +4,11 @@ from typing import TYPE_CHECKING, Any, List, Optional
 from pydantic import UUID4
 from sqlalchemy import DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import StringEncryptedType  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine  # type: ignore
 
+from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 
@@ -37,13 +40,41 @@ class Ipaddress(Base):
         onupdate=func.current_timestamp(),
     )
     address: Mapped[str] = mapped_column(
-        String(40), nullable=False, unique=True, primary_key=True, default="::1"
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=40,
+        ),
+        nullable=False,
+        unique=True,
+        primary_key=True,
+        default="::1",
     )
     isp: Mapped[str] = mapped_column(
-        String(255), nullable=True, index=True, default="unknown"
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=255,
+        ),
+        nullable=True,
+        index=True,
+        default="unknown",
     )
     location: Mapped[str] = mapped_column(
-        String(255), nullable=True, index=True, default="unknown"
+        StringEncryptedType(
+            String,
+            key=settings.api.encryption_key,
+            engine=AesEngine,
+            padding="pkcs5",
+            length=255,
+        ),
+        nullable=True,
+        index=True,
+        default="unknown",
     )
 
     # relationships
