@@ -37,7 +37,7 @@ types-redis = "^4.6.0.20240106"
 Jinja2 = "3.1.3"
 anyio = {version = "3.7.1", extras = ["trio"]}
 asyncio = "3.4.3"
-aiohttp = "3.9.3"
+aiohttp = "3.9.4"
 aiosqlite = "0.19.0"
 aiomysql = "0.2.0"
 aiofiles = "23.2.1"
