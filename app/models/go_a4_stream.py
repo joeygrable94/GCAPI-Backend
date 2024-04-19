@@ -8,6 +8,7 @@ from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_STR_16BIT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .go_a4 import GoAnalytics4Property  # noqa: F401
@@ -35,9 +36,14 @@ class GoAnalytics4Stream(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    title: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    title: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=False, unique=True
+    )
     stream_id: Mapped[str] = mapped_column(
-        String(16), nullable=False, unique=True, primary_key=True
+        String(DB_STR_16BIT_MAXLEN_STORED),
+        nullable=False,
+        unique=True,
+        primary_key=True,
     )
 
     # relationships

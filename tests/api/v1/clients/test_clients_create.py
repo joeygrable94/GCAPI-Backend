@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_lower_string
 
 from app.api.exceptions import ErrorCode
+from app.db.constants import DB_STR_DESC_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_INPUT
 
 pytestmark = pytest.mark.asyncio
 
@@ -74,7 +75,8 @@ async def test_create_client_as_superuser_client_title_too_short(
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
     assert (
-        entry["detail"][0]["msg"] == "Value error, title must be 5 characters or more"
+        entry["detail"][0]["msg"]
+        == "Value error, title must be 5 characters or more"  # noqa: E501
     )
 
 
@@ -83,7 +85,7 @@ async def test_create_client_as_superuser_client_title_too_long(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    title: str = random_lower_string() * 4
+    title: str = random_lower_string() * 100
     description: str = random_lower_string()
     data: Dict[str, str] = {"title": title, "description": description}
     response: Response = await client.post(
@@ -94,7 +96,8 @@ async def test_create_client_as_superuser_client_title_too_long(
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
     assert (
-        entry["detail"][0]["msg"] == "Value error, title must be 96 characters or less"
+        entry["detail"][0]["msg"]
+        == f"Value error, title must be {DB_STR_TINYTEXT_MAXLEN_INPUT} characters or less"  # noqa: E501
     )
 
 
@@ -115,5 +118,5 @@ async def test_create_client_as_superuser_client_description_too_long(
     entry: Dict[str, Any] = response.json()
     assert (
         entry["detail"][0]["msg"]
-        == "Value error, description must be 5000 characters or less"
-    )  # noqa: E501
+        == f"Value error, description must be {DB_STR_DESC_MAXLEN_INPUT} characters or less"  # noqa: E501
+    )

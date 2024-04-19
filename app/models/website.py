@@ -21,6 +21,7 @@ from app.core.security.permissions import (
 )
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
@@ -55,7 +56,10 @@ class Website(Base):
         onupdate=func.current_timestamp(),
     )
     domain: Mapped[str] = mapped_column(
-        String(255), nullable=False, unique=True, primary_key=True
+        String(DB_STR_TINYTEXT_MAXLEN_STORED),
+        nullable=False,
+        unique=True,
+        primary_key=True,
     )
     is_secure: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)

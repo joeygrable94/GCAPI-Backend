@@ -24,6 +24,7 @@ from app.core.security.permissions import (
 )
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_STR_DESC_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client_report import ClientReport  # noqa: F401
@@ -53,9 +54,14 @@ class Note(Base):
         onupdate=func.current_timestamp(),
     )
     title: Mapped[str] = mapped_column(
-        String(96), nullable=False, unique=True, primary_key=True
+        String(DB_STR_TINYTEXT_MAXLEN_STORED),
+        nullable=False,
+        unique=True,
+        primary_key=True,
     )
-    description: Mapped[str] = mapped_column(Text(5000), nullable=False)
+    description: Mapped[str] = mapped_column(
+        Text(DB_STR_DESC_MAXLEN_STORED), nullable=False
+    )
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
 
     # relationships

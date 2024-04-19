@@ -9,6 +9,7 @@ from tests.utils.utils import random_lower_string
 
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
+from app.db.constants import DB_STR_DESC_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_INPUT
 from app.models import User
 from app.schemas import NoteRead, NoteUpdate
 
@@ -71,7 +72,7 @@ async def test_update_note_as_superuser_title_too_long(
         db_session=db_session, email=settings.auth.first_admin
     )
     entry_a: NoteRead = await create_random_note(db_session, user_id=user.id)
-    title: str = random_lower_string() * 4
+    title: str = random_lower_string() * 100
     data: Dict[str, str] = {"title": title}
     response: Response = await client.patch(
         f"notes/{entry_a.id}",
@@ -82,7 +83,7 @@ async def test_update_note_as_superuser_title_too_long(
     assert response.status_code == 422
     assert (
         updated_entry["detail"][0]["msg"]
-        == "Value error, title must be 96 characters or less"
+        == f"Value error, title must be {DB_STR_TINYTEXT_MAXLEN_INPUT} characters or less"  # noqa: E501
     )
 
 
@@ -106,7 +107,7 @@ async def test_update_note_as_superuser_description_too_long(
     assert response.status_code == 422
     assert (
         updated_entry["detail"][0]["msg"]
-        == "Value error, description must be 5000 characters or less"
+        == f"Value error, description must be {DB_STR_DESC_MAXLEN_INPUT} characters or less"  # noqa: E501
     )
 
 

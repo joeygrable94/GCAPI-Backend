@@ -8,6 +8,7 @@ from tests.utils.utils import random_lower_string
 
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
+from app.db.constants import DB_STR_DESC_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_INPUT
 from app.models.user import User
 
 pytestmark = pytest.mark.asyncio
@@ -118,7 +119,7 @@ async def test_create_note_as_superuser_note_title_too_long(
     user: User = await get_user_by_email(
         db_session=db_session, email=settings.auth.first_admin
     )
-    title: str = random_lower_string() * 4
+    title: str = random_lower_string() * 100
     description: str = random_lower_string()
     data_in: Dict[str, Any] = {
         "title": title,
@@ -133,7 +134,8 @@ async def test_create_note_as_superuser_note_title_too_long(
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
     assert (
-        entry["detail"][0]["msg"] == "Value error, title must be 96 characters or less"
+        entry["detail"][0]["msg"]
+        == f"Value error, title must be {DB_STR_TINYTEXT_MAXLEN_INPUT} characters or less"  # noqa: E501
     )
 
 
@@ -161,5 +163,5 @@ async def test_create_note_as_superuser_note_description_too_long(
     entry: Dict[str, Any] = response.json()
     assert (
         entry["detail"][0]["msg"]
-        == "Value error, description must be 5000 characters or less"
+        == f"Value error, description must be {DB_STR_DESC_MAXLEN_INPUT} characters or less"  # noqa: E501
     )  # noqa: E501

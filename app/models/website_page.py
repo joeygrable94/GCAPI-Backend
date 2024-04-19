@@ -19,6 +19,7 @@ from app.core.security.permissions import (
 )
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED, DB_STR_URLPATH_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .website import Website  # noqa: F401
@@ -51,14 +52,16 @@ class WebsitePage(Base):
         onupdate=func.current_timestamp(),
     )
     url: Mapped[str] = mapped_column(
-        String(2048),
+        String(DB_STR_URLPATH_MAXLEN_STORED),
         nullable=False,
         default="/",
     )
     status: Mapped[int] = mapped_column(Integer, nullable=False, default=200)
     priority: Mapped[float] = mapped_column(Float, nullable=False, default=0.5)
     last_modified: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
-    change_frequency: Mapped[str] = mapped_column(String(64), nullable=True)
+    change_frequency: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
 
     # relationships

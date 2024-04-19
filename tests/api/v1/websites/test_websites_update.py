@@ -7,6 +7,7 @@ from tests.utils.utils import random_boolean, random_lower_string
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions import ErrorCode
+from app.db.constants import DB_STR_TINYTEXT_MAXLEN_INPUT
 from app.models.website import Website
 from app.schemas import WebsiteRead, WebsiteUpdate
 
@@ -88,7 +89,7 @@ async def test_update_website_as_superuser_domain_too_long(
     entry: Dict[str, Any] = response.json()
     assert (
         entry["detail"][0]["msg"]
-        == "Value error, domain must be 255 characters or less"
+        == f"Value error, domain must be {DB_STR_TINYTEXT_MAXLEN_INPUT} characters or less"  # noqa: E501
     )
 
 

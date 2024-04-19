@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_boolean, random_domain
 
 from app.api.exceptions import ErrorCode
+from app.db.constants import DB_STR_TINYTEXT_MAXLEN_INPUT
 
 pytestmark = pytest.mark.asyncio
 
@@ -101,7 +102,7 @@ async def test_create_website_as_superuser_domain_too_long(
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
-    domain: str = random_domain(255, "com")
+    domain: str = random_domain(DB_STR_TINYTEXT_MAXLEN_INPUT, "com")
     is_secure: bool = random_boolean()
     data: Dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response = await client.post(
@@ -113,7 +114,7 @@ async def test_create_website_as_superuser_domain_too_long(
     entry: Dict[str, Any] = response.json()
     assert (
         entry["detail"][0]["msg"]
-        == "Value error, domain must be 255 characters or less"
+        == f"Value error, domain must be {DB_STR_TINYTEXT_MAXLEN_INPUT} characters or less"  # noqa: E501
     )
 
 

@@ -8,6 +8,11 @@ from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import (
+    DB_STR_DESC_MAXLEN_STORED,
+    DB_STR_TINYTEXT_MAXLEN_STORED,
+    DB_STR_URLPATH_MAXLEN_STORED,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
@@ -37,10 +42,17 @@ class ClientReport(Base):
         onupdate=func.current_timestamp(),
     )
     title: Mapped[str] = mapped_column(
-        String(96), nullable=False, unique=True, primary_key=True
+        String(DB_STR_TINYTEXT_MAXLEN_STORED),
+        nullable=False,
+        unique=True,
+        primary_key=True,
     )
-    url: Mapped[str] = mapped_column(String(2048), nullable=False)
-    description: Mapped[str] = mapped_column(Text(5000), nullable=True)
+    url: Mapped[str] = mapped_column(
+        String(DB_STR_URLPATH_MAXLEN_STORED), nullable=False
+    )
+    description: Mapped[str] = mapped_column(
+        Text(DB_STR_DESC_MAXLEN_STORED), nullable=True
+    )
     keys: Mapped[str] = mapped_column(BLOB, nullable=True)
 
     # relationships

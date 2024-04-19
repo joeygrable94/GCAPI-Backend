@@ -8,6 +8,7 @@ from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED, DB_STR_URLPATH_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .gcft import Gcft  # noqa: F401
@@ -39,15 +40,25 @@ class GcftSnapTrafficsource(Base):
     )
     session_id: Mapped[UUID4] = mapped_column(UUIDType(binary=False), nullable=False)
     referrer: Mapped[str] = mapped_column(
-        String(2048),
+        String(DB_STR_URLPATH_MAXLEN_STORED),
         nullable=False,
         default="/",
     )
-    utm_campaign: Mapped[str] = mapped_column(String(255), nullable=True)
-    utm_content: Mapped[str] = mapped_column(String(255), nullable=True)
-    utm_medium: Mapped[str] = mapped_column(String(255), nullable=True)
-    utm_source: Mapped[str] = mapped_column(String(255), nullable=True)
-    utm_term: Mapped[str] = mapped_column(String(255), nullable=True)
+    utm_campaign: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
+    utm_content: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
+    utm_medium: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
+    utm_source: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
+    utm_term: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
     visit_date: Mapped[datetime] = mapped_column(DateTime(), nullable=False)
 
     # relationships

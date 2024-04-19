@@ -6,12 +6,13 @@ import pytest
 from app.core.config import settings
 from app.core.security.permissions.scope import AclPrivilege
 from app.db.constants import (
-    DB_INT_INTEGER_MAX_LEN,
-    DB_STR_BLOB_MAX_LEN,
-    DB_STR_LONGTEXT_MAX_LEN,
-    DB_STR_NAME_TITLE_MAX_LEN,
-    DB_STR_TINYTEXT_MAX_LEN,
-    DB_STR_URL_PATH_MAX_LEN,
+    DB_INT_INTEGER_MAXLEN_STORED,
+    DB_STR_16BIT_MAXLEN_INPUT,
+    DB_STR_32BIT_MAXLEN_INPUT,
+    DB_STR_BLOB_MAXLEN_STORED,
+    DB_STR_LONGTEXT_MAXLEN_STORED,
+    DB_STR_TINYTEXT_MAXLEN_INPUT,
+    DB_STR_URLPATH_MAXLEN_INPUT,
 )
 from app.db.validators import (
     validate_active_seconds_required,
@@ -145,11 +146,11 @@ def test_validate_file_extension_optional(mock_settings: Any) -> None:
 def test_validate_title_required() -> None:
     assert validate_title_required(cls=None, value="Valid Title") == "Valid Title"
     with pytest.raises(ValueError):
-        validate_title_required(cls=None, value="a")  # less than min_len
+        validate_title_required(cls=None, value="a")
     with pytest.raises(ValueError):
         validate_title_required(
-            cls=None, value="a" * (DB_STR_NAME_TITLE_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
     with pytest.raises(ValueError):
         validate_title_required(cls=None, value=None)  # type: ignore
 
@@ -158,11 +159,11 @@ def test_validate_title_optional() -> None:
     assert validate_title_optional(cls=None, value=None) is None
     assert validate_title_optional(cls=None, value="Valid Title") == "Valid Title"
     with pytest.raises(ValueError):
-        validate_title_optional(cls=None, value="a")  # less than min_len
+        validate_title_optional(cls=None, value="a")
     with pytest.raises(ValueError):
         validate_title_optional(
-            cls=None, value="a" * (DB_STR_NAME_TITLE_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_description_optional() -> None:
@@ -172,7 +173,7 @@ def test_validate_description_optional() -> None:
         == "Valid Description"
     )
     with pytest.raises(ValueError):
-        validate_description_optional(cls=None, value="a" * 5001)  # more than max_len
+        validate_description_optional(cls=None, value="a" * 5001)
 
 
 def test_validate_domain_required() -> None:
@@ -184,19 +185,15 @@ def test_validate_domain_required() -> None:
     with pytest.raises(ValueError):
         validate_domain_required(cls=None, value="example.com/path")
     with pytest.raises(ValueError):
-        validate_domain_required(cls=None, value="example")  # invalid domain
+        validate_domain_required(cls=None, value="example")
     with pytest.raises(ValueError):
-        validate_domain_required(cls=None, value="example.")  # invalid domain
+        validate_domain_required(cls=None, value="example.")
     with pytest.raises(ValueError):
-        validate_domain_required(cls=None, value=".example.com")  # invalid domain
+        validate_domain_required(cls=None, value=".example.com")
     with pytest.raises(ValueError):
-        validate_domain_required(
-            cls=None, value="example.com" + "a" * 253
-        )  # domain too long
+        validate_domain_required(cls=None, value="example.com" + "a" * 253)
     with pytest.raises(ValueError):
-        validate_domain_required(
-            cls=None, value="example.com/path" + "a" * 240
-        )  # value too long
+        validate_domain_required(cls=None, value="example.com/path" + "a" * 240)
     with pytest.raises(ValueError):
         validate_domain_required(cls=None, value=None)  # type: ignore
 
@@ -211,27 +208,23 @@ def test_validate_domain_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_domain_optional(cls=None, value="example.com/path")
     with pytest.raises(ValueError):
-        validate_domain_optional(cls=None, value="example")  # invalid domain
+        validate_domain_optional(cls=None, value="example")
     with pytest.raises(ValueError):
-        validate_domain_optional(cls=None, value="example.")  # invalid domain
+        validate_domain_optional(cls=None, value="example.")
     with pytest.raises(ValueError):
-        validate_domain_optional(cls=None, value=".example.com")  # invalid domain
+        validate_domain_optional(cls=None, value=".example.com")
     with pytest.raises(ValueError):
-        validate_domain_optional(
-            cls=None, value="example.com" + "a" * 253
-        )  # domain too long
+        validate_domain_optional(cls=None, value="example.com" + "a" * 253)
     with pytest.raises(ValueError):
-        validate_domain_optional(
-            cls=None, value="example.com/path" + "a" * 240
-        )  # value too long
+        validate_domain_optional(cls=None, value="example.com/path" + "a" * 240)
 
 
 def test_validate_corpus_required() -> None:
     assert validate_corpus_required(cls=None, value="Valid Corpus") == "Valid Corpus"
     with pytest.raises(ValueError):
         validate_corpus_required(
-            cls=None, value="a" * (DB_STR_LONGTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_LONGTEXT_MAXLEN_STORED + 1)
+        )
     with pytest.raises(ValueError):
         assert validate_corpus_required(cls=None, value="")
 
@@ -241,16 +234,16 @@ def test_validate_corpus_optional() -> None:
     assert validate_corpus_optional(cls=None, value="Valid Corpus") == "Valid Corpus"
     with pytest.raises(ValueError):
         validate_corpus_optional(
-            cls=None, value="a" * (DB_STR_LONGTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_LONGTEXT_MAXLEN_STORED + 1)
+        )
 
 
 def test_validate_rawtext_required() -> None:
     assert validate_rawtext_required(cls=None, value="Valid Rawtext") == "Valid Rawtext"
     with pytest.raises(ValueError):
         validate_rawtext_required(
-            cls=None, value="a" * (DB_STR_LONGTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_LONGTEXT_MAXLEN_STORED + 1)
+        )
     with pytest.raises(ValueError):
         validate_rawtext_required(cls=None, value=None)  # type: ignore
 
@@ -260,8 +253,8 @@ def test_validate_rawtext_optional() -> None:
     assert validate_rawtext_optional(cls=None, value="Valid Rawtext") == "Valid Rawtext"
     with pytest.raises(ValueError):
         validate_rawtext_optional(
-            cls=None, value="a" * (DB_STR_LONGTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_LONGTEXT_MAXLEN_STORED + 1)
+        )
 
 
 def test_validate_url_required() -> None:
@@ -270,13 +263,14 @@ def test_validate_url_required() -> None:
         == "https://example.com"
     )
     with pytest.raises(ValueError):
-        validate_url_required(cls=None, value="")  # empty string
+        validate_url_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_url_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
         validate_url_required(
-            cls=None, value="http://example.com/path" + "a" * 2049
-        )  # value too long
+            cls=None,
+            value="http://example.com/path" + "a" * (DB_STR_URLPATH_MAXLEN_INPUT + 1),
+        )
 
 
 def test_validate_url_optional() -> None:
@@ -295,11 +289,12 @@ def test_validate_url_optional() -> None:
     )
     assert validate_url_optional(cls=None, value="/") == "/"
     with pytest.raises(ValueError):
-        validate_url_optional(cls=None, value="")  # empty string
+        validate_url_optional(cls=None, value="")
     with pytest.raises(ValueError):
         validate_url_optional(
-            cls=None, value="http://example.com/path" + "a" * 2049
-        )  # value too long
+            cls=None,
+            value="http://example.com/path" + "a" * (DB_STR_URLPATH_MAXLEN_INPUT + 1),
+        )
 
 
 def test_validate_device_required() -> None:
@@ -316,17 +311,17 @@ def test_validate_strategy_required() -> None:
     assert validate_strategy_required(cls=None, value="mobile") == "mobile"
     assert validate_strategy_required(cls=None, value="desktop") == "desktop"
     with pytest.raises(ValueError):
-        validate_strategy_required(cls=None, value="web")  # invalid strategy
+        validate_strategy_required(cls=None, value="web")
     with pytest.raises(ValueError):
         validate_strategy_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_strategy_required(cls=None, value="")  # empty string
+        validate_strategy_required(cls=None, value="")
 
 
 def test_validate_ps_value_required() -> None:
     assert validate_ps_value_required(cls=None, value="1234") == "1234"
     with pytest.raises(ValueError):
-        validate_ps_value_required(cls=None, value="12345")  # more than max_len
+        validate_ps_value_required(cls=None, value="12345")
     with pytest.raises(ValueError):
         validate_ps_value_required(cls=None, value=None)  # type: ignore
 
@@ -336,69 +331,69 @@ def test_validate_ps_value_optional() -> None:
     assert validate_ps_value_optional(cls=None, value="1234") == "1234"
     assert validate_ps_value_optional(cls=None, value="1") == "1"
     with pytest.raises(ValueError):
-        validate_ps_value_optional(cls=None, value="")  # empty string
+        validate_ps_value_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_ps_value_optional(cls=None, value="12345")  # too long
+        validate_ps_value_optional(cls=None, value="12345")
 
 
 def test_validate_ps_unit_required() -> None:
     assert validate_ps_unit_required(cls=None, value="ValidUnit") == "ValidUnit"
     with pytest.raises(ValueError):
-        validate_ps_unit_required(cls=None, value="")  # empty string
+        validate_ps_unit_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_ps_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_ps_unit_required(cls=None, value="a" * 17)  # more than max_len
+        validate_ps_unit_required(cls=None, value="a" * 17)
 
 
 def test_validate_fcp_unit_required() -> None:
     assert validate_fcp_unit_required(cls=None, value="ValidUnit") == "ValidUnit"
     with pytest.raises(ValueError):
-        validate_fcp_unit_required(cls=None, value="")  # empty string
+        validate_fcp_unit_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_fcp_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_fcp_unit_required(cls=None, value="a" * 17)  # more than max_len
+        validate_fcp_unit_required(cls=None, value="a" * 17)
 
 
 def test_validate_lcp_unit_required() -> None:
     assert validate_lcp_unit_required(cls=None, value="ValidUnit") == "ValidUnit"
     with pytest.raises(ValueError):
-        validate_lcp_unit_required(cls=None, value="")  # empty string
+        validate_lcp_unit_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_lcp_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_lcp_unit_required(cls=None, value="a" * 17)  # more than max_len
+        validate_lcp_unit_required(cls=None, value="a" * 17)
 
 
 def test_validate_cls_unit_required() -> None:
     assert validate_cls_unit_required(cls=None, value="ValidClsUnit") == "ValidClsUnit"
     with pytest.raises(ValueError):
-        validate_cls_unit_required(cls=None, value="")  # empty string
+        validate_cls_unit_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_cls_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_cls_unit_required(cls=None, value="a" * 17)  # value too long
+        validate_cls_unit_required(cls=None, value="a" * 17)
 
 
 def test_validate_si_unit_required() -> None:
     assert validate_si_unit_required(cls=None, value="ValidUnit") == "ValidUnit"
     with pytest.raises(ValueError):
-        validate_si_unit_required(cls=None, value="")  # empty string
+        validate_si_unit_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_si_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_si_unit_required(cls=None, value="a" * 17)  # more than max_len
+        validate_si_unit_required(cls=None, value="a" * 17)
 
 
 def test_validate_tbt_unit_required() -> None:
     assert validate_tbt_unit_required(cls=None, value="ValidUnit") == "ValidUnit"
     with pytest.raises(ValueError):
-        validate_tbt_unit_required(cls=None, value="")  # empty string
+        validate_tbt_unit_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_tbt_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_tbt_unit_required(cls=None, value="a" * 17)  # more than max_len
+        validate_tbt_unit_required(cls=None, value="a" * 17)
 
 
 def test_validate_scopes_required() -> None:
@@ -422,7 +417,7 @@ def test_validate_scopes_required() -> None:
     with pytest.raises(ValueError):
         validate_scopes_required(
             cls=None, value=["read", "write", "execute"]
-        )  # invalid scope
+        )
     """
 
 
@@ -452,11 +447,16 @@ def test_validate_scopes_optional() -> None:
 
 def test_validate_auth_id_required() -> None:
     assert validate_auth_id_required(cls=None, value="valid_auth_id") == "valid_auth_id"
-    assert validate_auth_id_required(cls=None, value="a" * 255) == "a" * 255
+    assert (
+        validate_auth_id_required(cls=None, value="a" * DB_STR_TINYTEXT_MAXLEN_INPUT)
+        == "a" * DB_STR_TINYTEXT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         assert validate_auth_id_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_auth_id_required(cls=None, value="a" * 256)
+        validate_auth_id_required(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_email_required() -> None:
@@ -465,15 +465,15 @@ def test_validate_email_required() -> None:
         == "test@example.com"
     )
     with pytest.raises(ValueError):
-        validate_email_required(cls=None, value="a")  # less than min_len
+        validate_email_required(cls=None, value="a")
     with pytest.raises(ValueError):
         validate_email_required(
-            cls=None, value="a" * (DB_STR_LONGTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_LONGTEXT_MAXLEN_STORED + 1)
+        )
     with pytest.raises(ValueError):
         validate_email_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_email_required(cls=None, value="notanemail")  # invalid email format
+        validate_email_required(cls=None, value="notanemail")
 
 
 def test_validate_username_required() -> None:
@@ -485,16 +485,23 @@ def test_validate_username_required() -> None:
     with pytest.raises(ValueError):
         validate_username_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_username_required(cls=None, value="a" * 256)  # more than max_len
+        validate_username_required(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_password_required() -> None:
     assert validate_password_required(cls=None, value="password") == "password"
     with pytest.raises(ValueError):
         assert validate_password_required(cls=None, value="")
-    assert validate_password_required(cls=None, value="a" * 255) == "a" * 255
+    assert (
+        validate_password_required(cls=None, value="a" * DB_STR_TINYTEXT_MAXLEN_INPUT)
+        == "a" * DB_STR_TINYTEXT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
-        validate_password_required(cls=None, value="a" * 256)  # more than max_len
+        validate_password_required(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_username_optional() -> None:
@@ -503,23 +510,28 @@ def test_validate_username_optional() -> None:
         validate_username_optional(cls=None, value="valid_username") == "valid_username"
     )
     with pytest.raises(ValueError):
-        validate_username_optional(cls=None, value="a")  # less than min_len
+        validate_username_optional(cls=None, value="a")
     with pytest.raises(ValueError):
         validate_username_optional(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_password_optional() -> None:
     assert validate_password_optional(cls=None, value=None) is None
     assert validate_password_optional(cls=None, value="12345") == "12345"
-    assert validate_password_optional(cls=None, value="a" * 255) == "a" * 255
+    assert (
+        validate_password_optional(cls=None, value="a" * DB_STR_TINYTEXT_MAXLEN_INPUT)
+        == "a" * DB_STR_TINYTEXT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
-        validate_password_optional(cls=None, value="")  # empty string
+        validate_password_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_password_optional(cls=None, value="1234")  # less than min_len
+        validate_password_optional(cls=None, value="1234")
     with pytest.raises(ValueError):
-        validate_password_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_password_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_api_key_required() -> None:
@@ -528,7 +540,9 @@ def test_validate_api_key_required() -> None:
     with pytest.raises(ValueError):
         assert validate_api_key_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_api_key_required(cls=None, value="a" * 65)  # more than max_len
+        validate_api_key_required(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_secret_key_required() -> None:
@@ -540,7 +554,9 @@ def test_validate_secret_key_required() -> None:
     with pytest.raises(ValueError):
         assert validate_secret_key_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_secret_key_required(cls=None, value="a" * 65)  # more than max_len
+        validate_secret_key_required(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_api_key_optional() -> None:
@@ -550,7 +566,9 @@ def test_validate_api_key_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_api_key_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_api_key_optional(cls=None, value="a" * 65)  # more than max_len
+        validate_api_key_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_secret_key_optional() -> None:
@@ -559,7 +577,9 @@ def test_validate_secret_key_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_secret_key_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_secret_key_optional(cls=None, value="a" * 65)  # more than max_len
+        validate_secret_key_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_serverhost_required() -> None:
@@ -571,7 +591,9 @@ def test_validate_serverhost_required() -> None:
     with pytest.raises(ValueError):
         assert validate_serverhost_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_serverhost_required(cls=None, value="a" * 256)  # more than max_len
+        validate_serverhost_required(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_serverhost_optional() -> None:
@@ -582,40 +604,45 @@ def test_validate_serverhost_optional() -> None:
         == "subdomain.example.com"
     )
     with pytest.raises(ValueError):
-        validate_serverhost_optional(cls=None, value="a")  # less than min_len
+        validate_serverhost_optional(cls=None, value="a")
     with pytest.raises(ValueError):
-        validate_serverhost_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_serverhost_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_keys_optional() -> None:
     assert validate_keys_optional(cls=None, value=None) is None
     assert validate_keys_optional(cls=None, value="valid keys") == "valid keys"
-    assert validate_keys_optional(cls=None, value="a" * 65500) == "a" * 65500
+    assert (
+        validate_keys_optional(cls=None, value="a" * DB_STR_BLOB_MAXLEN_STORED)
+        == "a" * DB_STR_BLOB_MAXLEN_STORED
+    )
     with pytest.raises(ValueError):
         assert validate_keys_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_keys_optional(cls=None, value="a" * 65501)  # more than max_len
+        validate_keys_optional(cls=None, value="a" * (DB_STR_BLOB_MAXLEN_STORED + 1))
 
 
 def test_validate_object_key_required() -> None:
     assert validate_object_key_required(cls=None, value="valid_key") == "valid_key"
     with pytest.raises(ValueError):
-        validate_object_key_required(cls=None, value="")  # empty string
+        validate_object_key_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_object_key_required(
-            cls=None, value="a" * (DB_STR_URL_PATH_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_URLPATH_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_object_key_optional() -> None:
     assert validate_object_key_optional(cls=None, value=None) is None
     assert validate_object_key_optional(cls=None, value="valid_key") == "valid_key"
     with pytest.raises(ValueError):
-        validate_object_key_optional(cls=None, value="")  # empty string
+        validate_object_key_optional(cls=None, value="")
     with pytest.raises(ValueError):
         validate_object_key_optional(
-            cls=None, value="a" * (DB_STR_URL_PATH_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_URLPATH_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_bucket_name_required() -> None:
@@ -624,11 +651,11 @@ def test_validate_bucket_name_required() -> None:
         == "valid_bucket_name"
     )
     with pytest.raises(ValueError):
-        validate_bucket_name_required(cls=None, value="")  # empty string
+        validate_bucket_name_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_bucket_name_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_bucket_name_required(cls=None, value="a" * 101)  # more than max_len
+        validate_bucket_name_required(cls=None, value="a" * 101)
 
 
 def test_validate_bucket_name_optional() -> None:
@@ -638,16 +665,16 @@ def test_validate_bucket_name_optional() -> None:
         == "valid_bucket_name"
     )
     with pytest.raises(ValueError):
-        validate_bucket_name_optional(cls=None, value="")  # empty string
+        validate_bucket_name_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_bucket_name_optional(cls=None, value="a" * 101)  # more than max_len
+        validate_bucket_name_optional(cls=None, value="a" * 101)
 
 
 def test_validate_caption_optional() -> None:
     assert validate_caption_optional(cls=None, value=None) is None
     assert validate_caption_optional(cls=None, value="Valid Caption") == "Valid Caption"
     with pytest.raises(ValueError):
-        validate_caption_optional(cls=None, value="a" * 151)  # more than max_len
+        validate_caption_optional(cls=None, value="a" * 151)
 
 
 def test_validate_filename_required() -> None:
@@ -656,7 +683,7 @@ def test_validate_filename_required() -> None:
         assert validate_filename_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_filename_required(
-            cls=None, value="a" * (DB_STR_NAME_TITLE_MAX_LEN + 1)
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
         )
 
 
@@ -664,11 +691,11 @@ def test_validate_filename_optional() -> None:
     assert validate_filename_optional(cls=None, value=None) is None
     assert validate_filename_optional(cls=None, value="ValidName") == "ValidName"
     with pytest.raises(ValueError):
-        validate_filename_optional(cls=None, value="a")  # less than min_len
+        validate_filename_optional(cls=None, value="a")
     with pytest.raises(ValueError):
         validate_filename_optional(
-            cls=None, value="a" * (DB_STR_NAME_TITLE_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_size_kb_required() -> None:
@@ -693,11 +720,9 @@ def test_validate_size_kb_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_size_kb_optional(cls=None, value=0)
     with pytest.raises(ValueError):
-        validate_size_kb_optional(cls=None, value=-1)  # less than min_len
+        validate_size_kb_optional(cls=None, value=-1)
     with pytest.raises(ValueError):
-        validate_size_kb_optional(
-            cls=None, value=settings.api.payload_limit_kb + 1
-        )  # more than max_len
+        validate_size_kb_optional(cls=None, value=settings.api.payload_limit_kb + 1)
 
 
 def test_validate_address_required() -> None:
@@ -706,8 +731,8 @@ def test_validate_address_required() -> None:
         assert validate_address_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_address_required(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
     with pytest.raises(ValueError):
         validate_address_required(cls=None, value=None)  # type: ignore
 
@@ -717,8 +742,8 @@ def test_validate_address_optional() -> None:
     assert validate_address_optional(cls=None, value="Valid Address") == "Valid Address"
     with pytest.raises(ValueError):
         validate_address_optional(
-            cls=None, value="a" * (DB_STR_LONGTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_LONGTEXT_MAXLEN_STORED + 1)
+        )
 
 
 def test_validate_ip_required() -> None:
@@ -729,7 +754,7 @@ def test_validate_ip_required() -> None:
         == "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
     )
     with pytest.raises(ValueError):
-        validate_ip_required(cls=None, value="")  # invalid IP address
+        validate_ip_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_ip_required(cls=None, value=None)  # type: ignore
 
@@ -744,13 +769,13 @@ def test_validate_ip_optional() -> None:
     with pytest.raises(ValueError):
         validate_ip_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_ip_optional(cls=None, value="a" * 41)  # more than max_len
+        validate_ip_optional(cls=None, value="a" * 41)
 
 
 def test_validate_isp_required() -> None:
     assert validate_isp_required(cls=None, value="Valid ISP") == "Valid ISP"
     with pytest.raises(ValueError):
-        validate_isp_required(cls=None, value="a" * 256)  # more than max_len
+        validate_isp_required(cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1))
     with pytest.raises(ValueError):
         assert validate_isp_required(cls=None, value="")
 
@@ -759,7 +784,7 @@ def test_validate_isp_optional() -> None:
     assert validate_isp_optional(cls=None, value=None) is None
     assert validate_isp_optional(cls=None, value="Valid ISP") == "Valid ISP"
     with pytest.raises(ValueError):
-        validate_isp_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_isp_optional(cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1))
 
 
 def test_validate_ip_location_required() -> None:
@@ -768,7 +793,9 @@ def test_validate_ip_location_required() -> None:
         == "Valid Location"
     )
     with pytest.raises(ValueError):
-        validate_ip_location_required(cls=None, value="a" * 256)  # more than max_len
+        validate_ip_location_required(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
     with pytest.raises(ValueError):
         assert validate_ip_location_required(cls=None, value="")
 
@@ -780,7 +807,9 @@ def test_validate_ip_location_optional() -> None:
         == "Valid Location"
     )
     with pytest.raises(ValueError):
-        validate_ip_location_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_ip_location_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_group_name_required() -> None:
@@ -789,11 +818,13 @@ def test_validate_group_name_required() -> None:
         == "Valid Group Name"
     )
     with pytest.raises(ValueError):
-        validate_group_name_required(cls=None, value="")  # empty string
+        validate_group_name_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_group_name_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_group_name_required(cls=None, value="a" * 256)  # more than max_len
+        validate_group_name_required(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_group_name_optional() -> None:
@@ -803,7 +834,9 @@ def test_validate_group_name_optional() -> None:
         == "Valid Group Name"
     )
     with pytest.raises(ValueError):
-        validate_group_name_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_group_name_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_group_slug_required() -> None:
@@ -812,7 +845,7 @@ def test_validate_group_slug_required() -> None:
     with pytest.raises(ValueError):
         assert validate_group_slug_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_group_slug_required(cls=None, value="a" * 13)  # more than max_len
+        validate_group_slug_required(cls=None, value="a" * 13)
 
 
 def test_validate_snap_name_required() -> None:
@@ -821,13 +854,13 @@ def test_validate_snap_name_required() -> None:
         == "Valid Snap Name"
     )
     with pytest.raises(ValueError):
-        validate_snap_name_required(cls=None, value="")  # empty string
+        validate_snap_name_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_snap_name_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
         validate_snap_name_required(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_snap_name_optional() -> None:
@@ -839,7 +872,9 @@ def test_validate_snap_name_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_snap_name_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_snap_name_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_snap_name_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_snap_slug_required() -> None:
@@ -858,9 +893,9 @@ def test_validate_altitude_required() -> None:
     with pytest.raises(ValueError):
         assert validate_altitude_required(cls=None, value=-1)
     with pytest.raises(ValueError):
-        validate_altitude_required(cls=None, value=-1)  # less than min_len
+        validate_altitude_required(cls=None, value=-1)
     with pytest.raises(ValueError):
-        validate_altitude_required(cls=None, value=1001)  # more than max_len
+        validate_altitude_required(cls=None, value=1001)
 
 
 def test_validate_altitude_optional() -> None:
@@ -871,9 +906,9 @@ def test_validate_altitude_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_altitude_optional(cls=None, value=-1)
     with pytest.raises(ValueError):
-        validate_altitude_optional(cls=None, value=-1)  # less than min_len
+        validate_altitude_optional(cls=None, value=-1)
     with pytest.raises(ValueError):
-        validate_altitude_optional(cls=None, value=1001)  # more than max_len
+        validate_altitude_optional(cls=None, value=1001)
 
 
 def test_validate_referrer_required() -> None:
@@ -888,8 +923,9 @@ def test_validate_referrer_required() -> None:
     assert validate_referrer_required(cls=None, value="/") == "/"
     with pytest.raises(ValueError):
         validate_referrer_required(
-            cls=None, value="http://example.com/path" + "a" * 2049
-        )  # value too long
+            cls=None,
+            value="http://example.com/path" + "a" * (DB_STR_URLPATH_MAXLEN_INPUT + 1),
+        )
     with pytest.raises(ValueError):
         validate_referrer_required(cls=None, value=None)  # type: ignore
 
@@ -901,7 +937,9 @@ def test_validate_utm_campaign_optional() -> None:
         == "Valid UTM Campaign"
     )
     with pytest.raises(ValueError):
-        validate_utm_campaign_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_utm_campaign_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_utm_content_optional() -> None:
@@ -911,7 +949,9 @@ def test_validate_utm_content_optional() -> None:
         == "Valid UTM Content"
     )
     with pytest.raises(ValueError):
-        validate_utm_content_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_utm_content_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_utm_medium_optional() -> None:
@@ -923,7 +963,9 @@ def test_validate_utm_medium_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_utm_medium_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_utm_medium_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_utm_medium_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_utm_source_optional() -> None:
@@ -933,7 +975,9 @@ def test_validate_utm_source_optional() -> None:
         == "Valid UTM Source"
     )
     with pytest.raises(ValueError):
-        validate_utm_source_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_utm_source_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_utm_term_optional() -> None:
@@ -942,7 +986,9 @@ def test_validate_utm_term_optional() -> None:
         validate_utm_term_optional(cls=None, value="Valid UTM Term") == "Valid UTM Term"
     )
     with pytest.raises(ValueError):
-        validate_utm_term_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_utm_term_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_reporting_id_required() -> None:
@@ -951,11 +997,13 @@ def test_validate_reporting_id_required() -> None:
         == "valid_reporting_id"
     )
     with pytest.raises(ValueError):
-        validate_reporting_id_required(cls=None, value="")  # empty string
+        validate_reporting_id_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_reporting_id_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_reporting_id_required(cls=None, value="a" * 33)  # more than max_len
+        validate_reporting_id_required(
+            cls=None, value="a" * (DB_STR_32BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_hotspot_type_name_optional() -> None:
@@ -964,11 +1012,18 @@ def test_validate_hotspot_type_name_optional() -> None:
         validate_hotspot_type_name_optional(cls=None, value="Valid Name")
         == "Valid Name"
     )
-    assert validate_hotspot_type_name_optional(cls=None, value="a" * 32) == "a" * 32
+    assert (
+        validate_hotspot_type_name_optional(
+            cls=None, value="a" * DB_STR_32BIT_MAXLEN_INPUT
+        )
+        == "a" * DB_STR_32BIT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         validate_hotspot_type_name_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_hotspot_type_name_optional(cls=None, value="a" * 33)  # too long
+        validate_hotspot_type_name_optional(
+            cls=None, value="a" * (DB_STR_32BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_hotspot_content_optional() -> None:
@@ -979,8 +1034,8 @@ def test_validate_hotspot_content_optional() -> None:
     )
     with pytest.raises(ValueError):
         validate_hotspot_content_optional(
-            cls=None, value="a" * (DB_STR_BLOB_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_BLOB_MAXLEN_STORED + 1)
+        )
 
 
 def test_validate_hotspot_icon_name_optional() -> None:
@@ -991,8 +1046,8 @@ def test_validate_hotspot_icon_name_optional() -> None:
     )
     with pytest.raises(ValueError):
         validate_hotspot_icon_name_optional(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_hotspot_name_optional() -> None:
@@ -1002,7 +1057,9 @@ def test_validate_hotspot_name_optional() -> None:
         == "Valid Hotspot Name"
     )
     with pytest.raises(ValueError):
-        validate_hotspot_name_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_hotspot_name_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_hotspot_user_icon_name_optional() -> None:
@@ -1015,8 +1072,8 @@ def test_validate_hotspot_user_icon_name_optional() -> None:
     )
     with pytest.raises(ValueError):
         validate_hotspot_user_icon_name_optional(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_linked_snap_name_optional() -> None:
@@ -1027,8 +1084,8 @@ def test_validate_linked_snap_name_optional() -> None:
     )
     with pytest.raises(ValueError):
         validate_linked_snap_name_optional(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_snap_file_name_optional() -> None:
@@ -1038,7 +1095,9 @@ def test_validate_snap_file_name_optional() -> None:
         == "valid_file_name.jpg"
     )
     with pytest.raises(ValueError):
-        validate_snap_file_name_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_snap_file_name_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_icon_color_optional() -> None:
@@ -1047,7 +1106,9 @@ def test_validate_icon_color_optional() -> None:
     assert validate_icon_color_optional(cls=None, value="green") == "green"
     assert validate_icon_color_optional(cls=None, value="blue") == "blue"
     with pytest.raises(ValueError):
-        validate_icon_color_optional(cls=None, value="a" * 33)  # more than max_len
+        validate_icon_color_optional(
+            cls=None, value="a" * (DB_STR_32BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_bg_color_optional() -> None:
@@ -1076,7 +1137,7 @@ def test_validate_bg_color_optional() -> None:
     assert validate_bg_color_optional(cls=None, value="aqua") == "aqua"
     assert validate_bg_color_optional(cls=None, value="fuchsia") == "fuchsia"
     with pytest.raises(ValueError):
-        validate_bg_color_optional(cls=None, value="red" * 11)  # more than max_len
+        validate_bg_color_optional(cls=None, value="red" * 11)
 
 
 def test_validate_text_color_optional() -> None:
@@ -1095,14 +1156,18 @@ def test_validate_text_color_optional() -> None:
     assert validate_text_color_optional(cls=None, value="grey") == "grey"
     assert validate_text_color_optional(cls=None, value="") == ""
     with pytest.raises(ValueError):
-        validate_text_color_optional(cls=None, value="a" * 33)  # more than max_len
+        validate_text_color_optional(
+            cls=None, value="a" * (DB_STR_32BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_browser_optional() -> None:
     assert validate_browser_optional(cls=None, value=None) is None
     assert validate_browser_optional(cls=None, value="Valid Browser") == "Valid Browser"
     with pytest.raises(ValueError):
-        validate_browser_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_browser_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_browser_version_optional() -> None:
@@ -1113,8 +1178,8 @@ def test_validate_browser_version_optional() -> None:
     )
     with pytest.raises(ValueError):
         validate_browser_version_optional(
-            cls=None, value="a" * (DB_STR_LONGTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_LONGTEXT_MAXLEN_STORED + 1)
+        )
 
 
 def test_validate_platform_optional() -> None:
@@ -1125,8 +1190,8 @@ def test_validate_platform_optional() -> None:
     assert validate_platform_optional(cls=None, value="") == ""
     with pytest.raises(ValueError):
         validate_platform_optional(
-            cls=None, value="a" * (DB_STR_LONGTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_LONGTEXT_MAXLEN_STORED + 1)
+        )
 
 
 def test_validate_platform_version_optional() -> None:
@@ -1138,8 +1203,8 @@ def test_validate_platform_version_optional() -> None:
     )
     with pytest.raises(ValueError):
         validate_platform_version_optional(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_city_optional() -> None:
@@ -1148,7 +1213,7 @@ def test_validate_city_optional() -> None:
     assert validate_city_optional(cls=None, value="San Francisco") == "San Francisco"
     assert validate_city_optional(cls=None, value="Los Angeles") == "Los Angeles"
     with pytest.raises(ValueError):
-        validate_city_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_city_optional(cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1))
 
 
 def test_validate_country_optional() -> None:
@@ -1157,7 +1222,9 @@ def test_validate_country_optional() -> None:
     assert validate_country_optional(cls=None, value="United States") == "United States"
     assert validate_country_optional(cls=None, value="Canada") == "Canada"
     with pytest.raises(ValueError):
-        validate_country_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_country_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_state_optional() -> None:
@@ -1165,7 +1232,9 @@ def test_validate_state_optional() -> None:
     assert validate_state_optional(cls=None, value="") == ""
     assert validate_state_optional(cls=None, value="Valid State") == "Valid State"
     with pytest.raises(ValueError):
-        validate_state_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_state_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_language_optional() -> None:
@@ -1175,7 +1244,9 @@ def test_validate_language_optional() -> None:
     assert validate_language_optional(cls=None, value="French") == "French"
     assert validate_language_optional(cls=None, value="Spanish") == "Spanish"
     with pytest.raises(ValueError):
-        validate_language_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_language_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_active_seconds_required() -> None:
@@ -1183,9 +1254,9 @@ def test_validate_active_seconds_required() -> None:
     assert validate_active_seconds_required(cls=None, value=86400) == 86400
     assert validate_active_seconds_required(cls=None, value=60) == 60
     with pytest.raises(ValueError):
-        validate_active_seconds_required(cls=None, value=-1)  # less than min_len
+        validate_active_seconds_required(cls=None, value=-1)
     with pytest.raises(ValueError):
-        validate_active_seconds_required(cls=None, value=86401)  # more than max_len
+        validate_active_seconds_required(cls=None, value=86401)
 
 
 def test_validate_project_name_required() -> None:
@@ -1194,11 +1265,11 @@ def test_validate_project_name_required() -> None:
         == "Valid Project Name"
     )
     with pytest.raises(ValueError):
-        validate_project_name_required(cls=None, value="")  # empty string
+        validate_project_name_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_project_name_required(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAX_LEN + 1)
-        )  # more than max_len
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_project_name_optional() -> None:
@@ -1210,7 +1281,9 @@ def test_validate_project_name_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_project_name_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_project_name_optional(cls=None, value="a" * 256)  # more than max_len
+        validate_project_name_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_project_id_required() -> None:
@@ -1219,9 +1292,11 @@ def test_validate_project_id_required() -> None:
         == "valid_project_id"
     )
     with pytest.raises(ValueError):
-        validate_project_id_required(cls=None, value="")  # empty string
+        validate_project_id_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_project_id_required(cls=None, value="a" * 65)  # value too long
+        validate_project_id_required(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_project_number_required() -> None:
@@ -1230,11 +1305,13 @@ def test_validate_project_number_required() -> None:
         == "valid_project_number"
     )
     with pytest.raises(ValueError):
-        validate_project_number_required(cls=None, value="")  # empty string
+        validate_project_number_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_project_number_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_project_number_required(cls=None, value="a" * 65)  # more than max_len
+        validate_project_number_required(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_service_account_required() -> None:
@@ -1246,7 +1323,9 @@ def test_validate_service_account_required() -> None:
     with pytest.raises(ValueError):
         assert validate_service_account_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_service_account_required(cls=None, value="a" * 65)
+        validate_service_account_required(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_project_id_optional() -> None:
@@ -1255,7 +1334,9 @@ def test_validate_project_id_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_project_id_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_project_id_optional(cls=None, value="a" * 65)  # more than max_len
+        validate_project_id_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_project_number_optional() -> None:
@@ -1265,7 +1346,9 @@ def test_validate_project_number_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_project_number_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_project_number_optional(cls=None, value="a" * 65)  # more than max_len
+        validate_project_number_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_service_account_optional() -> None:
@@ -1277,37 +1360,56 @@ def test_validate_service_account_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_service_account_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_service_account_optional(cls=None, value="a" * 65)  # more than max_len
+        validate_service_account_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_measurement_id_required() -> None:
     assert validate_measurement_id_required(cls=None, value="valid_id") == "valid_id"
     assert validate_measurement_id_required(cls=None, value="0") == "0"
-    assert validate_measurement_id_required(cls=None, value="a" * 16) == "a" * 16
+    assert (
+        validate_measurement_id_required(
+            cls=None, value="a" * DB_STR_16BIT_MAXLEN_INPUT
+        )
+        == "a" * DB_STR_16BIT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         assert validate_measurement_id_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_measurement_id_required(cls=None, value="a" * 17)
+        validate_measurement_id_required(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_property_id_required() -> None:
     assert validate_property_id_required(cls=None, value="valid_id") == "valid_id"
     assert validate_property_id_required(cls=None, value="0") == "0"
-    assert validate_property_id_required(cls=None, value="a" * 16) == "a" * 16
+    assert (
+        validate_property_id_required(cls=None, value="a" * DB_STR_16BIT_MAXLEN_INPUT)
+        == "a" * DB_STR_16BIT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         assert validate_property_id_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_property_id_required(cls=None, value="a" * 17)
+        validate_property_id_required(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_stream_id_required() -> None:
     assert validate_stream_id_required(cls=None, value="valid_id") == "valid_id"
     assert validate_stream_id_required(cls=None, value="0") == "0"
-    assert validate_stream_id_required(cls=None, value="a" * 16) == "a" * 16
+    assert (
+        validate_stream_id_required(cls=None, value="a" * DB_STR_16BIT_MAXLEN_INPUT)
+        == "a" * DB_STR_16BIT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         assert validate_stream_id_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_stream_id_required(cls=None, value="a" * 17)
+        validate_stream_id_required(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_keys_required() -> None:
@@ -1315,54 +1417,56 @@ def test_validate_keys_required() -> None:
     with pytest.raises(ValueError):
         assert validate_keys_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_keys_required(
-            cls=None, value="a" * (DB_STR_BLOB_MAX_LEN + 1)
-        )  # more than max_len
+        validate_keys_required(cls=None, value="a" * (DB_STR_BLOB_MAXLEN_STORED + 1))
 
 
 def test_validate_clicks_required() -> None:
     assert validate_clicks_required(cls=None, value=0) == 0
     assert (
-        validate_clicks_required(cls=None, value=DB_INT_INTEGER_MAX_LEN)
-        == DB_INT_INTEGER_MAX_LEN
+        validate_clicks_required(cls=None, value=DB_INT_INTEGER_MAXLEN_STORED)
+        == DB_INT_INTEGER_MAXLEN_STORED
     )
     with pytest.raises(ValueError):
-        validate_clicks_required(cls=None, value=-1)  # less than min_len
+        validate_clicks_required(cls=None, value=-1)
     with pytest.raises(ValueError):
-        validate_clicks_required(
-            cls=None, value=DB_INT_INTEGER_MAX_LEN + 1
-        )  # more than max_len
+        validate_clicks_required(cls=None, value=DB_INT_INTEGER_MAXLEN_STORED + 1)
 
 
 def test_validate_impressions_required() -> None:
     assert validate_impressions_required(cls=None, value=0) == 0
     assert validate_impressions_required(cls=None, value=1) == 1
     assert (
-        validate_impressions_required(cls=None, value=DB_INT_INTEGER_MAX_LEN)
-        == DB_INT_INTEGER_MAX_LEN
+        validate_impressions_required(cls=None, value=DB_INT_INTEGER_MAXLEN_STORED)
+        == DB_INT_INTEGER_MAXLEN_STORED
     )
     with pytest.raises(ValueError):
-        validate_impressions_required(cls=None, value=-1)  # less than min_len
+        validate_impressions_required(cls=None, value=-1)
     with pytest.raises(ValueError):
-        validate_impressions_required(
-            cls=None, value=DB_INT_INTEGER_MAX_LEN + 1
-        )  # more than max_len
+        validate_impressions_required(cls=None, value=DB_INT_INTEGER_MAXLEN_STORED + 1)
 
 
 def test_validate_tracking_id_required() -> None:
     assert validate_tracking_id_required(cls=None, value="a") == "a"
-    assert validate_tracking_id_required(cls=None, value="a" * 16) == "a" * 16
+    assert (
+        validate_tracking_id_required(cls=None, value="a" * DB_STR_16BIT_MAXLEN_INPUT)
+        == "a" * DB_STR_16BIT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         assert validate_tracking_id_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_tracking_id_required(cls=None, value="a" * 17)
+        validate_tracking_id_required(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_view_id_required() -> None:
     assert validate_view_id_required(cls=None, value="valid_view_id") == "valid_view_id"
     assert validate_view_id_required(cls=None, value="0") == "0"
-    assert validate_view_id_required(cls=None, value="1" * 16) == "1" * 16
+    assert (
+        validate_view_id_required(cls=None, value="1" * DB_STR_16BIT_MAXLEN_INPUT)
+        == "1" * DB_STR_16BIT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         assert validate_view_id_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_view_id_required(cls=None, value="1" * 17)
+        validate_view_id_required(cls=None, value="1" * (DB_STR_16BIT_MAXLEN_INPUT + 1))

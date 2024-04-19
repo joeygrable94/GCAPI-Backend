@@ -8,6 +8,7 @@ from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_FLOAT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .go_sc import GoSearchConsoleProperty  # noqa: F401
@@ -39,8 +40,10 @@ class GoSearchConsoleDevice(Base):
     keys: Mapped[str] = mapped_column(BLOB, nullable=False)
     clicks: Mapped[int] = mapped_column(Integer, nullable=False)
     impressions: Mapped[int] = mapped_column(Integer, nullable=False)
-    ctr: Mapped[float] = mapped_column(Float(20), nullable=False)
-    position: Mapped[float] = mapped_column(Float(20), nullable=False)
+    ctr: Mapped[float] = mapped_column(Float(DB_FLOAT_MAXLEN_STORED), nullable=False)
+    position: Mapped[float] = mapped_column(
+        Float(DB_FLOAT_MAXLEN_STORED), nullable=False
+    )
     date_start: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )

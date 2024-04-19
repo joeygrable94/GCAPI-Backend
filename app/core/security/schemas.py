@@ -1,5 +1,7 @@
 from pydantic import BaseModel, field_validator
 
+from app.db.constants import DB_STR_DESC_MAXLEN_INPUT, DB_STR_URLPATH_MAXLEN_INPUT
+
 
 class CsrfToken(BaseModel):
     csrf_token: str
@@ -17,8 +19,10 @@ class PlainMessage(BaseModel):
     def check_message(cls, value: str) -> str:
         if not value:
             raise ValueError("message cannot be empty")
-        if len(value) > 2048:
-            raise ValueError("message may not contain more than 2048 characters")
+        if len(value) > DB_STR_URLPATH_MAXLEN_INPUT:
+            raise ValueError(
+                f"message may not contain more than {DB_STR_URLPATH_MAXLEN_INPUT} characters"  # noqa: E501
+            )
         return value
 
 
@@ -29,6 +33,8 @@ class EncryptedMessage(BaseModel):
     def check_message(cls, value: str) -> str:
         if not value:
             raise ValueError("message cannot be empty")
-        if len(value) > 5000:
-            raise ValueError("message may not contain more than 5000 characters")
+        if len(value) > DB_STR_DESC_MAXLEN_INPUT:
+            raise ValueError(
+                f"message may not contain more than {DB_STR_DESC_MAXLEN_INPUT} characters"  # noqa: E501
+            )
         return value

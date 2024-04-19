@@ -8,6 +8,7 @@ from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .gcft import Gcft  # noqa: F401
@@ -38,17 +39,33 @@ class GcftSnapBrowserreport(Base):
         onupdate=func.current_timestamp(),
     )
     session_id: Mapped[UUID4] = mapped_column(UUIDType(binary=False), nullable=False)
-    browser: Mapped[str] = mapped_column(String(255), nullable=True)
-    browser_version: Mapped[str] = mapped_column(String(255), nullable=True)
-    platform: Mapped[str] = mapped_column(String(255), nullable=True)
-    platform_version: Mapped[str] = mapped_column(String(255), nullable=True)
+    browser: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
+    browser_version: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
+    platform: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
+    platform_version: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
     desktop: Mapped[bool] = mapped_column(Boolean(), nullable=True)
     tablet: Mapped[bool] = mapped_column(Boolean(), nullable=True)
     mobile: Mapped[bool] = mapped_column(Boolean(), nullable=True)
-    city: Mapped[str] = mapped_column(String(255), nullable=True)
-    country: Mapped[str] = mapped_column(String(255), nullable=True)
-    state: Mapped[str] = mapped_column(String(255), nullable=True)
-    language: Mapped[str] = mapped_column(String(255), nullable=True)
+    city: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
+    country: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
+    state: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
+    language: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
     visit_date: Mapped[datetime] = mapped_column(DateTime(), nullable=False)
 
     # relationships

@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_lower_string
 from tests.utils.website_pages import create_random_website_page
 
+from app.db.constants import DB_STR_URLPATH_MAXLEN_INPUT
 from app.schemas import WebsitePageRead
 
 pytestmark = pytest.mark.asyncio
@@ -54,5 +55,6 @@ async def test_update_website_page_as_superuser_url_too_long(
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
     assert (
-        entry["detail"][0]["msg"] == "Value error, url must be 2048 characters or less"
+        entry["detail"][0]["msg"]
+        == f"Value error, url must be {DB_STR_URLPATH_MAXLEN_INPUT} characters or less"
     )

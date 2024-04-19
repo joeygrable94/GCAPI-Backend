@@ -60,6 +60,7 @@ async def test_sign_and_encrypt() -> None:
         "a" * 2048,
         "a" * 5000,
         "a" * 65535,
+        "a" * 49000,
     ]
 
     for message in messages:

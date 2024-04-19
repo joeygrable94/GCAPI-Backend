@@ -8,6 +8,7 @@ from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
+from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .bdx_feed import BdxFeed  # noqa: F401
@@ -75,12 +76,22 @@ class FileAsset(Base):
         onupdate=func.current_timestamp(),
     )
     filename: Mapped[str] = mapped_column(
-        String(96), nullable=False, unique=True, primary_key=True, default="default"
+        String(DB_STR_TINYTEXT_MAXLEN_STORED),
+        nullable=False,
+        unique=True,
+        primary_key=True,
+        default="default",
     )
-    extension: Mapped[str] = mapped_column(String(255), nullable=False, default="jpg")
+    extension: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=False, default="jpg"
+    )
     size_kb: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    title: Mapped[str] = mapped_column(String(96), nullable=False)
-    caption: Mapped[str] = mapped_column(String(150), nullable=True)
+    title: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=False
+    )
+    caption: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+    )
     keys: Mapped[str] = mapped_column(BLOB, nullable=True)
     is_private: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
 

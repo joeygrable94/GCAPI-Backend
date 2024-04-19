@@ -7,6 +7,7 @@ from tests.utils.clients import create_random_client
 from tests.utils.utils import random_lower_string
 
 from app.api.exceptions import ErrorCode
+from app.db.constants import DB_STR_DESC_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_INPUT
 from app.schemas import ClientRead, ClientUpdate
 
 pytestmark = pytest.mark.asyncio
@@ -59,7 +60,7 @@ async def test_update_client_as_superuser_title_too_long(
     admin_token_headers: Dict[str, str],
 ) -> None:
     entry_a: ClientRead = await create_random_client(db_session)
-    title: str = random_lower_string() * 4
+    title: str = random_lower_string() * 100
     data: Dict[str, str] = {"title": title}
     response: Response = await client.patch(
         f"clients/{entry_a.id}",
@@ -70,7 +71,7 @@ async def test_update_client_as_superuser_title_too_long(
     assert response.status_code == 422
     assert (
         updated_entry["detail"][0]["msg"]
-        == "Value error, title must be 96 characters or less"
+        == f"Value error, title must be {DB_STR_TINYTEXT_MAXLEN_INPUT} characters or less"  # noqa: E501
     )
 
 
@@ -91,7 +92,7 @@ async def test_update_client_as_superuser_description_too_long(
     assert response.status_code == 422
     assert (
         updated_entry["detail"][0]["msg"]
-        == "Value error, description must be 5000 characters or less"
+        == f"Value error, description must be {DB_STR_DESC_MAXLEN_INPUT} characters or less"  # noqa: E501
     )
 
 

@@ -25,6 +25,10 @@ from app.core.security.permissions import (
 from app.core.utilities.uuids import get_random_username  # type: ignore
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
+from app.db.constants import (
+    DB_STR_SHORTTEXT_MAXLEN_STORED,
+    DB_STR_TINYTEXT_MAXLEN_STORED,
+)
 from app.db.custom_types import Scopes
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -57,17 +61,23 @@ class User(Base):
         onupdate=func.current_timestamp(),
     )
     auth_id: Mapped[str] = mapped_column(
-        String(255), unique=True, primary_key=True, nullable=False
+        String(DB_STR_TINYTEXT_MAXLEN_STORED),
+        unique=True,
+        primary_key=True,
+        nullable=False,
     )
     email: Mapped[str] = mapped_column(
-        String(320),
+        String(DB_STR_SHORTTEXT_MAXLEN_STORED),
         nullable=False,
     )
     username: Mapped[str] = mapped_column(
-        String(255), unique=True, nullable=False, default=get_random_username()
+        String(DB_STR_TINYTEXT_MAXLEN_STORED),
+        unique=True,
+        nullable=False,
+        default=get_random_username(),
     )
     picture: Mapped[str] = mapped_column(
-        String(1024),
+        String(DB_STR_SHORTTEXT_MAXLEN_STORED),
         nullable=False,
         default="https://www.gravatar.com/avatar/?d=identicon",
     )

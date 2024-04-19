@@ -5,13 +5,13 @@ from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.engine.interfaces import Dialect
 
 from app.core.utilities import scope_regex
-from app.db.constants import DB_STR_BLOB_MAX_LEN, DB_STR_LONGTEXT_MAX_LEN
+from app.db.constants import DB_STR_BLOB_MAXLEN_STORED, DB_STR_LONGTEXT_MAXLEN_STORED
 
 
 class LongText(types.UserDefinedType):
-    cache_ok = False
+    cache_ok = True
 
-    def __init__(self, length: int = DB_STR_LONGTEXT_MAX_LEN):
+    def __init__(self, length: int = DB_STR_LONGTEXT_MAXLEN_STORED):
         self.length = length
 
     def get_col_spec(self, **kw: Any) -> str:
@@ -29,7 +29,7 @@ class LongText(types.UserDefinedType):
         if dialect.name == "mysql":
             return dialect.type_descriptor(LONGTEXT())
         else:
-            return dialect.type_descriptor(Text(length=DB_STR_LONGTEXT_MAX_LEN))
+            return dialect.type_descriptor(Text(length=DB_STR_LONGTEXT_MAXLEN_STORED))
 
     def result_processor(
         self, dialect: Dialect, coltype: object
@@ -41,15 +41,21 @@ class LongText(types.UserDefinedType):
 
 
 class Scopes(types.TypeDecorator):
-    impl = types.BLOB(DB_STR_BLOB_MAX_LEN)
+    cache_ok = False
+    impl = types.BLOB(DB_STR_BLOB_MAXLEN_STORED)
 
     def process_bind_param(self, value: List[str] | None, dialect: Dialect) -> bytes:
+        processed_value: bytes
         if value is not None:
             for scope in value:
                 if not scope_regex.fullmatch(scope.lower()):
                     raise ValueError("invalid scope format")
-            return ",".join(value).encode("utf-8")
-        return "".encode("utf-8")
+            processed_value = ",".join(value).encode("utf-8")
+        else:
+            processed_value = "".encode("utf-8")
+        if len(processed_value) > DB_STR_BLOB_MAXLEN_STORED:
+            raise ValueError("Scopes too long")
+        return processed_value
 
     def process_result_value(self, value: Any | None, dialect: Dialect) -> List[str]:
         if value is not None:

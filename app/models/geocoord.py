@@ -8,6 +8,7 @@ from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_FLOAT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .file_asset import FileAsset  # noqa: F401
@@ -37,7 +38,7 @@ class Geocoord(Base):
         onupdate=func.current_timestamp(),
     )
     address: Mapped[str] = mapped_column(
-        String(255),
+        String(DB_STR_TINYTEXT_MAXLEN_STORED),
         unique=True,
         primary_key=True,
         nullable=False,
@@ -45,10 +46,10 @@ class Geocoord(Base):
             Orange County, California, 92866, United States",
     )
     latitude: Mapped[float] = mapped_column(
-        Float(20), nullable=False, default=33.78701447619846000
+        Float(DB_FLOAT_MAXLEN_STORED), nullable=False, default=33.78701447619846000
     )
     longitude: Mapped[float] = mapped_column(
-        Float(20), nullable=False, default=-117.853817613489810
+        Float(DB_FLOAT_MAXLEN_STORED), nullable=False, default=-117.853817613489810
     )
 
     # relationships

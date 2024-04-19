@@ -8,6 +8,7 @@ from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
@@ -42,7 +43,9 @@ class GoSearchConsoleProperty(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    title: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    title: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=False, unique=True
+    )
 
     # relationships
     client_id: Mapped[UUID4] = mapped_column(

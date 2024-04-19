@@ -8,6 +8,7 @@ from sqlalchemy_utils import UUIDType  # type: ignore
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
+from app.db.constants import DB_STR_16BIT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .file_asset import FileAsset  # noqa: F401
@@ -42,9 +43,14 @@ class GcftSnap(Base):
         default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
-    snap_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    snap_name: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=False
+    )
     snap_slug: Mapped[str] = mapped_column(
-        String(12), nullable=False, unique=True, primary_key=True
+        String(DB_STR_16BIT_MAXLEN_STORED),
+        nullable=False,
+        unique=True,
+        primary_key=True,
     )
     altitude: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 

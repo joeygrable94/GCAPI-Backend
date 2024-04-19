@@ -10,6 +10,7 @@ from tests.utils.website_maps import create_random_website_map
 from app.api.exceptions import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
 from app.crud.website import WebsiteRepository
+from app.db.constants import DB_STR_URLPATH_MAXLEN_INPUT
 from app.models import Website
 from app.schemas import WebsiteMapRead
 
@@ -143,7 +144,8 @@ async def test_create_website_sitemap_as_superuser_url_too_long(
     assert response.status_code == 422
     entry: Dict[str, Any] = response.json()
     assert (
-        entry["detail"][0]["msg"] == "Value error, url must be 2048 characters or less"
+        entry["detail"][0]["msg"]
+        == f"Value error, url must be {DB_STR_URLPATH_MAXLEN_INPUT} characters or less"
     )
 
 

@@ -2,6 +2,7 @@ import pytest
 from pydantic import ValidationError
 
 from app.core.security.schemas import EncryptedMessage, PlainMessage
+from app.db.constants import DB_STR_DESC_MAXLEN_INPUT, DB_STR_URLPATH_MAXLEN_INPUT
 
 
 def test_plain_message() -> None:
@@ -14,9 +15,9 @@ def test_plain_message() -> None:
     with pytest.raises(ValidationError):
         PlainMessage(message="")
 
-    # Test message with more than 2048 characters
+    # Test message with more than DB_STR_URLPATH_MAXLEN_INPUT characters
     with pytest.raises(ValidationError):
-        PlainMessage(message="a" * 2049)
+        PlainMessage(message="a" * (DB_STR_URLPATH_MAXLEN_INPUT + 1))
 
 
 def test_encrypted_message() -> None:
@@ -29,6 +30,6 @@ def test_encrypted_message() -> None:
     with pytest.raises(ValidationError):
         EncryptedMessage(message="")
 
-    # Test message with more than 5000 characters
+    # Test message with more than DB_STR_DESC_MAXLEN_INPUT characters
     with pytest.raises(ValidationError):
-        EncryptedMessage(message="a" * 5001)
+        EncryptedMessage(message="a" * (DB_STR_DESC_MAXLEN_INPUT + 1))
