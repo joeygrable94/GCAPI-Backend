@@ -24,7 +24,7 @@ async def test_sign_and_encrypt() -> None:
     encrypted = sm.sign_and_encrypt(message)
     assert encrypted != message
     assert urlsafe_b64decode(encrypted.encode("utf-8")) != message.encode("utf-8")
-    decrypted = sm.decrypt_and_verify(encrypted)
+    decrypted = sm.decrypt_and_verify(encrypted, str)
     assert decrypted == message
 
 
@@ -44,7 +44,7 @@ async def test_sign_and_encryp_signature_verification_error() -> None:
     sm.public_key = RSA.generate(2048)
     assert urlsafe_b64decode(encrypted.encode("utf-8")) != message.encode("utf-8")
     with pytest.raises(SignatureVerificationError):
-        sm.decrypt_and_verify(encrypted)
+        sm.decrypt_and_verify(encrypted, str)
 
 
 async def test_sign_and_encryp_decryption_error() -> None:
@@ -55,4 +55,4 @@ async def test_sign_and_encryp_decryption_error() -> None:
     assert encrypted != message
     assert urlsafe_b64decode(encrypted.encode("utf-8")) != message.encode("utf-8")
     with pytest.raises(DecryptionError):
-        sm_bad.decrypt_and_verify(encrypted)
+        sm_bad.decrypt_and_verify(encrypted, str)

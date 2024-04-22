@@ -24,40 +24,65 @@ class SecureMessage:
         self.public_key, self.private_key = load_api_keys()
         self.salt = salt
 
-    def sign_and_encrypt(self, message: str) -> str:
+    def _serialize_value(self, value: bool | str | int) -> bytes:
+        if isinstance(value, bool):
+            return b"true" if value else b"false"
+        elif isinstance(value, str):
+            return value.encode("utf-8")
+        elif isinstance(value, int):
+            return str(value).encode("utf-8")
+        else:
+            raise TypeError("Unsupported data type for encryption")
+
+    def _deserialize_value(
+        self, serialized_value: bytes, data_type: type[bool] | type[str] | type[int]
+    ) -> object:
+        if data_type == bool:
+            return serialized_value == b"true"
+        elif data_type == str:
+            return serialized_value.decode("utf-8")
+        elif data_type == int:
+            return int(serialized_value.decode("utf-8"))
+        else:
+            raise TypeError("Unsupported data type for decryption")
+
+    def sign_and_encrypt(self, value: bool | str | int) -> str:
         try:
-            # Sign the message
+            serialized_value = self._serialize_value(value)
+            # Sign the value
             signer = PKCS1_v1_5.new(self.private_key)
             digest = SHA256.new()
-            digest.update(message.encode("utf-8"))
+            digest.update(serialized_value)
             signature = signer.sign(digest)
             # Generate a random IV
             iv = get_random_bytes(16)
-            # Encrypt the message and the signature
+            # Encrypt the value and the signature
             cipher: CbcMode = AES.new(self.aes_key, AES.MODE_CBC, iv)
             ciphertext = cipher.encrypt(
-                pad((message.encode("utf-8") + signature), self.block_size)
+                pad((serialized_value + signature), self.block_size)
             )
             return urlsafe_b64encode(iv + ciphertext).decode("utf-8")
         except Exception as e:
             logger.exception(e)
             raise EncryptionError()
 
-    def decrypt_and_verify(self, ciphertext: str) -> str:
+    def decrypt_and_verify(
+        self, ciphertext: str, data_type: type[bool] | type[str] | type[int]
+    ) -> object:
         try:
             # Decode the ciphertext and extract the IV
             decoded = urlsafe_b64decode(ciphertext)
             iv, deciphertext = decoded[:16], decoded[16:]
-            # Decrypt the message and the signature
+            # Decrypt the value and the signature
             cipher: CbcMode = AES.new(self.aes_key, AES.MODE_CBC, iv=iv)
             plaintext = unpad(cipher.decrypt(deciphertext), self.block_size)
-            message, signature = plaintext[:-256], plaintext[-256:]
+            serialized_value, signature = plaintext[:-256], plaintext[-256:]
             # Verify the signature
             verifier = PKCS1_v1_5.new(self.public_key)
             digest = SHA256.new()
-            digest.update(message)
+            digest.update(serialized_value)
             if verifier.verify(digest, signature):
-                return message.decode("utf-8")
+                return self._deserialize_value(serialized_value, data_type)
             else:
                 raise SignatureVerificationError()
         except SignatureVerificationError as e:

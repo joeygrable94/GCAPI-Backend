@@ -28,6 +28,7 @@ from app.db.base_class import Base
 from app.db.constants import (
     DB_STR_SHORTTEXT_MAXLEN_STORED,
     DB_STR_TINYTEXT_MAXLEN_STORED,
+    DB_STR_USER_PICTURE_DEFAULT,
 )
 from app.db.custom_types import Scopes
 
@@ -79,13 +80,13 @@ class User(Base):
     picture: Mapped[str] = mapped_column(
         String(DB_STR_SHORTTEXT_MAXLEN_STORED),
         nullable=False,
-        default="https://www.gravatar.com/avatar/?d=identicon",
+        default=DB_STR_USER_PICTURE_DEFAULT,
     )
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     scopes: Mapped[list[AclPrivilege]] = mapped_column(
-        Scopes,
+        Scopes(),
         nullable=False,
         default=[RoleUser],
     )

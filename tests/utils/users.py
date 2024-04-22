@@ -4,6 +4,7 @@ from tests.utils.utils import random_email, random_lower_string
 
 from app.core.security.permissions import AclPrivilege, RoleUser
 from app.crud.user import UserRepository
+from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
 from app.models.user import User
 from app.schemas.user import UserCreate
 
@@ -38,7 +39,7 @@ async def create_random_user(
             auth_id=auth_id,
             email=email,
             username=username,
-            picture="https://www.gravatar.com/avatar/?d=identicon",
+            picture=DB_STR_USER_PICTURE_DEFAULT,
             is_active=is_active,
             is_verified=is_verified,
             is_superuser=is_superuser,

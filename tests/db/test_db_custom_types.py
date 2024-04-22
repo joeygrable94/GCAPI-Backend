@@ -8,7 +8,7 @@ from app.db.custom_types import Scopes
 def test_process_bind_param_valid_scopes() -> None:
     scopes = Scopes()
     result = scopes.process_bind_param(["scope:one", "scope:two"], mysql.dialect())
-    assert result == b"scope:one,scope:two"
+    assert result == "scope:one,scope:two"
 
 
 def test_process_bind_param_invalid_scope_format() -> None:
@@ -28,18 +28,18 @@ def test_process_bind_param_invalid_scope_too_long() -> None:
 def test_process_bind_param_none_value() -> None:
     scopes = Scopes()
     result = scopes.process_bind_param(None, mysql.dialect())
-    assert result == b""
+    assert result == ""
 
 
 def test_process_result_value_valid_scopes() -> None:
     scopes = Scopes()
-    result = scopes.process_result_value(b"scope:one,scope:two", mysql.dialect())
+    result = scopes.process_result_value("scope:one,scope:two", mysql.dialect())
     assert result == ["scope:one", "scope:two"]
 
 
 def test_process_result_value_empty_value() -> None:
     scopes = Scopes()
-    result = scopes.process_result_value(b"", mysql.dialect())
+    result = scopes.process_result_value("", mysql.dialect())
     assert result == []
 
 

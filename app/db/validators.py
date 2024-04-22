@@ -13,6 +13,7 @@ from app.db.constants import (
     DB_STR_SHORTTEXT_MAXLEN_INPUT,
     DB_STR_TINYTEXT_MAXLEN_INPUT,
     DB_STR_URLPATH_MAXLEN_INPUT,
+    DB_STR_USER_PICTURE_DEFAULT,
 )
 
 # validation utilities
@@ -400,6 +401,8 @@ def validate_username_required(cls: Any, value: str) -> str:
 
 
 def validate_picture_required(cls: Any, value: str) -> str:
+    if not value or len(value) <= 0:
+        return DB_STR_USER_PICTURE_DEFAULT
     return require_string_name_min_max_len(
         v=value,
         name="picture",
@@ -609,7 +612,7 @@ def validate_ip_required(cls: Any, value: str) -> str:
         v=value,
         name="ip",
         min_len=0,
-        max_len=40,
+        max_len=50,
     )
 
 
@@ -618,7 +621,7 @@ def validate_ip_optional(cls: Any, value: str | None) -> str | None:
         v=value,
         name="ip",
         min_len=0,
-        max_len=40,
+        max_len=50,
     )
 
 

@@ -141,5 +141,5 @@ async def secure_decrypt_message(
     input: EncryptedMessage,
 ) -> PlainMessage:
     """Decrypts and verifies the RSA signature of a securely encrypted message."""
-    decrypted_message = secure.decrypt_and_verify(input.message)
+    decrypted_message = secure.decrypt_and_verify(input.message, str)
     return PlainMessage(message=decrypted_message)

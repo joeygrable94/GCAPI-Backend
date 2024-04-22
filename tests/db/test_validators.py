@@ -769,7 +769,7 @@ def test_validate_ip_optional() -> None:
     with pytest.raises(ValueError):
         validate_ip_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_ip_optional(cls=None, value="a" * 41)
+        validate_ip_optional(cls=None, value="a" * 51)
 
 
 def test_validate_isp_required() -> None:

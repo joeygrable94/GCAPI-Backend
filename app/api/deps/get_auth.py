@@ -7,6 +7,7 @@ from app.core import logger
 from app.core.security import Auth0User, auth
 from app.core.security.permissions import AclPrivilege, RoleUser
 from app.crud import UserRepository
+from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
 from app.models import User
 from app.schemas import UserCreate, UserUpdatePrivileges
 
@@ -53,8 +54,7 @@ async def get_current_user(
                 auth_id=auth0_user.auth_id,
                 email=auth0_user.email,
                 username=auth0_user.email,
-                picture=auth0_user.picture
-                or "https://www.gravatar.com/avatar/?d=identicon",
+                picture=auth0_user.picture or DB_STR_USER_PICTURE_DEFAULT,
                 scopes=auth0_scopes,
                 is_active=True,
                 is_verified=auth0_user.is_verified or False,

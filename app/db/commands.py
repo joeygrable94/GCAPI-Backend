@@ -11,6 +11,7 @@ from app.core.logger import logger
 from app.core.security.permissions import AclPrivilege
 from app.crud import ClientRepository, UserClientRepository, UserRepository
 from app.db.base import Base
+from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
 from app.db.session import async_engine, async_session, engine
 from app.models import Client, User, UserClient
 from app.schemas import ClientCreate, UserClientCreate, UserCreate
@@ -221,7 +222,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     username=settings.auth.first_user_verified,
                     email=settings.auth.first_user_verified,
                     auth_id=settings.auth.first_user_verified_auth_id,
-                    picture="https://www.gravatar.com/avatar/?d=identicon",
+                    picture=DB_STR_USER_PICTURE_DEFAULT,
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
@@ -242,7 +243,7 @@ async def create_init_data() -> None:  # pragma: no cover
                     username=settings.auth.first_user_unverified,
                     email=settings.auth.first_user_unverified,
                     auth_id=settings.auth.first_user_unverified_auth_id,
-                    picture="https://www.gravatar.com/avatar/?d=identicon",
+                    picture=DB_STR_USER_PICTURE_DEFAULT,
                     is_active=True,
                     is_verified=False,
                     is_superuser=False,
