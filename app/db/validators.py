@@ -13,7 +13,6 @@ from app.db.constants import (
     DB_STR_SHORTTEXT_MAXLEN_INPUT,
     DB_STR_TINYTEXT_MAXLEN_INPUT,
     DB_STR_URLPATH_MAXLEN_INPUT,
-    DB_STR_USER_PICTURE_DEFAULT,
 )
 
 # validation utilities
@@ -401,8 +400,6 @@ def validate_username_required(cls: Any, value: str) -> str:
 
 
 def validate_picture_required(cls: Any, value: str) -> str:
-    if not value or len(value) <= 0:
-        return DB_STR_USER_PICTURE_DEFAULT
     return require_string_name_min_max_len(
         v=value,
         name="picture",

@@ -46,6 +46,7 @@ class User(Base):
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         index=True,
+        primary_key=True,
         unique=True,
         nullable=False,
         default=get_uuid(),
@@ -64,7 +65,6 @@ class User(Base):
     auth_id: Mapped[str] = mapped_column(
         String(DB_STR_TINYTEXT_MAXLEN_STORED),
         unique=True,
-        primary_key=True,
         nullable=False,
     )
     email: Mapped[str] = mapped_column(
