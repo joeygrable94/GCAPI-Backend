@@ -1,10 +1,10 @@
-from datetime import datetime
 from typing import TYPE_CHECKING
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, func
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import Timestamp  # type: ignore
+from sqlalchemy_utils import UUIDType
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
@@ -14,7 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .user import User  # noqa: F401
 
 
-class UserClient(Base):
+class UserClient(Base, Timestamp):
     __tablename__: str = "user_client"
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
@@ -22,17 +22,6 @@ class UserClient(Base):
         unique=True,
         nullable=False,
         default=get_uuid(),
-    )
-    created_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-    )
-    updated_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-        onupdate=func.current_timestamp(),
     )
     user_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),

@@ -1,11 +1,16 @@
-from datetime import datetime
 from typing import TYPE_CHECKING, Any, Tuple
 
 from pydantic import UUID4
-from sqlalchemy import Boolean, DateTime, String, func
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import Timestamp  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import (  # type: ignore  # noqa: E501
+    AesEngine,
+    StringEncryptedType,
+)
 
+from app.core.config import settings
 from app.core.security.permissions import (
     AccessCreate,
     AccessDelete,
@@ -26,6 +31,7 @@ from app.core.utilities.uuids import get_random_username  # type: ignore
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
 from app.db.constants import (
+    DB_STR_32BIT_MAXLEN_STORED,
     DB_STR_SHORTTEXT_MAXLEN_STORED,
     DB_STR_TINYTEXT_MAXLEN_STORED,
     DB_STR_USER_PICTURE_DEFAULT,
@@ -39,7 +45,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .note import Note  # noqa: F401
 
 
-class User(Base):
+class User(Base, Timestamp):
     __tablename__: str = "user"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -51,40 +57,83 @@ class User(Base):
         nullable=False,
         default=get_uuid(),
     )
-    created_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-    )
-    updated_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-        onupdate=func.current_timestamp(),
-    )
     auth_id: Mapped[str] = mapped_column(
-        String(DB_STR_TINYTEXT_MAXLEN_STORED),
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_TINYTEXT_MAXLEN_STORED,
+        ),
         unique=True,
         nullable=False,
     )
     email: Mapped[str] = mapped_column(
-        String(DB_STR_SHORTTEXT_MAXLEN_STORED),
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_SHORTTEXT_MAXLEN_STORED,
+        ),
         nullable=False,
     )
     username: Mapped[str] = mapped_column(
-        String(DB_STR_TINYTEXT_MAXLEN_STORED),
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_TINYTEXT_MAXLEN_STORED,
+        ),
         unique=True,
         nullable=False,
         default=get_random_username(),
     )
     picture: Mapped[str] = mapped_column(
-        String(DB_STR_SHORTTEXT_MAXLEN_STORED),
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_SHORTTEXT_MAXLEN_STORED,
+        ),
         nullable=False,
         default=DB_STR_USER_PICTURE_DEFAULT,
     )
-    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
-    is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
-    is_superuser: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
+    is_active: Mapped[bool] = mapped_column(
+        StringEncryptedType(
+            Boolean,
+            settings.api.encryption_key,
+            AesEngine,
+            "zeroes",
+            length=DB_STR_32BIT_MAXLEN_STORED,
+        ),
+        nullable=False,
+        default=True,
+    )
+    is_verified: Mapped[bool] = mapped_column(
+        StringEncryptedType(
+            Boolean,
+            settings.api.encryption_key,
+            AesEngine,
+            "zeroes",
+            length=DB_STR_32BIT_MAXLEN_STORED,
+        ),
+        nullable=False,
+        default=False,
+    )
+    is_superuser: Mapped[bool] = mapped_column(
+        StringEncryptedType(
+            Boolean,
+            settings.api.encryption_key,
+            AesEngine,
+            "zeroes",
+            length=DB_STR_32BIT_MAXLEN_STORED,
+        ),
+        nullable=False,
+        default=False,
+    )
     scopes: Mapped[list[AclPrivilege]] = mapped_column(
         Scopes(),
         nullable=False,
@@ -93,11 +142,9 @@ class User(Base):
 
     # relationships
     clients: Mapped[list["Client"]] = relationship(
-        "Client", secondary="user_client", back_populates="users", lazy="selectin"
+        "Client", secondary="user_client", back_populates="users"
     )
-    notes: Mapped[list["Note"]] = relationship(
-        "Note", back_populates="user", lazy="selectin"
-    )
+    notes: Mapped[list["Note"]] = relationship("Note", back_populates="user")
     ipaddresses: Mapped[list["Ipaddress"]] = relationship(
         "Ipaddress", secondary="user_ipaddress", back_populates="users"
     )

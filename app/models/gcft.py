@@ -1,11 +1,16 @@
-from datetime import datetime
 from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, String, func
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import Timestamp  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import (  # type: ignore  # noqa: E501
+    AesEngine,
+    StringEncryptedType,
+)
 
+from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 from app.db.constants import DB_STR_16BIT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_STORED
@@ -20,7 +25,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .gcft_snap_view import GcftSnapView  # noqa: F401
 
 
-class Gcft(Base):
+class Gcft(Base, Timestamp):
     __tablename__: str = "gcft"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -28,25 +33,29 @@ class Gcft(Base):
         UUIDType(binary=False),
         index=True,
         unique=True,
+        primary_key=True,
         nullable=False,
         default=get_uuid(),
     )
-    created_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-    )
-    updated_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-        onupdate=func.current_timestamp(),
-    )
     group_name: Mapped[str] = mapped_column(
-        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=False
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_TINYTEXT_MAXLEN_STORED,
+        ),
+        nullable=False,
     )
     group_slug: Mapped[str] = mapped_column(
-        String(DB_STR_16BIT_MAXLEN_STORED), nullable=False, primary_key=True
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_16BIT_MAXLEN_STORED,
+        ),
+        nullable=False,
     )
 
     # relationships

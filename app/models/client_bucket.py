@@ -1,11 +1,16 @@
-from datetime import datetime
 from typing import TYPE_CHECKING, List
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import Timestamp  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import (  # type: ignore  # noqa: E501
+    AesEngine,
+    StringEncryptedType,
+)
 
+from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 from app.db.constants import (
@@ -19,7 +24,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .file_asset import FileAsset  # noqa: F401
 
 
-class ClientBucket(Base):
+class ClientBucket(Base, Timestamp):
     """
     Bucket Name: The name of the AWS S3 bucket where the image is stored. This allows
         you to identify the specific bucket for retrieval.
@@ -31,28 +36,39 @@ class ClientBucket(Base):
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         unique=True,
+        primary_key=True,
         nullable=False,
         default=get_uuid(),
     )
-    created_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-    )
-    updated_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-        onupdate=func.current_timestamp(),
-    )
     bucket_name: Mapped[str] = mapped_column(
-        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=False, primary_key=True
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_TINYTEXT_MAXLEN_STORED,
+        ),
+        nullable=False,
     )
     object_key: Mapped[str] = mapped_column(
-        String(DB_STR_URLPATH_MAXLEN_STORED), nullable=False
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_URLPATH_MAXLEN_STORED,
+        ),
+        nullable=False,
     )
     description: Mapped[str] = mapped_column(
-        Text(DB_STR_DESC_MAXLEN_STORED), nullable=True
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_DESC_MAXLEN_STORED,
+        ),
+        nullable=True,
     )
 
     # relationships

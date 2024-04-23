@@ -2,9 +2,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, ForeignKey, String, func
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import Timestamp  # type: ignore
+from sqlalchemy_utils import UUIDType
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
@@ -15,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .gcft_snap import GcftSnap  # noqa: F401
 
 
-class GcftSnapTrafficsource(Base):
+class GcftSnapTrafficsource(Base, Timestamp):
     __tablename__: str = "gcft_snap_trafficsource"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -26,17 +27,6 @@ class GcftSnapTrafficsource(Base):
         unique=True,
         nullable=False,
         default=get_uuid(),
-    )
-    created_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-    )
-    updated_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-        onupdate=func.current_timestamp(),
     )
     session_id: Mapped[UUID4] = mapped_column(UUIDType(binary=False), nullable=False)
     referrer: Mapped[str] = mapped_column(

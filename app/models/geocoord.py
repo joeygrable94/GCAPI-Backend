@@ -1,10 +1,10 @@
-from datetime import datetime
 from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, Float, String, func
+from sqlalchemy import Float, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import Timestamp  # type: ignore
+from sqlalchemy_utils import UUIDType
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .ipaddress import Ipaddress  # noqa: F401
 
 
-class Geocoord(Base):
+class Geocoord(Base, Timestamp):
     __tablename__: str = "geocoord"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -25,17 +25,6 @@ class Geocoord(Base):
         unique=True,
         nullable=False,
         default=get_uuid(),
-    )
-    created_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-    )
-    updated_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-        onupdate=func.current_timestamp(),
     )
     address: Mapped[str] = mapped_column(
         String(DB_STR_TINYTEXT_MAXLEN_STORED),

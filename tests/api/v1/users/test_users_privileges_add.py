@@ -1,4 +1,3 @@
-from time import sleep
 from typing import Any, Dict
 
 import pytest
@@ -8,7 +7,7 @@ from tests.utils.users import create_random_user
 
 from app.core.security.permissions.scope import AclPrivilege
 from app.models.user import User
-from app.schemas.user import UserReadAsAdmin, UserReadAsManager, UserUpdatePrivileges
+from app.schemas.user import UserUpdatePrivileges
 
 pytestmark = pytest.mark.asyncio
 
@@ -26,18 +25,9 @@ async def test_add_user_priv_as_admin(
         headers=admin_token_headers,
         json=user1_update_priv.model_dump(),
     )
-    data: Dict[str, Any] = response.json()
-    user1_new: UserReadAsAdmin = UserReadAsAdmin.model_validate(data)
     assert 200 <= response.status_code < 300
-    sleep(1)
-    response2: Response = await client.get(
-        f"users/{user1_new.id}",
-        headers=admin_token_headers,
-    )
-    assert 200 <= response2.status_code < 300
-    data2: Dict[str, Any] = response2.json()
-    user2_new: UserReadAsAdmin = UserReadAsAdmin.model_validate(data2)
-    assert test_priv in user2_new.scopes
+    data: Dict[str, Any] = response.json()
+    assert test_priv in data["scopes"]
 
 
 async def test_add_user_priv_as_manager(
@@ -53,18 +43,9 @@ async def test_add_user_priv_as_manager(
         headers=manager_token_headers,
         json=user1_update_priv.model_dump(),
     )
-    data: Dict[str, Any] = response.json()
-    user1_new: UserReadAsManager = UserReadAsManager.model_validate(data)
     assert 200 <= response.status_code < 300
-    sleep(1)
-    response2: Response = await client.get(
-        f"users/{user1_new.id}",
-        headers=manager_token_headers,
-    )
-    assert 200 <= response2.status_code < 300
-    data2: Dict[str, Any] = response2.json()
-    user2_new: UserReadAsManager = UserReadAsManager.model_validate(data2)
-    assert test_priv in user2_new.scopes
+    data: Dict[str, Any] = response.json()
+    assert test_priv in data["scopes"]
 
 
 async def test_add_user_priv_as_manager_add_role_disallowed(

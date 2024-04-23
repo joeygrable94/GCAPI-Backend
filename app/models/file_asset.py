@@ -1,14 +1,19 @@
-from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
 
 from pydantic import UUID4
-from sqlalchemy import BLOB, Boolean, DateTime, ForeignKey, Integer, String, func
+from sqlalchemy import BLOB, Boolean, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import Timestamp  # type: ignore
+from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import (  # type: ignore  # noqa: E501
+    AesEngine,
+    StringEncryptedType,
+)
 
+from app.core.config import settings
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
-from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED
+from app.db.constants import DB_STR_32BIT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .bdx_feed import BdxFeed  # noqa: F401
@@ -19,7 +24,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .user import User  # noqa: F401
 
 
-class FileAsset(Base):
+class FileAsset(Base, Timestamp):
     """
     ID (Primary Key): A unique identifier for each image record. You can use an
         auto-incrementing integer or a UUID as the primary key.
@@ -61,39 +66,76 @@ class FileAsset(Base):
         UUIDType(binary=False),
         index=True,
         unique=True,
+        primary_key=True,
         nullable=False,
         default=get_uuid(),
     )
-    created_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-    )
-    updated_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-        onupdate=func.current_timestamp(),
-    )
     filename: Mapped[str] = mapped_column(
-        String(DB_STR_TINYTEXT_MAXLEN_STORED),
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_TINYTEXT_MAXLEN_STORED,
+        ),
         nullable=False,
         unique=True,
-        primary_key=True,
         default="default",
     )
     extension: Mapped[str] = mapped_column(
-        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=False, default="jpg"
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_TINYTEXT_MAXLEN_STORED,
+        ),
+        nullable=False,
+        default="jpg",
     )
-    size_kb: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    size_kb: Mapped[int] = mapped_column(
+        StringEncryptedType(
+            Integer,
+            settings.api.encryption_key,
+            AesEngine,
+            "oneandzeroes",
+            length=DB_STR_32BIT_MAXLEN_STORED,
+        ),
+        nullable=False,
+        default=0,
+    )
     title: Mapped[str] = mapped_column(
-        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=False
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_TINYTEXT_MAXLEN_STORED,
+        ),
+        nullable=False,
     )
     caption: Mapped[str] = mapped_column(
-        String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
+        StringEncryptedType(
+            String,
+            settings.api.encryption_key,
+            AesEngine,
+            "pkcs5",
+            length=DB_STR_TINYTEXT_MAXLEN_STORED,
+        ),
+        nullable=True,
     )
     keys: Mapped[str] = mapped_column(BLOB, nullable=True)
-    is_private: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
+    is_private: Mapped[bool] = mapped_column(
+        StringEncryptedType(
+            Boolean,
+            settings.api.encryption_key,
+            AesEngine,
+            "zeroes",
+            length=DB_STR_32BIT_MAXLEN_STORED,
+        ),
+        nullable=False,
+        default=False,
+    )
 
     # relationships
     user_id: Mapped[UUID4] = mapped_column(
@@ -130,6 +172,6 @@ class FileAsset(Base):
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (
             f"FileAsset({self.title} | {self.filename}.{self.extension} \
-            [{self.size_kb} kb]: created {self.created_on}, updated {self.updated_on})"
+            [{self.size_kb} kb]: created {self.created}, updated {self.updated})"
         )
         return repr_str

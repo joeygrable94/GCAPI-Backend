@@ -1,10 +1,10 @@
-from datetime import datetime
 from typing import TYPE_CHECKING, Any, List, Tuple
 
 from pydantic import UUID4
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, func
+from sqlalchemy import Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import Timestamp  # type: ignore
+from sqlalchemy_utils import UUIDType
 
 from app.core.security.permissions import (
     AccessCreate,
@@ -26,7 +26,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .website_page import WebsitePage  # noqa: F401
 
 
-class WebsitePageSpeedInsights(Base):
+class WebsitePageSpeedInsights(Base, Timestamp):
     __tablename__: str = "website_pagespeedinsights"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -37,17 +37,6 @@ class WebsitePageSpeedInsights(Base):
         unique=True,
         nullable=False,
         default=get_uuid(),
-    )
-    created_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-    )
-    updated_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-        onupdate=func.current_timestamp(),
     )
     strategy: Mapped[str] = mapped_column(
         String(DB_STR_16BIT_MAXLEN_STORED), nullable=False, default="mobile"

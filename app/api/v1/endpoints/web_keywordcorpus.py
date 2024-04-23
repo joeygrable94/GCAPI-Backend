@@ -154,7 +154,7 @@ async def website_page_keyword_corpus_create(
     logger.info(
         "Created Website Keyword Corpus:",
         kwc_in_db.id,
-        kwc_in_db.created_on,
+        kwc_in_db.created,
     )
     return WebsiteKeywordCorpusRead.model_validate(kwc_in_db)
 

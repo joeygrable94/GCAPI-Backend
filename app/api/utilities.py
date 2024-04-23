@@ -7,25 +7,25 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.exceptions.exceptions import WebsiteNotExists, WebsitePageNotExists
 from app.core.config import settings
 from app.core.logger import logger
-from app.core.utilities import parse_id
-from app.core.utilities.websites import fetch_url_status_code
-from app.crud import WebsitePageRepository
-from app.crud.website import WebsiteRepository
-from app.crud.website_map import WebsiteMapRepository
-from app.crud.website_pagespeedinsights import WebsitePageSpeedInsightsRepository
+from app.core.utilities import fetch_url_status_code, parse_id
+from app.crud import (
+    WebsiteMapRepository,
+    WebsitePageRepository,
+    WebsitePageSpeedInsightsRepository,
+    WebsiteRepository,
+)
 from app.db.session import get_db_session
-from app.models import WebsitePage
-from app.models.website import Website
-from app.models.website_map import WebsiteMap
+from app.models import Website, WebsiteMap, WebsitePage
 from app.schemas import (
     PageSpeedInsightsDevice,
+    WebsiteMapCreate,
     WebsiteMapPage,
+    WebsiteMapUpdate,
     WebsitePageCreate,
     WebsitePageSpeedInsightsBase,
+    WebsitePageSpeedInsightsCreate,
     WebsitePageUpdate,
 )
-from app.schemas.website_map import WebsiteMapCreate, WebsiteMapUpdate
-from app.schemas.website_pagespeedinsights import WebsitePageSpeedInsightsCreate
 
 
 async def create_or_update_website_map(

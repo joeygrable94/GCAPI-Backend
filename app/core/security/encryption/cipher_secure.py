@@ -26,7 +26,7 @@ class SecureMessage:
 
     def _serialize_value(self, value: bool | str | int) -> bytes:
         if isinstance(value, bool):
-            return b"true" if value else b"false"
+            return b"1" if value else b"0"
         elif isinstance(value, str):
             return value.encode("utf-8")
         elif isinstance(value, int):
@@ -38,7 +38,7 @@ class SecureMessage:
         self, serialized_value: bytes, data_type: type[bool] | type[str] | type[int]
     ) -> object:
         if data_type == bool:
-            return serialized_value == b"true"
+            return serialized_value == b"1"
         elif data_type == str:
             return serialized_value.decode("utf-8")
         elif data_type == int:

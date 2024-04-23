@@ -105,7 +105,7 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
         updated_scopes = entry.scopes
         if schema.scopes:
             updated_scopes.extend(schema.scopes)
-        setattr(entry, "scopes", list(set(updated_scopes)))
+        entry.scopes = list(set(updated_scopes))
         await self._db.commit()
         await self._db.refresh(entry)
         return entry
@@ -120,7 +120,7 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
             updated_scopes = [
                 scope for scope in user_scopes if scope not in schema.scopes
             ]
-        setattr(entry, "scopes", list(set(updated_scopes)))
+        entry.scopes = list(set(updated_scopes))
         await self._db.commit()
         await self._db.refresh(entry)
         return entry

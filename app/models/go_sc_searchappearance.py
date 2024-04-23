@@ -2,9 +2,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import BLOB, DateTime, Float, ForeignKey, Integer, func
+from sqlalchemy import BLOB, DateTime, Float, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import UUIDType  # type: ignore
+from sqlalchemy_utils import Timestamp  # type: ignore
+from sqlalchemy_utils import UUIDType
 
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
@@ -14,7 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .go_sc import GoSearchConsoleProperty  # noqa: F401
 
 
-class GoSearchConsoleSearchappearance(Base):
+class GoSearchConsoleSearchappearance(Base, Timestamp):
     __tablename__: str = "go_sc_searchappearance"
     __table_args__: Any = {"mysql_engine": "InnoDB"}
     __mapper_args__: Any = {"always_refresh": True}
@@ -25,17 +26,6 @@ class GoSearchConsoleSearchappearance(Base):
         unique=True,
         nullable=False,
         default=get_uuid(),
-    )
-    created_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-    )
-    updated_on: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=func.current_timestamp(),
-        onupdate=func.current_timestamp(),
     )
     keys: Mapped[str] = mapped_column(BLOB, nullable=False)
     clicks: Mapped[int] = mapped_column(Integer, nullable=False)

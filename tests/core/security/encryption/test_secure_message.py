@@ -1,7 +1,9 @@
 from base64 import urlsafe_b64decode
+from datetime import date
 
 import pytest
 from Crypto.PublicKey import RSA
+from tests.utils.utils import random_boolean
 
 from app.core.config import settings
 from app.core.security.encryption import DecryptionError, EncryptionError, SecureMessage
@@ -26,6 +28,40 @@ async def test_sign_and_encrypt() -> None:
     assert urlsafe_b64decode(encrypted.encode("utf-8")) != message.encode("utf-8")
     decrypted = sm.decrypt_and_verify(encrypted, str)
     assert decrypted == message
+
+
+async def test_sign_and_encrypt_boolean() -> None:
+    sm = SecureMessage(settings.api.encryption_key, settings.api.encryption_salt)
+    message = random_boolean()
+    encrypted = sm.sign_and_encrypt(message)
+    assert encrypted != message
+    decrypted = sm.decrypt_and_verify(encrypted, bool)
+    assert decrypted == message
+
+
+async def test_sign_and_encrypt_integer() -> None:
+    sm = SecureMessage(settings.api.encryption_key, settings.api.encryption_salt)
+    message = 12345
+    encrypted = sm.sign_and_encrypt(message)
+    assert encrypted != message
+    decrypted = sm.decrypt_and_verify(encrypted, int)
+    assert decrypted == message
+
+
+async def test_sign_and_encrypt_unsupported() -> None:
+    sm = SecureMessage(settings.api.encryption_key, settings.api.encryption_salt)
+    message = date.today()
+    encrypted = sm.sign_and_encrypt(message.isoformat())
+    assert encrypted != message
+    with pytest.raises(DecryptionError):
+        sm.decrypt_and_verify(encrypted, date)  # type: ignore
+
+
+async def test_sign_and_encrypt_serialize_value_type_error() -> None:
+    sm = SecureMessage(settings.api.encryption_key, settings.api.encryption_salt)
+    message = date.today()
+    with pytest.raises(EncryptionError):
+        sm.sign_and_encrypt(message)  # type: ignore
 
 
 async def test_sign_and_encryp_encryption_error() -> None:

@@ -51,10 +51,10 @@ class Auth0User(BaseModel):
     is_verified: Optional[bool] = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/is_verified"
     )
-    created_on: Optional[datetime] = Field(  # type: ignore [literal-required]
+    created: Optional[datetime] = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/created_on"
     )
-    updated_on: Optional[datetime] = Field(  # type: ignore [literal-required]
+    updated: Optional[datetime] = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/updated_on"
     )
 

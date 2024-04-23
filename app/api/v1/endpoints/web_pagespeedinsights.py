@@ -170,7 +170,7 @@ async def website_page_speed_insights_create(
     logger.info(
         "Created Website Page Speed Insights:",
         psi_in_db.id,
-        psi_in_db.created_on,
+        psi_in_db.created,
     )
     return WebsitePageSpeedInsightsRead.model_validate(psi_in_db)
 
