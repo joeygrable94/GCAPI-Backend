@@ -9,6 +9,8 @@ from app.db.constants import (
     DB_INT_INTEGER_MAXLEN_STORED,
     DB_STR_16BIT_MAXLEN_INPUT,
     DB_STR_32BIT_MAXLEN_INPUT,
+    DB_STR_64BIT_MAXLEN_INPUT,
+    DB_STR_BLOB_MAXLEN_INPUT,
     DB_STR_BLOB_MAXLEN_STORED,
     DB_STR_LONGTEXT_MAXLEN_STORED,
     DB_STR_TINYTEXT_MAXLEN_INPUT,
@@ -55,12 +57,24 @@ from app.db.validators import (
     validate_hotspot_user_icon_name_optional,
     validate_icon_color_optional,
     validate_impressions_required,
-    validate_ip_location_optional,
-    validate_ip_location_required,
-    validate_ip_optional,
-    validate_ip_required,
-    validate_isp_optional,
-    validate_isp_required,
+    validate_ip_address_optional,
+    validate_ip_address_required,
+    validate_ip_city_optional,
+    validate_ip_continent_code_optional,
+    validate_ip_continent_name_optional,
+    validate_ip_country_currency_code_optional,
+    validate_ip_country_flag_unicode_optional,
+    validate_ip_country_flag_url_optional,
+    validate_ip_country_name_optional,
+    validate_ip_country_optional,
+    validate_ip_hostname_optional,
+    validate_ip_latitude_optional,
+    validate_ip_loc_optional,
+    validate_ip_longitude_optional,
+    validate_ip_org_optional,
+    validate_ip_postal_optional,
+    validate_ip_region_optional,
+    validate_ip_timezone_optional,
     validate_keys_optional,
     validate_keys_required,
     validate_language_optional,
@@ -746,69 +760,197 @@ def test_validate_address_optional() -> None:
         )
 
 
-def test_validate_ip_required() -> None:
-    assert validate_ip_required(cls=None, value="192.168.0.1") == "192.168.0.1"
-    assert validate_ip_required(cls=None, value="::1") == "::1"
+def test_validate_ip_address_required() -> None:
+    assert validate_ip_address_required(cls=None, value="192.168.0.1") == "192.168.0.1"
+    assert validate_ip_address_required(cls=None, value="::1") == "::1"
     assert (
-        validate_ip_required(cls=None, value="2001:0db8:85a3:0000:0000:8a2e:0370:7334")
+        validate_ip_address_required(
+            cls=None, value="2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+        )
         == "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
     )
     with pytest.raises(ValueError):
-        validate_ip_required(cls=None, value="")
+        validate_ip_address_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_ip_required(cls=None, value=None)  # type: ignore
+        validate_ip_address_required(cls=None, value=None)  # type: ignore
 
 
-def test_validate_ip_optional() -> None:
-    assert validate_ip_optional(cls=None, value=None) is None
-    assert validate_ip_optional(cls=None, value="192.168.0.1") == "192.168.0.1"
+def test_validate_ip_address_optional() -> None:
+    assert validate_ip_address_optional(cls=None, value=None) is None
+    assert validate_ip_address_optional(cls=None, value="192.168.0.1") == "192.168.0.1"
     assert (
-        validate_ip_optional(cls=None, value="2001:0db8:85a3:0000:0000:8a2e:0370:7334")
+        validate_ip_address_optional(
+            cls=None, value="2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+        )
         == "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
     )
     with pytest.raises(ValueError):
-        validate_ip_optional(cls=None, value="")
+        validate_ip_address_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_ip_optional(cls=None, value="a" * 51)
-
-
-def test_validate_isp_required() -> None:
-    assert validate_isp_required(cls=None, value="Valid ISP") == "Valid ISP"
-    with pytest.raises(ValueError):
-        validate_isp_required(cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1))
-    with pytest.raises(ValueError):
-        assert validate_isp_required(cls=None, value="")
-
-
-def test_validate_isp_optional() -> None:
-    assert validate_isp_optional(cls=None, value=None) is None
-    assert validate_isp_optional(cls=None, value="Valid ISP") == "Valid ISP"
-    with pytest.raises(ValueError):
-        validate_isp_optional(cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1))
-
-
-def test_validate_ip_location_required() -> None:
-    assert (
-        validate_ip_location_required(cls=None, value="Valid Location")
-        == "Valid Location"
-    )
-    with pytest.raises(ValueError):
-        validate_ip_location_required(
+        validate_ip_address_optional(
             cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
         )
+
+
+def test_validate_ip_hostname_optional() -> None:
+    assert validate_ip_hostname_optional(cls=None, value=None) is None
+    assert validate_ip_hostname_optional(cls=None, value="Valid ISP") == "Valid ISP"
     with pytest.raises(ValueError):
-        assert validate_ip_location_required(cls=None, value="")
+        validate_ip_hostname_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
 
 
-def test_validate_ip_location_optional() -> None:
-    assert validate_ip_location_optional(cls=None, value=None) is None
+def test_validate_ip_city_optional() -> None:
+    assert validate_ip_city_optional(cls=None, value=None) is None
     assert (
-        validate_ip_location_optional(cls=None, value="Valid Location")
-        == "Valid Location"
+        validate_ip_city_optional(cls=None, value="Valid Location") == "Valid Location"
     )
     with pytest.raises(ValueError):
-        validate_ip_location_optional(
+        validate_ip_city_optional(
             cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_region_optional() -> None:
+    assert validate_ip_region_optional(cls=None, value=None) is None
+    assert validate_ip_region_optional(cls=None, value="valid value") == "valid value"
+    with pytest.raises(ValueError):
+        validate_ip_region_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_country_optional() -> None:
+    assert validate_ip_country_optional(cls=None, value=None) is None
+    assert validate_ip_country_optional(cls=None, value="valid value") == "valid value"
+    with pytest.raises(ValueError):
+        validate_ip_country_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_loc_optional() -> None:
+    assert validate_ip_loc_optional(cls=None, value=None) is None
+    assert validate_ip_loc_optional(cls=None, value="valid value") == "valid value"
+    with pytest.raises(ValueError):
+        validate_ip_loc_optional(cls=None, value="a" * (DB_STR_32BIT_MAXLEN_INPUT + 1))
+
+
+def test_validate_ip_org_optional() -> None:
+    assert validate_ip_org_optional(cls=None, value=None) is None
+    assert validate_ip_org_optional(cls=None, value="valid value") == "valid value"
+    with pytest.raises(ValueError):
+        validate_ip_org_optional(cls=None, value="a" * (DB_STR_BLOB_MAXLEN_INPUT + 1))
+
+
+def test_validate_ip_postal_optional() -> None:
+    assert validate_ip_postal_optional(cls=None, value=None) is None
+    assert validate_ip_postal_optional(cls=None, value="valid value") == "valid value"
+    with pytest.raises(ValueError):
+        validate_ip_postal_optional(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_timezone_optional() -> None:
+    assert validate_ip_timezone_optional(cls=None, value=None) is None
+    assert validate_ip_timezone_optional(cls=None, value="valid value") == "valid value"
+    with pytest.raises(ValueError):
+        validate_ip_timezone_optional(
+            cls=None, value="a" * (DB_STR_64BIT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_country_name_optional() -> None:
+    assert validate_ip_country_name_optional(cls=None, value=None) is None
+    assert (
+        validate_ip_country_name_optional(cls=None, value="valid value")
+        == "valid value"
+    )
+    with pytest.raises(ValueError):
+        validate_ip_country_name_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_country_flag_url_optional() -> None:
+    assert validate_ip_country_flag_url_optional(cls=None, value=None) is None
+    assert (
+        validate_ip_country_flag_url_optional(cls=None, value="valid value")
+        == "valid value"
+    )
+    with pytest.raises(ValueError):
+        validate_ip_country_flag_url_optional(
+            cls=None, value="a" * (DB_STR_URLPATH_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_country_flag_unicode_optional() -> None:
+    assert validate_ip_country_flag_unicode_optional(cls=None, value=None) is None
+    assert (
+        validate_ip_country_flag_unicode_optional(cls=None, value="valid value")
+        == "valid value"
+    )
+    with pytest.raises(ValueError):
+        validate_ip_country_flag_unicode_optional(
+            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_country_currency_code_optional() -> None:
+    assert validate_ip_country_currency_code_optional(cls=None, value=None) is None
+    assert (
+        validate_ip_country_currency_code_optional(cls=None, value="valid value")
+        == "valid value"
+    )
+    with pytest.raises(ValueError):
+        validate_ip_country_currency_code_optional(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_continent_code_optional() -> None:
+    assert validate_ip_continent_code_optional(cls=None, value=None) is None
+    assert (
+        validate_ip_continent_code_optional(cls=None, value="valid value")
+        == "valid value"
+    )
+    with pytest.raises(ValueError):
+        validate_ip_continent_code_optional(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_continent_name_optional() -> None:
+    assert validate_ip_continent_name_optional(cls=None, value=None) is None
+    assert (
+        validate_ip_continent_name_optional(cls=None, value="valid value")
+        == "valid value"
+    )
+    with pytest.raises(ValueError):
+        validate_ip_continent_name_optional(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_latitude_optional() -> None:
+    assert validate_ip_latitude_optional(cls=None, value=None) is None
+    assert validate_ip_latitude_optional(cls=None, value="valid value") == "valid value"
+    with pytest.raises(ValueError):
+        validate_ip_latitude_optional(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_ip_longitude_optional() -> None:
+    assert validate_ip_longitude_optional(cls=None, value=None) is None
+    assert (
+        validate_ip_longitude_optional(cls=None, value="valid value") == "valid value"
+    )
+    with pytest.raises(ValueError):
+        validate_ip_longitude_optional(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
         )
 
 

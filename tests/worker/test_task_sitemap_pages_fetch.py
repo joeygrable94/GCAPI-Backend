@@ -44,7 +44,7 @@ async def test_task_website_sitemap_process_xml_page(
     ) as mock_fetch_url_page_text:
         mock_fetch_url_page_text.return_value = mock_fetch_sitemap_page
         with unittest.mock.patch(
-            "app.api.utilities.fetch_url_status_code"
+            "app.core.utilities.fetch_url_status_code"
         ) as mock_fetch_url_page_status_code:
             mock_fetch_url_page_status_code.return_value = 200
             sitemap_task: WebsiteMapProcessedResult = (

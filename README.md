@@ -17,6 +17,7 @@
   - [PyTest](#pytest)
     - [PyTest Commands](#pytest-commands)
     - [PyTest Resources](#pytest-resources)
+  - [External Resources](#external-resources)
 
 ---
 
@@ -167,3 +168,9 @@ Always add a message about what changed in the db models/tables.
 
 - [FastAPI PyTest Coverage WalkThrough](https://www.azepug.az/posts/fastapi/ecommerce-fastapi-nuxtjs/ecommerce-pytest-user-auth-part1.html)
 - [PyTest Raising Exceptions](https://docs.pytest.org/en/6.2.x/assert.html)
+
+---
+
+## External Resources
+
+- [IPInfo.io](https://ipinfo.io/)

@@ -6,15 +6,17 @@ from fastapi import FastAPI, Request
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.api.deps import get_request_client_ip
-from app.api.deps.get_auth import get_current_user
-from app.core import logger
+# from app.api.deps import get_request_client_ip
 from app.core.config import settings
 
 
 def configure_middleware(app: FastAPI) -> None:
     app.add_middleware(CorrelationIdMiddleware)
-    app.add_middleware(SessionMiddleware, secret_key=settings.api.secret_key)
+    app.add_middleware(
+        SessionMiddleware,
+        secret_key=settings.api.secret_key,
+        session_cookie="gcapi_session",
+    )
     if settings.api.allowed_cors:
         app.add_middleware(  # pragma: no cover
             CORSMiddleware,
@@ -38,7 +40,9 @@ def configure_middleware(app: FastAPI) -> None:
     # async def log_ip_activity(request: Request, call_next: Any) -> Any:
     #     """Adds a header to each response with the time it took to process."""
     #     req_ip = get_request_client_ip(request)
+    #     print(f"Request from IP: {req_ip}")
     #     response_result: Any = await call_next(request)
+    #     print('response_result', response_result)
     #     return response_result
 
 

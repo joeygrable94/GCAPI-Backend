@@ -3,6 +3,7 @@ from .core_tasks import (
     task_request_to_delete_user,
     task_speak,
 )
+from .user_tasks import task_fetch_ipinfo
 from .website_tasks import (
     task_website_page_pagespeedinsights_fetch,
     task_website_sitemap_process_xml,
@@ -10,6 +11,7 @@ from .website_tasks import (
 
 __all__: list[str] = [
     "task_speak",
+    "task_fetch_ipinfo",
     "task_request_to_delete_user",
     "task_request_to_delete_client",
     "task_website_sitemap_process_xml",

@@ -10,7 +10,7 @@ from app.tasks import task_website_page_pagespeedinsights_fetch
 
 
 @pytest.mark.anyio
-async def test_celery_task_website_page_pagespeedinsights_fetch() -> None:
+async def test_worker_task_website_page_pagespeedinsights_fetch() -> None:
     website_id = get_uuid()
     page_id = get_uuid()
     psi_url = "https://getcommunity.com/"

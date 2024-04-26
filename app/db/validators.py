@@ -7,6 +7,8 @@ from app.db.constants import (
     DB_INT_INTEGER_MAXLEN_STORED,
     DB_STR_16BIT_MAXLEN_INPUT,
     DB_STR_32BIT_MAXLEN_INPUT,
+    DB_STR_64BIT_MAXLEN_INPUT,
+    DB_STR_BLOB_MAXLEN_INPUT,
     DB_STR_BLOB_MAXLEN_STORED,
     DB_STR_DESC_MAXLEN_INPUT,
     DB_STR_LONGTEXT_MAXLEN_STORED,
@@ -604,57 +606,153 @@ def validate_address_optional(cls: Any, value: str | None) -> str | None:
     )
 
 
-def validate_ip_required(cls: Any, value: str) -> str:
+def validate_ip_address_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
         name="ip",
         min_len=0,
-        max_len=50,
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
 
-def validate_ip_optional(cls: Any, value: str | None) -> str | None:
+def validate_ip_address_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="ip",
         min_len=0,
-        max_len=50,
-    )
-
-
-def validate_isp_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value,
-        name="isp",
-        min_len=0,
         max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
 
-def validate_isp_optional(cls: Any, value: str | None) -> str | None:
+def validate_ip_hostname_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
-        name="isp",
-        min_len=0,
+        name="hostname",
         max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
 
-def validate_ip_location_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value,
-        name="location",
-        min_len=0,
-        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
-    )
-
-
-def validate_ip_location_optional(cls: Any, value: str | None) -> str | None:
+def validate_ip_city_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
-        name="location",
-        min_len=0,
+        name="city",
         max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_region_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="region",
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_country_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="country",
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_loc_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="loc",
+        max_len=DB_STR_32BIT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_org_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="org",
+        max_len=DB_STR_BLOB_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_postal_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="postal",
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_timezone_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="timezone",
+        max_len=DB_STR_64BIT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_country_name_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="country_name",
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_country_flag_url_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="country_flag_url",
+        max_len=DB_STR_URLPATH_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_country_flag_unicode_optional(
+    cls: Any, value: str | None
+) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="country_flag_unicode",
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_country_currency_code_optional(
+    cls: Any, value: str | None
+) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="country_currency_code",
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_continent_code_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="continent_code",
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_continent_name_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="continent_name",
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_latitude_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="latitude",
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
+    )
+
+
+def validate_ip_longitude_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="longitude",
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
     )
 
 

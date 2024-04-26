@@ -14,7 +14,9 @@ def test_fetch_pagespeedinsights(mock_fetch_psi: Dict[str, Any]) -> None:
     if api_key is None:
         raise Exception("Google Cloud API Key not found in environment variables")
 
-    with patch("app.api.utilities.request.urlopen") as mock_urlopen:
+    with patch(
+        "app.api.utilities.web_pagespeedinsights.request.urlopen"
+    ) as mock_urlopen:
         mock_response = MagicMock()
         mock_response.read.return_value = json.dumps(mock_fetch_psi).encode("utf-8")
         mock_urlopen.return_value = mock_response

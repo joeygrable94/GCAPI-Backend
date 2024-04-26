@@ -76,7 +76,7 @@ from .go_sc_searchappearance import (
     GoSearchConsoleSearchappearanceRead,
     GoSearchConsoleSearchappearanceUpdate,
 )
-from .ipaddress import IpaddressCreate, IpaddressRead, IpaddressUpdate
+from .ipaddress import IpaddressCreate, IpaddressRead, IpaddressUpdate, IpinfoResponse
 from .note import NoteCreate, NoteRead, NoteUpdate
 from .sharpspring import SharpspringCreate, SharpspringRead, SharpspringUpdate
 from .task import TaskState
@@ -199,6 +199,7 @@ __all__: List[str] = [
     "GoSearchConsoleSearchappearanceCreate",
     "GoSearchConsoleSearchappearanceRead",
     "GoSearchConsoleSearchappearanceUpdate",
+    "IpinfoResponse",
     "IpaddressCreate",
     "IpaddressRead",
     "IpaddressUpdate",

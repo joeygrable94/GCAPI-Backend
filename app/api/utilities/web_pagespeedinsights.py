@@ -7,104 +7,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.exceptions.exceptions import WebsiteNotExists, WebsitePageNotExists
 from app.core.config import settings
 from app.core.logger import logger
-from app.core.utilities import fetch_url_status_code, parse_id
+from app.core.utilities import parse_id
 from app.crud import (
-    WebsiteMapRepository,
     WebsitePageRepository,
     WebsitePageSpeedInsightsRepository,
     WebsiteRepository,
 )
 from app.db.session import get_db_session
-from app.models import Website, WebsiteMap, WebsitePage
+from app.models import Website, WebsitePage
 from app.schemas import (
     PageSpeedInsightsDevice,
-    WebsiteMapCreate,
-    WebsiteMapPage,
-    WebsiteMapUpdate,
-    WebsitePageCreate,
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsCreate,
-    WebsitePageUpdate,
 )
-
-
-async def create_or_update_website_map(
-    website_id: str,
-    sitemap_url: str,
-) -> None:
-    try:
-        website_uuid = parse_id(website_id)
-        session: AsyncSession
-        sitemap: WebsiteMap | None
-        async with get_db_session() as session:
-            sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session)
-            sitemap = await sitemap_repo.exists_by_two(
-                field_name_a="url",
-                field_value_a=sitemap_url,
-                field_name_b="website_id",
-                field_value_b=website_uuid,
-            )
-            if sitemap is not None:
-                sitemap = await sitemap_repo.update(
-                    sitemap, WebsiteMapUpdate(url=sitemap_url)
-                )
-            else:
-                sitemap = await sitemap_repo.create(
-                    WebsiteMapCreate(url=sitemap_url, website_id=website_uuid)
-                )
-    except Exception as e:  # pragma: no cover
-        logger.warning("Error Creating or Updating Website Sitemap: %s" % e)
-    finally:
-        return None
-
-
-async def create_or_update_website_page(
-    website_id: str,
-    sitemap_id: str,
-    page: WebsiteMapPage,
-) -> None:
-    try:
-        website_uuid = parse_id(website_id)
-        sitemap_uuid = parse_id(sitemap_id)
-        status_code: int = await fetch_url_status_code(page.url)
-        session: AsyncSession
-        website_page: WebsitePage | None
-        pages_repo: WebsitePageRepository
-        async with get_db_session() as session:
-            pages_repo = WebsitePageRepository(session)
-            website_page = await pages_repo.exists_by_two(
-                field_name_a="url",
-                field_value_a=page.url,
-                field_name_b="website_id",
-                field_value_b=website_uuid,
-            )
-            if website_page is not None:
-                website_page = await pages_repo.update(
-                    entry=website_page,
-                    schema=WebsitePageUpdate(
-                        url=page.url,
-                        status=status_code,
-                        priority=page.priority,
-                        last_modified=page.last_modified,
-                        change_frequency=page.change_frequency,
-                    ),
-                )
-            else:
-                website_page = await pages_repo.create(
-                    schema=WebsitePageCreate(
-                        url=page.url,
-                        status=status_code,
-                        priority=page.priority,
-                        last_modified=page.last_modified,
-                        change_frequency=page.change_frequency,
-                        website_id=website_uuid,
-                        sitemap_id=sitemap_uuid,
-                    )
-                )
-    except Exception as e:  # pragma: no cover
-        logger.warning("Error Creating or Updating Website Page: %s" % e)
-    finally:
-        return None
 
 
 def fetch_pagespeedinsights(

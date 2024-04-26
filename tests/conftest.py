@@ -1,7 +1,7 @@
 import asyncio
 import json
 import xml.etree.ElementTree as ET
-from os import path
+from os import path, remove
 from typing import Any, AsyncGenerator, Dict, Generator
 
 import pytest
@@ -33,6 +33,17 @@ def event_loop() -> Generator:
         loop = asyncio.new_event_loop()
     yield loop
     loop.close()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def delete_test_db() -> None:
+    # if test.db file exists,
+    # delete it before running tests
+    if path.exists("test.db"):
+        try:
+            remove("test.db")
+        except Exception:
+            pass
 
 
 @pytest.fixture(scope="function")
@@ -74,6 +85,15 @@ def mock_fetch_psi() -> Dict[str, Any]:
     mocked_response = {}
     here = path.dirname(path.abspath(__file__))
     with open(f"{here}/utils/fetchpsi.json") as f:
+        mocked_response = json.load(f)
+    return mocked_response
+
+
+@pytest.fixture(scope="session")
+def mock_fetch_ipinfo() -> Dict[str, Any]:
+    mocked_response = {}
+    here = path.dirname(path.abspath(__file__))
+    with open(f"{here}/utils/ipinfo-8.8.8.8.json") as f:
         mocked_response = json.load(f)
     return mocked_response
 

@@ -9,6 +9,7 @@ load_dotenv()
 
 class CloudKeySettings(BaseSettings):
     googleapi: Optional[str] = environ.get("CLOUDKEY_GOOGLE_API", None)
+    ipinfo: Optional[str] = environ.get("CLOUDKEY_IPINFO", None)
 
     # pydantic settings config
     model_config = SettingsConfigDict(
