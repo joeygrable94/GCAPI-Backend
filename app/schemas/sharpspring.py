@@ -17,6 +17,7 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 class SharpspringBase(BaseSchema):
     api_key: str
     secret_key: str
+    client_id: UUID4
 
     _validate_api_key = field_validator("api_key", mode="before")(
         validate_api_key_required
@@ -33,6 +34,7 @@ class SharpspringCreate(SharpspringBase):
 class SharpspringUpdate(BaseSchema):
     api_key: Optional[str] = None
     secret_key: Optional[str] = None
+    client_id: Optional[UUID4] = None
 
     _validate_api_key = field_validator("api_key", mode="before")(
         validate_api_key_optional

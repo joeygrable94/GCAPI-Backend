@@ -5,6 +5,7 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.users import create_random_user
 
+from app.api.exceptions.errors import ErrorCode
 from app.core.security.permissions.scope import AclPrivilege
 from app.models.user import User
 from app.schemas.user import UserReadAsAdmin, UserReadAsManager, UserUpdatePrivileges
@@ -77,10 +78,7 @@ async def test_remove_user_priv_as_manager_add_role_disallowed(
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 405
-    assert (
-        data["detail"]
-        == "You do not have permission to remove role based access to users"
-    )
+    assert data["detail"] == ErrorCode.INSUFFICIENT_PERMISSIONS_SCOPE_REMOVE
 
 
 async def test_remove_user_priv_as_user_disallowed(
@@ -101,4 +99,4 @@ async def test_remove_user_priv_as_user_disallowed(
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 403
-    assert data["detail"] == "Insufficient permissions"
+    assert data["detail"] == ErrorCode.INSUFFICIENT_PERMISSIONS

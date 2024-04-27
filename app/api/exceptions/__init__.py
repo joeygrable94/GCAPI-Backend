@@ -4,9 +4,6 @@ from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
 
-from app.core.security import DecryptionError  # noqa: F401
-from app.core.security import EncryptionError  # noqa: F401
-from app.core.security import SignatureVerificationError  # noqa: F401
 from app.core.security import (
     Auth0UnauthenticatedException,
     Auth0UnauthorizedException,
@@ -22,9 +19,13 @@ from .exceptions import (
     ClientAlreadyExists,
     ClientNotExists,
     ClientRelationshipNotExists,
+    Ga4PropertyAlreadyExists,
+    Ga4PropertyNotExists,
     InvalidID,
     NoteAlreadyExists,
     NoteNotExists,
+    SharpspringAlreadyExists,
+    SharpspringNotExists,
     UserAlreadyExists,
     UserNotExists,
     WebsiteAlreadyExists,
@@ -399,6 +400,58 @@ def configure_exceptions(app: FastAPI) -> None:
             ),
         )
 
+    @app.exception_handler(SharpspringNotExists)
+    async def sharpspring_not_exists_exception_handler(
+        request: Request, exc: SharpspringNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(SharpspringAlreadyExists)
+    async def sharpspring_already_exists_exception_handler(
+        request: Request, exc: SharpspringAlreadyExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(Ga4PropertyNotExists)
+    async def ga4_not_exists_exception_handler(
+        request: Request, exc: Ga4PropertyNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(Ga4PropertyAlreadyExists)
+    async def ga4_already_exists_exception_handler(
+        request: Request, exc: Ga4PropertyAlreadyExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
 
 __all__: List[str] = [
     "ApiException",
@@ -422,4 +475,8 @@ __all__: List[str] = [
     "WebsitePageNotExists",
     "WebsitePageSpeedInsightsNotExists",
     "WebsitePageKeywordCorpusNotExists",
+    "SharpspringNotExists",
+    "SharpspringAlreadyExists",
+    "Ga4PropertyNotExists",
+    "Ga4PropertyAlreadyExists",
 ]

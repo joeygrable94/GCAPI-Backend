@@ -5,6 +5,7 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.users import create_random_user
 
+from app.api.exceptions.errors import ErrorCode
 from app.core.config import settings
 from app.crud.user import UserRepository
 from app.models.user import User
@@ -40,7 +41,7 @@ async def test_delete_other_user_as_manager(
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 405
-    assert data["detail"] == "You do not have permission to access this resource"
+    assert data["detail"] == ErrorCode.INSUFFICIENT_PERMISSIONS_ACCESS
 
 
 async def test_delete_user_request_to_delete_self(

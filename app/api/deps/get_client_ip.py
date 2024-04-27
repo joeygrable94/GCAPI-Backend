@@ -7,4 +7,4 @@ def get_request_client_ip(request: Request) -> str:
         return forwarded_ip.split(",")[0]
     elif request.client is not None:
         return request.client.host
-    return "::0"  # pragma: no cover
+    return "127.0.0.1"  # pragma: no cover

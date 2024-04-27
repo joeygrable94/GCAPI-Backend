@@ -26,6 +26,7 @@ class GoCloudPropertyBase(BaseSchema):
     project_id: str
     project_number: str
     service_account: str
+    client_id: UUID4
 
     _validate_project_name = field_validator("project_name", mode="before")(
         validate_project_name_required
@@ -54,6 +55,7 @@ class GoCloudPropertyUpdate(BaseSchema):
     project_id: Optional[str] = None
     project_number: Optional[str] = None
     service_account: Optional[str] = None
+    client_id: Optional[UUID4]
 
     _validate_project_name = field_validator("project_name", mode="before")(
         validate_project_name_optional

@@ -4,6 +4,7 @@ from fastapi import Depends, status
 from pydantic import UUID4, BaseModel
 from sqlalchemy import Select
 
+from app.api.exceptions.errors import ErrorCode
 from app.core.pagination import PageParams, Paginated, paginated_query
 from app.core.security import configure_permissions
 from app.core.security.permissions import (
@@ -92,7 +93,7 @@ class PermissionController(Generic[T]):
         # deny access by default
         raise AuthPermissionException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-            message="You do not have permission to access this resource",
+            message=ErrorCode.INSUFFICIENT_PERMISSIONS_ACCESS,
         )
 
     def verify_input_schema_by_role(
@@ -105,7 +106,7 @@ class PermissionController(Generic[T]):
                     return
         raise AuthPermissionException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-            message="You do not have permission to take this action on this resource",
+            message=ErrorCode.INSUFFICIENT_PERMISSIONS_ACTION,
         )
 
     def get_resource_response(
@@ -118,7 +119,7 @@ class PermissionController(Generic[T]):
                 return response_schema.model_validate(resource)
         raise AuthPermissionException(  # pragma: no cover
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-            message="You do not have permission to access the output of this resource",
+            message=ErrorCode.INSUFFICIENT_PERMISSIONS_RESPONSE,
         )
 
     async def get_paginated_resource_response(
@@ -139,7 +140,7 @@ class PermissionController(Generic[T]):
                 )
         raise AuthPermissionException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-            message="You do not have permission to access the paginated output of this resource",  # noqa: E501
+            message=ErrorCode.INSUFFICIENT_PERMISSIONS_PAGINATION,
         )
 
     def verify_user_add_scopes(
@@ -159,7 +160,7 @@ class PermissionController(Generic[T]):
         ):
             raise AuthPermissionException(
                 status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-                message="You do not have permission to add role based access to users",
+                message=ErrorCode.INSUFFICIENT_PERMISSIONS_SCOPE_ADD,
             )
         # manager can only add user based access
         return True
@@ -181,7 +182,7 @@ class PermissionController(Generic[T]):
         ):
             raise AuthPermissionException(
                 status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-                message="You do not have permission to remove role based access to users",  # noqa: E501
+                message=ErrorCode.INSUFFICIENT_PERMISSIONS_SCOPE_REMOVE,
             )
         # manager can only remove user based access
         return True

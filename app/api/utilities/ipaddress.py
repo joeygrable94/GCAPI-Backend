@@ -4,6 +4,7 @@ from ipinfo.details import Details  # type: ignore
 from pydantic.networks import IPvAnyAddress
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.ipinfo import ipinfo_handler
 from app.core.logger import logger
 from app.crud import IpaddressRepository
@@ -41,7 +42,7 @@ def get_ipinfo_details(ip_address: IPvAnyAddress) -> IpinfoResponse:
     ip_data: Details
     ip_data = (
         mock_details
-        if "pytest" in sys.modules
+        if "pytest" in sys.modules and settings.api.mode in ["development", "test"]
         else ipinfo_handler.getDetails(ip_address)
     )  # pragma: no cover  # noqa: E501
     country_flag_unicode_value: dict = ip_data.details.get(

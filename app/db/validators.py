@@ -450,7 +450,7 @@ def validate_api_key_required(cls: Any, value: str) -> str:
         v=value,
         name="api_key",
         min_len=0,
-        max_len=64,
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
 
@@ -459,7 +459,7 @@ def validate_secret_key_required(cls: Any, value: str) -> str:
         v=value,
         name="secret_key",
         min_len=0,
-        max_len=64,
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
 
@@ -468,7 +468,7 @@ def validate_api_key_optional(cls: Any, value: str | None) -> str | None:
         v=value,
         name="api_key",
         min_len=0,
-        max_len=64,
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
 
@@ -477,7 +477,7 @@ def validate_secret_key_optional(cls: Any, value: str | None) -> str | None:
         v=value,
         name="secret_key",
         min_len=0,
-        max_len=64,
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
 

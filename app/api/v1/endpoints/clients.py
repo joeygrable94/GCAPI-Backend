@@ -351,7 +351,7 @@ async def clients_assign_user(
     user_client_in: UserClientCreate,
     client: Client = Permission([AccessUpdate], get_client_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
-) -> UserClientRead:  # TODO: test
+) -> UserClientRead:
     """Assigns a user to a client.
 
     Permissions:
@@ -402,7 +402,7 @@ async def clients_remove_user(
     user_client_in: UserClientCreate,
     client: Client = Permission([AccessUpdate], get_client_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
-) -> UserClientRead:  # TODO: test
+) -> UserClientRead:
     """Removes a user from a client.
 
     Permissions:
@@ -454,7 +454,7 @@ async def clients_assign_website(
     client_website_in: ClientWebsiteCreate,
     client: Client = Permission([AccessUpdate], get_client_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
-) -> ClientWebsiteRead:  # TODO: test
+) -> ClientWebsiteRead:
     """Assigns a website to a client.
 
     Permissions:
@@ -509,7 +509,7 @@ async def clients_remove_website(
     client_website_in: ClientWebsiteCreate,
     client: Client = Permission([AccessUpdate], get_client_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
-) -> ClientWebsiteRead:  # TODO: test
+) -> ClientWebsiteRead:
     """Removes a website from a client.
 
     Permissions:

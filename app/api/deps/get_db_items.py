@@ -6,7 +6,9 @@ from fastapi import Depends
 from app.api.deps.get_db import AsyncDatabaseSession
 from app.api.exceptions import (
     ClientNotExists,
+    Ga4PropertyNotExists,
     NoteNotExists,
+    SharpspringNotExists,
     UserNotExists,
     WebsiteMapNotExists,
     WebsiteNotExists,
@@ -17,7 +19,9 @@ from app.api.exceptions import (
 from app.core.utilities.uuids import parse_id
 from app.crud import (
     ClientRepository,
+    GoAnalytics4PropertyRepository,
     NoteRepository,
+    SharpspringRepository,
     UserRepository,
     WebsiteKeywordCorpusRepository,
     WebsiteMapRepository,
@@ -27,7 +31,9 @@ from app.crud import (
 )
 from app.models import (
     Client,
+    GoAnalytics4Property,
     Note,
+    Sharpspring,
     User,
     Website,
     WebsiteKeywordCorpus,
@@ -175,3 +181,31 @@ async def get_website_page_kwc_or_404(
 FetchWebsiteKeywordCorpusOr404 = Annotated[
     WebsiteKeywordCorpus, Depends(get_website_page_kwc_or_404)
 ]
+
+
+async def get_sharpspring_404(
+    db: AsyncDatabaseSession,
+    ss_id: Any,
+) -> Sharpspring | None:
+    """Parses uuid/int and fetches sharpspring account by id."""
+    parsed_id: UUID = parse_id(ss_id)
+    ss_repo: SharpspringRepository = SharpspringRepository(session=db)
+    ss_acct: Sharpspring | None = await ss_repo.read(parsed_id)
+    if ss_acct is None:
+        raise SharpspringNotExists()
+    return ss_acct
+
+
+async def get_ga4_property_404(
+    db: AsyncDatabaseSession,
+    ga4_id: Any,
+) -> GoAnalytics4Property | None:
+    """Parses uuid/int and fetches ga4 property by id."""
+    parsed_id: UUID = parse_id(ga4_id)
+    ga4_repo: GoAnalytics4PropertyRepository = GoAnalytics4PropertyRepository(
+        session=db
+    )
+    ga4_property: GoAnalytics4Property | None = await ga4_repo.read(parsed_id)
+    if ga4_property is None:
+        raise Ga4PropertyNotExists()
+    return ga4_property

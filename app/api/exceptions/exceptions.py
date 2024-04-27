@@ -53,6 +53,28 @@ class NoteNotExists(ApiException):
         super().__init__(status.HTTP_404_NOT_FOUND, message)
 
 
+# Sharpspring
+class SharpspringAlreadyExists(ApiException):
+    def __init__(self, message: str = ErrorCode.SHARPSPRING_EXISTS):
+        super().__init__(status.HTTP_400_BAD_REQUEST, message)
+
+
+class SharpspringNotExists(ApiException):
+    def __init__(self, message: str = ErrorCode.SHARPSPRING_NOT_FOUND):
+        super().__init__(status.HTTP_404_NOT_FOUND, message)
+
+
+# Ga4 Property
+class Ga4PropertyAlreadyExists(ApiException):
+    def __init__(self, message: str = ErrorCode.GA4_PROPERTY_EXISTS):
+        super().__init__(status.HTTP_400_BAD_REQUEST, message)
+
+
+class Ga4PropertyNotExists(ApiException):
+    def __init__(self, message: str = ErrorCode.GA4_PROPERTY_NOT_FOUND):
+        super().__init__(status.HTTP_404_NOT_FOUND, message)
+
+
 # Websites
 class WebsiteAlreadyExists(ApiException):
     def __init__(self, message: str = ErrorCode.WEBSITE_DOMAIN_EXISTS):

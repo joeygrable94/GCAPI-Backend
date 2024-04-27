@@ -118,10 +118,7 @@ async def test_update_user_self_manager_invalid_update_obj(
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 405
-    assert (
-        data["detail"]
-        == "You do not have permission to take this action on this resource"
-    )
+    assert data["detail"] == ErrorCode.INSUFFICIENT_PERMISSIONS_ACTION
 
 
 async def test_update_user_self_employee(
@@ -168,10 +165,7 @@ async def test_update_user_self_employee_invalid_update_obj(
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 405
-    assert (
-        data["detail"]
-        == "You do not have permission to take this action on this resource"
-    )
+    assert data["detail"] == ErrorCode.INSUFFICIENT_PERMISSIONS_ACTION
 
 
 async def test_update_other_user_as_admin(
@@ -271,10 +265,7 @@ async def test_update_other_user_as_manager_invalid_update_obj(
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 405
-    assert (
-        data["detail"]
-        == "You do not have permission to take this action on this resource"
-    )
+    assert data["detail"] == ErrorCode.INSUFFICIENT_PERMISSIONS_ACTION
 
 
 async def test_update_other_user_as_employee(
@@ -292,4 +283,4 @@ async def test_update_other_user_as_employee(
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 403
-    assert data["detail"] == "Insufficient permissions"
+    assert data["detail"] == ErrorCode.INSUFFICIENT_PERMISSIONS

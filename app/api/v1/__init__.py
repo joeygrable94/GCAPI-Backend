@@ -2,9 +2,11 @@ from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
     clients,
+    go_a4,
     notes,
     public,
     security,
+    sharpspring,
     tasks,
     users,
     web_keywordcorpus,
@@ -55,6 +57,29 @@ router_v1.include_router(
     prefix="/notes",
     tags=["Notes"],
 )
+
+# sharpspring routes
+router_v1.include_router(
+    sharpspring.router,
+    prefix="/sharpspring",
+    tags=["SharpSpring"],
+)
+
+# GA4 routes
+router_v1.include_router(
+    go_a4.router,
+    prefix="/ga4",
+    tags=["Google Analytics 4"],
+)
+
+# GSC routes
+"""
+router_v1.include_router(
+    go_sc.router,
+    prefix="/gsc",
+    tags=["Google Search Console"],
+)
+"""
 
 # website routes
 router_v1.include_router(

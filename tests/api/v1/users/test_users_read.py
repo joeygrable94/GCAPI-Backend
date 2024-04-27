@@ -85,7 +85,7 @@ async def test_read_user_as_employee(
         headers=employee_token_headers,
     )
     data_b: Dict[str, Any] = response_b.json()
-    assert data_b["detail"] == "Insufficient permissions"
+    assert data_b["detail"] == ErrorCode.INSUFFICIENT_PERMISSIONS
     assert response_b.status_code == 403
 
 
@@ -119,7 +119,7 @@ async def test_read_user_as_user_verified(
         headers=user_verified_token_headers,
     )
     data_b: Dict[str, Any] = response_b.json()
-    assert data_b["detail"] == "Insufficient permissions"
+    assert data_b["detail"] == ErrorCode.INSUFFICIENT_PERMISSIONS
     assert response_b.status_code == 403
 
 

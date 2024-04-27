@@ -38,7 +38,7 @@ async def test_task_website_sitemap_process_xml_page(
 ) -> None:
     website_id = get_uuid()
     sitemap_id = get_uuid()
-    sitemap_url = "https://getcommunity.com/page-sitemap.xml"
+    sitemap_url = "https://getcommunity.com/branch-sitemap.xml"
     with unittest.mock.patch(
         "app.tasks.website_tasks.fetch_url_page_text"
     ) as mock_fetch_url_page_text:

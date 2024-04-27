@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, List, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import ForeignKey, String
@@ -11,6 +11,26 @@ from sqlalchemy_utils.types.encrypted.encrypted_type import (  # type: ignore  #
 )
 
 from app.core.config import settings
+from app.core.security.permissions import (
+    AccessCreate,
+    AccessCreateRelated,
+    AccessDelete,
+    AccessDeleteRelated,
+    AccessList,
+    AccessListRelated,
+    AccessListSelf,
+    AccessRead,
+    AccessReadRelated,
+    AccessUpdate,
+    AccessUpdateRelated,
+    AclAction,
+    AclPermission,
+    AclPrivilege,
+    RoleAdmin,
+    RoleClient,
+    RoleEmployee,
+    RoleManager,
+)
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 from app.db.constants import DB_STR_16BIT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_STORED
@@ -61,6 +81,38 @@ class GoAnalytics4Stream(Base, Timestamp):
     ga4_account: Mapped["GoAnalytics4Property"] = relationship(
         "GoAnalytics4Property", back_populates="ga4_streams"
     )
+
+    # ACL
+    def __acl__(
+        self,
+    ) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
+        return [
+            # list
+            (AclAction.allow, RoleAdmin, AccessList),
+            (AclAction.allow, RoleManager, AccessList),
+            (AclAction.allow, RoleEmployee, AccessListRelated),
+            (AclAction.allow, RoleClient, AccessListSelf),
+            # create
+            (AclAction.allow, RoleAdmin, AccessCreate),
+            (AclAction.allow, RoleManager, AccessCreate),
+            (AclAction.allow, RoleEmployee, AccessCreateRelated),
+            (AclAction.allow, RoleClient, AccessCreateRelated),
+            # read
+            (AclAction.allow, RoleAdmin, AccessRead),
+            (AclAction.allow, RoleManager, AccessRead),
+            (AclAction.allow, RoleEmployee, AccessReadRelated),
+            (AclAction.allow, RoleClient, AccessReadRelated),
+            # update
+            (AclAction.allow, RoleAdmin, AccessUpdate),
+            (AclAction.allow, RoleManager, AccessUpdate),
+            (AclAction.allow, RoleEmployee, AccessUpdateRelated),
+            (AclAction.allow, RoleClient, AccessUpdateRelated),
+            # delete
+            (AclAction.allow, RoleAdmin, AccessDelete),
+            (AclAction.allow, RoleManager, AccessDelete),
+            (AclAction.allow, RoleEmployee, AccessDeleteRelated),
+            (AclAction.allow, RoleClient, AccessDeleteRelated),
+        ]
 
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (

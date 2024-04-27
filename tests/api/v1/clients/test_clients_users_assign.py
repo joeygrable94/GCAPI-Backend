@@ -49,7 +49,7 @@ async def test_clients_assign_user_as_employee(
     )
     assert response.status_code == 403
     data: Dict[str, Any] = response.json()
-    assert data["detail"] == "Insufficient permissions"
+    assert data["detail"] == ErrorCode.INSUFFICIENT_PERMISSIONS
 
 
 async def test_clients_assign_user_as_superuser_missmatching_client_id(

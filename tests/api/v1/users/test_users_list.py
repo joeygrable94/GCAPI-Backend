@@ -4,6 +4,8 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.exceptions.errors import ErrorCode
+
 pytestmark = pytest.mark.asyncio
 
 
@@ -67,8 +69,5 @@ async def test_list_all_users_as_employee(
         headers=employee_token_headers,
     )
     data: Dict[str, Any] = response.json()
-    assert (
-        data["detail"]
-        == "You do not have permission to access the paginated output of this resource"
-    )
+    assert data["detail"] == ErrorCode.INSUFFICIENT_PERMISSIONS_PAGINATION
     assert response.status_code == 405

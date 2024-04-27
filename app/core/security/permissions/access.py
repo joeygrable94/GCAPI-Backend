@@ -17,9 +17,11 @@ RoleUser: AclPrivilege = AclPrivilege("role:user")
 AccessAll: AclPermission = AclPermission("access:all")
 # list
 AccessList: AclPermission = AclPermission("list:all")
+AccessListSelf: AclPermission = AclPermission("list:self")
 AccessListRelated: AclPermission = AclPermission("list:related")
 # create
 AccessCreate: AclPermission = AclPermission("create:all")
+AccessCreateRelated: AclPermission = AclPermission("create:related")
 # read
 AccessRead: AclPermission = AclPermission("read:all")
 AccessReadSelf: AclPermission = AclPermission("read:self")

@@ -19,8 +19,26 @@ class ErrorCode(str, Enum):
     ID_NOT_PROVIDED = "ID_NOT_PROVIDED"
     # authorization
     UNAUTHORIZED = "UNAUTHORIZED"
-    INSUFFICIENT_PERMISSIONS = "INSUFFICIENT_PERMISSIONS"
     UNVERIFIED_ACCESS_DENIED = "UNVERIFIED_ACCESS_DENIED"
+    INSUFFICIENT_PERMISSIONS = "INSUFFICIENT_PERMISSIONS"
+    INSUFFICIENT_PERMISSIONS_ACCESS = (
+        "You do not have permission to access this resource"
+    )
+    INSUFFICIENT_PERMISSIONS_ACTION = (
+        "You do not have permission to take this action on this resource"
+    )
+    INSUFFICIENT_PERMISSIONS_RESPONSE = (
+        "You do not have permission to access the output of this resource"
+    )
+    INSUFFICIENT_PERMISSIONS_PAGINATION = (
+        "You do not have permission to access the paginated output of this resource"
+    )
+    INSUFFICIENT_PERMISSIONS_SCOPE_ADD = (
+        "You do not have permission to add role based access to users"
+    )
+    INSUFFICIENT_PERMISSIONS_SCOPE_REMOVE = (
+        "You do not have permission to remove role based access to users"
+    )
     # security
     IP_RESTRICTED_TOO_MANY_REQUESTS = "call limit reached"
     # users
@@ -33,6 +51,12 @@ class ErrorCode(str, Enum):
     # notes
     NOTE_NOT_FOUND = "NOTE_NOT_FOUND"
     NOTE_EXISTS = "NOTE_EXISTS"
+    # sharpspring
+    SHARPSPRING_EXISTS = "SHARPSPRING_EXISTS"
+    SHARPSPRING_NOT_FOUND = "SHARPSPRING_NOT_FOUND"
+    # google analytics
+    GA4_PROPERTY_EXISTS = "GA4_PROPERTY_EXISTS"
+    GA4_PROPERTY_NOT_FOUND = "GA4_PROPERTY_NOT_FOUND"
     # websites
     WEBSITE_NOT_FOUND = "WEBSITE_NOT_FOUND"
     WEBSITE_DOMAIN_INVALID = "WEBSITE_DOMAIN_INVALID"
