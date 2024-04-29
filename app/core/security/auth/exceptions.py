@@ -1,10 +1,9 @@
 from typing import Any
 
+from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
 from pydantic import BaseModel
-
-from app.core.utilities import get_global_headers
 
 
 class Auth0UnauthenticatedException(HTTPException):
@@ -29,9 +28,12 @@ def configure_authorization_exceptions(app: FastAPI) -> None:
     async def auth0_unauthenticated_exception_handler(
         request: Request, exc: Auth0UnauthenticatedException
     ) -> Response:  # noqa: E501
-        request_headers = (
-            get_global_headers(exc.headers) if exc.headers else get_global_headers()
-        )
+        request_headers = {
+            "x-request-id": correlation_id.get() or "",
+            "Access-Control-Expose-Headers": "x-request-id",
+        }
+        if exc.headers is not None:
+            request_headers.update(exc.headers)
         return await http_exception_handler(
             request,
             HTTPException(
@@ -45,9 +47,12 @@ def configure_authorization_exceptions(app: FastAPI) -> None:
     async def auth0_unauthorized_exception_handler(
         request: Request, exc: Auth0UnauthorizedException
     ) -> Response:  # noqa: E501
-        request_headers = (
-            get_global_headers(exc.headers) if exc.headers else get_global_headers()
-        )
+        request_headers = {
+            "x-request-id": correlation_id.get() or "",
+            "Access-Control-Expose-Headers": "x-request-id",
+        }
+        if exc.headers is not None:
+            request_headers.update(exc.headers)
         return await http_exception_handler(
             request,
             HTTPException(

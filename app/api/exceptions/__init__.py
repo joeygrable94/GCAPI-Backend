@@ -1,9 +1,8 @@
-from typing import List
+from typing import Dict, List
 
+from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
-
-from app.core.utilities import get_global_headers
 
 from .errors import ErrorCode, ErrorCodeReasonModel, ErrorModel
 from .exceptions import (
@@ -37,6 +36,16 @@ from .exceptions import (
     WebsitePageNotExists,
     WebsitePageSpeedInsightsNotExists,
 )
+
+
+def get_global_headers(inject_headers: Dict[str, str] | None = None) -> Dict[str, str]:
+    global_headers = {
+        "x-request-id": correlation_id.get() or "",
+        "Access-Control-Expose-Headers": "x-request-id",
+    }
+    if inject_headers is not None:
+        global_headers.update(inject_headers)
+    return global_headers
 
 
 def configure_exceptions(app: FastAPI) -> None:

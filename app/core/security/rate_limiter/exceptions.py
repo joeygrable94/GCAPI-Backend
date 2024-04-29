@@ -1,9 +1,8 @@
 from typing import Dict
 
+from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
-
-from app.core.utilities import get_global_headers
 
 
 class RateLimitedRequestException(Exception):
@@ -24,9 +23,10 @@ def configure_rate_limiter_exceptions(app: FastAPI) -> None:
     async def rate_limited_request_exception_handler(
         request: Request, exc: RateLimitedRequestException
     ) -> Response:  # noqa: E501
-        request_headers = (
-            get_global_headers(exc.headers) if exc.headers else get_global_headers()
-        )
+        request_headers = {
+            "x-request-id": correlation_id.get() or "",
+            "Access-Control-Expose-Headers": "x-request-id",
+        }
         return await http_exception_handler(
             request,
             HTTPException(
