@@ -14,6 +14,7 @@ from .exceptions import (
     Auth0UnauthenticatedException,
     Auth0UnauthorizedException,
     HTTPAuth0Error,
+    configure_authorization_exceptions,
 )
 
 auth = Auth0(
@@ -29,6 +30,7 @@ __all__: List[str] = [
     "Auth0UnauthenticatedException",
     "Auth0UnauthorizedException",
     "Auth0User",
+    "configure_authorization_exceptions",
     "HTTPAuth0Error",
     "JwksDict",
     "JwksKeyDict",

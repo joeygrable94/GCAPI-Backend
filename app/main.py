@@ -9,7 +9,17 @@ from app.api.middleware import configure_middleware
 from app.api.monitoring import configure_monitoring
 from app.core.config import settings
 from app.core.redis import redis_conn
-from app.core.security import CsrfProtect, CsrfSettings, FastAPILimiter, RateLimiter
+from app.core.security import (
+    CsrfProtect,
+    CsrfSettings,
+    FastAPILimiter,
+    RateLimiter,
+    configure_authorization_exceptions,
+    configure_csrf_exceptions,
+    configure_encryption_exceptions,
+    configure_permissions_exceptions,
+    configure_rate_limiter_exceptions,
+)
 from app.core.templates import static_files
 from app.db.commands import check_db_connected, check_db_disconnected
 
@@ -75,6 +85,11 @@ def create_app() -> FastAPI:
     )
     configure_middleware(app)
     configure_exceptions(app)
+    configure_permissions_exceptions(app)
+    configure_authorization_exceptions(app)
+    configure_csrf_exceptions(app)
+    configure_encryption_exceptions(app)
+    configure_rate_limiter_exceptions(app)
     configure_static(app)
     configure_routers(app)
     return app

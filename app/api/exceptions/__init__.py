@@ -1,26 +1,24 @@
-from typing import Dict, List
+from typing import List
 
-from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
 
-from app.core.security import (
-    Auth0UnauthenticatedException,
-    Auth0UnauthorizedException,
-    AuthPermissionException,
-    CipherError,
-    CsrfProtectError,
-    RateLimitedRequestException,
-)
+from app.core.utilities import get_global_headers
 
 from .errors import ErrorCode, ErrorCodeReasonModel, ErrorModel
 from .exceptions import (
     ApiException,
+    BdxFeedAlreadyExists,
+    BdxFeedNotExists,
     ClientAlreadyExists,
     ClientNotExists,
     ClientRelationshipNotExists,
     Ga4PropertyAlreadyExists,
     Ga4PropertyNotExists,
+    Ga4StreamAlreadyExists,
+    Ga4StreamNotExists,
+    GoCloudPropertyAlreadyExists,
+    GoCloudPropertyNotExists,
     InvalidID,
     NoteAlreadyExists,
     NoteNotExists,
@@ -39,16 +37,6 @@ from .exceptions import (
     WebsitePageNotExists,
     WebsitePageSpeedInsightsNotExists,
 )
-
-
-def get_global_headers(inject_headers: Dict[str, str] | None = None) -> Dict[str, str]:
-    global_headers = {
-        "x-request-id": correlation_id.get() or "",
-        "Access-Control-Expose-Headers": "x-request-id",
-    }
-    if inject_headers is not None:
-        global_headers.update(inject_headers)
-    return global_headers
 
 
 def configure_exceptions(app: FastAPI) -> None:
@@ -73,96 +61,6 @@ def configure_exceptions(app: FastAPI) -> None:
                 exc.status_code,
                 detail=exc.message,
                 headers={**get_global_headers()},
-            ),
-        )
-
-    @app.exception_handler(CsrfProtectError)
-    async def csrf_protect_exception_handler(
-        request: Request, exc: CsrfProtectError
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
-    @app.exception_handler(CipherError)
-    async def cipher_security_exception_handler(
-        request: Request, exc: CipherError
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(  # pragma: no cover
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
-    @app.exception_handler(Auth0UnauthenticatedException)
-    async def auth0_unauthenticated_exception_handler(
-        request: Request, exc: Auth0UnauthenticatedException
-    ) -> Response:  # noqa: E501
-        request_headers = (
-            get_global_headers(exc.headers) if exc.headers else get_global_headers()
-        )
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.detail,
-                headers=request_headers,
-            ),
-        )
-
-    @app.exception_handler(Auth0UnauthorizedException)
-    async def auth0_unauthorized_exception_handler(
-        request: Request, exc: Auth0UnauthorizedException
-    ) -> Response:  # noqa: E501
-        request_headers = (
-            get_global_headers(exc.headers) if exc.headers else get_global_headers()
-        )
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.detail,
-                headers=request_headers,
-            ),
-        )
-
-    @app.exception_handler(AuthPermissionException)
-    async def permissions_exception_handler(
-        request: Request, exc: AuthPermissionException
-    ) -> Response:  # noqa: E501
-        request_headers = (
-            get_global_headers(exc.headers) if exc.headers else get_global_headers()
-        )
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers=request_headers,
-            ),
-        )
-
-    @app.exception_handler(RateLimitedRequestException)
-    async def rate_limited_request_exception_handler(
-        request: Request, exc: RateLimitedRequestException
-    ) -> Response:  # noqa: E501
-        request_headers = (
-            get_global_headers(exc.headers) if exc.headers else get_global_headers()
-        )
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers=request_headers,
             ),
         )
 
@@ -400,6 +298,32 @@ def configure_exceptions(app: FastAPI) -> None:
             ),
         )
 
+    @app.exception_handler(BdxFeedNotExists)
+    async def bdx_feed_not_exists_exception_handler(
+        request: Request, exc: BdxFeedNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(BdxFeedAlreadyExists)
+    async def bdx_feed_already_exists_exception_handler(
+        request: Request, exc: BdxFeedAlreadyExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
     @app.exception_handler(SharpspringNotExists)
     async def sharpspring_not_exists_exception_handler(
         request: Request, exc: SharpspringNotExists
@@ -426,8 +350,34 @@ def configure_exceptions(app: FastAPI) -> None:
             ),
         )
 
+    @app.exception_handler(GoCloudPropertyNotExists)
+    async def go_cloud_not_exists_exception_handler(
+        request: Request, exc: GoCloudPropertyNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(GoCloudPropertyAlreadyExists)
+    async def go_cloud_already_exists_exception_handler(
+        request: Request, exc: GoCloudPropertyAlreadyExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
     @app.exception_handler(Ga4PropertyNotExists)
-    async def ga4_not_exists_exception_handler(
+    async def ga4_property_not_exists_exception_handler(
         request: Request, exc: Ga4PropertyNotExists
     ) -> Response:  # noqa: E501
         return await http_exception_handler(
@@ -440,7 +390,33 @@ def configure_exceptions(app: FastAPI) -> None:
         )
 
     @app.exception_handler(Ga4PropertyAlreadyExists)
-    async def ga4_already_exists_exception_handler(
+    async def ga4_property_already_exists_exception_handler(
+        request: Request, exc: Ga4PropertyAlreadyExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(Ga4StreamNotExists)
+    async def ga4_stream_not_exists_exception_handler(
+        request: Request, exc: Ga4PropertyNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(Ga4StreamAlreadyExists)
+    async def ga4_stream_already_exists_exception_handler(
         request: Request, exc: Ga4PropertyAlreadyExists
     ) -> Response:  # noqa: E501
         return await http_exception_handler(
@@ -475,8 +451,14 @@ __all__: List[str] = [
     "WebsitePageNotExists",
     "WebsitePageSpeedInsightsNotExists",
     "WebsitePageKeywordCorpusNotExists",
+    "BdxFeedNotExists",
+    "BdxFeedAlreadyExists",
     "SharpspringNotExists",
     "SharpspringAlreadyExists",
+    "GoCloudPropertyNotExists",
+    "GoCloudPropertyAlreadyExists",
     "Ga4PropertyNotExists",
     "Ga4PropertyAlreadyExists",
+    "Ga4StreamNotExists",
+    "Ga4StreamAlreadyExists",
 ]

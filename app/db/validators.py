@@ -396,7 +396,7 @@ def validate_username_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
         name="username",
-        min_len=0,
+        min_len=5,
         max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
@@ -414,7 +414,7 @@ def validate_password_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
         name="password",
-        min_len=0,
+        min_len=5,
         max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
@@ -485,7 +485,7 @@ def validate_serverhost_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
         name="serverhost",
-        min_len=0,
+        min_len=3,
         max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
@@ -1076,7 +1076,7 @@ def validate_project_id_required(cls: Any, value: str) -> str:
         v=value,
         name="project_id",
         min_len=0,
-        max_len=64,
+        max_len=DB_STR_64BIT_MAXLEN_INPUT,
     )
 
 
@@ -1085,7 +1085,7 @@ def validate_project_number_required(cls: Any, value: str) -> str:
         v=value,
         name="project_number",
         min_len=0,
-        max_len=64,
+        max_len=DB_STR_64BIT_MAXLEN_INPUT,
     )
 
 
@@ -1093,8 +1093,8 @@ def validate_service_account_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
         name="service_account",
-        min_len=0,
-        max_len=64,
+        min_len=5,
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
 
@@ -1103,7 +1103,7 @@ def validate_project_id_optional(cls: Any, value: str | None) -> str | None:
         v=value,
         name="project_id",
         min_len=0,
-        max_len=64,
+        max_len=DB_STR_64BIT_MAXLEN_INPUT,
     )
 
 
@@ -1112,7 +1112,7 @@ def validate_project_number_optional(cls: Any, value: str | None) -> str | None:
         v=value,
         name="project_number",
         min_len=0,
-        max_len=64,
+        max_len=DB_STR_64BIT_MAXLEN_INPUT,
     )
 
 
@@ -1120,8 +1120,8 @@ def validate_service_account_optional(cls: Any, value: str | None) -> str | None
     return optional_string_name_min_max_len(
         v=value,
         name="service_account",
-        min_len=0,
-        max_len=64,
+        min_len=5,
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
 

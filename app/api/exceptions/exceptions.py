@@ -53,6 +53,17 @@ class NoteNotExists(ApiException):
         super().__init__(status.HTTP_404_NOT_FOUND, message)
 
 
+# Bdx Feed
+class BdxFeedAlreadyExists(ApiException):
+    def __init__(self, message: str = ErrorCode.BDX_FEED_EXISTS):
+        super().__init__(status.HTTP_400_BAD_REQUEST, message)
+
+
+class BdxFeedNotExists(ApiException):
+    def __init__(self, message: str = ErrorCode.BDX_FEED_NOT_FOUND):
+        super().__init__(status.HTTP_404_NOT_FOUND, message)
+
+
 # Sharpspring
 class SharpspringAlreadyExists(ApiException):
     def __init__(self, message: str = ErrorCode.SHARPSPRING_EXISTS):
@@ -64,6 +75,17 @@ class SharpspringNotExists(ApiException):
         super().__init__(status.HTTP_404_NOT_FOUND, message)
 
 
+# Google Cloud
+class GoCloudPropertyAlreadyExists(ApiException):
+    def __init__(self, message: str = ErrorCode.GO_CLOUD_EXISTS):
+        super().__init__(status.HTTP_400_BAD_REQUEST, message)
+
+
+class GoCloudPropertyNotExists(ApiException):
+    def __init__(self, message: str = ErrorCode.GO_CLOUD_NOT_FOUND):
+        super().__init__(status.HTTP_404_NOT_FOUND, message)
+
+
 # Ga4 Property
 class Ga4PropertyAlreadyExists(ApiException):
     def __init__(self, message: str = ErrorCode.GA4_PROPERTY_EXISTS):
@@ -72,6 +94,17 @@ class Ga4PropertyAlreadyExists(ApiException):
 
 class Ga4PropertyNotExists(ApiException):
     def __init__(self, message: str = ErrorCode.GA4_PROPERTY_NOT_FOUND):
+        super().__init__(status.HTTP_404_NOT_FOUND, message)
+
+
+# Ga4 Stream
+class Ga4StreamAlreadyExists(ApiException):
+    def __init__(self, message: str = ErrorCode.GA4_STREAM_EXISTS):
+        super().__init__(status.HTTP_400_BAD_REQUEST, message)
+
+
+class Ga4StreamNotExists(ApiException):
+    def __init__(self, message: str = ErrorCode.GA4_STREAM_NOT_FOUND):
         super().__init__(status.HTTP_404_NOT_FOUND, message)
 
 

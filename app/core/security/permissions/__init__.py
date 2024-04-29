@@ -31,7 +31,7 @@ from .core import (
     list_permissions,
     permission_dependency_factory,
 )
-from .exceptions import AuthPermissionException
+from .exceptions import AuthPermissionException, configure_permissions_exceptions
 from .scope import AclPermission, AclPrivilege, Scope
 
 __all__: List[str] = [
@@ -42,6 +42,7 @@ __all__: List[str] = [
     "Everyone",
     "Authenticated",
     "AuthPermissionException",
+    "configure_permissions_exceptions",
     "configure_permissions",
     "permission_dependency_factory",
     "has_permission",

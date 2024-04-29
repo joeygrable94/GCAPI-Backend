@@ -4,15 +4,15 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.clients import create_random_client
-from tests.utils.ga4 import create_random_ga4_property
+from tests.utils.ga4 import create_random_ga4_property, create_random_ga4_stream
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions.errors import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
-from app.crud import GoAnalytics4PropertyRepository
-from app.models import GoAnalytics4Property
-from app.schemas import ClientRead, WebsiteRead
-from app.schemas.go_a4 import GoAnalytics4PropertyRead
+from app.crud import GoAnalytics4StreamRepository
+from app.models.go_a4_stream import GoAnalytics4Stream
+from app.schemas import ClientRead, GoAnalytics4PropertyRead, WebsiteRead
+from app.schemas.go_a4_stream import GoAnalytics4StreamRead
 
 pytestmark = pytest.mark.asyncio
 
@@ -24,27 +24,28 @@ async def test_read_ga4_property_by_id_as_superuser(
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
     a_website: WebsiteRead = await create_random_website(db_session)
-    entry: GoAnalytics4PropertyRead = await create_random_ga4_property(
-        db_session, client_id=a_client.id, website_id=a_website.id
+    ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
+        db_session, client_id=a_client.id
+    )
+    entry: GoAnalytics4StreamRead = await create_random_ga4_stream(
+        db_session, ga4_property.id, a_website.id
     )
     response: Response = await client.get(
-        f"ga4/{entry.id}",
+        f"ga4/stream/{entry.id}",
         headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
     assert data["id"] == str(entry.id)
     assert "title" in data
-    assert "measurement_id" in data
-    assert "property_id" in data
-    assert data["client_id"] == str(a_client.id)
+    assert "stream_id" in data
+    assert data["ga4_id"] == str(ga4_property.id)
     assert data["website_id"] == str(a_website.id)
-    repo: GoAnalytics4PropertyRepository = GoAnalytics4PropertyRepository(db_session)
-    existing_data: GoAnalytics4Property | None = await repo.read(entry.id)
+    repo: GoAnalytics4StreamRepository = GoAnalytics4StreamRepository(db_session)
+    existing_data: GoAnalytics4Stream | None = await repo.read(entry.id)
     assert existing_data
-    assert existing_data.measurement_id == data["measurement_id"]
-    assert existing_data.property_id == data["property_id"]
-    assert str(existing_data.client_id) == data["client_id"]
+    assert existing_data.stream_id == data["stream_id"]
+    assert existing_data.ga4_id == ga4_property.id
     assert str(existing_data.website_id) == data["website_id"]
 
 
@@ -55,9 +56,9 @@ async def test_read_ga4_property_by_id_as_superuser_client_not_found(
 ) -> None:
     entry_id: str = get_uuid_str()
     response: Response = await client.get(
-        f"ga4/{entry_id}",
+        f"ga4/stream/{entry_id}",
         headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 404
-    assert data["detail"] == ErrorCode.GA4_PROPERTY_NOT_FOUND
+    assert data["detail"] == ErrorCode.GA4_STREAM_NOT_FOUND

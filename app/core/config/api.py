@@ -29,7 +29,7 @@ class ApiSettings(BaseSettings):
     domain_name: str = environ.get("API_DOMAIN", "localhost")
     timezone: str = environ.get("API_TIMEZONE", "America/Los_Angeles")
     logging_level: str = environ.get("API_LOG_LEVEL", "debug").upper()
-    logger_name: str = environ.get("API_NAME", "GCAPI")
+    logger_name: str = environ.get("API_NAME", "GCAPI").lower()
     # Security
     asgi_header_key: str = "x-request-id"
     allowed_cors: Optional[Union[str, List[str]]] = environ.get("API_ALLOWED_CORS")

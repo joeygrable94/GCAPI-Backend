@@ -38,7 +38,6 @@ from app.db.constants import DB_STR_16BIT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
     from .go_a4_stream import GoAnalytics4Stream  # noqa: F401
-    from .website import Website  # noqa: F401
 
 
 class GoAnalytics4Property(Base, Timestamp):
@@ -92,10 +91,6 @@ class GoAnalytics4Property(Base, Timestamp):
         UUIDType(binary=False), ForeignKey("client.id"), nullable=False
     )
     client: Mapped["Client"] = relationship(back_populates="ga4_accounts")
-    website_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("website.id"), nullable=False
-    )
-    website: Mapped["Website"] = relationship(back_populates="ga4_accounts")
     ga4_streams: Mapped[List["GoAnalytics4Stream"]] = relationship(
         "GoAnalytics4Stream", back_populates="ga4_account"
     )
@@ -135,9 +130,6 @@ class GoAnalytics4Property(Base, Timestamp):
     # representation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (
-            f"GoAnalytics4Property(\
-            MeasurementID[{self.measurement_id}] for \
-            Client[{self.client_id}] \
-            Website[{self.website_id}])"
+            f"GoAnalytics4Property(MeasurementID[{self.measurement_id}] for Client[{self.client_id}])"  # noqa: F841, E501
         )
         return repr_str

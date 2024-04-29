@@ -25,7 +25,7 @@ from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
-    from .go_a4 import GoAnalytics4Property  # noqa: F401
+    from .go_a4_stream import GoAnalytics4Stream  # noqa: F401
     from .go_sc import GoSearchConsoleProperty  # noqa: F401
     from .website_keywordcorpus import WebsiteKeywordCorpus  # noqa: F401
     from .website_map import WebsiteMap  # noqa: F401
@@ -66,8 +66,8 @@ class Website(Base, Timestamp):
     gsc_accounts: Mapped[List["GoSearchConsoleProperty"]] = relationship(
         "GoSearchConsoleProperty", back_populates="website"
     )
-    ga4_accounts: Mapped[List["GoAnalytics4Property"]] = relationship(
-        "GoAnalytics4Property", back_populates="website"
+    ga4_streams: Mapped[List["GoAnalytics4Stream"]] = relationship(
+        "GoAnalytics4Stream", back_populates="website"
     )
     keywordcorpus: Mapped[List["WebsiteKeywordCorpus"]] = relationship(
         "WebsiteKeywordCorpus", back_populates="website"

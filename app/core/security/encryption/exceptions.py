@@ -1,4 +1,7 @@
-from fastapi import status
+from fastapi import FastAPI, HTTPException, Request, Response, status
+from fastapi.exception_handlers import http_exception_handler
+
+from app.core.utilities import get_global_headers
 
 
 class CipherError(Exception):
@@ -24,3 +27,19 @@ class EncryptionError(CipherError):
 class DecryptionError(CipherError):
     def __init__(self, message: str = "error decrypting message"):
         super().__init__(message=message)
+
+
+def configure_encryption_exceptions(app: FastAPI) -> None:
+
+    @app.exception_handler(CipherError)
+    async def cipher_security_exception_handler(
+        request: Request, exc: CipherError
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(  # pragma: no cover
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )

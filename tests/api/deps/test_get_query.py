@@ -9,12 +9,14 @@ from app.api.deps.get_query import (
     CommonClientWebsiteQueryParams,
     CommonUserClientQueryParams,
     CommonUserQueryParams,
+    CommonWebsiteGa4QueryParams,
     CommonWebsiteKeywordCorpusQueryParams,
     CommonWebsiteMapQueryParams,
     CommonWebsitePageQueryParams,
     CommonWebsitePageSpeedInsightsQueryParams,
     CommonWebsiteQueryParams,
     DeviceStrategyQueryParams,
+    Ga4QueryParams,
     PublicQueryParams,
     UserIdQueryParams,
     WebsiteIdQueryParams,
@@ -149,6 +151,26 @@ def test_public_query_params() -> None:
 
     query_params = PublicQueryParams(message=None)
     assert query_params.message is None
+
+
+def test_ga4_property_id_query_params_valid_id() -> None:
+    uuid_1 = get_uuid_str()
+    query_params = Ga4QueryParams(ga4_id=uuid_1)
+    assert query_params.ga4_id == uuid.UUID(uuid_1)
+
+
+def test_ga4_property_id_query_params_invalid_id() -> None:
+    fake_id = "invalid-id"
+    try:
+        Ga4QueryParams(ga4_id=fake_id)
+    except HTTPException as e:
+        assert e.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert e.detail == "Invalid ga4 property ID"
+
+
+def test_ga4_property_id_query_params_none() -> None:
+    query_params = Ga4QueryParams()
+    assert query_params.ga4_id is None
 
 
 def test_common_user_query_params() -> None:
@@ -364,3 +386,32 @@ def test_common_website_keyword_corpus_query_params() -> None:
     assert query_params.size == settings.api.query_limit_rows_default
     assert query_params.website_id is None
     assert query_params.page_id is None
+
+
+def test_common_ga4_query_params() -> None:
+    uuid_1 = get_uuid_str()
+    uuid_2 = get_uuid_str()
+    query_params = CommonWebsiteGa4QueryParams(
+        page=2,
+        size=5,
+        website_id=uuid_1,
+        ga4_id=uuid_2,
+    )
+    assert query_params.page == 2
+    assert query_params.size == 5
+    assert query_params.website_id == uuid.UUID(uuid_1)
+    assert query_params.ga4_id == uuid.UUID(uuid_2)
+
+    query_params = CommonWebsiteGa4QueryParams()
+    assert query_params.page == 1
+    assert query_params.size == settings.api.query_limit_rows_default
+    assert query_params.website_id is None
+    assert query_params.ga4_id is None
+
+    query_params = CommonWebsiteGa4QueryParams(
+        page=None, size=None, website_id=None, ga4_id=None
+    )
+    assert query_params.page == 1
+    assert query_params.size == settings.api.query_limit_rows_default
+    assert query_params.website_id is None
+    assert query_params.ga4_id is None

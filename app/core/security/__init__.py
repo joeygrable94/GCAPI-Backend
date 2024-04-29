@@ -11,23 +11,31 @@ from .auth import (
     JwksKeyDict,
     OAuth2ImplicitBearer,
     auth,
+    configure_authorization_exceptions,
 )
-from .csrf import CsrfProtect, CsrfProtectError, CsrfSettings
+from .csrf import CsrfProtect, CsrfProtectError, CsrfSettings, configure_csrf_exceptions
 from .encryption import (
     CipherError,
     DecryptionError,
     EncryptionError,
     SecureMessage,
     SignatureVerificationError,
+    configure_encryption_exceptions,
     load_api_keys,
 )
 from .permissions import (
     AuthPermissionException,
     configure_permissions,
+    configure_permissions_exceptions,
     has_permission,
     list_permissions,
 )
-from .rate_limiter import FastAPILimiter, RateLimitedRequestException, RateLimiter
+from .rate_limiter import (
+    FastAPILimiter,
+    RateLimitedRequestException,
+    RateLimiter,
+    configure_rate_limiter_exceptions,
+)
 from .schemas import CsrfToken, EncryptedMessage, PlainMessage, RateLimitedToken
 
 __all__: List[str] = [
@@ -39,6 +47,10 @@ __all__: List[str] = [
     "Auth0UnauthenticatedException",
     "Auth0UnauthorizedException",
     "Auth0User",
+    "configure_authorization_exceptions",
+    "configure_csrf_exceptions",
+    "configure_encryption_exceptions",
+    "configure_rate_limiter_exceptions",
     "CipherError",
     "CsrfProtect",
     "CsrfProtectError",
@@ -55,6 +67,7 @@ __all__: List[str] = [
     "SecureMessage",
     "SignatureVerificationError",
     "AuthPermissionException",
+    "configure_permissions_exceptions",
     "configure_permissions",
     "has_permission",
     "list_permissions",

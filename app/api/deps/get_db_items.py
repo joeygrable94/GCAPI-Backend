@@ -5,8 +5,11 @@ from fastapi import Depends
 
 from app.api.deps.get_db import AsyncDatabaseSession
 from app.api.exceptions import (
+    BdxFeedNotExists,
     ClientNotExists,
     Ga4PropertyNotExists,
+    Ga4StreamNotExists,
+    GoCloudPropertyNotExists,
     NoteNotExists,
     SharpspringNotExists,
     UserNotExists,
@@ -18,8 +21,11 @@ from app.api.exceptions import (
 )
 from app.core.utilities.uuids import parse_id
 from app.crud import (
+    BdxFeedRepository,
     ClientRepository,
     GoAnalytics4PropertyRepository,
+    GoAnalytics4StreamRepository,
+    GoCloudPropertyRepository,
     NoteRepository,
     SharpspringRepository,
     UserRepository,
@@ -30,8 +36,11 @@ from app.crud import (
     WebsiteRepository,
 )
 from app.models import (
+    BdxFeed,
     Client,
     GoAnalytics4Property,
+    GoAnalytics4Stream,
+    GoCloudProperty,
     Note,
     Sharpspring,
     User,
@@ -183,6 +192,19 @@ FetchWebsiteKeywordCorpusOr404 = Annotated[
 ]
 
 
+async def get_bdx_feed_404(
+    db: AsyncDatabaseSession,
+    bdx_id: Any,
+) -> BdxFeed | None:
+    """Parses uuid/int and fetches bdx_feed by id."""
+    parsed_id: UUID = parse_id(bdx_id)
+    bdx_repo: BdxFeedRepository = BdxFeedRepository(session=db)
+    bdx_feed: BdxFeed | None = await bdx_repo.read(parsed_id)
+    if bdx_feed is None:
+        raise BdxFeedNotExists()
+    return bdx_feed
+
+
 async def get_sharpspring_404(
     db: AsyncDatabaseSession,
     ss_id: Any,
@@ -194,6 +216,19 @@ async def get_sharpspring_404(
     if ss_acct is None:
         raise SharpspringNotExists()
     return ss_acct
+
+
+async def get_go_cloud_404(
+    db: AsyncDatabaseSession,
+    go_cloud_id: Any,
+) -> GoCloudProperty | None:
+    """Parses uuid/int and fetches google cloud property by id."""
+    parsed_id: UUID = parse_id(go_cloud_id)
+    go_cloud_repo: GoCloudPropertyRepository = GoCloudPropertyRepository(session=db)
+    go_cloud_acct: Sharpspring | None = await go_cloud_repo.read(parsed_id)
+    if go_cloud_acct is None:
+        raise GoCloudPropertyNotExists()
+    return go_cloud_acct
 
 
 async def get_ga4_property_404(
@@ -209,3 +244,18 @@ async def get_ga4_property_404(
     if ga4_property is None:
         raise Ga4PropertyNotExists()
     return ga4_property
+
+
+async def get_ga4_stream_404(
+    db: AsyncDatabaseSession,
+    ga4_stream_id: Any,
+) -> GoAnalytics4Stream | None:
+    """Parses uuid/int and fetches ga4 stream by id."""
+    parsed_id: UUID = parse_id(ga4_stream_id)
+    ga4_stream_repo: GoAnalytics4StreamRepository = GoAnalytics4StreamRepository(
+        session=db
+    )
+    ga4_stream: GoAnalytics4Stream | None = await ga4_stream_repo.read(parsed_id)
+    if ga4_stream is None:
+        raise Ga4StreamNotExists()
+    return ga4_stream

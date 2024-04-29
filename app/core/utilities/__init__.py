@@ -2,6 +2,7 @@ from typing import List
 
 from .dates_and_time import get_date, get_datetime_from_int, get_int_from_datetime
 from .email import send_test_email
+from .headers import get_global_headers
 from .paginate import paginate
 from .regex import (
     domain_in_url_regex,
@@ -28,6 +29,7 @@ __all__: List[str] = [
     "get_date",
     "get_datetime_from_int",
     "get_int_from_datetime",
+    "get_global_headers",
     "send_test_email",
     "paginate",
     "domain_in_url_regex",

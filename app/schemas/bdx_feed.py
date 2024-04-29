@@ -41,6 +41,7 @@ class BdxFeedUpdate(BaseSchema):
     username: Optional[str] = None
     password: Optional[str] = None
     serverhost: Optional[str] = None
+    client_id: Optional[UUID4] = None
 
     _validate_username = field_validator("username", mode="before")(
         validate_username_optional

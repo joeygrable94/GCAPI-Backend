@@ -94,6 +94,19 @@ class DeviceStrategyQueryParams:
         self.strategy: List[str] | None = q_devices
 
 
+class Ga4QueryParams:
+    def __init__(self, ga4_id: str | None = None):
+        q_ga4_id: UUID4 | None
+        try:
+            q_ga4_id = None if not ga4_id else parse_id(ga4_id)
+        except InvalidID:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid ga4 property ID",
+            )
+        self.ga4_id: UUID4 | None = q_ga4_id
+
+
 # compound query classes
 
 
@@ -314,3 +327,27 @@ class CommonWebsiteKeywordCorpusQueryParams(
 GetWebsiteKeywordCorpusQueryParams = Annotated[
     CommonWebsiteKeywordCorpusQueryParams, Depends()
 ]
+
+
+class CommonWebsiteGa4QueryParams(
+    PageParamsFromQuery, WebsiteIdQueryParams, Ga4QueryParams
+):
+    def __init__(
+        self,
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        website_id: Annotated[str | None, Query()] = None,
+        ga4_id: Annotated[str | None, Query()] = None,
+    ):
+        PageParamsFromQuery.__init__(self, page, size)
+        WebsiteIdQueryParams.__init__(self, website_id)
+        Ga4QueryParams.__init__(self, ga4_id)
+
+
+GetWebsiteGa4QueryParams = Annotated[CommonWebsiteGa4QueryParams, Depends()]

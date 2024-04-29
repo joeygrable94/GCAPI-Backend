@@ -37,6 +37,7 @@ from app.db.constants import DB_STR_16BIT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_
 
 if TYPE_CHECKING:  # pragma: no cover
     from .go_a4 import GoAnalytics4Property  # noqa: F401
+    from .website import Website  # noqa: F401
 
 
 class GoAnalytics4Stream(Base, Timestamp):
@@ -47,6 +48,7 @@ class GoAnalytics4Stream(Base, Timestamp):
         UUIDType(binary=False),
         index=True,
         unique=True,
+        primary_key=True,
         nullable=False,
         default=get_uuid(),
     )
@@ -71,7 +73,6 @@ class GoAnalytics4Stream(Base, Timestamp):
         ),
         unique=True,
         nullable=False,
-        primary_key=True,
     )
 
     # relationships
@@ -81,6 +82,10 @@ class GoAnalytics4Stream(Base, Timestamp):
     ga4_account: Mapped["GoAnalytics4Property"] = relationship(
         "GoAnalytics4Property", back_populates="ga4_streams"
     )
+    website_id: Mapped[UUID4] = mapped_column(
+        UUIDType(binary=False), ForeignKey("website.id"), nullable=False
+    )
+    website: Mapped["Website"] = relationship(back_populates="ga4_streams")
 
     # ACL
     def __acl__(
@@ -116,7 +121,6 @@ class GoAnalytics4Stream(Base, Timestamp):
 
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = (
-            f"GoAnalytics4Stream({self.title} \
-            Stream[{self.stream_id}] for GA4 Property[{self.ga4_id}])"
+            f"GoAnalytics4Stream({self.title} Stream[{self.stream_id}] for GA4 Property[{self.ga4_id}] and Website[{self.website_id}])"  # noqa: F841, E501
         )
         return repr_str

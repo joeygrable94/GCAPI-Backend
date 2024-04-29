@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import Select
 
 from app.api.deps import (
-    CommonClientWebsiteQueryParams,
-    GetClientWebsiteQueryParams,
+    CommonClientQueryParams,
+    GetClientQueryParams,
     Permission,
     PermissionController,
     get_async_db,
@@ -13,11 +13,7 @@ from app.api.deps import (
     get_ga4_property_404,
     get_permission_controller,
 )
-from app.api.exceptions import (
-    ClientNotExists,
-    Ga4PropertyAlreadyExists,
-    WebsiteNotExists,
-)
+from app.api.exceptions import ClientNotExists, Ga4PropertyAlreadyExists
 from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
 from app.core.security.permissions import (
@@ -36,8 +32,8 @@ from app.core.security.permissions import (
     RoleManager,
     RoleUser,
 )
-from app.crud import ClientRepository, GoAnalytics4PropertyRepository, WebsiteRepository
-from app.models import Client, GoAnalytics4Property, Website
+from app.crud import ClientRepository, GoAnalytics4PropertyRepository
+from app.models import Client, GoAnalytics4Property
 from app.schemas import (
     GoAnalytics4PropertyCreate,
     GoAnalytics4PropertyRead,
@@ -49,9 +45,9 @@ router: APIRouter = APIRouter()
 
 @router.get(
     "/",
-    name="ga4:list",
+    name="ga4_property:list",
     dependencies=[
-        Depends(CommonClientWebsiteQueryParams),
+        Depends(CommonClientQueryParams),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
@@ -60,7 +56,7 @@ router: APIRouter = APIRouter()
     response_model=Paginated[GoAnalytics4PropertyRead],
 )
 async def ga4_property_list(
-    query: GetClientWebsiteQueryParams,
+    query: GetClientQueryParams,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> Paginated[GoAnalytics4PropertyRead]:
     """Retrieve a paginated list of ga4 properties.
@@ -83,16 +79,12 @@ async def ga4_property_list(
     )
     select_stmt: Select
     if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
-        select_stmt = ga4_repo.query_list(
-            client_id=query.client_id, website_id=query.website_id
-        )
+        select_stmt = ga4_repo.query_list(client_id=query.client_id)
     else:
         select_stmt = ga4_repo.query_list(
             user_id=permissions.current_user.id,
             client_id=query.client_id,
-            website_id=query.website_id,
         )
-        print("select_stmt", select_stmt)
     response_out: Paginated[GoAnalytics4PropertyRead] = (
         await permissions.get_paginated_resource_response(
             table_name=GoAnalytics4Property.__tablename__,
@@ -111,7 +103,7 @@ async def ga4_property_list(
 
 @router.post(
     "/",
-    name="ga4:create",
+    name="ga4_property:create",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -143,10 +135,6 @@ async def ga4_property_create(
         privileges=[RoleAdmin, RoleManager],
         client_id=ga4_in.client_id,
     )
-    await permissions.verify_user_can_access(
-        privileges=[RoleAdmin, RoleManager],
-        website_id=ga4_in.website_id,
-    )
     ga4_repo: GoAnalytics4PropertyRepository = GoAnalytics4PropertyRepository(
         session=permissions.db
     )
@@ -166,16 +154,16 @@ async def ga4_property_create(
         field_name="property_id",
         field_value=check_property_id,
     )
-    if a_ga4_measurement_id or a_ga4_title or a_ga4_property_id:
+    if (
+        a_ga4_measurement_id is not None
+        or a_ga4_title is not None
+        or a_ga4_property_id is not None
+    ):
         raise Ga4PropertyAlreadyExists()
     client_repo: ClientRepository = ClientRepository(session=permissions.db)
     a_client: Client | None = await client_repo.read(entry_id=ga4_in.client_id)
     if a_client is None:
         raise ClientNotExists()
-    website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
-    a_website: Website | None = await website_repo.read(entry_id=ga4_in.website_id)
-    if a_website is None:
-        raise WebsiteNotExists()
     new_ga4: GoAnalytics4Property = await ga4_repo.create(ga4_in)
     # return role based response
     response_out: GoAnalytics4PropertyRead = permissions.get_resource_response(
@@ -189,7 +177,7 @@ async def ga4_property_create(
 
 @router.get(
     "/{ga4_id}",
-    name="ga4:read",
+    name="ga4_property:read",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -224,10 +212,6 @@ async def ga4_property_read(
         privileges=[RoleAdmin, RoleManager],
         client_id=ga4.client_id,
     )
-    await permissions.verify_user_can_access(
-        privileges=[RoleAdmin, RoleManager],
-        website_id=ga4.website_id,
-    )
     # return role based response
     response_out: GoAnalytics4PropertyRead = permissions.get_resource_response(
         resource=ga4,
@@ -240,7 +224,7 @@ async def ga4_property_read(
 
 @router.patch(
     "/{ga4_id}",
-    name="ga4:update",
+    name="ga4_property:update",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -283,10 +267,6 @@ async def ga4_property_update(
         privileges=[RoleAdmin, RoleManager],
         client_id=ga4.client_id,
     )
-    await permissions.verify_user_can_access(
-        privileges=[RoleAdmin, RoleManager],
-        website_id=ga4.website_id,
-    )
     ga4_repo: GoAnalytics4PropertyRepository = GoAnalytics4PropertyRepository(
         session=permissions.db
     )
@@ -305,15 +285,6 @@ async def ga4_property_update(
         a_client: Client | None = await client_repo.read(entry_id=ga4_in.client_id)
         if a_client is None:
             raise ClientNotExists()
-    if ga4_in.website_id is not None:
-        await permissions.verify_user_can_access(
-            privileges=[RoleAdmin, RoleManager],
-            client_id=ga4_in.website_id,
-        )
-        website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
-        a_website: Website | None = await website_repo.read(entry_id=ga4_in.website_id)
-        if a_website is None:
-            raise WebsiteNotExists()
     updated_ga4: GoAnalytics4Property | None = await ga4_repo.update(
         entry=ga4, schema=ga4_in
     )
@@ -329,7 +300,7 @@ async def ga4_property_update(
 
 @router.delete(
     "/{ga4_id}",
-    name="ga4:delete",
+    name="ga4_property:delete",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -362,10 +333,6 @@ async def ga4_property_delete(
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         client_id=ga4.client_id,
-    )
-    await permissions.verify_user_can_access(
-        privileges=[RoleAdmin, RoleManager],
-        website_id=ga4.website_id,
     )
     ga4_repo: GoAnalytics4PropertyRepository = GoAnalytics4PropertyRepository(
         session=permissions.db

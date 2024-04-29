@@ -1,5 +1,3 @@
-from typing import Dict
-
 from fastapi import APIRouter, Depends
 from sqlalchemy import Select
 
@@ -130,15 +128,12 @@ async def sharpspring_create(
         client_id=ss_in.client_id,
     )
     ss_repo: SharpspringRepository = SharpspringRepository(session=permissions.db)
-    data: Dict = ss_in.model_dump()
-    check_api_key: str | None = data.get("api_key")
-    if check_api_key:
-        a_ss: Sharpspring | None = await ss_repo.read_by(
-            field_name="api_key",
-            field_value=check_api_key,
-        )
-        if a_ss:
-            raise SharpspringAlreadyExists()
+    a_ss: Sharpspring | None = await ss_repo.read_by(
+        field_name="api_key",
+        field_value=ss_in.api_key,
+    )
+    if a_ss:
+        raise SharpspringAlreadyExists()
     client_repo: ClientRepository = ClientRepository(session=permissions.db)
     a_client: Client | None = await client_repo.read(entry_id=ss_in.client_id)
     if a_client is None:

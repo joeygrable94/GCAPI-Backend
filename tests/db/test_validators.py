@@ -550,7 +550,10 @@ def test_validate_password_optional() -> None:
 
 def test_validate_api_key_required() -> None:
     assert validate_api_key_required(cls=None, value="valid_api_key") == "valid_api_key"
-    assert validate_api_key_required(cls=None, value="a" * 64) == "a" * 64
+    assert (
+        validate_api_key_required(cls=None, value="a" * DB_STR_64BIT_MAXLEN_INPUT)
+        == "a" * DB_STR_64BIT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         assert validate_api_key_required(cls=None, value="")
     with pytest.raises(ValueError):
@@ -564,7 +567,10 @@ def test_validate_secret_key_required() -> None:
         validate_secret_key_required(cls=None, value="valid_secret_key")
         == "valid_secret_key"
     )
-    assert validate_secret_key_required(cls=None, value="a" * 64) == "a" * 64
+    assert (
+        validate_secret_key_required(cls=None, value="a" * DB_STR_64BIT_MAXLEN_INPUT)
+        == "a" * DB_STR_64BIT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         assert validate_secret_key_required(cls=None, value="")
     with pytest.raises(ValueError):
@@ -575,7 +581,10 @@ def test_validate_secret_key_required() -> None:
 
 def test_validate_api_key_optional() -> None:
     assert validate_api_key_optional(cls=None, value="valid_api_key") == "valid_api_key"
-    assert validate_api_key_optional(cls=None, value="a" * 64) == "a" * 64
+    assert (
+        validate_api_key_optional(cls=None, value="a" * DB_STR_64BIT_MAXLEN_INPUT)
+        == "a" * DB_STR_64BIT_MAXLEN_INPUT
+    )
     assert validate_api_key_optional(cls=None, value=None) is None
     with pytest.raises(ValueError):
         assert validate_api_key_optional(cls=None, value="")
@@ -586,7 +595,10 @@ def test_validate_api_key_optional() -> None:
 
 
 def test_validate_secret_key_optional() -> None:
-    assert validate_secret_key_optional(cls=None, value="a" * 64) == "a" * 64
+    assert (
+        validate_secret_key_optional(cls=None, value="a" * DB_STR_64BIT_MAXLEN_INPUT)
+        == "a" * DB_STR_64BIT_MAXLEN_INPUT
+    )
     assert validate_secret_key_optional(cls=None, value=None) is None
     with pytest.raises(ValueError):
         assert validate_secret_key_optional(cls=None, value="")
@@ -1437,7 +1449,7 @@ def test_validate_project_id_required() -> None:
         validate_project_id_required(cls=None, value="")
     with pytest.raises(ValueError):
         validate_project_id_required(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+            cls=None, value="a" * (DB_STR_64BIT_MAXLEN_INPUT + 1)
         )
 
 
@@ -1452,7 +1464,7 @@ def test_validate_project_number_required() -> None:
         validate_project_number_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
         validate_project_number_required(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+            cls=None, value="a" * (DB_STR_64BIT_MAXLEN_INPUT + 1)
         )
 
 
@@ -1461,7 +1473,12 @@ def test_validate_service_account_required() -> None:
         validate_service_account_required(cls=None, value="valid_service_account")
         == "valid_service_account"
     )
-    assert validate_service_account_required(cls=None, value="a" * 64) == "a" * 64
+    assert (
+        validate_service_account_required(
+            cls=None, value="a" * DB_STR_64BIT_MAXLEN_INPUT
+        )
+        == "a" * DB_STR_64BIT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         assert validate_service_account_required(cls=None, value="")
     with pytest.raises(ValueError):
@@ -1472,24 +1489,32 @@ def test_validate_service_account_required() -> None:
 
 def test_validate_project_id_optional() -> None:
     assert validate_project_id_optional(cls=None, value=None) is None
-    assert validate_project_id_optional(cls=None, value="a" * 64) == "a" * 64
+    assert (
+        validate_project_id_optional(cls=None, value="a" * DB_STR_64BIT_MAXLEN_INPUT)
+        == "a" * DB_STR_64BIT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         assert validate_project_id_optional(cls=None, value="")
     with pytest.raises(ValueError):
         validate_project_id_optional(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+            cls=None, value="a" * (DB_STR_64BIT_MAXLEN_INPUT + 1)
         )
 
 
 def test_validate_project_number_optional() -> None:
     assert validate_project_number_optional(cls=None, value=None) is None
     assert validate_project_number_optional(cls=None, value="1234") == "1234"
-    assert validate_project_number_optional(cls=None, value="a" * 64) == "a" * 64
+    assert (
+        validate_project_number_optional(
+            cls=None, value="a" * DB_STR_64BIT_MAXLEN_INPUT
+        )
+        == "a" * DB_STR_64BIT_MAXLEN_INPUT
+    )
     with pytest.raises(ValueError):
         assert validate_project_number_optional(cls=None, value="")
     with pytest.raises(ValueError):
         validate_project_number_optional(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+            cls=None, value="a" * (DB_STR_64BIT_MAXLEN_INPUT + 1)
         )
 
 

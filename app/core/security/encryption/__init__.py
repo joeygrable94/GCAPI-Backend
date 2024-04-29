@@ -6,6 +6,7 @@ from .exceptions import (
     DecryptionError,
     EncryptionError,
     SignatureVerificationError,
+    configure_encryption_exceptions,
 )
 from .keys import load_api_keys
 
@@ -16,4 +17,5 @@ __all__: List[str] = [
     "load_api_keys",
     "SecureMessage",
     "SignatureVerificationError",
+    "configure_encryption_exceptions",
 ]

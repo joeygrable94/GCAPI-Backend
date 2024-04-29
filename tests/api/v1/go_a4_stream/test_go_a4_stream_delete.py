@@ -8,43 +8,51 @@ from tests.utils.clients import (
     assign_website_to_client,
     create_random_client,
 )
-from tests.utils.ga4 import create_random_ga4_property
+from tests.utils.ga4 import create_random_ga4_property, create_random_ga4_stream
 from tests.utils.users import get_user_by_email
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
 from app.models import ClientWebsite, User, UserClient
-from app.schemas import ClientRead, GoAnalytics4PropertyRead, WebsiteRead
+from app.schemas import (
+    ClientRead,
+    GoAnalytics4PropertyRead,
+    GoAnalytics4StreamRead,
+    WebsiteRead,
+)
 
 pytestmark = pytest.mark.asyncio
 
 
-async def test_delete_ga4_property_by_id_as_superuser(
+async def test_delete_ga4_stream_by_id_as_superuser(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
     a_website: WebsiteRead = await create_random_website(db_session)
-    entry: GoAnalytics4PropertyRead = await create_random_ga4_property(
-        db_session, client_id=a_client.id, website_id=a_website.id
+    ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
+        db_session, client_id=a_client.id
+    )
+    entry: GoAnalytics4StreamRead = await create_random_ga4_stream(
+        db_session, ga4_property.id, a_website.id
     )
     response: Response = await client.delete(
-        f"ga4/{entry.id}",
+        f"ga4/stream/{entry.id}",
         headers=admin_token_headers,
     )
     assert 200 <= response.status_code < 300
     response: Response = await client.get(
-        f"ga4/{entry.id}",
+        f"ga4/stream/{entry.id}",
         headers=admin_token_headers,
     )
     assert response.status_code == 404
     data: Dict[str, Any] = response.json()
-    assert data["detail"] == ErrorCode.GA4_PROPERTY_NOT_FOUND
+    assert data["detail"] == ErrorCode.GA4_STREAM_NOT_FOUND
 
 
-async def test_delete_ga4_property_by_id_as_employee(
+async def test_delete_ga4_stream_by_id_as_employee(
     client: AsyncClient,
     db_session: AsyncSession,
     employee_token_headers: Dict[str, str],
@@ -62,18 +70,21 @@ async def test_delete_ga4_property_by_id_as_employee(
         a_website,
         a_client,
     )
-    entry: GoAnalytics4PropertyRead = await create_random_ga4_property(
-        db_session, client_id=a_client.id, website_id=a_website.id
+    ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
+        db_session, client_id=a_client.id
+    )
+    entry: GoAnalytics4StreamRead = await create_random_ga4_stream(
+        db_session, ga4_property.id, a_website.id
     )
     response: Response = await client.delete(
-        f"ga4/{entry.id}",
+        f"ga4/stream/{entry.id}",
         headers=employee_token_headers,
     )
     assert 200 <= response.status_code < 300
     response: Response = await client.get(
-        f"ga4/{entry.id}",
+        f"ga4/stream/{entry.id}",
         headers=employee_token_headers,
     )
     assert response.status_code == 404
     data: Dict[str, Any] = response.json()
-    assert data["detail"] == ErrorCode.GA4_PROPERTY_NOT_FOUND
+    assert data["detail"] == ErrorCode.GA4_STREAM_NOT_FOUND

@@ -33,7 +33,7 @@ from app.core.security.permissions import (
 )
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
-from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED
+from app.db.constants import DB_STR_64BIT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
@@ -62,24 +62,15 @@ class GoCloudProperty(Base, Timestamp):
         unique=True,
         nullable=False,
     )
-    api_key: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            settings.api.encryption_key,
-            AesEngine,
-            "pkcs5",
-            length=DB_STR_TINYTEXT_MAXLEN_STORED,
-        ),
-        nullable=False,
-    )
     project_id: Mapped[str] = mapped_column(
         StringEncryptedType(
             String,
             settings.api.encryption_key,
             AesEngine,
             "pkcs5",
-            length=DB_STR_TINYTEXT_MAXLEN_STORED,
+            length=DB_STR_64BIT_MAXLEN_STORED,
         ),
+        unique=True,
         nullable=False,
     )
     project_number: Mapped[str] = mapped_column(
@@ -88,8 +79,9 @@ class GoCloudProperty(Base, Timestamp):
             settings.api.encryption_key,
             AesEngine,
             "pkcs5",
-            length=DB_STR_TINYTEXT_MAXLEN_STORED,
+            length=DB_STR_64BIT_MAXLEN_STORED,
         ),
+        unique=True,
         nullable=False,
     )
     service_account: Mapped[str] = mapped_column(
@@ -100,7 +92,8 @@ class GoCloudProperty(Base, Timestamp):
             "pkcs5",
             length=DB_STR_TINYTEXT_MAXLEN_STORED,
         ),
-        nullable=False,
+        unique=True,
+        nullable=True,
     )
 
     # relationships

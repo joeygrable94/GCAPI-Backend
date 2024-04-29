@@ -8,17 +8,21 @@ from tests.utils.clients import (
     assign_website_to_client,
     create_random_client,
 )
-from tests.utils.ga4 import create_random_ga4_property
+from tests.utils.ga4 import create_random_ga4_property, create_random_ga4_stream
 from tests.utils.users import get_user_by_email
 from tests.utils.utils import random_lower_string
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
-from app.core.utilities.uuids import get_uuid_str
-from app.models import User
-from app.models.user_client import UserClient
-from app.schemas import ClientRead, GoAnalytics4PropertyRead, WebsiteRead
+from app.core.utilities import get_uuid_str
+from app.models import User, UserClient
+from app.schemas import (
+    ClientRead,
+    GoAnalytics4PropertyRead,
+    GoAnalytics4StreamRead,
+    WebsiteRead,
+)
 
 pytestmark = pytest.mark.asyncio
 
@@ -30,55 +34,29 @@ async def test_update_ga4_property_as_superuser(
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
     a_website: WebsiteRead = await create_random_website(db_session)
-    a_ga4: GoAnalytics4PropertyRead = await create_random_ga4_property(
-        db_session, a_client.id, a_website.id
-    )
     a_client_website = await assign_website_to_client(  # noqa: F841
         db_session, a_website, a_client
+    )
+    ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
+        db_session, client_id=a_client.id
+    )
+    ga4_stream: GoAnalytics4StreamRead = await create_random_ga4_stream(
+        db_session, ga4_property.id, a_website.id
     )
     data_in: Dict[str, Any] = dict(
         title=random_lower_string(),
     )
     response: Response = await client.patch(
-        f"ga4/{a_ga4.id}",
+        f"ga4/stream/{ga4_stream.id}",
         headers=admin_token_headers,
         json=data_in,
     )
     entry: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
     assert entry["title"] == data_in["title"]
-    assert entry["measurement_id"] == a_ga4.measurement_id
-    assert entry["property_id"] == a_ga4.property_id
-    assert entry["client_id"] == str(a_client.id)
+    assert entry["stream_id"] == ga4_stream.stream_id
+    assert entry["ga4_id"] == str(ga4_property.id)
     assert entry["website_id"] == str(a_website.id)
-
-
-async def test_update_ga4_property_as_superuser_client_not_exists(
-    client: AsyncClient,
-    db_session: AsyncSession,
-    admin_token_headers: Dict[str, str],
-) -> None:
-    fake_client_id = get_uuid_str()
-    a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    a_ga4: GoAnalytics4PropertyRead = await create_random_ga4_property(
-        db_session, a_client.id, a_website.id
-    )
-    a_client_website = await assign_website_to_client(  # noqa: F841
-        db_session, a_website, a_client
-    )
-    data_in: Dict[str, Any] = dict(
-        title=random_lower_string(),
-        client_id=fake_client_id,
-    )
-    response: Response = await client.patch(
-        f"ga4/{a_ga4.id}",
-        headers=admin_token_headers,
-        json=data_in,
-    )
-    entry: Dict[str, Any] = response.json()
-    assert response.status_code == 404
-    assert entry["detail"] == ErrorCode.CLIENT_NOT_FOUND
 
 
 async def test_update_ga4_property_as_superuser_website_not_exists(
@@ -89,18 +67,20 @@ async def test_update_ga4_property_as_superuser_website_not_exists(
     fake_website_id = get_uuid_str()
     a_client: ClientRead = await create_random_client(db_session)
     a_website: WebsiteRead = await create_random_website(db_session)
-    a_ga4: GoAnalytics4PropertyRead = await create_random_ga4_property(
-        db_session, a_client.id, a_website.id
-    )
     a_client_website = await assign_website_to_client(  # noqa: F841
         db_session, a_website, a_client
     )
+    ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
+        db_session, client_id=a_client.id
+    )
+    ga4_stream: GoAnalytics4StreamRead = await create_random_ga4_stream(
+        db_session, ga4_property.id, a_website.id
+    )
     data_in: Dict[str, Any] = dict(
-        title=random_lower_string(),
-        website_id=fake_website_id,
+        title=random_lower_string(), website_id=fake_website_id
     )
     response: Response = await client.patch(
-        f"ga4/{a_ga4.id}",
+        f"ga4/stream/{ga4_stream.id}",
         headers=admin_token_headers,
         json=data_in,
     )
@@ -116,30 +96,32 @@ async def test_update_ga4_property_as_employee(
 ) -> None:
     a_user: User = await get_user_by_email(db_session, settings.auth.first_employee)
     a_client: ClientRead = await create_random_client(db_session)
-    a_client_a_user: UserClient = await assign_user_to_client(
+    a_website: WebsiteRead = await create_random_website(db_session)
+    a_client_a_user: UserClient = await assign_user_to_client(  # noqa: F841
         db_session, a_user, a_client
     )
-    a_website: WebsiteRead = await create_random_website(db_session)
     a_client_website = await assign_website_to_client(  # noqa: F841
         db_session, a_website, a_client
     )
-    a_ga4: GoAnalytics4PropertyRead = await create_random_ga4_property(
-        db_session, a_client_a_user.client_id, a_client_website.website_id
+    ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
+        db_session, client_id=a_client.id
+    )
+    ga4_stream: GoAnalytics4StreamRead = await create_random_ga4_stream(
+        db_session, ga4_property.id, a_website.id
     )
     data_in: Dict[str, Any] = dict(
         title=random_lower_string(),
     )
     response: Response = await client.patch(
-        f"ga4/{a_ga4.id}",
+        f"ga4/stream/{ga4_stream.id}",
         headers=employee_token_headers,
         json=data_in,
     )
     entry: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
     assert entry["title"] == data_in["title"]
-    assert entry["measurement_id"] == a_ga4.measurement_id
-    assert entry["property_id"] == a_ga4.property_id
-    assert entry["client_id"] == str(a_client.id)
+    assert entry["stream_id"] == ga4_stream.stream_id
+    assert entry["ga4_id"] == str(ga4_property.id)
     assert entry["website_id"] == str(a_website.id)
 
 
@@ -148,23 +130,22 @@ async def test_update_ga4_property_as_employee_forbidden(
     db_session: AsyncSession,
     employee_token_headers: Dict[str, str],
 ) -> None:
-    a_user: User = await get_user_by_email(db_session, settings.auth.first_admin)
     a_client: ClientRead = await create_random_client(db_session)
-    a_client_a_user: UserClient = await assign_user_to_client(
-        db_session, a_user, a_client
-    )
     a_website: WebsiteRead = await create_random_website(db_session)
     a_client_website = await assign_website_to_client(  # noqa: F841
         db_session, a_website, a_client
     )
-    a_ga4: GoAnalytics4PropertyRead = await create_random_ga4_property(
-        db_session, a_client_a_user.client_id, a_client_website.website_id
+    ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
+        db_session, client_id=a_client.id
+    )
+    ga4_stream: GoAnalytics4StreamRead = await create_random_ga4_stream(
+        db_session, ga4_property.id, a_website.id
     )
     data_in: Dict[str, Any] = dict(
         title=random_lower_string(),
     )
     response: Response = await client.patch(
-        f"ga4/{a_ga4.id}",
+        f"ga4/stream/{ga4_stream.id}",
         headers=employee_token_headers,
         json=data_in,
     )
@@ -180,22 +161,23 @@ async def test_update_ga4_property_as_superuser_already_exists(
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
     a_website: WebsiteRead = await create_random_website(db_session)
-    a_ga4: GoAnalytics4PropertyRead = await create_random_ga4_property(
-        db_session, a_client.id, a_website.id
+    ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
+        db_session, client_id=a_client.id
+    )
+    ga4_stream: GoAnalytics4StreamRead = await create_random_ga4_stream(
+        db_session, ga4_property.id, a_website.id
     )
     a_client_website = await assign_website_to_client(  # noqa: F841
         db_session, a_website, a_client
     )
     data_in: Dict[str, Any] = dict(
-        title=a_ga4.title,
-        measurement_id=a_ga4.measurement_id,
-        property_id=a_ga4.property_id,
+        title=ga4_stream.title,
     )
     response: Response = await client.patch(
-        f"ga4/{a_ga4.id}",
+        f"ga4/stream/{ga4_stream.id}",
         headers=admin_token_headers,
         json=data_in,
     )
     entry: Dict[str, Any] = response.json()
     assert response.status_code == 400
-    assert entry["detail"] == ErrorCode.GA4_PROPERTY_EXISTS
+    assert entry["detail"] == ErrorCode.GA4_STREAM_EXISTS

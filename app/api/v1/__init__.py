@@ -1,8 +1,11 @@
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
+    bdx_feed,
     clients,
-    go_a4,
+    go_a4_property,
+    go_a4_stream,
+    go_cloud,
     notes,
     public,
     security,
@@ -19,7 +22,7 @@ from app.api.v1.endpoints import (
 router_v1 = APIRouter(prefix="/v1")
 
 
-# public routes
+# Public routes
 router_v1.include_router(
     public.router,
     tags=["Public"],
@@ -30,46 +33,66 @@ router_v1.include_router(
     tags=["Security"],
 )
 
-# task routes
+# Task routes
 router_v1.include_router(
     tasks.router,
     prefix="/tasks",
     tags=["Tasks"],
 )
 
-# user routes
+# User routes
 router_v1.include_router(
     users.router,
     prefix="/users",
     tags=["Users"],
 )
 
-# client routes
+# Client routes
 router_v1.include_router(
     clients.router,
     prefix="/clients",
     tags=["Clients"],
 )
 
-# note routes
+# Note routes
 router_v1.include_router(
     notes.router,
     prefix="/notes",
     tags=["Notes"],
 )
 
-# sharpspring routes
+# Bdx Feed routes
+router_v1.include_router(
+    bdx_feed.router,
+    prefix="/bdx",
+    tags=["BDX Feeds"],
+)
+
+# Sharpspring routes
 router_v1.include_router(
     sharpspring.router,
     prefix="/sharpspring",
-    tags=["SharpSpring"],
+    tags=["SharpSpring Accounts"],
+)
+
+# Google Cloud routes
+router_v1.include_router(
+    go_cloud.router,
+    prefix="/go/cloud",
+    tags=["Google Cloud Accounts"],
 )
 
 # GA4 routes
 router_v1.include_router(
-    go_a4.router,
-    prefix="/ga4",
-    tags=["Google Analytics 4"],
+    go_a4_property.router,
+    prefix="/ga4/property",
+    tags=["Google Analytics 4 Properties"],
+)
+
+router_v1.include_router(
+    go_a4_stream.router,
+    prefix="/ga4/stream",
+    tags=["Google Analytics 4 Property Streams"],
 )
 
 # GSC routes

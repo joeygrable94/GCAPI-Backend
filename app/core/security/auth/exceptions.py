@@ -1,7 +1,10 @@
 from typing import Any
 
-from fastapi import HTTPException, status
+from fastapi import FastAPI, HTTPException, Request, Response, status
+from fastapi.exception_handlers import http_exception_handler
 from pydantic import BaseModel
+
+from app.core.utilities import get_global_headers
 
 
 class Auth0UnauthenticatedException(HTTPException):
@@ -18,3 +21,38 @@ class Auth0UnauthorizedException(HTTPException):
 
 class HTTPAuth0Error(BaseModel):
     detail: str
+
+
+def configure_authorization_exceptions(app: FastAPI) -> None:
+
+    @app.exception_handler(Auth0UnauthenticatedException)
+    async def auth0_unauthenticated_exception_handler(
+        request: Request, exc: Auth0UnauthenticatedException
+    ) -> Response:  # noqa: E501
+        request_headers = (
+            get_global_headers(exc.headers) if exc.headers else get_global_headers()
+        )
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.detail,
+                headers=request_headers,
+            ),
+        )
+
+    @app.exception_handler(Auth0UnauthorizedException)
+    async def auth0_unauthorized_exception_handler(
+        request: Request, exc: Auth0UnauthorizedException
+    ) -> Response:  # noqa: E501
+        request_headers = (
+            get_global_headers(exc.headers) if exc.headers else get_global_headers()
+        )
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.detail,
+                headers=request_headers,
+            ),
+        )

@@ -52,6 +52,7 @@ taskiq-redis = "^0.5.5"
 ipinfo = "^5.0.1"
 pydantic-extra-types = "^2.7.0"
 pycountry = "^23.12.11"
+fastapi-profiler = "^1.3.0"
 
 [tool.poetry.group.dev.dependencies]
 httpx = "0.23.3"

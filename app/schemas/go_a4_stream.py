@@ -15,6 +15,7 @@ class GoAnalytics4StreamBase(BaseSchema):
     title: str
     stream_id: str
     ga4_id: UUID4
+    website_id: UUID4
 
     _validate_title = field_validator("title", mode="before")(validate_title_required)
     _validate_stream_id = field_validator("stream_id", mode="before")(
@@ -28,6 +29,7 @@ class GoAnalytics4StreamCreate(GoAnalytics4StreamBase):
 
 class GoAnalytics4StreamUpdate(BaseSchema):
     title: Optional[str] = None
+    website_id: Optional[UUID4] = None
 
     _validate_title = field_validator("title", mode="before")(validate_title_optional)
 

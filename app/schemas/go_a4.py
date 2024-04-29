@@ -19,7 +19,6 @@ class GoAnalytics4PropertyBase(BaseSchema):
     measurement_id: str
     property_id: str
     client_id: UUID4
-    website_id: UUID4
 
     _validate_title = field_validator("title", mode="before")(validate_title_required)
     _validate_measurement_id = field_validator("measurement_id", mode="before")(
@@ -37,7 +36,6 @@ class GoAnalytics4PropertyCreate(GoAnalytics4PropertyBase):
 class GoAnalytics4PropertyUpdate(BaseSchema):
     title: Optional[str] = None
     client_id: Optional[UUID4] = None
-    website_id: Optional[UUID4] = None
 
     _validate_title = field_validator("title", mode="before")(validate_title_optional)
 

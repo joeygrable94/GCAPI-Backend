@@ -3,15 +3,28 @@ from typing import Any, List
 
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI, Request
+from fastapi_profiler import PyInstrumentProfilerMiddleware  # type: ignore
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-# from app.api.deps import get_request_client_ip
 from app.core.config import settings
 
 
 def configure_middleware(app: FastAPI) -> None:
     app.add_middleware(CorrelationIdMiddleware)
+    app.add_middleware(
+        PyInstrumentProfilerMiddleware,
+        # Required to output the profile on server shutdown
+        server_app=app,
+        profiler_output_type="html",
+        # Set to True to show request profile on stdout on each request
+        is_print_each_request=False,
+        # Set to true to open your web-browser automatically
+        # when the server shuts down
+        open_in_browser=False,
+        # Filename for output
+        html_file_name=f"{settings.api.key}_profile.html",
+    )
     app.add_middleware(
         SessionMiddleware,
         secret_key=settings.api.secret_key,

@@ -21,7 +21,7 @@ from pydantic import BaseModel, StrictStr
 from app.core.config import settings
 
 from .core import CsrfProtect
-from .exceptions import CsrfProtectError
+from .exceptions import CsrfProtectError, configure_csrf_exceptions
 
 
 class CsrfSettings(BaseModel):
@@ -36,4 +36,5 @@ __all__: List[str] = [
     "CsrfProtect",
     "CsrfSettings",
     "CsrfProtectError",
+    "configure_csrf_exceptions",
 ]
