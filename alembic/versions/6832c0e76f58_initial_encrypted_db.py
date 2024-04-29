@@ -1,8 +1,8 @@
 """initial encrypted db
 
-Revision ID: eea0802b7269
+Revision ID: 6832c0e76f58
 Revises:
-Create Date: 2024-04-22 16:14:40.713714
+Create Date: 2024-04-29 07:39:49.009909
 
 """
 from alembic import op
@@ -12,7 +12,7 @@ from app.db.custom_types import Scopes, LongText
 
 
 # revision identifiers, used by Alembic.
-revision = 'eea0802b7269'
+revision = '6832c0e76f58'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -84,7 +84,6 @@ def upgrade() -> None:
     sa.Column('updated', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['client_id'], ['client.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('username'),
     mysql_engine='InnoDB'
     )
     op.create_index(op.f('ix_bdx_feed_id'), 'bdx_feed', ['id'], unique=True)
@@ -144,13 +143,12 @@ def upgrade() -> None:
     sa.Column('measurement_id', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=408), nullable=False),
     sa.Column('property_id', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=408), nullable=False),
     sa.Column('client_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
-    sa.Column('website_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('created', sa.DateTime(), nullable=False),
     sa.Column('updated', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['client_id'], ['client.id'], ),
-    sa.ForeignKeyConstraint(['website_id'], ['website.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('measurement_id'),
+    sa.UniqueConstraint('property_id'),
     sa.UniqueConstraint('title'),
     mysql_engine='InnoDB'
     )
@@ -158,16 +156,18 @@ def upgrade() -> None:
     op.create_table('go_cloud',
     sa.Column('id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('project_name', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=False),
-    sa.Column('api_key', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=False),
-    sa.Column('project_id', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=False),
-    sa.Column('project_number', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=False),
-    sa.Column('service_account', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=False),
+    sa.Column('project_id', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=472), nullable=False),
+    sa.Column('project_number', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=472), nullable=False),
+    sa.Column('service_account', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=True),
     sa.Column('client_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('created', sa.DateTime(), nullable=False),
     sa.Column('updated', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['client_id'], ['client.id'], ),
     sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('project_id'),
     sa.UniqueConstraint('project_name'),
+    sa.UniqueConstraint('project_number'),
+    sa.UniqueConstraint('service_account'),
     mysql_engine='InnoDB'
     )
     op.create_index(op.f('ix_go_cloud_id'), 'go_cloud', ['id'], unique=True)
@@ -188,8 +188,24 @@ def upgrade() -> None:
     op.create_table('ipaddress',
     sa.Column('id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('address', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=False),
-    sa.Column('isp', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=True),
-    sa.Column('location', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=True),
+    sa.Column('hostname', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=True),
+    sa.Column('is_anycast', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=428), nullable=True),
+    sa.Column('city', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=True),
+    sa.Column('region', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=True),
+    sa.Column('country', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=408), nullable=True),
+    sa.Column('loc', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=428), nullable=True),
+    sa.Column('org', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=True),
+    sa.Column('postal', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=408), nullable=True),
+    sa.Column('timezone', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=472), nullable=True),
+    sa.Column('country_name', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=True),
+    sa.Column('is_eu', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=428), nullable=True),
+    sa.Column('country_flag_url', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=3116), nullable=True),
+    sa.Column('country_flag_unicode', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=True),
+    sa.Column('country_currency_code', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=408), nullable=True),
+    sa.Column('continent_code', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=408), nullable=True),
+    sa.Column('continent_name', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=408), nullable=True),
+    sa.Column('latitude', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=408), nullable=True),
+    sa.Column('longitude', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=408), nullable=True),
     sa.Column('geocoord_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=True),
     sa.Column('created', sa.DateTime(), nullable=False),
     sa.Column('updated', sa.DateTime(), nullable=False),
@@ -290,10 +306,12 @@ def upgrade() -> None:
     sa.Column('title', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=704), nullable=False),
     sa.Column('stream_id', sqlalchemy_utils.types.encrypted.encrypted_type.StringEncryptedType(length=408), nullable=False),
     sa.Column('ga4_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
+    sa.Column('website_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('created', sa.DateTime(), nullable=False),
     sa.Column('updated', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['ga4_id'], ['go_a4.id'], ),
-    sa.PrimaryKeyConstraint('stream_id'),
+    sa.ForeignKeyConstraint(['website_id'], ['website.id'], ),
+    sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('stream_id'),
     sa.UniqueConstraint('title'),
     mysql_engine='InnoDB'
