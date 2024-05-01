@@ -30,7 +30,7 @@ python-multipart = "0.0.9"
 python-dotenv = "1.0.1"
 PyMySQL = "1.1.0"
 SQLAlchemy = {version = "2.0.23", extras = ["mypy", "asyncio"]}
-SQLAlchemy-Utils = "0.41.1"
+SQLAlchemy-Utils = "0.41.2"
 alembic = "1.13.1"
 redis = "^5.0.0"
 types-redis = "^4.6.0.20240106"
