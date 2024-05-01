@@ -8,7 +8,7 @@ from tests.utils.go_sc import (
     create_random_go_search_console_property,
     create_random_go_search_console_property_metric,
 )
-from tests.utils.utils import random_date
+from tests.utils.utils import random_date_str
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions.errors import ErrorCode
@@ -226,7 +226,7 @@ async def test_list_all_go_sc_property_metric_as_superuser_by_date_start(
     response: Response = await client.get(
         f"go/search/metric/{a_gsc.id}",
         headers=admin_token_headers,
-        params=QueryParams({"date_start": str(random_date())}),
+        params=QueryParams({"date_start": random_date_str()}),
     )
     data: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
@@ -250,7 +250,7 @@ async def test_list_all_go_sc_property_metric_as_superuser_by_date_end(
     response: Response = await client.get(
         f"go/search/metric/{a_gsc.id}",
         headers=admin_token_headers,
-        params=QueryParams({"date_end": str(random_date())}),
+        params=QueryParams({"date_end": random_date_str()}),
     )
     data: Dict[str, Any] = response.json()
     assert 200 <= response.status_code < 300
@@ -276,8 +276,8 @@ async def test_list_all_go_sc_property_metric_as_superuser_between_date(
         headers=admin_token_headers,
         params=QueryParams(
             {
-                "date_start": str(random_date()),
-                "date_end": str(random_date()),
+                "date_start": random_date_str(),
+                "date_end": random_date_str(),
             }
         ),
     )

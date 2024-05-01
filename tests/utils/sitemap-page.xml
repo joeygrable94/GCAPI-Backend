@@ -1,475 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This sitemap was dynamically generated on January 16, 2024 at 4:12 pm by All in One SEO v4.5.1.1 - the original SEO plugin for WordPress. -->
 
-<?xml-stylesheet type="text/xsl" href="https://getcommunity.com/default-sitemap.xsl?sitemap=page"?>
+<?xml-stylesheet type="text/xsl" href="https://getcommunity.com/default-sitemap.xsl?sitemap=branch"?>
 <urlset
 	xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
 	xmlns:xhtml="http://www.w3.org/1999/xhtml"
 	xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
 >
 	<url>
-		<loc><![CDATA[https://getcommunity.com/]]></loc>
-		<lastmod><![CDATA[2022-04-23T05:42:07+00:00]]></lastmod>
-		<changefreq><![CDATA[always]]></changefreq>
-		<priority><![CDATA[1]]></priority>
+		<loc><![CDATA[https://getcommunity.com/branch/gc-creative/]]></loc>
+		<lastmod><![CDATA[2023-12-20T17:51:22+00:00]]></lastmod>
+		<changefreq><![CDATA[weekly]]></changefreq>
+		<priority><![CDATA[0.7]]></priority>
 		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GetCommunity_FullLogo_1200x623.png]]></image:loc>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/image-creative-graphic-designer-working-color-selection-drawing-graphics-tablet-1.jpg]]></image:loc>
+		</image:image>
+		<image:image>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/GC_Creative-1.png]]></image:loc>
 		</image:image>
 		<image:image>
 			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/close-up-of-businessman-with-digital-tablet-web-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2021/03/GC_HappyHour-1.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2023/01/GC_HBHHPodcastGraphic_S3E9_2023_Square_geo.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/12/GC_HBHHPodcastGraphic_S3E8_2022_Square_geo.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/12/GC_HBHHPodcastGraphic_S3E7_2022-11_Square_geo.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/gc-fly-tours-product-survey/]]></loc>
-		<lastmod><![CDATA[2023-12-19T19:10:18+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/connect-email-confirmed/]]></loc>
-		<lastmod><![CDATA[2023-12-18T20:12:59+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2023/12/GC_LeadMagnet_2024TrendsReport_2023-12-7_1280x720.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/01/GC_2022TrendsReport_2021-12_Page_01-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/10/GC_Blog_HBHHIntroduciton_2021-10_geo.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/connect-thank-you/]]></loc>
-		<lastmod><![CDATA[2023-12-18T20:10:22+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/01/GC_2022TrendsReport_2021-12_Page_01-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/10/GC_Blog_HBHHIntroduciton_2021-10_geo.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/newsletter/]]></loc>
-		<lastmod><![CDATA[2023-04-13T15:52:56+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/11/AdobeStock_428593284.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/close-up-of-businessman-with-digital-tablet-web-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/11/AdobeStock_428593284.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2021/11/AdobeStock_318982945.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2021/11/GC_HBHH_Logo-White-1024x227.png]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/message-gc-marketing/]]></loc>
-		<lastmod><![CDATA[2023-04-07T02:15:37+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/close-up-of-businessman-with-digital-tablet-web-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/diverse-business-colleagues-shoot.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/GC_Marketing.png]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/]]></loc>
-		<lastmod><![CDATA[2023-04-07T02:15:08+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/close-up-of-businessman-with-digital-tablet-web-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/IM101892.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GG_logo_2022_Horizontal_White-1.png]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/message-gc-creative/]]></loc>
-		<lastmod><![CDATA[2023-03-21T19:47:09+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/close-up-of-businessman-with-digital-tablet-web-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/diverse-business-colleagues-shoot.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/GC_Creative.png]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/newsletter/newsletter-thank-you/]]></loc>
-		<lastmod><![CDATA[2023-02-08T04:06:45+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GG_logo_2022_Horizontal_White-1.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/01/GC_2022TrendsReport_2021-12_Page_01-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/10/GC_Blog_HBHHIntroduciton_2021-10_geo.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/give-us-your-feedback/feedback-thank-you/]]></loc>
-		<lastmod><![CDATA[2023-02-08T04:06:45+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GG_logo_2022_Horizontal_White-1.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/01/GC_2022TrendsReport_2021-12_Page_01-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/10/GC_Blog_HBHHIntroduciton_2021-10_geo.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/message-gc-marketing/thank-you-for-connecting-with-gc-marketing/]]></loc>
-		<lastmod><![CDATA[2022-11-28T21:59:24+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/GC_Marketing.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/09/Kelly-Borgen_geo-sqr.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/01/GC_2022TrendsReport_2021-12_Page_01-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/10/GC_Blog_HBHHIntroduciton_2021-10_geo.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/policies/social-stream/]]></loc>
-		<lastmod><![CDATA[2022-11-28T21:57:54+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/policies/our-commitment/]]></loc>
-		<lastmod><![CDATA[2022-11-28T21:57:24+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com//wp-content/uploads/2020/11/GC_Logo_120x120.png]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/policies/gc-privacy-policy/]]></loc>
-		<lastmod><![CDATA[2022-11-28T21:57:17+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/policies/text-terms-and-conditions/]]></loc>
-		<lastmod><![CDATA[2022-11-28T21:54:14+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/policies/]]></loc>
-		<lastmod><![CDATA[2022-10-31T22:37:00+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/cropped-GCLogo_Favicon_2020-1.png]]></image:loc>
 		</image:image>
 		<image:image>
 			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/image-creative-graphic-designer-working-color-selection-drawing-graphics-tablet.jpg]]></image:loc>
 		</image:image>
 		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GG_logo_2022_Horizontal_White-1.png]]></image:loc>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GC_Creative_GraphicDesign.jpg]]></image:loc>
+		</image:image>
+		<image:image>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GC_Creative_Video-1.jpg]]></image:loc>
+		</image:image>
+		<image:image>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GC_Creative_Storytelling.jpg]]></image:loc>
+		</image:image>
+		<image:image>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GC_Creative_CretiveDirection.jpg]]></image:loc>
+		</image:image>
+		<image:image>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GC_Creative_ConntentCreation.jpg]]></image:loc>
 		</image:image>
 	</url>
 	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/product-thank-you-gc-video/]]></loc>
-		<lastmod><![CDATA[2022-08-01T19:04:18+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GC_TextCaseStudy_Media_Graphic_geo.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GG_logo_2022_Horizontal_White-1.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/09/Drea-Villanueva_geo-sqr.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GC_VideoCaseStudy_Graphic_geo.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/01/GC_2022TrendsReport_2021-12_Page_01-1.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/give-us-your-feedback/]]></loc>
-		<lastmod><![CDATA[2022-04-27T22:25:50+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/gc-marketing-automation-product-thank-you/]]></loc>
-		<lastmod><![CDATA[2022-04-27T20:45:55+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GC_TextCaseStudy_Media_Graphic_geo.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GG_logo_2022_Horizontal_White-1.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/09/Kelly-Borgen_geo-sqr.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/01/GC_2022TrendsReport_2021-12_Page_01-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/10/GC_Blog_HBHHIntroduciton_2021-10_geo.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/message-gc-creative/thank-you-for-connecting-with-gc-creative/]]></loc>
-		<lastmod><![CDATA[2022-04-27T20:45:53+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/GC_Creative.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/09/Ryan-Canton_geo-sqr.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/01/GC_2022TrendsReport_2021-12_Page_01-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/10/GC_Blog_HBHHIntroduciton_2021-10_geo.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/gc-fly-tours-product-thank-you/]]></loc>
-		<lastmod><![CDATA[2022-04-27T20:35:06+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/GCLogo_FlyTours_White.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/09/Ryan-Canton_geo-sqr.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GC_Blog_FlyTourCaseStudy_2022_blog_geo.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/01/GC_2022TrendsReport_2021-12_Page_01-1.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/gc-text-product-thank-you/]]></loc>
-		<lastmod><![CDATA[2022-04-27T17:04:30+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/GCLogo-Text.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/09/Cat-Du-Pont_geo-sqr.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GC_TextCaseStudy_Graphics-1_geo-1.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/01/GC_2022TrendsReport_2021-12_Page_01-1.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/gc-media-product-thank-you/]]></loc>
-		<lastmod><![CDATA[2022-04-27T17:04:22+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/08/2021-08-31-GC-TY-page-header-img-hd.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GC_Media_Logo_web-1-e1648511946441.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/09/Sarah-Hussain_geo-sqr.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/04/GC_TextCaseStudy_Media_Graphic_geo.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2022/01/GC_2022TrendsReport_2021-12_Page_01-1.jpg]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/gold-nugget-awards-2021/]]></loc>
-		<lastmod><![CDATA[2022-04-27T16:29:09+00:00]]></lastmod>
+		<loc><![CDATA[https://getcommunity.com/branch/gc-marketing/]]></loc>
+		<lastmod><![CDATA[2023-12-20T17:51:20+00:00]]></lastmod>
 		<changefreq><![CDATA[weekly]]></changefreq>
 		<priority><![CDATA[0.7]]></priority>
 		<image:image>
 			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/diverse-business-colleagues-shoot.jpg]]></image:loc>
 		</image:image>
 		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2021/05/image-11-e1622825021598.png]]></image:loc>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/GC_Marketing-1.png]]></image:loc>
 		</image:image>
 		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2021/03/crop-0-0-1920-960-0-Sunset.jpg]]></image:loc>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/close-up-of-businessman-with-digital-tablet-web-1.jpg]]></image:loc>
 		</image:image>
 		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2021/03/GCLogo_FlyTours_White.png]]></image:loc>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/diverse-business-colleagues-shoot.jpg]]></image:loc>
 		</image:image>
 		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2021/03/GCLogo_New_2020_White.png]]></image:loc>
-		</image:image>
-	</url>
-	<url>
-		<loc><![CDATA[https://getcommunity.com/contact/powered-by-gc/]]></loc>
-		<lastmod><![CDATA[2022-04-27T16:13:34+00:00]]></lastmod>
-		<changefreq><![CDATA[weekly]]></changefreq>
-		<priority><![CDATA[0.7]]></priority>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GetCommunity_FullLogo_1200x623.png]]></image:loc>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/03/GC_Marketing.png]]></image:loc>
 		</image:image>
 		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2021/03/cropped-GC_Logo_Signaturesmall-01-1.png]]></image:loc>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GC_Marketing_StratigicPlanning.jpg]]></image:loc>
 		</image:image>
 		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2021/05/KellyButton.png]]></image:loc>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GC_Marketing_BrandCampaign.jpg]]></image:loc>
 		</image:image>
 		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2021/05/DreaButton.png]]></image:loc>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GC_Marketing_DigitalMediaPlanning.jpg]]></image:loc>
 		</image:image>
 		<image:image>
-			<image:loc><![CDATA[https://i.ytimg.com/vi/HLdhZcVuOkE/hqdefault.jpg]]></image:loc>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GC_Marketing_ConntentStrategy.jpg]]></image:loc>
 		</image:image>
 		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/slider6/gsmc_sliders_background1.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/slider6/gsmc_sliders_background2.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/slider6/gsmc_sliders_background3.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/slider6/slide-image-home-ownership-1.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://i.ytimg.com/vi/9Slj4tR-aHI/hqdefault.jpg]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/slider6/slide-image-iheart-orange-1.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/slider6/slide-image-email-campaign-1.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2020/09/CDCDesign.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2020/09/Chameleon.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2020/09/OlsonHomes.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2020/09/RiverIslands.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2020/09/SheaHomes.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2020/09/TollBrothers.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2020/09/WhitneyRanch.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2020/09/WPG.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2020/09/GCCreative_Stacked.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2020/09/GCMarketing_Stacked.png]]></image:loc>
-		</image:image>
-		<image:image>
-			<image:loc><![CDATA[http://getcommunity.com/wp-content/uploads/2020/09/KRISTENLYNETTEPHOTO-IHOTOteam-254_1medq.jpg]]></image:loc>
+			<image:loc><![CDATA[https://getcommunity.com/wp-content/uploads/2021/06/GC_Marketing_MarketingAutomation.jpg]]></image:loc>
 		</image:image>
 	</url>
 </urlset>
@@ -477,10 +81,10 @@
 <!--
 Performance optimized by W3 Total Cache. Learn more: https://www.boldgrid.com/w3-total-cache/
 
-Object Caching 510/949 objects using Disk
+Object Caching 506/907 objects using Disk
 Page Caching using Disk: Enhanced
 Lazy Loading
 Database Caching using Disk (modification query)
 
-Served from: getcommunity.com @ 2024-01-16 16:12:52 by W3 Total Cache
+Served from: getcommunity.com @ 2024-01-16 16:12:47 by W3 Total Cache
 -->

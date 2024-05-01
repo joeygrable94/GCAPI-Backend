@@ -1,6 +1,6 @@
 import random
 import string
-from datetime import _Date, datetime
+from datetime import datetime
 
 from pydantic import EmailStr
 
@@ -24,8 +24,8 @@ def random_datetime() -> datetime:
     return datetime.now()
 
 
-def random_date() -> _Date:
-    return datetime.date(datetime.now())
+def random_date_str() -> str:
+    return datetime.date(datetime.now()).isoformat()
 
 
 def random_lower_string(chars: int = 32) -> str:

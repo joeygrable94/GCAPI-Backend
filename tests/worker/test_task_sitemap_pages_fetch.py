@@ -7,8 +7,9 @@ from app.core.utilities.uuids import get_uuid
 from app.schemas import WebsiteMapProcessedResult
 from app.tasks import task_website_sitemap_process_xml
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.mark.anyio
+
 async def test_task_website_sitemap_process_xml_index(
     mock_fetch_sitemap_index: str,
     db_session: AsyncSession,
@@ -31,7 +32,6 @@ async def test_task_website_sitemap_process_xml_index(
         assert sitemap_task.is_active is True
 
 
-@pytest.mark.anyio
 async def test_task_website_sitemap_process_xml_page(
     mock_fetch_sitemap_page: str,
     db_session: AsyncSession,
