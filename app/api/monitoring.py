@@ -6,7 +6,7 @@ from app.core.config import ApiModes, settings
 def configure_monitoring() -> Client | None:
     sentry_client: Client | None = None
     if (
-        settings.worker.sentry_dsn and settings.api.mode == ApiModes.production
+        settings.worker.sentry_dsn and settings.api.mode == ApiModes.production.value
     ):  # pragma: no cover
         sentry_client = init(
             settings.worker.sentry_dsn,

@@ -24,7 +24,7 @@ class ApiSettings(BaseSettings):
     name: str = environ.get("API_NAME", "GCAPI")
     key: str = environ.get("API_KEY", "gcapi")
     version: str = environ.get("API_TAG", "0.0.3")
-    mode: ApiModes = ApiModes(environ.get("API_MODE", "development"))
+    mode: str = environ.get("API_MODE", "development")
     debug: bool = bool(
         environ.get("API_MODE", "development") == "test"
         or environ.get("API_MODE", "development") == "development"

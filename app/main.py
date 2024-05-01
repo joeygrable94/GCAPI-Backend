@@ -59,7 +59,7 @@ def configure_static(app: FastAPI) -> None:
 
 def create_app() -> FastAPI:
     deps = []
-    if settings.api.mode == ApiModes.production:  # pragma: no cover
+    if settings.api.mode == ApiModes.production.value:  # pragma: no cover
         deps = [
             # 114.15 req/hr over 1 year
             RateLimiter(times=1000000, hours=8760),

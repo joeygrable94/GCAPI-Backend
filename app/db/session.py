@@ -20,8 +20,8 @@ engine: Engine = create_engine(
     url=settings.db.uri,
     pool_pre_ping=True,
     poolclass=SingletonThreadPool,
-    echo=settings.api.mode == ApiModes.development
-    or settings.api.mode == ApiModes.test,
+    echo=settings.api.mode == ApiModes.development.value
+    or settings.api.mode == ApiModes.test.value,
 )
 
 session: sessionmaker[Session] = sessionmaker(
@@ -31,8 +31,8 @@ session: sessionmaker[Session] = sessionmaker(
 # Async Session
 async_engine: AsyncEngine = create_async_engine(
     url=settings.db.uri_async,
-    echo=settings.api.mode == ApiModes.development
-    or settings.api.mode == ApiModes.test,
+    echo=settings.api.mode == ApiModes.development.value
+    or settings.api.mode == ApiModes.test.value,
 )
 
 async_session: Any = async_sessionmaker(async_engine, expire_on_commit=False)

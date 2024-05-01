@@ -16,5 +16,5 @@ email_conf: ConnectionConfig = ConnectionConfig(
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=False,
     TEMPLATE_FOLDER=Path(settings.email.templates_dir),
-    SUPPRESS_SEND=1 if settings.api.mode == ApiModes.test else 0,
+    SUPPRESS_SEND=1 if settings.api.mode == ApiModes.test.value else 0,
 )
