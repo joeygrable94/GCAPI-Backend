@@ -10,6 +10,8 @@ from app.api.exceptions import (
     Ga4PropertyNotExists,
     Ga4StreamNotExists,
     GoCloudPropertyNotExists,
+    GoSearchConsoleMetricNotExists,
+    GoSearchConsolePropertyNotExists,
     NoteNotExists,
     SharpspringNotExists,
     UserNotExists,
@@ -26,6 +28,8 @@ from app.crud import (
     GoAnalytics4PropertyRepository,
     GoAnalytics4StreamRepository,
     GoCloudPropertyRepository,
+    GoSearchConsoleMetricRepository,
+    GoSearchConsolePropertyRepository,
     NoteRepository,
     SharpspringRepository,
     UserRepository,
@@ -41,6 +45,12 @@ from app.models import (
     GoAnalytics4Property,
     GoAnalytics4Stream,
     GoCloudProperty,
+    GoSearchConsoleCountry,
+    GoSearchConsoleDevice,
+    GoSearchConsolePage,
+    GoSearchConsoleProperty,
+    GoSearchConsoleQuery,
+    GoSearchConsoleSearchappearance,
     Note,
     Sharpspring,
     User,
@@ -50,6 +60,7 @@ from app.models import (
     WebsitePage,
     WebsitePageSpeedInsights,
 )
+from app.schemas import GoSearchConsoleMetricType
 
 
 async def get_user_or_404(
@@ -259,3 +270,48 @@ async def get_ga4_stream_404(
     if ga4_stream is None:
         raise Ga4StreamNotExists()
     return ga4_stream
+
+
+async def get_go_search_console_property_404(
+    db: AsyncDatabaseSession,
+    gsc_id: Any,
+) -> GoSearchConsoleProperty | None:
+    """Parses uuid/int and fetches google search console property by id."""
+    parsed_id: UUID = parse_id(gsc_id)
+    gsc_repo: GoSearchConsolePropertyRepository = GoSearchConsolePropertyRepository(
+        session=db
+    )
+    gsc_property: GoSearchConsoleProperty | None = await gsc_repo.read(parsed_id)
+    if gsc_property is None:
+        raise GoSearchConsolePropertyNotExists()
+    return gsc_property
+
+
+async def get_go_search_console_metric_404(
+    db: AsyncDatabaseSession,
+    metric_type: GoSearchConsoleMetricType,
+    metric_id: Any,
+) -> (
+    GoSearchConsoleSearchappearance
+    | GoSearchConsoleQuery
+    | GoSearchConsolePage
+    | GoSearchConsoleDevice
+    | GoSearchConsoleCountry
+):
+    """
+    Parses uuid/int and fetches google search console metric by metric type and id.
+    """
+    parsed_metric_id: UUID = parse_id(metric_id)
+    gsc_metric_response: (
+        GoSearchConsoleSearchappearance
+        | GoSearchConsoleQuery
+        | GoSearchConsolePage
+        | GoSearchConsoleDevice
+        | GoSearchConsoleCountry
+        | None
+    ) = None
+    gsc_metric_repo = GoSearchConsoleMetricRepository(db, metric_type=metric_type)
+    gsc_metric_response = await gsc_metric_repo.read(parsed_metric_id)
+    if gsc_metric_response is None:
+        raise GoSearchConsoleMetricNotExists()
+    return gsc_metric_response

@@ -1,3 +1,4 @@
+from enum import Enum
 from os import environ
 from typing import Any, List, Optional, Union
 
@@ -10,13 +11,20 @@ from .utilities import get_root_directory
 load_dotenv()
 
 
+class ApiModes(str, Enum):
+    test = "test"
+    development = "development"
+    staging = "staging"
+    production = "production"
+
+
 class ApiSettings(BaseSettings):
     # API
     root_dir: str = get_root_directory(__file__)
     name: str = environ.get("API_NAME", "GCAPI")
     key: str = environ.get("API_KEY", "gcapi")
     version: str = environ.get("API_TAG", "0.0.3")
-    mode: str = environ.get("API_MODE", "development")
+    mode: ApiModes = ApiModes(environ.get("API_MODE", "development"))
     debug: bool = bool(
         environ.get("API_MODE", "development") == "test"
         or environ.get("API_MODE", "development") == "development"

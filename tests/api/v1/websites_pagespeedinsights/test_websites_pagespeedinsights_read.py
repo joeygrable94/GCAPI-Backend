@@ -10,7 +10,7 @@ from tests.utils.website_pagespeedinsights import (
 from app.api.exceptions import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
 from app.crud import WebsitePageSpeedInsightsRepository
-from app.models.website_pagespeedinsights import WebsitePageSpeedInsights
+from app.models import WebsitePageSpeedInsights
 from app.schemas import WebsitePageSpeedInsightsRead
 
 pytestmark = pytest.mark.asyncio

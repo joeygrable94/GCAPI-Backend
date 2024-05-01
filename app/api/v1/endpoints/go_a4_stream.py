@@ -36,10 +36,12 @@ from app.core.security.permissions import (
     RoleManager,
     RoleUser,
 )
-from app.crud import GoAnalytics4StreamRepository, WebsiteRepository
-from app.crud.go_a4 import GoAnalytics4PropertyRepository
-from app.models import GoAnalytics4Stream, Website
-from app.models.go_a4 import GoAnalytics4Property
+from app.crud import (
+    GoAnalytics4PropertyRepository,
+    GoAnalytics4StreamRepository,
+    WebsiteRepository,
+)
+from app.models import GoAnalytics4Property, GoAnalytics4Stream, Website
 from app.schemas import (
     GoAnalytics4StreamCreate,
     GoAnalytics4StreamRead,

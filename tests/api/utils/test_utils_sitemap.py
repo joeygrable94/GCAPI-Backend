@@ -4,8 +4,8 @@ from tests.utils.utils import random_domain
 from tests.utils.websites import create_random_website
 
 from app.api.utilities import create_or_update_website_map
-from app.models.website import Website
-from app.schemas.website import WebsiteRead
+from app.models import Website
+from app.schemas import WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 

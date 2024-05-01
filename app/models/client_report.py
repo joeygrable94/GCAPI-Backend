@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, List
 
 from pydantic import UUID4
-from sqlalchemy import BLOB, ForeignKey, String
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import Timestamp  # type: ignore
 from sqlalchemy_utils import UUIDType
@@ -18,6 +18,7 @@ from app.db.constants import (
     DB_STR_TINYTEXT_MAXLEN_STORED,
     DB_STR_URLPATH_MAXLEN_INPUT,
 )
+from app.db.custom_types import LongText
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
@@ -67,7 +68,7 @@ class ClientReport(Base, Timestamp):
         ),
         nullable=True,
     )
-    keys: Mapped[str] = mapped_column(BLOB, nullable=True)
+    keys: Mapped[str] = mapped_column(LongText, nullable=True)
 
     # relationships
     client_id: Mapped[UUID4] = mapped_column(

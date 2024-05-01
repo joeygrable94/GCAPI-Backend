@@ -18,6 +18,10 @@ from .exceptions import (
     Ga4StreamNotExists,
     GoCloudPropertyAlreadyExists,
     GoCloudPropertyNotExists,
+    GoSearchConsoleMetricNotExists,
+    GoSearchConsoleMetricTypeInvalid,
+    GoSearchConsolePropertyAlreadyExists,
+    GoSearchConsolePropertyNotExists,
     InvalidID,
     NoteAlreadyExists,
     NoteNotExists,
@@ -44,7 +48,7 @@ def get_global_headers(inject_headers: Dict[str, str] | None = None) -> Dict[str
         "Access-Control-Expose-Headers": "x-request-id",
     }
     if inject_headers is not None:
-        global_headers.update(inject_headers)
+        global_headers.update(inject_headers)  # pragma: no cover
     return global_headers
 
 
@@ -437,6 +441,58 @@ def configure_exceptions(app: FastAPI) -> None:
             ),
         )
 
+    @app.exception_handler(GoSearchConsolePropertyAlreadyExists)
+    async def go_search_console_property_already_exists_exception_handler(
+        request: Request, exc: GoSearchConsolePropertyAlreadyExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(GoSearchConsolePropertyNotExists)
+    async def go_search_console_property_not_exists_exception_handler(
+        request: Request, exc: GoSearchConsolePropertyNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(GoSearchConsoleMetricTypeInvalid)
+    async def go_search_console_metric_type_invalid_exception_handler(
+        request: Request, exc: GoSearchConsoleMetricTypeInvalid
+    ) -> Response:  # noqa: E501  # pragma: no cover
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(GoSearchConsoleMetricNotExists)
+    async def go_search_console_metric_not_exists_exception_handler(
+        request: Request, exc: GoSearchConsoleMetricNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
 
 __all__: List[str] = [
     "ApiException",
@@ -470,4 +526,8 @@ __all__: List[str] = [
     "Ga4PropertyAlreadyExists",
     "Ga4StreamNotExists",
     "Ga4StreamAlreadyExists",
+    "GoSearchConsolePropertyAlreadyExists",
+    "GoSearchConsolePropertyNotExists",
+    "GoSearchConsoleMetricTypeInvalid",
+    "GoSearchConsoleMetricNotExists",
 ]

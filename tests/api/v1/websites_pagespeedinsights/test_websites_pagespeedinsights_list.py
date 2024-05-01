@@ -9,7 +9,7 @@ from tests.utils.website_pagespeedinsights import (
 )
 from tests.utils.websites import create_random_website
 
-from app.models.website import Website
+from app.models import Website
 from app.schemas import WebsitePageRead, WebsitePageSpeedInsightsRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio

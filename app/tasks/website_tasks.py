@@ -1,4 +1,3 @@
-import xml.etree.ElementTree as ET
 from typing import Optional
 
 from app.api.utilities import (
@@ -34,7 +33,7 @@ async def task_website_sitemap_process_xml(
     sitemap_url: str,
 ) -> WebsiteMapProcessedResult:
     sitemap_text: str = await fetch_url_page_text(sitemap_url)
-    sitemap_root: ET.Element = await parse_sitemap_xml(sitemap_text)
+    sitemap_root = await parse_sitemap_xml(sitemap_text)
     # Check if the sitemap is a sitemap index
     if await check_is_sitemap_index(sitemap_root):
         logger.info(

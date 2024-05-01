@@ -9,7 +9,6 @@ from app.db.constants import (
     DB_STR_32BIT_MAXLEN_INPUT,
     DB_STR_64BIT_MAXLEN_INPUT,
     DB_STR_BLOB_MAXLEN_INPUT,
-    DB_STR_BLOB_MAXLEN_STORED,
     DB_STR_DESC_MAXLEN_INPUT,
     DB_STR_LONGTEXT_MAXLEN_STORED,
     DB_STR_SHORTTEXT_MAXLEN_INPUT,
@@ -499,15 +498,6 @@ def validate_serverhost_optional(cls: Any, value: str | None) -> str | None:
     )
 
 
-def validate_keys_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
-        v=value,
-        name="keys",
-        min_len=1,
-        max_len=DB_STR_BLOB_MAXLEN_STORED,
-    )
-
-
 def validate_object_key_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
@@ -906,7 +896,7 @@ def validate_hotspot_content_optional(cls: Any, value: str | None) -> str | None
         v=value,
         name="hotspot_content",
         min_len=0,
-        max_len=DB_STR_BLOB_MAXLEN_STORED,
+        max_len=DB_STR_BLOB_MAXLEN_INPUT,
     )
 
 
@@ -1157,7 +1147,16 @@ def validate_keys_required(cls: Any, value: str) -> str:
         v=value,
         name="keys",
         min_len=0,
-        max_len=DB_STR_BLOB_MAXLEN_STORED,
+        max_len=DB_STR_LONGTEXT_MAXLEN_STORED,
+    )
+
+
+def validate_keys_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="keys",
+        min_len=1,
+        max_len=DB_STR_LONGTEXT_MAXLEN_STORED,
     )
 
 
@@ -1171,8 +1170,28 @@ def validate_clicks_required(cls: Any, value: int) -> int:
     )
 
 
+def validate_clicks_optional(cls: Any, value: int | None) -> int | None:
+    return optional_int_name_min_max_len(
+        v=value,
+        name="clicks",
+        min_len=0,
+        max_len=DB_INT_INTEGER_MAXLEN_STORED,
+        can_be_zero=True,
+    )
+
+
 def validate_impressions_required(cls: Any, value: int) -> int:
     return require_int_name_min_max_len(
+        v=value,
+        name="impressions",
+        min_len=0,
+        max_len=DB_INT_INTEGER_MAXLEN_STORED,
+        can_be_zero=True,
+    )
+
+
+def validate_impressions_optional(cls: Any, value: int | None) -> int | None:
+    return optional_int_name_min_max_len(
         v=value,
         name="impressions",
         min_len=0,

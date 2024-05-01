@@ -14,8 +14,12 @@ from tests.utils.websites import create_random_website
 
 from app.core.config import settings
 from app.models import User
-from app.schemas import ClientRead, GoAnalytics4PropertyRead, WebsiteRead
-from app.schemas.go_a4_stream import GoAnalytics4StreamRead
+from app.schemas import (
+    ClientRead,
+    GoAnalytics4PropertyRead,
+    GoAnalytics4StreamRead,
+    WebsiteRead,
+)
 
 pytestmark = pytest.mark.asyncio
 

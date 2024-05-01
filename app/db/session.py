@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import SingletonThreadPool
 
-from app.core.config import settings
+from app.core.config import ApiModes, settings
 from app.core.logger import logger
 
 # Session
@@ -20,7 +20,8 @@ engine: Engine = create_engine(
     url=settings.db.uri,
     pool_pre_ping=True,
     poolclass=SingletonThreadPool,
-    echo=False,  # echo=settings.api.mode == "development",
+    echo=settings.api.mode == ApiModes.development
+    or settings.api.mode == ApiModes.test,
 )
 
 session: sessionmaker[Session] = sessionmaker(
@@ -30,7 +31,8 @@ session: sessionmaker[Session] = sessionmaker(
 # Async Session
 async_engine: AsyncEngine = create_async_engine(
     url=settings.db.uri_async,
-    echo=False,  # echo=settings.api.mode == "development",
+    echo=settings.api.mode == ApiModes.development
+    or settings.api.mode == ApiModes.test,
 )
 
 async_session: Any = async_sessionmaker(async_engine, expire_on_commit=False)

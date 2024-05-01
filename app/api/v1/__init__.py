@@ -6,6 +6,8 @@ from app.api.v1.endpoints import (
     go_a4_property,
     go_a4_stream,
     go_cloud,
+    go_sc_metrics,
+    go_sc_property,
     notes,
     public,
     security,
@@ -96,13 +98,17 @@ router_v1.include_router(
 )
 
 # GSC routes
-"""
 router_v1.include_router(
-    go_sc.router,
-    prefix="/gsc",
-    tags=["Google Search Console"],
+    go_sc_property.router,
+    prefix="/go/search/property",
+    tags=["Google Search Console Properties"],
 )
-"""
+
+router_v1.include_router(
+    go_sc_metrics.router,
+    prefix="/go/search/metric",
+    tags=["Google Search Console Property Metrics"],
+)
 
 # website routes
 router_v1.include_router(

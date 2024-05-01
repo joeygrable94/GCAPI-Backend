@@ -6,8 +6,7 @@ from tests.utils.utils import random_domain
 from tests.utils.websites import create_random_website
 
 from app.crud import WebsiteMapRepository
-from app.models import WebsiteMap
-from app.models.website import Website
+from app.models import Website, WebsiteMap
 from app.schemas import WebsiteMapCreate, WebsiteMapPage, WebsiteMapRead, WebsiteRead
 
 

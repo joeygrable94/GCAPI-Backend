@@ -7,8 +7,8 @@ from typing import Any, Optional, Union
 from pydantic import UUID4, BaseModel, field_validator
 
 from app.db.validators import validate_url_optional, validate_url_required
+from app.schemas import SitemapPageChangeFrequency
 from app.schemas.base import BaseSchema, BaseSchemaRead
-from app.schemas.website_map import SitemapPageChangeFrequency
 
 
 # schemas

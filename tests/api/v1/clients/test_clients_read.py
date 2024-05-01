@@ -32,7 +32,7 @@ async def test_read_client_by_id_as_superuser(
     assert existing_data.title == data["title"]
 
 
-async def test_read_client_by_id_as_superuser_client_not_found(
+async def test_read_client_by_id_as_superuser_not_found(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],

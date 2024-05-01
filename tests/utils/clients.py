@@ -1,19 +1,16 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_lower_string
 
-from app.crud import ClientRepository
-from app.crud.client_website import ClientWebsiteRepository
-from app.crud.user_client import UserClientRepository
-from app.models import Client
-from app.models.client_website import ClientWebsite
-from app.models.user import User
-from app.models.user_client import UserClient
-from app.models.website import Website
-from app.schemas import ClientCreate, ClientRead
-from app.schemas.client_website import ClientWebsiteCreate
-from app.schemas.user import UserRead
-from app.schemas.user_client import UserClientCreate
-from app.schemas.website import WebsiteRead
+from app.crud import ClientRepository, ClientWebsiteRepository, UserClientRepository
+from app.models import Client, ClientWebsite, User, UserClient, Website
+from app.schemas import (
+    ClientCreate,
+    ClientRead,
+    ClientWebsiteCreate,
+    UserClientCreate,
+    UserRead,
+    WebsiteRead,
+)
 
 
 async def create_random_client(db_session: AsyncSession) -> ClientRead:

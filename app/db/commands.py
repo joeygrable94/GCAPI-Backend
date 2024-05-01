@@ -124,7 +124,11 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_active=True,
                     is_verified=True,
                     is_superuser=True,
-                    scopes=[AclPrivilege("role:user"), AclPrivilege("role:admin")],
+                    scopes=[
+                        AclPrivilege("role:user"),
+                        AclPrivilege("role:admin"),
+                        AclPrivilege("access:test"),
+                    ],
                 )
             )
             i_count += 1
@@ -145,7 +149,11 @@ async def create_init_data() -> None:  # pragma: no cover
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
-                    scopes=[AclPrivilege("role:user"), AclPrivilege("role:manager")],
+                    scopes=[
+                        AclPrivilege("role:user"),
+                        AclPrivilege("role:manager"),
+                        AclPrivilege("access:test"),
+                    ],
                 )
             )
             i_count += 1

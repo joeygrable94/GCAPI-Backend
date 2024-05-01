@@ -3,10 +3,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_email, random_lower_string
 
 from app.core.security.permissions import AclPrivilege, RoleUser
-from app.crud.user import UserRepository
+from app.crud import UserRepository
 from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
-from app.models.user import User
-from app.schemas.user import UserCreate
+from app.models import User
+from app.schemas import UserCreate
 
 
 async def get_user_by_email(

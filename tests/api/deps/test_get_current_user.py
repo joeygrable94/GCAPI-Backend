@@ -10,7 +10,7 @@ from app.api.exceptions import ErrorCode
 from app.core.security import Auth0User
 from app.core.security.permissions import AclPrivilege, Authenticated, Everyone
 from app.core.utilities.uuids import get_uuid_str
-from app.models.user import User
+from app.models import User
 
 
 class MockAuth:

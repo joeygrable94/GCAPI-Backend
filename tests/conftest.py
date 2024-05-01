@@ -1,6 +1,5 @@
 import asyncio
 import json
-import xml.etree.ElementTree as ET
 from os import path, remove
 from typing import Any, AsyncGenerator, Dict, Generator
 
@@ -8,6 +7,7 @@ import pytest
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 from httpx import AsyncClient
+from lxml import etree
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.auth0 import get_auth0_access_token
 
@@ -117,21 +117,21 @@ def mock_fetch_sitemap_page() -> str:
 
 
 @pytest.fixture(scope="session")
-def mock_invalid_sitemap_xml() -> ET.Element:
+def mock_invalid_sitemap_xml() -> etree._Element:
     mocked_response = ""
     here = path.dirname(path.abspath(__file__))
     with open(f"{here}/utils/sitemap-invalid.xml") as f:
         mocked_response = f.read()
-    return ET.fromstring(mocked_response)
+    return etree.fromstring(mocked_response.encode())
 
 
 @pytest.fixture(scope="session")
-def mock_valid_sitemap_urlset_xml() -> ET.Element:
+def mock_valid_sitemap_urlset_xml() -> etree._Element:
     mocked_response = ""
     here = path.dirname(path.abspath(__file__))
     with open(f"{here}/utils/sitemap-urlset.xml") as f:
         mocked_response = f.read()
-    return ET.fromstring(mocked_response)
+    return etree.fromstring(mocked_response.encode())
 
 
 @pytest.fixture(scope="session")

@@ -7,9 +7,9 @@ from tests.utils.users import create_random_user
 
 from app.api.exceptions.errors import ErrorCode
 from app.core.config import settings
-from app.crud.user import UserRepository
-from app.models.user import User
-from app.schemas.user import UserDelete
+from app.crud import UserRepository
+from app.models import User
+from app.schemas import UserDelete
 
 pytestmark = pytest.mark.asyncio
 

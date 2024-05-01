@@ -1,7 +1,7 @@
 import unittest.mock
-import xml.etree.ElementTree as ET
 
 import pytest
+from lxml import etree
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud import WebsiteMapRepository
@@ -26,7 +26,7 @@ async def test_website_map_repo_is_sitemap_url_xml_invalid(
 
 
 async def test_website_map_repo_is_sitemap_url_xml_invalid_xml_parse(
-    db_session: AsyncSession, mock_invalid_sitemap_xml: ET.Element
+    db_session: AsyncSession, mock_invalid_sitemap_xml: etree._Element
 ) -> None:
     repo: WebsiteMapRepository = WebsiteMapRepository(session=db_session)
     with unittest.mock.patch(
@@ -48,7 +48,7 @@ async def test_website_map_repo_is_sitemap_url_xml_invalid_xml_parse(
 
 
 async def test_website_map_repo_is_sitemap_url_xml_invalid_xml_exception_raised(
-    db_session: AsyncSession, mock_invalid_sitemap_xml: ET.Element
+    db_session: AsyncSession, mock_invalid_sitemap_xml: etree._Element
 ) -> None:
     repo: WebsiteMapRepository = WebsiteMapRepository(session=db_session)
     with unittest.mock.patch(

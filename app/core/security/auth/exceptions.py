@@ -33,7 +33,7 @@ def configure_authorization_exceptions(app: FastAPI) -> None:
             "Access-Control-Expose-Headers": "x-request-id",
         }
         if exc.headers is not None:
-            request_headers.update(exc.headers)
+            request_headers.update(exc.headers)  # pragma: no cover
         return await http_exception_handler(
             request,
             HTTPException(

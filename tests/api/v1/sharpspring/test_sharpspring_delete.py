@@ -10,8 +10,7 @@ from tests.utils.users import get_user_by_email
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
 from app.models import User, UserClient
-from app.schemas import ClientRead
-from app.schemas.sharpspring import SharpspringRead
+from app.schemas import ClientRead, SharpspringRead
 
 pytestmark = pytest.mark.asyncio
 

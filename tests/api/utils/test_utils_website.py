@@ -8,9 +8,8 @@ from tests.utils.website_maps import create_random_website_map
 from tests.utils.websites import create_random_website
 
 from app.api.utilities import create_or_update_website_page
-from app.models.website import Website
-from app.schemas.website import WebsiteRead
-from app.schemas.website_map import WebsiteMapPage, WebsiteMapRead
+from app.models import Website
+from app.schemas import WebsiteMapPage, WebsiteMapRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 

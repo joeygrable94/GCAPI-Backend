@@ -5,8 +5,8 @@ from tests.utils.websites import create_random_website
 from app.api.deps import get_website_or_404
 from app.api.exceptions.exceptions import InvalidID, WebsiteNotExists
 from app.core.utilities.uuids import get_uuid_str
-from app.models.website import Website
-from app.schemas.website import WebsiteRead
+from app.models import Website
+from app.schemas import WebsiteRead
 
 
 async def test_get_website_or_404(db_session: AsyncSession) -> None:

@@ -9,7 +9,7 @@ from tests.utils.utils import random_lower_string
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
 from app.db.constants import DB_STR_DESC_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_INPUT
-from app.models.user import User
+from app.models import User
 
 pytestmark = pytest.mark.asyncio
 

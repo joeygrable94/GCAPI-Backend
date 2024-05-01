@@ -10,8 +10,7 @@ from app.api.exceptions.errors import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
 from app.crud import GoAnalytics4PropertyRepository
 from app.models import GoAnalytics4Property
-from app.schemas import ClientRead
-from app.schemas.go_a4 import GoAnalytics4PropertyRead
+from app.schemas import ClientRead, GoAnalytics4PropertyRead
 
 pytestmark = pytest.mark.asyncio
 
@@ -44,7 +43,7 @@ async def test_read_ga4_property_by_id_as_superuser(
     assert str(existing_data.client_id) == data["client_id"]
 
 
-async def test_read_ga4_property_by_id_as_superuser_client_not_found(
+async def test_read_ga4_property_by_id_as_superuser_not_found(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],

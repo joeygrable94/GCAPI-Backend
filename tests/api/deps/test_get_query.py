@@ -1,3 +1,4 @@
+import datetime as dt
 import uuid
 
 import pytest
@@ -10,21 +11,27 @@ from app.api.deps.get_query import (
     CommonUserClientQueryParams,
     CommonUserQueryParams,
     CommonWebsiteGa4QueryParams,
+    CommonWebsiteGoSearchConsoleQueryParams,
     CommonWebsiteKeywordCorpusQueryParams,
     CommonWebsiteMapQueryParams,
     CommonWebsitePageQueryParams,
     CommonWebsitePageSpeedInsightsQueryParams,
     CommonWebsiteQueryParams,
+    DateEndQueryParams,
+    DateStartQueryParams,
     DeviceStrategyQueryParams,
     Ga4QueryParams,
+    GoSearchConsoleMetricTypeQueryParams,
     PublicQueryParams,
     UserIdQueryParams,
     WebsiteIdQueryParams,
     WebsiteMapIdQueryParams,
     WebsitePageIdQueryParams,
 )
+from app.api.exceptions.exceptions import GoSearchConsoleMetricTypeInvalid
 from app.core.config import settings
 from app.core.utilities.uuids import get_uuid_str
+from app.schemas import GoSearchConsoleMetricType
 
 
 def test_user_id_query_params_valid_id() -> None:
@@ -415,3 +422,54 @@ def test_common_ga4_query_params() -> None:
     assert query_params.size == settings.api.query_limit_rows_default
     assert query_params.website_id is None
     assert query_params.ga4_id is None
+
+
+def test_date_start_query_params() -> None:
+    query_1 = DateStartQueryParams(date_start="2021-01-01")
+    assert query_1.date_start == dt.date.fromisoformat("2021-01-01")
+    query_2 = DateStartQueryParams(date_start="2024-01-01")
+    assert query_2.date_start == dt.date.fromisoformat("2024-01-01")
+    query_3 = DateStartQueryParams(date_start=None)
+    assert query_3.date_start is None
+    with pytest.raises(HTTPException) as e:
+        DateStartQueryParams(date_start="invalid")
+        assert e.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY  # type: ignore
+        assert e.detail == "Invalid date start"  # type: ignore
+
+
+def test_date_end_query_params() -> None:
+    query_1 = DateEndQueryParams(date_end="2021-01-01")
+    assert query_1.date_end == dt.date.fromisoformat("2021-01-01")
+    query_2 = DateEndQueryParams(date_end="2024-01-01")
+    assert query_2.date_end == dt.date.fromisoformat("2024-01-01")
+    query_3 = DateEndQueryParams(date_end=None)
+    assert query_3.date_end is None
+    with pytest.raises(HTTPException) as e:
+        DateEndQueryParams(date_end="invalid")
+        assert e.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY  # type: ignore
+        assert e.detail == "Invalid date end"  # type: ignore
+
+
+def test_gsc_metric_types_query_params() -> None:
+    metric_types = "page,query"
+    query_metric_types_none = GoSearchConsoleMetricTypeQueryParams(metric_types=None)
+    assert query_metric_types_none.metric_types is None
+    query_metric_types = GoSearchConsoleMetricTypeQueryParams(metric_types=metric_types)
+    assert query_metric_types.metric_types == [
+        GoSearchConsoleMetricType.page,
+        GoSearchConsoleMetricType.query,
+    ]
+    with pytest.raises(GoSearchConsoleMetricTypeInvalid):
+        GoSearchConsoleMetricTypeQueryParams(metric_types="invalid")
+
+
+def test_common_go_sc_query_params() -> None:
+    query_1 = CommonWebsiteGoSearchConsoleQueryParams(
+        1, 100, "page,query", "2021-01-01", "2021-01-31"
+    )
+    assert query_1.page == 1
+    assert query_1.size == 100
+    assert query_1.metric_types == [
+        GoSearchConsoleMetricType.page,
+        GoSearchConsoleMetricType.query,
+    ]

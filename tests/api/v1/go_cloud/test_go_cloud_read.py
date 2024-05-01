@@ -46,7 +46,7 @@ async def test_read_go_cloud_by_id_as_superuser(
     assert str(existing_data.client_id) == data["client_id"]
 
 
-async def test_read_go_cloud_by_id_as_superuser_client_not_found(
+async def test_read_go_cloud_by_id_as_superuser_not_found(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],

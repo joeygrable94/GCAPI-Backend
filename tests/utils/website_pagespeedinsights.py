@@ -4,8 +4,7 @@ from tests.utils.website_pages import create_random_website_page
 from tests.utils.websites import create_random_website
 
 from app.crud import WebsitePageSpeedInsightsRepository
-from app.models import WebsitePageSpeedInsights
-from app.models.website import Website
+from app.models import Website, WebsitePageSpeedInsights
 from app.schemas import (
     WebsitePageRead,
     WebsitePageSpeedInsightsBase,

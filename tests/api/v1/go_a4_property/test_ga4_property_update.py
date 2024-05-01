@@ -11,8 +11,7 @@ from tests.utils.utils import random_lower_string
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
 from app.core.utilities.uuids import get_uuid_str
-from app.models import User
-from app.models.user_client import UserClient
+from app.models import User, UserClient
 from app.schemas import ClientRead, GoAnalytics4PropertyRead
 
 pytestmark = pytest.mark.asyncio

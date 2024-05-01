@@ -647,7 +647,9 @@ def test_validate_keys_optional() -> None:
     with pytest.raises(ValueError):
         assert validate_keys_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_keys_optional(cls=None, value="a" * (DB_STR_BLOB_MAXLEN_STORED + 1))
+        validate_keys_optional(
+            cls=None, value="a" * (DB_STR_LONGTEXT_MAXLEN_STORED + 1)
+        )
 
 
 def test_validate_object_key_required() -> None:
@@ -1584,7 +1586,9 @@ def test_validate_keys_required() -> None:
     with pytest.raises(ValueError):
         assert validate_keys_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_keys_required(cls=None, value="a" * (DB_STR_BLOB_MAXLEN_STORED + 1))
+        validate_keys_required(
+            cls=None, value="a" * (DB_STR_LONGTEXT_MAXLEN_STORED + 1)
+        )
 
 
 def test_validate_clicks_required() -> None:

@@ -12,7 +12,7 @@ from app.core.security.permissions.core import (
     list_permissions,
     normalize_acl,
 )
-from app.models.user import User
+from app.models import User
 
 pytestmark = pytest.mark.asyncio
 

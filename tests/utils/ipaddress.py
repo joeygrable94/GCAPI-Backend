@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from app.schemas.ipaddress import IpinfoResponse
+from app.schemas import IpinfoResponse
 
 
 def get_ipinfo_response(data: Dict[str, Any]) -> IpinfoResponse:  # pragma: no cover

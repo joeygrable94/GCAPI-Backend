@@ -6,8 +6,7 @@ from taskiq_redis.exceptions import ResultIsMissingError
 
 from app.api.deps import CurrentUser, get_current_user
 from app.core.security import auth
-from app.schemas import TaskState
-from app.schemas.task import TaskStatus
+from app.schemas import TaskState, TaskStatus
 from app.worker import task_broker
 
 router: APIRouter = APIRouter()

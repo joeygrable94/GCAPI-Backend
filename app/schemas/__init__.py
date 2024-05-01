@@ -51,35 +51,17 @@ from .go_sc import (
     GoSearchConsolePropertyRead,
     GoSearchConsolePropertyUpdate,
 )
-from .go_sc_country import (
-    GoSearchConsoleCountryCreate,
-    GoSearchConsoleCountryRead,
-    GoSearchConsoleCountryUpdate,
-)
-from .go_sc_device import (
-    GoSearchConsoleDeviceCreate,
-    GoSearchConsoleDeviceRead,
-    GoSearchConsoleDeviceUpdate,
-)
-from .go_sc_page import (
-    GoSearchConsolePageCreate,
-    GoSearchConsolePageRead,
-    GoSearchConsolePageUpdate,
-)
-from .go_sc_query import (
-    GoSearchConsoleQueryCreate,
-    GoSearchConsoleQueryRead,
-    GoSearchConsoleQueryUpdate,
-)
-from .go_sc_searchappearance import (
-    GoSearchConsoleSearchappearanceCreate,
-    GoSearchConsoleSearchappearanceRead,
-    GoSearchConsoleSearchappearanceUpdate,
+from .go_sc_metrics import (
+    GoSearchConsoleMetricCreate,
+    GoSearchConsoleMetricPages,
+    GoSearchConsoleMetricRead,
+    GoSearchConsoleMetricType,
+    GoSearchConsoleMetricUpdate,
 )
 from .ipaddress import IpaddressCreate, IpaddressRead, IpaddressUpdate, IpinfoResponse
 from .note import NoteCreate, NoteRead, NoteUpdate
 from .sharpspring import SharpspringCreate, SharpspringRead, SharpspringUpdate
-from .task import TaskState
+from .task import TaskState, TaskStatus
 from .user import (
     UserCreate,
     UserDelete,
@@ -181,24 +163,14 @@ __all__: List[str] = [
     "GoCloudPropertyCreate",
     "GoCloudPropertyRead",
     "GoCloudPropertyUpdate",
+    "GoSearchConsoleMetricPages",
+    "GoSearchConsoleMetricType",
+    "GoSearchConsoleMetricCreate",
+    "GoSearchConsoleMetricRead",
+    "GoSearchConsoleMetricUpdate",
     "GoSearchConsolePropertyCreate",
     "GoSearchConsolePropertyRead",
     "GoSearchConsolePropertyUpdate",
-    "GoSearchConsoleCountryCreate",
-    "GoSearchConsoleCountryRead",
-    "GoSearchConsoleCountryUpdate",
-    "GoSearchConsoleDeviceCreate",
-    "GoSearchConsoleDeviceRead",
-    "GoSearchConsoleDeviceUpdate",
-    "GoSearchConsolePageCreate",
-    "GoSearchConsolePageRead",
-    "GoSearchConsolePageUpdate",
-    "GoSearchConsoleQueryCreate",
-    "GoSearchConsoleQueryRead",
-    "GoSearchConsoleQueryUpdate",
-    "GoSearchConsoleSearchappearanceCreate",
-    "GoSearchConsoleSearchappearanceRead",
-    "GoSearchConsoleSearchappearanceUpdate",
     "IpinfoResponse",
     "IpaddressCreate",
     "IpaddressRead",
@@ -212,6 +184,7 @@ __all__: List[str] = [
     "SharpspringRead",
     "SharpspringUpdate",
     "TaskState",
+    "TaskStatus",
     "UserCreate",
     "UserDelete",
     "UserRead",

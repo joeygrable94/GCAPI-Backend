@@ -62,21 +62,22 @@ async def get_current_user(
             )
         )
         logger.info(f"Created user from Auth0: {user.id}")
-    update_scopes = False
-    new_scopes = user.scopes
-    for scope in auth0_scopes:
-        if scope not in user.scopes:
-            update_scopes = True
-            new_scopes.append(scope)
-    if update_scopes:
-        new_scopes = list(set(new_scopes))
-        update_user = await users_repo.add_privileges(
-            entry=user,
-            schema=UserUpdatePrivileges(scopes=new_scopes),
-        )
-        logger.info(f"Updated user scopes: {user.id}")
-        if update_user:
-            return update_user
+    else:
+        update_scopes = False
+        new_scopes = user.scopes
+        for scope in auth0_scopes:
+            if scope not in user.scopes:
+                update_scopes = True
+                new_scopes.append(scope)
+        if update_scopes:
+            new_scopes = list(set(new_scopes))
+            update_user = await users_repo.add_privileges(
+                entry=user,
+                schema=UserUpdatePrivileges(scopes=new_scopes),
+            )
+            if update_user:
+                logger.info(f"Updated user scopes: {user.id}")
+                return update_user
     return user
 
 

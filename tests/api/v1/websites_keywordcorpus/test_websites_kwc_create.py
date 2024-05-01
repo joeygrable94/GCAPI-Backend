@@ -10,9 +10,8 @@ from tests.utils.websites import create_random_website
 
 from app.api.exceptions.errors import ErrorCode
 from app.core.utilities.uuids import get_uuid
-from app.models.website import Website
-from app.schemas.website import WebsiteRead
-from app.schemas.website_page import WebsitePageRead
+from app.models import Website
+from app.schemas import WebsitePageRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 

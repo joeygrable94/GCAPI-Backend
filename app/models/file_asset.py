@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Optional
 
 from pydantic import UUID4
-from sqlalchemy import BLOB, Boolean, ForeignKey, Integer, String
+from sqlalchemy import Boolean, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import Timestamp  # type: ignore
 from sqlalchemy_utils import UUIDType
@@ -14,6 +14,7 @@ from app.core.config import settings
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
 from app.db.constants import DB_STR_32BIT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_STORED
+from app.db.custom_types import LongText
 
 if TYPE_CHECKING:  # pragma: no cover
     from .bdx_feed import BdxFeed  # noqa: F401
@@ -124,7 +125,7 @@ class FileAsset(Base, Timestamp):
         ),
         nullable=True,
     )
-    keys: Mapped[str] = mapped_column(BLOB, nullable=True)
+    keys: Mapped[str] = mapped_column(LongText, nullable=True)
     is_private: Mapped[bool] = mapped_column(
         StringEncryptedType(
             Boolean,

@@ -24,12 +24,12 @@ from app.core.security.permissions import (
     RoleManager,
     RoleUser,
 )
-from app.crud import WebsiteKeywordCorpusRepository
-from app.crud.website import WebsiteRepository
-from app.crud.website_page import WebsitePageRepository
-from app.models import WebsiteKeywordCorpus
-from app.models.website import Website
-from app.models.website_page import WebsitePage
+from app.crud import (
+    WebsiteKeywordCorpusRepository,
+    WebsitePageRepository,
+    WebsiteRepository,
+)
+from app.models import Website, WebsiteKeywordCorpus, WebsitePage
 from app.schemas import WebsiteKeywordCorpusCreate, WebsiteKeywordCorpusRead
 
 router: APIRouter = APIRouter()

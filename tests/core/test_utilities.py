@@ -1,9 +1,9 @@
-import xml.etree.ElementTree as ET
 from datetime import datetime
 from typing import Any
 from uuid import UUID
 
 import pytest
+from lxml import etree
 from pydantic import UUID4
 
 from app.api.exceptions import InvalidID
@@ -64,7 +64,7 @@ def test_parse_id_uuid_invalid() -> None:
 
 @pytest.mark.asyncio
 async def test_check_is_xml_valid_sitemap_false(
-    mock_invalid_sitemap_xml: ET.Element,
+    mock_invalid_sitemap_xml: etree._Element,
 ) -> None:
     result = await check_is_xml_valid_sitemap(mock_invalid_sitemap_xml)
     assert result is False
@@ -72,7 +72,7 @@ async def test_check_is_xml_valid_sitemap_false(
 
 @pytest.mark.asyncio
 async def test_check_is_sitemap_page_false(
-    mock_invalid_sitemap_xml: ET.Element,
+    mock_invalid_sitemap_xml: etree._Element,
 ) -> None:
     result = await check_is_sitemap_page(mock_invalid_sitemap_xml)
     assert result is False
@@ -80,7 +80,7 @@ async def test_check_is_sitemap_page_false(
 
 @pytest.mark.asyncio
 async def test_check_is_sitemap_urlset_false(
-    mock_invalid_sitemap_xml: ET.Element,
+    mock_invalid_sitemap_xml: etree._Element,
 ) -> None:
     result = await check_is_sitemap_urlset(mock_invalid_sitemap_xml)
     assert result is False
@@ -88,7 +88,7 @@ async def test_check_is_sitemap_urlset_false(
 
 @pytest.mark.asyncio
 async def test_check_is_sitemap_urlset_true(
-    mock_valid_sitemap_urlset_xml: ET.Element,
+    mock_valid_sitemap_urlset_xml: etree._Element,
 ) -> None:
     result = await check_is_sitemap_urlset(mock_valid_sitemap_urlset_xml)
     assert result is True

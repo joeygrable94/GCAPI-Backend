@@ -7,10 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.website_maps import create_random_website_map
 from tests.utils.website_pages import create_random_website_page
 
-from app.api.exceptions.errors import ErrorCode
+from app.api.exceptions import ErrorCode
 from app.core.utilities.uuids import get_uuid
-from app.schemas import WebsitePageRead
-from app.schemas.website_map import WebsiteMapRead
+from app.schemas import WebsiteMapRead, WebsitePageRead
 
 pytestmark = pytest.mark.asyncio
 

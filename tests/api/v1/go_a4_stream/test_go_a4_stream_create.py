@@ -18,8 +18,7 @@ from app.core.config import settings
 from app.core.utilities.uuids import get_uuid_str
 from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT
 from app.models import User
-from app.schemas import ClientRead, WebsiteRead
-from app.schemas.go_a4 import GoAnalytics4PropertyRead
+from app.schemas import ClientRead, GoAnalytics4PropertyRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 

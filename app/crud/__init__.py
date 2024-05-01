@@ -17,11 +17,7 @@ from .go_a4 import GoAnalytics4PropertyRepository
 from .go_a4_stream import GoAnalytics4StreamRepository
 from .go_cloud import GoCloudPropertyRepository
 from .go_sc import GoSearchConsolePropertyRepository
-from .go_sc_country import GoSearchConsoleCountryRepository
-from .go_sc_device import GoSearchConsoleDeviceRepository
-from .go_sc_page import GoSearchConsolePageRepository
-from .go_sc_query import GoSearchConsoleQueryRepository
-from .go_sc_searchappearance import GoSearchConsoleSearchappearanceRepository
+from .go_sc_metrics import GoSearchConsoleMetricRepository
 from .ipaddress import IpaddressRepository
 from .note import NoteRepository
 from .sharpspring import SharpspringRepository
@@ -54,11 +50,7 @@ __all__: list[str] = [
     "GoAnalytics4StreamRepository",
     "GoCloudPropertyRepository",
     "GoSearchConsolePropertyRepository",
-    "GoSearchConsoleCountryRepository",
-    "GoSearchConsoleDeviceRepository",
-    "GoSearchConsolePageRepository",
-    "GoSearchConsoleQueryRepository",
-    "GoSearchConsoleSearchappearanceRepository",
+    "GoSearchConsoleMetricRepository",
     "IpaddressRepository",
     "NoteRepository",
     "SharpspringRepository",

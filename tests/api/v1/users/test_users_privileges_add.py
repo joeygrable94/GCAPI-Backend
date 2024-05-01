@@ -7,8 +7,8 @@ from tests.utils.users import create_random_user
 
 from app.api.exceptions.errors import ErrorCode
 from app.core.security.permissions.scope import AclPrivilege
-from app.models.user import User
-from app.schemas.user import UserUpdatePrivileges
+from app.models import User
+from app.schemas import UserUpdatePrivileges
 
 pytestmark = pytest.mark.asyncio
 

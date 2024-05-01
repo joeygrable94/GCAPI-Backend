@@ -8,7 +8,7 @@ from tests.utils.websites import create_random_website
 
 from app.api.exceptions import ErrorCode
 from app.db.constants import DB_STR_TINYTEXT_MAXLEN_INPUT
-from app.models.website import Website
+from app.models import Website
 from app.schemas import WebsiteRead, WebsiteUpdate
 
 pytestmark = pytest.mark.asyncio

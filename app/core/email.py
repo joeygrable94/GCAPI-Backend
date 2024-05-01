@@ -2,7 +2,7 @@ from pathlib import Path
 
 from fastapi_mail import ConnectionConfig  # type: ignore
 
-from app.core.config import settings
+from app.core.config import ApiModes, settings
 
 email_conf: ConnectionConfig = ConnectionConfig(
     MAIL_USERNAME=settings.email.smtp_user,
@@ -16,5 +16,5 @@ email_conf: ConnectionConfig = ConnectionConfig(
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=False,
     TEMPLATE_FOLDER=Path(settings.email.templates_dir),
-    SUPPRESS_SEND=1 if settings.api.mode == "test" else 0,
+    SUPPRESS_SEND=1 if settings.api.mode == ApiModes.test else 0,
 )

@@ -108,6 +108,27 @@ class Ga4StreamNotExists(ApiException):
         super().__init__(status.HTTP_404_NOT_FOUND, message)
 
 
+# Google Search Console
+class GoSearchConsolePropertyAlreadyExists(ApiException):
+    def __init__(self, message: str = ErrorCode.GO_SEARCH_PROPERTY_EXISTS):
+        super().__init__(status.HTTP_400_BAD_REQUEST, message)
+
+
+class GoSearchConsoleMetricTypeInvalid(ApiException):
+    def __init__(self, message: str = ErrorCode.GO_SEARCH_METRIC_TYPE_INVALID):
+        super().__init__(status.HTTP_422_UNPROCESSABLE_ENTITY, message)
+
+
+class GoSearchConsolePropertyNotExists(ApiException):
+    def __init__(self, message: str = ErrorCode.GO_SEARCH_PROPERTY_NOT_FOUND):
+        super().__init__(status.HTTP_404_NOT_FOUND, message)
+
+
+class GoSearchConsoleMetricNotExists(ApiException):
+    def __init__(self, message: str = ErrorCode.GO_SEARCH_METRIC_NOT_FOUND):
+        super().__init__(status.HTTP_404_NOT_FOUND, message)
+
+
 # Websites
 class WebsiteAlreadyExists(ApiException):
     def __init__(self, message: str = ErrorCode.WEBSITE_DOMAIN_EXISTS):

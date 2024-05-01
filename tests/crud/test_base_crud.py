@@ -3,11 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_boolean, random_email
 
 from app.core.utilities.uuids import get_random_username, get_uuid_str
-from app.crud.client import ClientRepository
-from app.crud.user import UserRepository
+from app.crud import ClientRepository, UserRepository
 from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
-from app.schemas.client import ClientCreate
-from app.schemas.user import UserCreate
+from app.schemas import ClientCreate, UserCreate
 
 pytestmark = pytest.mark.asyncio
 

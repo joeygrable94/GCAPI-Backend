@@ -5,8 +5,8 @@ from tests.utils.clients import create_random_client
 from app.api.deps import get_client_or_404
 from app.api.exceptions.exceptions import ClientNotExists, InvalidID
 from app.core.utilities.uuids import get_uuid_str
-from app.models.client import Client
-from app.schemas.client import ClientRead
+from app.models import Client
+from app.schemas import ClientRead
 
 
 async def test_get_client_or_404(db_session: AsyncSession) -> None:

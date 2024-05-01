@@ -7,7 +7,7 @@ from sentry_sdk import Client
 from app.api.exceptions import configure_exceptions
 from app.api.middleware import configure_middleware
 from app.api.monitoring import configure_monitoring
-from app.core.config import settings
+from app.core.config import ApiModes, settings
 from app.core.redis import redis_conn
 from app.core.security import (
     CsrfProtect,
@@ -59,7 +59,7 @@ def configure_static(app: FastAPI) -> None:
 
 def create_app() -> FastAPI:
     deps = []
-    if settings.api.mode == "production":  # pragma: no cover
+    if settings.api.mode == ApiModes.production:  # pragma: no cover
         deps = [
             # 114.15 req/hr over 1 year
             RateLimiter(times=1000000, hours=8760),

@@ -34,7 +34,7 @@ def configure_encryption_exceptions(app: FastAPI) -> None:
     async def cipher_security_exception_handler(
         request: Request, exc: CipherError
     ) -> Response:  # noqa: E501
-        request_headers = {
+        request_headers = {  # pragma: no cover
             "x-request-id": correlation_id.get() or "",
             "Access-Control-Expose-Headers": "x-request-id",
         }

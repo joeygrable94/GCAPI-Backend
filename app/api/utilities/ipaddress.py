@@ -10,8 +10,7 @@ from app.core.logger import logger
 from app.crud import IpaddressRepository
 from app.db.session import get_db_session
 from app.models import Ipaddress
-from app.schemas import IpinfoResponse
-from app.schemas.ipaddress import IpaddressCreate
+from app.schemas import IpaddressCreate, IpinfoResponse
 
 mock_details = Details(
     details=dict(  # pragma: no cover

@@ -7,10 +7,8 @@ from tests.utils.website_keywordcorpus import create_random_website_keywordcorpu
 from tests.utils.website_pages import create_random_website_page
 from tests.utils.websites import create_random_website
 
-from app.models.website import Website
-from app.schemas.website import WebsiteRead
-from app.schemas.website_keywordcorpus import WebsiteKeywordCorpusRead
-from app.schemas.website_page import WebsitePageRead
+from app.models import Website
+from app.schemas import WebsiteKeywordCorpusRead, WebsitePageRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 

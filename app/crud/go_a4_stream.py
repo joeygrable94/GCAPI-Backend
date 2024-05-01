@@ -7,12 +7,12 @@ from app.crud.base import BaseRepository
 from app.models import (
     Client,
     ClientWebsite,
+    GoAnalytics4Property,
     GoAnalytics4Stream,
     User,
     UserClient,
     Website,
 )
-from app.models.go_a4 import GoAnalytics4Property
 from app.schemas import (
     GoAnalytics4StreamCreate,
     GoAnalytics4StreamRead,

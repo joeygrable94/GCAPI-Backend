@@ -53,10 +53,10 @@ from app.schemas import (
     ClientRead,
     ClientUpdate,
     ClientWebsiteCreate,
+    ClientWebsiteRead,
     UserClientCreate,
+    UserClientRead,
 )
-from app.schemas.client_website import ClientWebsiteRead
-from app.schemas.user_client import UserClientRead
 from app.tasks import task_request_to_delete_client
 
 router: APIRouter = APIRouter()

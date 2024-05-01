@@ -1,15 +1,40 @@
+import datetime as dt
 from typing import Annotated, List
 
 from fastapi import Depends, HTTPException, Query, status
 from pydantic import UUID4
 
-from app.api.exceptions import InvalidID
+from app.api.exceptions import GoSearchConsoleMetricTypeInvalid, InvalidID
 from app.core.config import settings
 from app.core.pagination import PageParamsFromQuery
 from app.core.utilities.uuids import parse_id
-from app.schemas import PageSpeedInsightsDevice
+from app.schemas import GoSearchConsoleMetricType, PageSpeedInsightsDevice
 
 # utility query classes
+
+
+class DateStartQueryParams:
+    def __init__(self, date_start: str | None = None):
+        try:
+            q_date_start = None if not date_start else dt.date.fromisoformat(date_start)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid date format",
+            )
+        self.date_start: dt.date | None = q_date_start
+
+
+class DateEndQueryParams:
+    def __init__(self, date_end: str | None = None):
+        try:
+            q_date_end = None if not date_end else dt.date.fromisoformat(date_end)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid date format",
+            )
+        self.date_end: dt.date | None = q_date_end
 
 
 class UserIdQueryParams:
@@ -105,6 +130,26 @@ class Ga4QueryParams:
                 detail="Invalid ga4 property ID",
             )
         self.ga4_id: UUID4 | None = q_ga4_id
+
+
+class GoSearchConsoleMetricTypeQueryParams:
+    def __init__(self, metric_types: str | None = None):
+        s_metric_types: List[str] | None = None
+        q_metric_types: List[GoSearchConsoleMetricType] | None = None
+        try:
+            s_metric_types = (
+                None
+                if metric_types is None or metric_types == ""
+                else metric_types.split(",") if "," in metric_types else [metric_types]
+            )
+            q_metric_types = (
+                None
+                if s_metric_types is None
+                else [GoSearchConsoleMetricType(metric) for metric in s_metric_types]
+            )
+        except ValueError:
+            raise GoSearchConsoleMetricTypeInvalid()
+        self.metric_types: list[GoSearchConsoleMetricType] | None = q_metric_types
 
 
 # compound query classes
@@ -351,3 +396,34 @@ class CommonWebsiteGa4QueryParams(
 
 
 GetWebsiteGa4QueryParams = Annotated[CommonWebsiteGa4QueryParams, Depends()]
+
+
+class CommonWebsiteGoSearchConsoleQueryParams(
+    PageParamsFromQuery,
+    GoSearchConsoleMetricTypeQueryParams,
+    DateStartQueryParams,
+    DateEndQueryParams,
+):
+    def __init__(
+        self,
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        metric_types: Annotated[str | None, Query()] = None,
+        date_start: Annotated[str | None, Query()] = None,
+        date_end: Annotated[str | None, Query()] = None,
+    ):
+        PageParamsFromQuery.__init__(self, page, size)
+        GoSearchConsoleMetricTypeQueryParams.__init__(self, metric_types)
+        DateStartQueryParams.__init__(self, date_start)
+        DateEndQueryParams.__init__(self, date_end)
+
+
+GetWebsiteGoSearchConsoleQueryParams = Annotated[
+    CommonWebsiteGoSearchConsoleQueryParams, Depends()
+]

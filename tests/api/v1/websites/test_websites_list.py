@@ -6,10 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.clients import assign_website_to_client, create_random_client
 from tests.utils.websites import create_random_website
 
-from app.models.client_website import ClientWebsite
-from app.models.website import Website
-from app.schemas import WebsiteRead
-from app.schemas.client import ClientRead
+from app.models import ClientWebsite, Website
+from app.schemas import ClientRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
 

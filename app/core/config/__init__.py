@@ -3,7 +3,7 @@ from functools import lru_cache
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
-from .api import ApiSettings
+from .api import ApiModes, ApiSettings
 from .auth import AuthSettings
 from .cloud import CloudKeySettings
 from .database import DatabaseSettings
@@ -38,3 +38,11 @@ def get_settings() -> Settings:
 
 
 settings: Settings = get_settings()
+
+
+__all__: list[str] = [
+    "ApiModes",
+    "Settings",
+    "get_settings",
+    "settings",
+]

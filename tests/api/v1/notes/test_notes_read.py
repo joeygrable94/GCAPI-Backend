@@ -45,7 +45,7 @@ async def test_read_note_by_id_as_superuser(
     assert existing_data.is_active == data["is_active"]
 
 
-async def test_read_note_by_id_as_superuser_client_not_found(
+async def test_read_note_by_id_as_superuser_not_found(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],

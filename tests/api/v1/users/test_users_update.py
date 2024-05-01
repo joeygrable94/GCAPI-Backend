@@ -10,12 +10,13 @@ from app.api.exceptions.errors import ErrorCode
 from app.core.config import settings
 from app.crud import UserRepository
 from app.models import User
-from app.schemas import UserUpdate, UserUpdateAsManager
-from app.schemas.user import (
+from app.schemas import (
     UserRead,
     UserReadAsAdmin,
     UserReadAsManager,
+    UserUpdate,
     UserUpdateAsAdmin,
+    UserUpdateAsManager,
 )
 
 pytestmark = pytest.mark.asyncio

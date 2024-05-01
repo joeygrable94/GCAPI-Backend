@@ -9,7 +9,7 @@ from tests.utils.website_maps import create_random_website_map
 
 from app.api.exceptions import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
-from app.crud.website import WebsiteRepository
+from app.crud import WebsiteRepository
 from app.db.constants import DB_STR_URLPATH_MAXLEN_INPUT
 from app.models import Website
 from app.schemas import WebsiteMapRead
