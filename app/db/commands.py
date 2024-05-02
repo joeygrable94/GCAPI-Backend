@@ -91,7 +91,7 @@ async def drop_db_tables() -> None:  # pragma: no cover
     logger.info("Database Tables Dropped")
 
 
-async def create_init_data() -> None:  # pragma: no cover
+async def create_init_data() -> int:  # pragma: no cover
     i_count = 0
     session: AsyncSession
     admin1: User | None
@@ -332,7 +332,7 @@ async def create_init_data() -> None:  # pragma: no cover
                 UserClientCreate(user_id=manager1.id, client_id=c2.id)
             )
             i_count += 1
-    logger.info(f"Data Inserted C[{i_count}]")
+    return i_count
 
 
 async def build_database() -> None:  # pragma: no cover

@@ -1,11 +1,9 @@
-import asyncio
-
-import typer
 from sqlalchemy_data_model_visualizer import (
     add_web_font_and_interactivity,
     generate_data_model_diagram,
 )
 
+from app.cli.app import AsyncTyper
 from app.core.config import settings
 from app.core.logger import logger
 from app.db.commands import (
@@ -15,45 +13,41 @@ from app.db.commands import (
     create_init_data,
 )
 
-app = typer.Typer()
+app = AsyncTyper()
 
 
 @app.command()
-def check_db_connection() -> None:
+async def check_db_connection() -> None:
     try:
-        logger.info("Check Database Connection")
-        current_loop = asyncio.get_event_loop()
-        asyncio.run_coroutine_threadsafe(check_db_connected(), loop=current_loop)
+        await check_db_connected()
     except Exception as e:
         logger.warning(f"Error checking DB connection: {e}")
 
 
 @app.command()
-def check_redis_connection() -> None:
+async def check_redis_connection() -> None:
     try:
         logger.info("Check Redis Connection")
-        current_loop = asyncio.get_event_loop()
-        asyncio.run_coroutine_threadsafe(check_redis_connected(), loop=current_loop)
+        await check_redis_connected()
     except Exception as e:
         logger.warning(f"Error checking redis connection: {e}")
 
 
 @app.command()
-def create_db() -> None:
+async def create_db() -> None:
     try:
         logger.info("Create Database")
-        current_loop = asyncio.get_event_loop()
-        asyncio.run_coroutine_threadsafe(build_database(), loop=current_loop)
+        await build_database()
     except Exception as e:
         logger.warning(f"Error building database: {e}")
 
 
 @app.command()
-def add_initial_data() -> None:
+async def add_initial_data() -> None:
     try:
         logger.info("Load Initial Data")
-        current_loop = asyncio.get_event_loop()
-        asyncio.run_coroutine_threadsafe(create_init_data(), loop=current_loop)
+        count = await create_init_data()
+        logger.info(f"Data Inserted C[{count}]")
     except Exception as e:
         logger.warning(f"Error adding initial DB data: {e}")
 

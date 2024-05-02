@@ -7,6 +7,7 @@ from fastapi_profiler import PyInstrumentProfilerMiddleware  # type: ignore
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
+from app.api.deps.get_client_ip import get_request_client_ip
 from app.core.config import settings
 
 

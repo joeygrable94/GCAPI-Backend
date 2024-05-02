@@ -32,11 +32,7 @@ from app.core.security.permissions import (
 )
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
-from app.db.constants import (
-    DB_STR_32BIT_MAXLEN_STORED,
-    DB_STR_DESC_MAXLEN_STORED,
-    DB_STR_TINYTEXT_MAXLEN_STORED,
-)
+from app.db.constants import DB_STR_DESC_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_INPUT
 
 if TYPE_CHECKING:  # pragma: no cover
     from .bdx_feed import BdxFeed  # noqa: F401
@@ -65,13 +61,8 @@ class Client(Base, Timestamp):
         default=get_uuid(),
     )
     title: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            settings.api.encryption_key,
-            AesEngine,
-            "pkcs5",
-            length=DB_STR_TINYTEXT_MAXLEN_STORED,
-        ),
+        String(length=DB_STR_TINYTEXT_MAXLEN_INPUT),
+        index=True,
         unique=True,
         nullable=False,
     )
@@ -86,13 +77,7 @@ class Client(Base, Timestamp):
         nullable=True,
     )
     is_active: Mapped[bool] = mapped_column(
-        StringEncryptedType(
-            Boolean,
-            settings.api.encryption_key,
-            AesEngine,
-            "zeroes",
-            length=DB_STR_32BIT_MAXLEN_STORED,
-        ),
+        Boolean(),
         nullable=False,
         default=True,
     )

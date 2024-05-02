@@ -173,6 +173,12 @@ def optional_string_in_list(
 
 
 def validate_file_extension_required(cls: Any, value: str) -> str:
+    value = require_string_name_min_max_len(
+        v=value,
+        name="extension",
+        min_len=0,
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
+    )
     return required_string_in_list(
         v=value,
         name="extension",
@@ -181,6 +187,11 @@ def validate_file_extension_required(cls: Any, value: str) -> str:
 
 
 def validate_file_extension_optional(cls: Any, value: str | None) -> str | None:
+    value = optional_string_name_min_max_len(
+        v=value,
+        name="extension",
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
+    )
     return optional_string_in_list(
         v=value,
         name="extension",

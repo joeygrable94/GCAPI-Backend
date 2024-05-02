@@ -5,19 +5,10 @@ from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import Timestamp  # type: ignore
 from sqlalchemy_utils import UUIDType
-from sqlalchemy_utils.types.encrypted.encrypted_type import (  # type: ignore  # noqa: E501
-    AesEngine,
-    StringEncryptedType,
-)
 
-from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
-from app.db.constants import (
-    DB_STR_16BIT_MAXLEN_STORED,
-    DB_STR_32BIT_MAXLEN_STORED,
-    DB_STR_TINYTEXT_MAXLEN_STORED,
-)
+from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_INPUT
 
 if TYPE_CHECKING:  # pragma: no cover
     from .file_asset import FileAsset  # noqa: F401
@@ -43,34 +34,18 @@ class GcftSnap(Base, Timestamp):
         default=get_uuid(),
     )
     snap_name: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            settings.api.encryption_key,
-            AesEngine,
-            "pkcs5",
-            length=DB_STR_TINYTEXT_MAXLEN_STORED,
-        ),
+        String(length=DB_STR_TINYTEXT_MAXLEN_INPUT),
+        index=True,
         nullable=False,
     )
     snap_slug: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            settings.api.encryption_key,
-            AesEngine,
-            "pkcs5",
-            length=DB_STR_16BIT_MAXLEN_STORED,
-        ),
+        String(length=DB_STR_16BIT_MAXLEN_INPUT),
+        index=True,
         unique=True,
         nullable=False,
     )
     altitude: Mapped[int] = mapped_column(
-        StringEncryptedType(
-            Integer,
-            settings.api.encryption_key,
-            AesEngine,
-            "oneandzeroes",
-            length=DB_STR_32BIT_MAXLEN_STORED,
-        ),
+        Integer(),
         nullable=False,
         default=0,
     )

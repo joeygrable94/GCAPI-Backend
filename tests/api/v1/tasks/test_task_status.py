@@ -1,4 +1,3 @@
-from time import sleep
 from typing import Any, Dict
 
 import pytest
@@ -25,7 +24,6 @@ async def test_get_status_task_speak(
     admin_token_headers: Dict[str, str],
 ) -> None:
     speak_word: str = random_lower_string()
-    sleep(5)
     request = await client.get(
         f"/status?message={speak_word}", headers=admin_token_headers
     )
@@ -33,7 +31,6 @@ async def test_get_status_task_speak(
     assert req_data["status"] == "ok"
     task_id = req_data["speak_task_id"]
     assert task_id
-    sleep(5)
     response = await client.get(f"tasks/{task_id}", headers=admin_token_headers)
     response_json: Dict[str, Any] = response.json()
     assert response_json["task_id"] == task_id

@@ -1,12 +1,11 @@
 import base64
 import os
 
-import typer
-
+from app.cli.app import AsyncTyper
 from app.core.logger import logger
 from app.core.security.encryption.keys import load_api_keys
 
-app = typer.Typer()
+app = AsyncTyper()
 
 
 @app.command()

@@ -262,6 +262,20 @@ files = [
 ]
 
 [[package]]
+name = "asyncer"
+version = "0.0.7"
+description = "Asyncer, async and await, focused on developer experience."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "asyncer-0.0.7-py3-none-any.whl", hash = "sha256:f0d579d4f67c4ead52ede3a45c854f462cae569058a8a6a68a4ebccac1c335d8"},
+    {file = "asyncer-0.0.7.tar.gz", hash = "sha256:d5e563fb0f56eb87b97257984703658a4f5bbdb52ff851b3e8ed864cc200b1d2"},
+]
+
+[package.dependencies]
+anyio = ">=3.4.0,<5.0"
+
+[[package]]
 name = "asyncio"
 version = "3.4.3"
 description = "reference implementation of PEP 3156"
@@ -3474,4 +3488,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "75a790d62ce8da8a2fde1160c6d632cf71ce1860aa0ff5bbedcffcd6fe0d0b54"
+content-hash = "6c72f67629e184e47014494e3f8f50492b7d622784534b5abefe3a866fac2d46"

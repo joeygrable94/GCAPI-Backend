@@ -15,7 +15,7 @@ from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 from app.db.constants import (
     DB_STR_DESC_MAXLEN_STORED,
-    DB_STR_TINYTEXT_MAXLEN_STORED,
+    DB_STR_TINYTEXT_MAXLEN_INPUT,
     DB_STR_URLPATH_MAXLEN_INPUT,
 )
 from app.db.custom_types import LongText
@@ -38,24 +38,13 @@ class ClientReport(Base, Timestamp):
         default=get_uuid(),
     )
     title: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            settings.api.encryption_key,
-            AesEngine,
-            "pkcs5",
-            length=DB_STR_TINYTEXT_MAXLEN_STORED,
-        ),
+        String(length=DB_STR_TINYTEXT_MAXLEN_INPUT),
+        index=True,
         unique=True,
         nullable=False,
     )
     url: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            settings.api.encryption_key,
-            AesEngine,
-            "pkcs5",
-            length=DB_STR_URLPATH_MAXLEN_INPUT,
-        ),
+        String(length=DB_STR_URLPATH_MAXLEN_INPUT),
         nullable=False,
     )
     description: Mapped[str] = mapped_column(

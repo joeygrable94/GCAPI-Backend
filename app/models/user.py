@@ -33,6 +33,7 @@ from app.db.base_class import Base
 from app.db.constants import (
     DB_STR_32BIT_MAXLEN_STORED,
     DB_STR_SHORTTEXT_MAXLEN_STORED,
+    DB_STR_TINYTEXT_MAXLEN_INPUT,
     DB_STR_TINYTEXT_MAXLEN_STORED,
     DB_STR_USER_PICTURE_DEFAULT,
 )
@@ -79,13 +80,8 @@ class User(Base, Timestamp):
         nullable=False,
     )
     username: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            settings.api.encryption_key,
-            AesEngine,
-            "pkcs5",
-            length=DB_STR_TINYTEXT_MAXLEN_STORED,
-        ),
+        String(length=DB_STR_TINYTEXT_MAXLEN_INPUT),
+        index=True,
         unique=True,
         nullable=False,
         default=get_random_username(),
@@ -102,24 +98,12 @@ class User(Base, Timestamp):
         default=DB_STR_USER_PICTURE_DEFAULT,
     )
     is_active: Mapped[bool] = mapped_column(
-        StringEncryptedType(
-            Boolean,
-            settings.api.encryption_key,
-            AesEngine,
-            "zeroes",
-            length=DB_STR_32BIT_MAXLEN_STORED,
-        ),
+        Boolean(),
         nullable=False,
         default=True,
     )
     is_verified: Mapped[bool] = mapped_column(
-        StringEncryptedType(
-            Boolean,
-            settings.api.encryption_key,
-            AesEngine,
-            "zeroes",
-            length=DB_STR_32BIT_MAXLEN_STORED,
-        ),
+        Boolean(),
         nullable=False,
         default=False,
     )
