@@ -28,7 +28,7 @@ class CsrfSettings(BaseModel):
     cookie_key: StrictStr = settings.api.csrf_name_key
     header_name: StrictStr = settings.api.csrf_header_key
     header_type: Optional[StrictStr] = None
-    secret_key: StrictStr = settings.api.secret_key
+    secret_key: StrictStr = settings.api.csrf_secret_key
     token_key: StrictStr = settings.api.csrf_name_key
 
 

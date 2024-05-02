@@ -41,7 +41,7 @@ class ApiSettings(BaseSettings):
     # Security
     asgi_header_key: str = "x-request-id"
     allowed_cors: Optional[Union[str, List[str]]] = environ.get("API_ALLOWED_CORS")
-    secret_key: str = environ.get(
+    session_secret_key: str = environ.get(
         "API_SECRET_KEY",
         "54295fb3ad6577bf6ec55fc8a4e2ce86b4a490b5f1666f1e871e94855f6dc0a7",
     )

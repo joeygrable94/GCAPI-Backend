@@ -27,7 +27,7 @@ def configure_middleware(app: FastAPI) -> None:
     )
     app.add_middleware(
         SessionMiddleware,
-        secret_key=settings.api.secret_key,
+        secret_key=settings.api.session_secret_key,
         session_cookie="gcapi_session",
     )
     if settings.api.allowed_cors:
