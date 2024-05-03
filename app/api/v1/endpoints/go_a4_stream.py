@@ -290,16 +290,16 @@ async def ga4_stream_update(
         if a_ga4_stream:
             raise Ga4StreamAlreadyExists()
     if ga4_stream_in.website_id is not None:
-        await permissions.verify_user_can_access(
-            privileges=[RoleAdmin, RoleManager],
-            website_id=ga4_stream_in.website_id,
-        )
         website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
         a_website: Website | None = await website_repo.read(
             entry_id=ga4_stream_in.website_id
         )
         if a_website is None:
             raise WebsiteNotExists()
+        await permissions.verify_user_can_access(
+            privileges=[RoleAdmin, RoleManager],
+            website_id=ga4_stream_in.website_id,
+        )
     updated_ga4: GoAnalytics4Stream | None = await ga4_stream_repo.update(
         entry=ga4_stream, schema=ga4_stream_in
     )

@@ -6,6 +6,7 @@ from .get_client_ip import get_request_client_ip
 from .get_db import AsyncDatabaseSession, get_async_db
 from .get_db_items import (
     FetchClientOr404,
+    FetchClientReportOr404,
     FetchNoteOr404,
     FetchSitemapOr404,
     FetchUserOr404,
@@ -15,6 +16,7 @@ from .get_db_items import (
     FetchWebsiteOr404,
     get_bdx_feed_404,
     get_client_or_404,
+    get_client_report_or_404,
     get_ga4_property_404,
     get_ga4_stream_404,
     get_go_cloud_404,
@@ -86,6 +88,8 @@ __all__: List[str] = [
     "FetchWebsiteKeywordCorpusOr404",
     "FetchWebsiteOr404",
     "get_client_or_404",
+    "FetchClientReportOr404",
+    "get_client_report_or_404",
     "get_note_or_404",
     "get_bdx_feed_404",
     "get_sharpspring_404",

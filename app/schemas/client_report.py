@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Optional
 
 from pydantic import UUID4, field_validator
@@ -41,6 +42,7 @@ class ClientReportUpdate(BaseSchema):
     description: Optional[str] = None
     keys: Optional[str] = None
     client_id: Optional[UUID4] = None
+    created: Optional[datetime] = None
 
     _validate_title = field_validator("title", mode="before")(validate_title_optional)
     _validate_url = field_validator("url", mode="before")(validate_url_optional)

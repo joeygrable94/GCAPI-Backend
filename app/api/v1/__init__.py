@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
     bdx_feed,
+    client_reports,
     clients,
     go_a4_property,
     go_a4_stream,
@@ -54,6 +55,13 @@ router_v1.include_router(
     clients.router,
     prefix="/clients",
     tags=["Clients"],
+)
+
+# Client Reports routes
+router_v1.include_router(
+    client_reports.router,
+    prefix="/clients/reports",
+    tags=["Client Reports"],
 )
 
 # Note routes

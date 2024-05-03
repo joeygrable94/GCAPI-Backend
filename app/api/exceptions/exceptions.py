@@ -42,6 +42,17 @@ class ClientRelationshipNotExists(ApiException):
         super().__init__(status.HTTP_404_NOT_FOUND, message)
 
 
+# Client Reports
+class ClientReportAlreadyExists(ApiException):
+    def __init__(self, message: str = ErrorCode.CLIENT_REPORT_EXISTS):
+        super().__init__(status.HTTP_400_BAD_REQUEST, message)
+
+
+class ClientReportNotExists(ApiException):
+    def __init__(self, message: str = ErrorCode.CLIENT_REPORT_NOT_FOUND):
+        super().__init__(status.HTTP_404_NOT_FOUND, message)
+
+
 # Notes
 class NoteAlreadyExists(ApiException):
     def __init__(self, message: str = ErrorCode.NOTE_EXISTS):

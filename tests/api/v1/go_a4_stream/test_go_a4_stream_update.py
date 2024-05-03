@@ -59,6 +59,39 @@ async def test_update_ga4_property_as_superuser(
     assert entry["website_id"] == str(a_website.id)
 
 
+async def test_update_ga4_property_as_superuser_website_exists(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_token_headers: Dict[str, str],
+) -> None:
+    a_client: ClientRead = await create_random_client(db_session)
+    a_website: WebsiteRead = await create_random_website(db_session)
+    b_website: WebsiteRead = await create_random_website(db_session)
+    a_client_website = await assign_website_to_client(  # noqa: F841
+        db_session, a_website, a_client
+    )
+    ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
+        db_session, client_id=a_client.id
+    )
+    ga4_stream: GoAnalytics4StreamRead = await create_random_ga4_stream(
+        db_session, ga4_property.id, a_website.id
+    )
+    data_in: Dict[str, Any] = dict(
+        title=random_lower_string(), website_id=str(b_website.id)
+    )
+    response: Response = await client.patch(
+        f"ga4/stream/{ga4_stream.id}",
+        headers=admin_token_headers,
+        json=data_in,
+    )
+    entry: Dict[str, Any] = response.json()
+    assert 200 <= response.status_code < 300
+    assert entry["title"] == data_in["title"]
+    assert entry["stream_id"] == ga4_stream.stream_id
+    assert entry["ga4_id"] == str(ga4_property.id)
+    assert entry["website_id"] == str(b_website.id)
+
+
 async def test_update_ga4_property_as_superuser_website_not_exists(
     client: AsyncClient,
     db_session: AsyncSession,

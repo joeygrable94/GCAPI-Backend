@@ -12,6 +12,8 @@ from .exceptions import (
     ClientAlreadyExists,
     ClientNotExists,
     ClientRelationshipNotExists,
+    ClientReportAlreadyExists,
+    ClientReportNotExists,
     Ga4PropertyAlreadyExists,
     Ga4PropertyNotExists,
     Ga4StreamAlreadyExists,
@@ -145,6 +147,32 @@ def configure_exceptions(app: FastAPI) -> None:
     @app.exception_handler(ClientRelationshipNotExists)
     async def client_relationship_not_exists_exception_handler(
         request: Request, exc: ClientRelationshipNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(ClientReportAlreadyExists)
+    async def client_report_already_exists_exception_handler(
+        request: Request, exc: ClientReportAlreadyExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(ClientReportNotExists)
+    async def client_report_not_exists_exception_handler(
+        request: Request, exc: ClientReportNotExists
     ) -> Response:  # noqa: E501
         return await http_exception_handler(
             request,
@@ -498,6 +526,9 @@ __all__: List[str] = [
     "ApiException",
     "ClientAlreadyExists",
     "ClientNotExists",
+    "ClientRelationshipNotExists",
+    "ClientReportAlreadyExists",
+    "ClientReportNotExists",
     "configure_exceptions",
     "ErrorModel",
     "ErrorCodeReasonModel",

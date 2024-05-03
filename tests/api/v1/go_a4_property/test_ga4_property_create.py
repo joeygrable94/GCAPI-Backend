@@ -73,9 +73,7 @@ async def test_create_ga4_property_as_employee(
 ) -> None:
     a_user: User = await get_user_by_email(db_session, settings.auth.first_employee)
     a_client: ClientRead = await create_random_client(db_session)
-    a_user_a_client = await assign_user_to_client(  # noqa: F841
-        db_session, a_user, a_client
-    )
+    a_user_a_client = await assign_user_to_client(db_session, a_user, a_client)
     data_in: Dict[str, Any] = dict(
         title=random_lower_string(),
         measurement_id=random_lower_string(DB_STR_16BIT_MAXLEN_INPUT),

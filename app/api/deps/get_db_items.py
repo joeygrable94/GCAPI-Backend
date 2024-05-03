@@ -7,6 +7,7 @@ from app.api.deps.get_db import AsyncDatabaseSession
 from app.api.exceptions import (
     BdxFeedNotExists,
     ClientNotExists,
+    ClientReportNotExists,
     Ga4PropertyNotExists,
     Ga4StreamNotExists,
     GoCloudPropertyNotExists,
@@ -24,6 +25,7 @@ from app.api.exceptions import (
 from app.core.utilities.uuids import parse_id
 from app.crud import (
     BdxFeedRepository,
+    ClientReportRepository,
     ClientRepository,
     GoAnalytics4PropertyRepository,
     GoAnalytics4StreamRepository,
@@ -42,6 +44,7 @@ from app.crud import (
 from app.models import (
     BdxFeed,
     Client,
+    ClientReport,
     GoAnalytics4Property,
     GoAnalytics4Stream,
     GoCloudProperty,
@@ -93,6 +96,22 @@ async def get_client_or_404(
 
 
 FetchClientOr404 = Annotated[Client, Depends(get_client_or_404)]
+
+
+async def get_client_report_or_404(
+    db: AsyncDatabaseSession,
+    report_id: Any,
+) -> ClientReport | None:
+    """Parses uuid/int and fetches client report by id."""
+    parsed_id: UUID = parse_id(report_id)
+    report_repo: ClientReportRepository = ClientReportRepository(session=db)
+    client_report: ClientReport | None = await report_repo.read(entry_id=parsed_id)
+    if client_report is None:
+        raise ClientReportNotExists()
+    return client_report
+
+
+FetchClientReportOr404 = Annotated[ClientReport, Depends(get_client_report_or_404)]
 
 
 async def get_note_or_404(
