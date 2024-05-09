@@ -10,6 +10,28 @@ from app.tasks import task_website_sitemap_process_xml
 pytestmark = pytest.mark.asyncio
 
 
+async def test_task_website_sitemap_process_xml_index_invalid_uuid(
+    mock_fetch_sitemap_index: str,
+    db_session: AsyncSession,
+) -> None:
+    website_id = get_uuid()
+    invalid_sitemap_id = "invalid-sitemap-id"
+    sitemap_url = "https://getcommunity.com/sitemap.xml"
+    with unittest.mock.patch(
+        "app.tasks.website_tasks.fetch_url_page_text"
+    ) as mock_fetch_url_page_text:
+        mock_fetch_url_page_text.return_value = mock_fetch_sitemap_index
+        sitemap_task: WebsiteMapProcessedResult = (
+            await task_website_sitemap_process_xml(
+                str(website_id), str(invalid_sitemap_id), sitemap_url
+            )
+        )
+        assert sitemap_task.url == sitemap_url
+        assert sitemap_task.is_active is False
+        assert sitemap_task.website_id is None
+        assert sitemap_task.sitemap_id is None
+
+
 async def test_task_website_sitemap_process_xml_index(
     mock_fetch_sitemap_index: str,
     db_session: AsyncSession,

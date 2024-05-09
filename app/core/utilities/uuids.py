@@ -41,11 +41,5 @@ def get_random_username() -> str:
     Returns:
         str: string
     """
-    USERNAME_MAX_LENGTH = 255
-    allowed_characters = string.ascii_letters + string.digits + "_"
-    max_username_length = min(USERNAME_MAX_LENGTH, len(allowed_characters))
-    username_length = random.randint(1, max_username_length)
-    username = "".join(
-        random.choice(allowed_characters) for _ in range(username_length)
-    )
+    username = "".join(random.choices(string.ascii_lowercase, k=64))
     return username

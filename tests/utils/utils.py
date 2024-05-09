@@ -1,11 +1,19 @@
 import random
 import string
 from datetime import datetime
+from os import path
 
 from pydantic import EmailStr
 
 now = datetime.now()
 random.seed(int(round(now.timestamp())))
+
+
+def get_tests_root_directory() -> str:
+    current_directory = __file__
+    while not path.isfile(path.join(current_directory, "conftest.py")):
+        current_directory = path.dirname(current_directory)
+    return current_directory
 
 
 def random_boolean() -> bool:

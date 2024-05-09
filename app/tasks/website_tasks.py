@@ -1,5 +1,8 @@
 from typing import Optional
 
+from pydantic import UUID4
+
+from app.api.exceptions.exceptions import InvalidID
 from app.api.utilities import (
     create_or_update_website_map,
     create_or_update_website_page,
@@ -7,6 +10,7 @@ from app.api.utilities import (
     fetch_pagespeedinsights,
 )
 from app.core.logger import logger
+from app.core.utilities.uuids import parse_id
 from app.core.utilities.websites import (
     check_is_sitemap_index,
     check_is_sitemap_page,
@@ -32,6 +36,18 @@ async def task_website_sitemap_process_xml(
     sitemap_id: str,
     sitemap_url: str,
 ) -> WebsiteMapProcessedResult:
+    website_uuid: UUID4
+    sitemap_uuid: UUID4
+    try:
+        website_uuid = parse_id(website_id)
+        sitemap_uuid = parse_id(sitemap_id)
+    except InvalidID:
+        return WebsiteMapProcessedResult(
+            url=sitemap_url,
+            is_active=False,
+            website_id=None,
+            sitemap_id=None,
+        )
     sitemap_text: str = await fetch_url_page_text(sitemap_url)
     sitemap_root = await parse_sitemap_xml(sitemap_text)
     # Check if the sitemap is a sitemap index
@@ -56,8 +72,9 @@ async def task_website_sitemap_process_xml(
         logger.info(f"Processed {len(sitemap_webpages)} sitemap website page urls")
     return WebsiteMapProcessedResult(
         url=sitemap_url,
-        website_id=website_id,
-        sitemap_id=sitemap_id,
+        is_active=True,
+        website_id=website_uuid,
+        sitemap_id=sitemap_uuid,
     )
 
 
@@ -69,8 +86,7 @@ async def task_website_page_pagespeedinsights_fetch(
     device: PSIDevice,
 ) -> WebsitePageSpeedInsightsProcessing:
     logger.info(
-        f"Fetching PageSpeedInsights for website {website_id}, \
-            page {page_id}, URL[{fetch_url}]"
+        f"Fetching PageSpeedInsights for website {website_id}, page {page_id}, URL[{fetch_url}]"  # noqa: E501
     )
     is_created: bool = False
     insights: Optional[WebsitePageSpeedInsightsBase] = fetch_pagespeedinsights(

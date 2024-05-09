@@ -41,6 +41,8 @@ class ApiSettings(BaseSettings):
     # Security
     asgi_header_key: str = "x-request-id"
     allowed_cors: Optional[Union[str, List[str]]] = environ.get("API_ALLOWED_CORS")
+    rsa_public_key: str = environ.get("API_RSA_PUBLIC_KEY", "")
+    rsa_private_key: str = environ.get("API_RSA_PRIVATE_KEY", "")
     session_secret_key: str = environ.get(
         "API_SECRET_KEY",
         "54295fb3ad6577bf6ec55fc8a4e2ce86b4a490b5f1666f1e871e94855f6dc0a7",
@@ -103,3 +105,21 @@ class ApiSettings(BaseSettings):
         elif isinstance(v, list):
             return v
         return ["*"]
+
+    @field_validator("rsa_public_key", mode="before")
+    def validate_rsa_public_key(
+        cls, v: str, info: ValidationInfo
+    ) -> str:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("RSA Public Key must be a string")
+
+    @field_validator("rsa_private_key", mode="before")
+    def validate_rsa_private_key(
+        cls, v: str, info: ValidationInfo
+    ) -> str:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("RSA Private Key must be a string")

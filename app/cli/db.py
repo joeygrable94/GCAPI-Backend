@@ -62,9 +62,7 @@ def generate_schema_graph() -> None:
         all_models = [getattr(models, m) for m in models.__all__]
         output_file_name = f"./docs/{app_name}_schema_graph"
         output_file_interactive = f"./docs/{output_file_name}_interactive.svg"
-        generate_data_model_diagram(  # type: ignore
-            all_models, output_file_name, view_diagram=False
-        )
+        generate_data_model_diagram(all_models, output_file_name)  # type: ignore
         add_web_font_and_interactivity(  # type: ignore
             output_file_name, output_file_interactive
         )

@@ -6,13 +6,11 @@ from pydantic import UUID4, field_validator
 
 from app.db.validators import (
     validate_caption_optional,
-    validate_file_extension_optional,
-    validate_file_extension_required,
-    validate_filename_optional,
-    validate_filename_required,
-    validate_keys_optional,
+    validate_file_name_optional,
+    validate_file_name_required,
+    validate_mime_type_optional,
+    validate_mime_type_required,
     validate_size_kb_optional,
-    validate_size_kb_required,
     validate_title_optional,
     validate_title_required,
 )
@@ -21,33 +19,31 @@ from app.schemas.base import BaseSchemaRead
 
 # schemas
 class FileAssetBase(BaseSchemaRead):
-    filename: str
-    extension: str
-    size_kb: int
+    file_name: str
+    mime_type: str
+    size_kb: int | None = None
     title: str
     caption: Optional[str] = None
-    keys: Optional[str] = None
-    is_private: bool
+    is_private: bool = False
     user_id: UUID4
     bucket_id: UUID4
     client_id: UUID4
     geocoord_id: Optional[UUID4] = None
     bdx_feed_id: Optional[UUID4] = None
 
-    _validate_filename = field_validator("filename", mode="before")(
-        validate_filename_required
+    _validate_file_name = field_validator("file_name", mode="before")(
+        validate_file_name_required
     )
-    _validate_extension = field_validator("extension", mode="before")(
-        validate_file_extension_required
+    _validate_mime_type = field_validator("mime_type", mode="before")(
+        validate_mime_type_required
     )
     _validate_size_kb = field_validator("size_kb", mode="before")(
-        validate_size_kb_required
+        validate_size_kb_optional
     )
     _validate_title = field_validator("title", mode="before")(validate_title_required)
     _validate_caption = field_validator("caption", mode="before")(
         validate_caption_optional
     )
-    _validate_keys = field_validator("keys", mode="before")(validate_keys_optional)
 
 
 class FileAssetCreate(FileAssetBase):
@@ -55,24 +51,23 @@ class FileAssetCreate(FileAssetBase):
 
 
 class FileAssetUpdate(BaseSchemaRead):
-    filename: Optional[str] = None
-    extension: Optional[str] = None
+    file_name: Optional[str] = None
+    mime_type: Optional[str] = None
     size_kb: Optional[int] = None
     title: Optional[str] = None
     caption: Optional[str] = None
     keys: Optional[str] = None
     is_private: Optional[bool] = None
-    user_id: Optional[UUID4] = None
     bucket_id: Optional[UUID4] = None
     client_id: Optional[UUID4] = None
     geocoord_id: Optional[UUID4] = None
     bdx_feed_id: Optional[UUID4] = None
 
-    _validate_filename = field_validator("filename", mode="before")(
-        validate_filename_optional
+    _validate_file_name = field_validator("file_name", mode="before")(
+        validate_file_name_optional
     )
-    _validate_extension = field_validator("extension", mode="before")(
-        validate_file_extension_optional
+    _validate_mime_type = field_validator("mime_type", mode="before")(
+        validate_mime_type_optional
     )
     _validate_size_kb = field_validator("size_kb", mode="before")(
         validate_size_kb_optional
@@ -81,7 +76,6 @@ class FileAssetUpdate(BaseSchemaRead):
     _validate_caption = field_validator("caption", mode="before")(
         validate_caption_optional
     )
-    _validate_keys = field_validator("keys", mode="before")(validate_keys_optional)
 
 
 class FileAssetRead(FileAssetBase, BaseSchemaRead):

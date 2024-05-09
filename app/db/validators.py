@@ -4,6 +4,7 @@ from app.core.config import settings
 from app.core.security.permissions import AclPrivilege, Scope
 from app.core.utilities import domain_name_regex, email_regex
 from app.db.constants import (
+    DB_INT_ALTITUDE_MAX,
     DB_INT_INTEGER_MAXLEN_STORED,
     DB_STR_16BIT_MAXLEN_INPUT,
     DB_STR_32BIT_MAXLEN_INPUT,
@@ -172,29 +173,29 @@ def optional_string_in_list(
 # validation Schemas
 
 
-def validate_file_extension_required(cls: Any, value: str) -> str:
+def validate_mime_type_required(cls: Any, value: str) -> str:
     value = require_string_name_min_max_len(
         v=value,
-        name="extension",
+        name="mime_type",
         min_len=0,
-        max_len=DB_STR_16BIT_MAXLEN_INPUT,
+        max_len=DB_STR_SHORTTEXT_MAXLEN_INPUT,
     )
     return required_string_in_list(
         v=value,
-        name="extension",
+        name="mime_type",
         choices=settings.api.accepted_types,
     )
 
 
-def validate_file_extension_optional(cls: Any, value: str | None) -> str | None:
+def validate_mime_type_optional(cls: Any, value: str | None) -> str | None:
     value = optional_string_name_min_max_len(
         v=value,
-        name="extension",
-        max_len=DB_STR_16BIT_MAXLEN_INPUT,
+        name="mime_type",
+        max_len=DB_STR_SHORTTEXT_MAXLEN_INPUT,
     )
     return optional_string_in_list(
         v=value,
-        name="extension",
+        name="mime_type",
         choices=settings.api.accepted_types,
     )
 
@@ -509,19 +510,19 @@ def validate_serverhost_optional(cls: Any, value: str | None) -> str | None:
     )
 
 
-def validate_object_key_required(cls: Any, value: str) -> str:
+def validate_bucket_key_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
-        name="object_key",
+        name="bucket_key",
         min_len=1,
         max_len=DB_STR_URLPATH_MAXLEN_INPUT,
     )
 
 
-def validate_object_key_optional(cls: Any, value: str | None) -> str | None:
+def validate_bucket_key_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
-        name="object_key",
+        name="bucket_key",
         min_len=1,
         max_len=DB_STR_URLPATH_MAXLEN_INPUT,
     )
@@ -532,7 +533,7 @@ def validate_bucket_name_required(cls: Any, value: str) -> str:
         v=value,
         name="bucket_name",
         min_len=0,
-        max_len=100,
+        max_len=DB_STR_SHORTTEXT_MAXLEN_INPUT,
     )
 
 
@@ -541,7 +542,7 @@ def validate_bucket_name_optional(cls: Any, value: str | None) -> str | None:
         v=value,
         name="bucket_name",
         min_len=1,
-        max_len=100,
+        max_len=DB_STR_SHORTTEXT_MAXLEN_INPUT,
     )
 
 
@@ -549,25 +550,25 @@ def validate_caption_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="caption",
-        max_len=150,
+        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
     )
 
 
-def validate_filename_required(cls: Any, value: str) -> str:
+def validate_file_name_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
         name="name",
         min_len=0,
-        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
+        max_len=DB_STR_SHORTTEXT_MAXLEN_INPUT,
     )
 
 
-def validate_filename_optional(cls: Any, value: str | None) -> str | None:
+def validate_file_name_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="name",
         min_len=5,
-        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
+        max_len=DB_STR_SHORTTEXT_MAXLEN_INPUT,
     )
 
 
@@ -780,7 +781,7 @@ def validate_group_slug_required(cls: Any, value: str) -> str:
         v=value,
         name="group_slug",
         min_len=0,
-        max_len=12,
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
     )
 
 
@@ -807,7 +808,7 @@ def validate_snap_slug_required(cls: Any, value: str) -> str:
         v=value,
         name="snap_slug",
         min_len=0,
-        max_len=12,
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
     )
 
 
@@ -816,7 +817,7 @@ def validate_altitude_required(cls: Any, value: int) -> int:
         v=value,
         name="altitude",
         min_len=0,
-        max_len=1000,
+        max_len=DB_INT_ALTITUDE_MAX,
         can_be_zero=True,
     )
 
@@ -826,7 +827,7 @@ def validate_altitude_optional(cls: Any, value: int | None) -> int | None:
         v=value,
         name="altitude",
         min_len=0,
-        max_len=1000,
+        max_len=DB_INT_ALTITUDE_MAX,
         can_be_zero=True,
     )
 

@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum, unique
-from typing import Any
 
 from pydantic import UUID4, BaseModel, field_validator
 
@@ -55,16 +54,13 @@ class WebsiteMapPage(BaseModel):
 # schemas
 class WebsiteMapBase(BaseSchema):
     url: str
-    is_active: bool
-    website_id: UUID4
+    is_active: bool = True
+
+    _validate_url = field_validator("url", mode="before")(validate_url_required)
 
 
 class WebsiteMapCreate(WebsiteMapBase):
-    url: str
-    is_active: bool = True
     website_id: UUID4
-
-    _validate_url = field_validator("url", mode="before")(validate_url_required)
 
 
 class WebsiteMapUpdate(BaseSchema):
@@ -76,6 +72,7 @@ class WebsiteMapUpdate(BaseSchema):
 
 class WebsiteMapRead(WebsiteMapBase, BaseSchemaRead):
     id: UUID4
+    website_id: UUID4
 
 
 # tasks
@@ -83,10 +80,11 @@ class WebsiteMapProcessing(BaseModel):
     url: str
     website_id: UUID4
     sitemap_id: UUID4
-    task_id: UUID4 | str | Any | None = None
+    task_id: str | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_required)
 
 
-class WebsiteMapProcessedResult(WebsiteMapCreate):
-    sitemap_id: UUID4
+class WebsiteMapProcessedResult(WebsiteMapBase):
+    website_id: UUID4 | None
+    sitemap_id: UUID4 | None

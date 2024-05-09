@@ -13,7 +13,11 @@ from sqlalchemy_utils.types.encrypted.encrypted_type import (  # type: ignore  #
 from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
-from app.db.constants import DB_STR_DESC_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_INPUT
+from app.db.constants import (
+    DB_STR_DESC_MAXLEN_STORED,
+    DB_STR_SHORTTEXT_MAXLEN_INPUT,
+    DB_STR_TINYTEXT_MAXLEN_INPUT,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
@@ -22,10 +26,10 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class ClientBucket(Base, Timestamp):
     """
-    Bucket Name: The name of the AWS S3 bucket where the image is stored. This allows
-        you to identify the specific bucket for retrieval.
-    Object Key: The unique key (path) within the S3 bucket that identifies the image.
-        This should be unique for each image and can include subdirectories if needed.
+    Bucket Name: The name of the folder where the data is stored.
+
+    Bucket Key: The unique key (id) provided by Google Cloud that identifies the folder.
+        This should be unique for each folder.
     """
 
     __tablename__: str = "client_bucket"
@@ -37,13 +41,14 @@ class ClientBucket(Base, Timestamp):
         default=get_uuid(),
     )
     bucket_name: Mapped[str] = mapped_column(
-        String(length=DB_STR_TINYTEXT_MAXLEN_INPUT),
+        String(length=DB_STR_SHORTTEXT_MAXLEN_INPUT),
         index=True,
         nullable=False,
     )
-    object_key: Mapped[str] = mapped_column(
+    bucket_key: Mapped[str] = mapped_column(
         String(length=DB_STR_TINYTEXT_MAXLEN_INPUT),
         index=True,
+        unique=True,
         nullable=False,
     )
     description: Mapped[str] = mapped_column(

@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.utils import random_boolean, random_email
+from tests.utils.utils import random_boolean, random_email, random_lower_string
 
-from app.core.utilities.uuids import get_random_username, get_uuid_str
+from app.core.utilities.uuids import get_uuid_str
 from app.crud import ClientRepository, UserRepository
 from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
 from app.schemas import ClientCreate, UserCreate
@@ -34,7 +34,7 @@ async def test_client_encrypted_too_in_db(db_session: AsyncSession) -> None:
 async def test_user_encrypted_in_db(db_session: AsyncSession) -> None:
     a_authid = get_uuid_str()
     a_email = random_email()
-    a_username = get_random_username()
+    a_username = random_lower_string()
     a_active = random_boolean()
     a_verified = random_boolean()
     a_superuser = random_boolean()

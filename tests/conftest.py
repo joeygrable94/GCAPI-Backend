@@ -84,7 +84,7 @@ async def client(app: FastAPI) -> AsyncGenerator:
 def mock_fetch_psi() -> Dict[str, Any]:
     mocked_response = {}
     here = path.dirname(path.abspath(__file__))
-    with open(f"{here}/utils/fetchpsi.json") as f:
+    with open(f"{here}/data/fetchpsi.json") as f:
         mocked_response = json.load(f)
     return mocked_response
 
@@ -93,7 +93,7 @@ def mock_fetch_psi() -> Dict[str, Any]:
 def mock_fetch_ipinfo() -> Dict[str, Any]:
     mocked_response = {}
     here = path.dirname(path.abspath(__file__))
-    with open(f"{here}/utils/ipinfo-8.8.8.8.json") as f:
+    with open(f"{here}/data/ipinfo-8.8.8.8.json") as f:
         mocked_response = json.load(f)
     return mocked_response
 
@@ -102,7 +102,7 @@ def mock_fetch_ipinfo() -> Dict[str, Any]:
 def mock_fetch_sitemap_index() -> str:
     mocked_response = ""
     here = path.dirname(path.abspath(__file__))
-    with open(f"{here}/utils/sitemap-index.xml") as f:
+    with open(f"{here}/data/sitemap-index.xml") as f:
         mocked_response = f.read()
     return mocked_response
 
@@ -111,7 +111,7 @@ def mock_fetch_sitemap_index() -> str:
 def mock_fetch_sitemap_page() -> str:
     mocked_response = ""
     here = path.dirname(path.abspath(__file__))
-    with open(f"{here}/utils/sitemap-page.xml") as f:
+    with open(f"{here}/data/sitemap-page.xml") as f:
         mocked_response = f.read()
     return mocked_response
 
@@ -120,7 +120,7 @@ def mock_fetch_sitemap_page() -> str:
 def mock_invalid_sitemap_xml() -> etree._Element:
     mocked_response = ""
     here = path.dirname(path.abspath(__file__))
-    with open(f"{here}/utils/sitemap-invalid.xml") as f:
+    with open(f"{here}/data/sitemap-invalid.xml") as f:
         mocked_response = f.read()
     return etree.fromstring(mocked_response.encode())
 
@@ -129,7 +129,7 @@ def mock_invalid_sitemap_xml() -> etree._Element:
 def mock_valid_sitemap_urlset_xml() -> etree._Element:
     mocked_response = ""
     here = path.dirname(path.abspath(__file__))
-    with open(f"{here}/utils/sitemap-urlset.xml") as f:
+    with open(f"{here}/data/sitemap-urlset.xml") as f:
         mocked_response = f.read()
     return etree.fromstring(mocked_response.encode())
 

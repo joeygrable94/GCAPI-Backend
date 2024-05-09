@@ -1,5 +1,4 @@
 import typer
-# from typing_extensions import Annotated
 
 import app.cli.db as db
 import app.cli.secure as secure

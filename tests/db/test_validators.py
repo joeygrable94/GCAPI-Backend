@@ -6,13 +6,16 @@ import pytest
 from app.core.config import settings
 from app.core.security.permissions.scope import AclPrivilege
 from app.db.constants import (
+    DB_INT_ALTITUDE_MAX,
     DB_INT_INTEGER_MAXLEN_STORED,
     DB_STR_16BIT_MAXLEN_INPUT,
     DB_STR_32BIT_MAXLEN_INPUT,
     DB_STR_64BIT_MAXLEN_INPUT,
     DB_STR_BLOB_MAXLEN_INPUT,
     DB_STR_BLOB_MAXLEN_STORED,
+    DB_STR_DESC_MAXLEN_INPUT,
     DB_STR_LONGTEXT_MAXLEN_STORED,
+    DB_STR_SHORTTEXT_MAXLEN_INPUT,
     DB_STR_TINYTEXT_MAXLEN_INPUT,
     DB_STR_URLPATH_MAXLEN_INPUT,
 )
@@ -28,6 +31,8 @@ from app.db.validators import (
     validate_bg_color_optional,
     validate_browser_optional,
     validate_browser_version_optional,
+    validate_bucket_key_optional,
+    validate_bucket_key_required,
     validate_bucket_name_optional,
     validate_bucket_name_required,
     validate_caption_optional,
@@ -43,10 +48,8 @@ from app.db.validators import (
     validate_domain_required,
     validate_email_required,
     validate_fcp_unit_required,
-    validate_file_extension_optional,
-    validate_file_extension_required,
-    validate_filename_optional,
-    validate_filename_required,
+    validate_file_name_optional,
+    validate_file_name_required,
     validate_group_name_optional,
     validate_group_name_required,
     validate_group_slug_required,
@@ -81,8 +84,8 @@ from app.db.validators import (
     validate_lcp_unit_required,
     validate_linked_snap_name_optional,
     validate_measurement_id_required,
-    validate_object_key_optional,
-    validate_object_key_required,
+    validate_mime_type_optional,
+    validate_mime_type_required,
     validate_password_optional,
     validate_password_required,
     validate_platform_optional,
@@ -142,19 +145,19 @@ def mock_settings() -> Any:
     return MagicMock(api=MagicMock(accepted_types=["jpg", "png"]))
 
 
-def test_validate_file_extension_required(mock_settings: Any) -> None:
-    assert validate_file_extension_required(cls=None, value="jpg") == "jpg"
-    assert validate_file_extension_required(cls=None, value="png") == "png"
+def test_validate_mime_type_required(mock_settings: Any) -> None:
+    assert validate_mime_type_required(cls=None, value="jpg") == "jpg"
+    assert validate_mime_type_required(cls=None, value="png") == "png"
     with pytest.raises(ValueError):
-        validate_file_extension_required(cls=None, value="exc")
+        validate_mime_type_required(cls=None, value="exc")
 
 
-def test_validate_file_extension_optional(mock_settings: Any) -> None:
-    assert validate_file_extension_optional(cls=None, value=None) is None
-    assert validate_file_extension_optional(cls=None, value="jpg") == "jpg"
-    assert validate_file_extension_optional(cls=None, value="png") == "png"
+def test_validate_mime_type_optional(mock_settings: Any) -> None:
+    assert validate_mime_type_optional(cls=None, value=None) is None
+    assert validate_mime_type_optional(cls=None, value="jpg") == "jpg"
+    assert validate_mime_type_optional(cls=None, value="png") == "png"
     with pytest.raises(ValueError):
-        validate_file_extension_optional(cls=None, value="exc")
+        validate_mime_type_optional(cls=None, value="exc")
 
 
 def test_validate_title_required() -> None:
@@ -187,7 +190,9 @@ def test_validate_description_optional() -> None:
         == "Valid Description"
     )
     with pytest.raises(ValueError):
-        validate_description_optional(cls=None, value="a" * 5001)
+        validate_description_optional(
+            cls=None, value="a" * (DB_STR_DESC_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_domain_required() -> None:
@@ -205,9 +210,14 @@ def test_validate_domain_required() -> None:
     with pytest.raises(ValueError):
         validate_domain_required(cls=None, value=".example.com")
     with pytest.raises(ValueError):
-        validate_domain_required(cls=None, value="example.com" + "a" * 253)
+        validate_domain_required(
+            cls=None, value="example.com" + "a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
     with pytest.raises(ValueError):
-        validate_domain_required(cls=None, value="example.com/path" + "a" * 240)
+        validate_domain_required(
+            cls=None,
+            value="example.com/path" + "a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1),
+        )
     with pytest.raises(ValueError):
         validate_domain_required(cls=None, value=None)  # type: ignore
 
@@ -228,9 +238,14 @@ def test_validate_domain_optional() -> None:
     with pytest.raises(ValueError):
         validate_domain_optional(cls=None, value=".example.com")
     with pytest.raises(ValueError):
-        validate_domain_optional(cls=None, value="example.com" + "a" * 253)
+        validate_domain_optional(
+            cls=None, value="example.com" + "a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        )
     with pytest.raises(ValueError):
-        validate_domain_optional(cls=None, value="example.com/path" + "a" * 240)
+        validate_domain_optional(
+            cls=None,
+            value="example.com/path" + "a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1),
+        )
 
 
 def test_validate_corpus_required() -> None:
@@ -357,7 +372,7 @@ def test_validate_ps_unit_required() -> None:
     with pytest.raises(ValueError):
         validate_ps_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_ps_unit_required(cls=None, value="a" * 17)
+        validate_ps_unit_required(cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1))
 
 
 def test_validate_fcp_unit_required() -> None:
@@ -367,7 +382,9 @@ def test_validate_fcp_unit_required() -> None:
     with pytest.raises(ValueError):
         validate_fcp_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_fcp_unit_required(cls=None, value="a" * 17)
+        validate_fcp_unit_required(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_lcp_unit_required() -> None:
@@ -377,7 +394,9 @@ def test_validate_lcp_unit_required() -> None:
     with pytest.raises(ValueError):
         validate_lcp_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_lcp_unit_required(cls=None, value="a" * 17)
+        validate_lcp_unit_required(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_cls_unit_required() -> None:
@@ -387,7 +406,9 @@ def test_validate_cls_unit_required() -> None:
     with pytest.raises(ValueError):
         validate_cls_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_cls_unit_required(cls=None, value="a" * 17)
+        validate_cls_unit_required(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_si_unit_required() -> None:
@@ -397,7 +418,7 @@ def test_validate_si_unit_required() -> None:
     with pytest.raises(ValueError):
         validate_si_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_si_unit_required(cls=None, value="a" * 17)
+        validate_si_unit_required(cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1))
 
 
 def test_validate_tbt_unit_required() -> None:
@@ -407,7 +428,9 @@ def test_validate_tbt_unit_required() -> None:
     with pytest.raises(ValueError):
         validate_tbt_unit_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_tbt_unit_required(cls=None, value="a" * 17)
+        validate_tbt_unit_required(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_scopes_required() -> None:
@@ -652,23 +675,23 @@ def test_validate_keys_optional() -> None:
         )
 
 
-def test_validate_object_key_required() -> None:
-    assert validate_object_key_required(cls=None, value="valid_key") == "valid_key"
+def test_validate_bucket_key_required() -> None:
+    assert validate_bucket_key_required(cls=None, value="valid_key") == "valid_key"
     with pytest.raises(ValueError):
-        validate_object_key_required(cls=None, value="")
+        validate_bucket_key_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_object_key_required(
+        validate_bucket_key_required(
             cls=None, value="a" * (DB_STR_URLPATH_MAXLEN_INPUT + 1)
         )
 
 
-def test_validate_object_key_optional() -> None:
-    assert validate_object_key_optional(cls=None, value=None) is None
-    assert validate_object_key_optional(cls=None, value="valid_key") == "valid_key"
+def test_validate_bucket_key_optional() -> None:
+    assert validate_bucket_key_optional(cls=None, value=None) is None
+    assert validate_bucket_key_optional(cls=None, value="valid_key") == "valid_key"
     with pytest.raises(ValueError):
-        validate_object_key_optional(cls=None, value="")
+        validate_bucket_key_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_object_key_optional(
+        validate_bucket_key_optional(
             cls=None, value="a" * (DB_STR_URLPATH_MAXLEN_INPUT + 1)
         )
 
@@ -683,7 +706,9 @@ def test_validate_bucket_name_required() -> None:
     with pytest.raises(ValueError):
         validate_bucket_name_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
-        validate_bucket_name_required(cls=None, value="a" * 101)
+        validate_bucket_name_required(
+            cls=None, value="a" * (DB_STR_SHORTTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_bucket_name_optional() -> None:
@@ -695,34 +720,38 @@ def test_validate_bucket_name_optional() -> None:
     with pytest.raises(ValueError):
         validate_bucket_name_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_bucket_name_optional(cls=None, value="a" * 101)
+        validate_bucket_name_optional(
+            cls=None, value="a" * (DB_STR_SHORTTEXT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_caption_optional() -> None:
     assert validate_caption_optional(cls=None, value=None) is None
     assert validate_caption_optional(cls=None, value="Valid Caption") == "Valid Caption"
     with pytest.raises(ValueError):
-        validate_caption_optional(cls=None, value="a" * 151)
-
-
-def test_validate_filename_required() -> None:
-    assert validate_filename_required(cls=None, value="ValidName") == "ValidName"
-    with pytest.raises(ValueError):
-        assert validate_filename_required(cls=None, value="")
-    with pytest.raises(ValueError):
-        validate_filename_required(
+        validate_caption_optional(
             cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
         )
 
 
-def test_validate_filename_optional() -> None:
-    assert validate_filename_optional(cls=None, value=None) is None
-    assert validate_filename_optional(cls=None, value="ValidName") == "ValidName"
+def test_validate_file_name_required() -> None:
+    assert validate_file_name_required(cls=None, value="ValidName") == "ValidName"
     with pytest.raises(ValueError):
-        validate_filename_optional(cls=None, value="a")
+        assert validate_file_name_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_filename_optional(
-            cls=None, value="a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+        validate_file_name_required(
+            cls=None, value="a" * (DB_STR_SHORTTEXT_MAXLEN_INPUT + 1)
+        )
+
+
+def test_validate_file_name_optional() -> None:
+    assert validate_file_name_optional(cls=None, value=None) is None
+    assert validate_file_name_optional(cls=None, value="ValidName") == "ValidName"
+    with pytest.raises(ValueError):
+        validate_file_name_optional(cls=None, value="a")
+    with pytest.raises(ValueError):
+        validate_file_name_optional(
+            cls=None, value="a" * (DB_STR_SHORTTEXT_MAXLEN_INPUT + 1)
         )
 
 
@@ -1001,7 +1030,9 @@ def test_validate_group_slug_required() -> None:
     with pytest.raises(ValueError):
         assert validate_group_slug_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_group_slug_required(cls=None, value="a" * 13)
+        validate_group_slug_required(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_snap_name_required() -> None:
@@ -1039,32 +1070,40 @@ def test_validate_snap_slug_required() -> None:
     with pytest.raises(ValueError):
         assert validate_snap_slug_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_snap_slug_required(cls=None, value="toolongslug1234")
+        validate_snap_slug_required(
+            cls=None, value="a" * (DB_STR_16BIT_MAXLEN_INPUT + 1)
+        )
 
 
 def test_validate_altitude_required() -> None:
     assert validate_altitude_required(cls=None, value=0) == 0
     assert validate_altitude_required(cls=None, value=500) == 500
-    assert validate_altitude_required(cls=None, value=1000) == 1000
+    assert (
+        validate_altitude_required(cls=None, value=DB_INT_ALTITUDE_MAX)
+        == DB_INT_ALTITUDE_MAX
+    )
     with pytest.raises(ValueError):
         assert validate_altitude_required(cls=None, value=-1)
     with pytest.raises(ValueError):
         validate_altitude_required(cls=None, value=-1)
     with pytest.raises(ValueError):
-        validate_altitude_required(cls=None, value=1001)
+        validate_altitude_required(cls=None, value=DB_INT_ALTITUDE_MAX + 1)
 
 
 def test_validate_altitude_optional() -> None:
     assert validate_altitude_optional(cls=None, value=None) is None
     assert validate_altitude_optional(cls=None, value=0) == 0
     assert validate_altitude_optional(cls=None, value=500) == 500
-    assert validate_altitude_optional(cls=None, value=1000) == 1000
+    assert (
+        validate_altitude_optional(cls=None, value=DB_INT_ALTITUDE_MAX)
+        == DB_INT_ALTITUDE_MAX
+    )
     with pytest.raises(ValueError):
         assert validate_altitude_optional(cls=None, value=-1)
     with pytest.raises(ValueError):
         validate_altitude_optional(cls=None, value=-1)
     with pytest.raises(ValueError):
-        validate_altitude_optional(cls=None, value=1001)
+        validate_altitude_optional(cls=None, value=DB_INT_ALTITUDE_MAX + 1)
 
 
 def test_validate_referrer_required() -> None:
