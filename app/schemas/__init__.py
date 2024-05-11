@@ -2,7 +2,6 @@ from typing import List
 
 from .bdx_feed import BdxFeedCreate, BdxFeedRead, BdxFeedUpdate
 from .client import ClientCreate, ClientDelete, ClientRead, ClientUpdate
-from .client_bucket import ClientBucketCreate, ClientBucketRead, ClientBucketUpdate
 from .client_report import ClientReportCreate, ClientReportRead, ClientReportUpdate
 from .client_report_note import (
     ClientReportNoteCreate,
@@ -10,6 +9,7 @@ from .client_report_note import (
     ClientReportNoteUpdate,
 )
 from .client_website import ClientWebsiteCreate, ClientWebsiteRead, ClientWebsiteUpdate
+from .data_bucket import DataBucketCreate, DataBucketRead, DataBucketUpdate
 from .file_asset import FileAssetCreate, FileAssetRead, FileAssetUpdate
 from .gcft import GcftCreate, GcftRead, GcftUpdate
 from .gcft_snap import GcftSnapCreate, GcftSnapRead, GcftSnapUpdate
@@ -115,9 +115,9 @@ __all__: List[str] = [
     "ClientDelete",
     "ClientRead",
     "ClientUpdate",
-    "ClientBucketCreate",
-    "ClientBucketRead",
-    "ClientBucketUpdate",
+    "DataBucketCreate",
+    "DataBucketRead",
+    "DataBucketUpdate",
     "ClientReportCreate",
     "ClientReportRead",
     "ClientReportUpdate",

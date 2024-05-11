@@ -1,19 +1,23 @@
 from typing import TYPE_CHECKING, Any, Optional
 
 from pydantic import UUID4
-from sqlalchemy import Boolean, ForeignKey, Integer, String
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import Timestamp  # type: ignore
 from sqlalchemy_utils import UUIDType
 
 from app.core.utilities.uuids import get_uuid
 from app.db.base_class import Base
-from app.db.constants import DB_STR_SHORTTEXT_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_INPUT
+from app.db.constants import (
+    DB_STR_BUCKET_OBJECT_NAME_MAXLEN_INPUT,
+    DB_STR_SHORTTEXT_MAXLEN_INPUT,
+    DB_STR_TINYTEXT_MAXLEN_INPUT,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from .bdx_feed import BdxFeed  # noqa: F401
     from .client import Client  # noqa: F401
-    from .client_bucket import ClientBucket  # noqa: F401
+    from .data_bucket import DataBucket  # noqa: F401
     from .gcft_snap import GcftSnap  # noqa: F401
     from .geocoord import Geocoord  # noqa: F401
     from .user import User  # noqa: F401
@@ -63,7 +67,7 @@ class FileAsset(Base, Timestamp):
         default=get_uuid(),
     )
     file_name: Mapped[str] = mapped_column(
-        String(length=DB_STR_SHORTTEXT_MAXLEN_INPUT),
+        String(length=DB_STR_BUCKET_OBJECT_NAME_MAXLEN_INPUT),
         index=True,
         nullable=False,
         unique=True,
@@ -89,23 +93,12 @@ class FileAsset(Base, Timestamp):
         index=True,
         nullable=True,
     )
-    is_private: Mapped[bool] = mapped_column(
-        Boolean(),
-        nullable=False,
-        default=False,
-    )
 
     # relationships
     user_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("user.id"), nullable=False
     )
     user: Mapped["User"] = relationship("User", back_populates="file_assets")
-    bucket_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("client_bucket.id"), nullable=False
-    )
-    client_bucket: Mapped["ClientBucket"] = relationship(
-        "ClientBucket", back_populates="file_assets"
-    )
     client_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("client.id"), nullable=False
     )

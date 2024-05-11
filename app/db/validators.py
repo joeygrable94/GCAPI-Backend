@@ -10,6 +10,11 @@ from app.db.constants import (
     DB_STR_32BIT_MAXLEN_INPUT,
     DB_STR_64BIT_MAXLEN_INPUT,
     DB_STR_BLOB_MAXLEN_INPUT,
+    DB_STR_BUCKET_NAME_MAXLEN_INPUT,
+    DB_STR_BUCKET_NAME_MINLEN_INPUT,
+    DB_STR_BUCKET_OBJECT_NAME_MAXLEN_INPUT,
+    DB_STR_BUCKET_OBJECT_NAME_MINLEN_INPUT,
+    DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT,
     DB_STR_DESC_MAXLEN_INPUT,
     DB_STR_LONGTEXT_MAXLEN_STORED,
     DB_STR_SHORTTEXT_MAXLEN_INPUT,
@@ -183,7 +188,7 @@ def validate_mime_type_required(cls: Any, value: str) -> str:
     return required_string_in_list(
         v=value,
         name="mime_type",
-        choices=settings.api.accepted_types,
+        choices=settings.api.allowed_mime_types,
     )
 
 
@@ -196,7 +201,7 @@ def validate_mime_type_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_in_list(
         v=value,
         name="mime_type",
-        choices=settings.api.accepted_types,
+        choices=settings.api.allowed_mime_types,
     )
 
 
@@ -510,21 +515,21 @@ def validate_serverhost_optional(cls: Any, value: str | None) -> str | None:
     )
 
 
-def validate_bucket_key_required(cls: Any, value: str) -> str:
+def validate_bucket_prefix_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
-        name="bucket_key",
+        name="bucket_prefix",
         min_len=1,
-        max_len=DB_STR_URLPATH_MAXLEN_INPUT,
+        max_len=DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT,
     )
 
 
-def validate_bucket_key_optional(cls: Any, value: str | None) -> str | None:
+def validate_bucket_prefix_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
-        name="bucket_key",
+        name="bucket_prefix",
         min_len=1,
-        max_len=DB_STR_URLPATH_MAXLEN_INPUT,
+        max_len=DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT,
     )
 
 
@@ -532,8 +537,8 @@ def validate_bucket_name_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
         name="bucket_name",
-        min_len=0,
-        max_len=DB_STR_SHORTTEXT_MAXLEN_INPUT,
+        min_len=DB_STR_BUCKET_NAME_MINLEN_INPUT,
+        max_len=DB_STR_BUCKET_NAME_MAXLEN_INPUT,
     )
 
 
@@ -541,8 +546,8 @@ def validate_bucket_name_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
         name="bucket_name",
-        min_len=1,
-        max_len=DB_STR_SHORTTEXT_MAXLEN_INPUT,
+        min_len=DB_STR_BUCKET_NAME_MINLEN_INPUT,
+        max_len=DB_STR_BUCKET_NAME_MAXLEN_INPUT,
     )
 
 
@@ -557,18 +562,18 @@ def validate_caption_optional(cls: Any, value: str | None) -> str | None:
 def validate_file_name_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
-        name="name",
-        min_len=0,
-        max_len=DB_STR_SHORTTEXT_MAXLEN_INPUT,
+        name="file_name",
+        min_len=DB_STR_BUCKET_OBJECT_NAME_MINLEN_INPUT,
+        max_len=DB_STR_BUCKET_OBJECT_NAME_MAXLEN_INPUT,
     )
 
 
 def validate_file_name_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
-        name="name",
-        min_len=5,
-        max_len=DB_STR_SHORTTEXT_MAXLEN_INPUT,
+        name="file_name",
+        min_len=DB_STR_BUCKET_OBJECT_NAME_MINLEN_INPUT,
+        max_len=DB_STR_BUCKET_OBJECT_NAME_MAXLEN_INPUT,
     )
 
 

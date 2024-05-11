@@ -37,6 +37,7 @@ from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
+    from .data_bucket import DataBucket  # noqa: F401
     from .file_asset import FileAsset  # noqa: F401
 
 

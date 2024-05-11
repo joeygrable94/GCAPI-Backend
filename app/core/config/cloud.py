@@ -10,8 +10,10 @@ load_dotenv()
 
 
 class CloudKeySettings(BaseSettings):
-    googleapi: Optional[str] = environ.get("CLOUDKEY_GOOGLE_API", None)
+    # IP Info
     ipinfo: Optional[str] = environ.get("CLOUDKEY_IPINFO", None)
+    # Google Cloud
+    googleapi: Optional[str] = environ.get("CLOUDKEY_GOOGLE_API", None)
     googlecloudserviceaccount: dict[str, Any] = environ.get(  # type: ignore
         "CLOUDKEY_GOOGLE_CLOUD_SERVICE_ACCOUNT", ""
     )
@@ -24,6 +26,15 @@ class CloudKeySettings(BaseSettings):
     gocloud_gdrive_public_folder_id: str = environ.get(
         "CLOUDKEY_GDRIVE_PUBLIC_FOLDER_ID", ""
     )
+    # AWS
+    aws_access_key_id: str = environ.get("CLOUDKEY_AWS_ACCESS_KEY_ID", "")
+    aws_secret_access_key: str = environ.get("CLOUDKEY_AWS_SECRET_ACCESS_KEY", "")
+    aws_default_region: str = environ.get("CLOUDKEY_AWS_DEFAULT_REGION", "")
+    aws_config_file: str = environ.get("CLOUDKEY_AWS_CONFIG_FILE", "~/.aws/config")
+    aws_shared_credentials_file: str = environ.get(
+        "CLOUDKEY_AWS_SHARED_CREDENTIALS_FILE", "~/.aws/credentials"
+    )
+    aws_s3_default_bucket: str = environ.get("CLOUDKEY_AWS_S3_DEFAULT_BUCKET", "")
 
     # pydantic settings config
     model_config = SettingsConfigDict(
@@ -70,3 +81,57 @@ class CloudKeySettings(BaseSettings):
             if len(v) > 0:
                 return v
         raise ValueError("Google Cloud Drive public folder id not set.")
+
+    @field_validator("aws_access_key_id", mode="before")
+    def validate_aws_access_key_id(
+        cls, v: str, info: ValidationInfo
+    ) -> str:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("AWS Access Key ID not set.")
+
+    @field_validator("aws_secret_access_key", mode="before")
+    def validate_aws_secret_access_key(
+        cls, v: str, info: ValidationInfo
+    ) -> str:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("AWS Secret Access Key not set.")
+
+    @field_validator("aws_default_region", mode="before")
+    def validate_aws_default_region(
+        cls, v: str, info: ValidationInfo
+    ) -> str:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("AWS Default Region not set.")
+
+    @field_validator("aws_config_file", mode="before")
+    def validate_aws_config_file(
+        cls, v: str, info: ValidationInfo
+    ) -> str:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("AWS Config File path not set.")
+
+    @field_validator("aws_shared_credentials_file", mode="before")
+    def validate_aws_shared_credentials_file(
+        cls, v: str, info: ValidationInfo
+    ) -> str:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("AWS Shared Credentials File path not set.")
+
+    @field_validator("aws_s3_default_bucket", mode="before")
+    def validate_aws_s3_default_bucket(
+        cls, v: str, info: ValidationInfo
+    ) -> str:  # pragma: no cover
+        if isinstance(v, str):
+            if len(v) > 0:
+                return v
+        raise ValueError("AWS S3 Default Bucket Name not set.")

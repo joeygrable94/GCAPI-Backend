@@ -13,9 +13,13 @@ from app.db.constants import (
     DB_STR_64BIT_MAXLEN_INPUT,
     DB_STR_BLOB_MAXLEN_INPUT,
     DB_STR_BLOB_MAXLEN_STORED,
+    DB_STR_BUCKET_NAME_MAXLEN_INPUT,
+    DB_STR_BUCKET_NAME_MINLEN_INPUT,
+    DB_STR_BUCKET_OBJECT_NAME_MAXLEN_INPUT,
+    DB_STR_BUCKET_OBJECT_NAME_MINLEN_INPUT,
+    DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT,
     DB_STR_DESC_MAXLEN_INPUT,
     DB_STR_LONGTEXT_MAXLEN_STORED,
-    DB_STR_SHORTTEXT_MAXLEN_INPUT,
     DB_STR_TINYTEXT_MAXLEN_INPUT,
     DB_STR_URLPATH_MAXLEN_INPUT,
 )
@@ -31,10 +35,10 @@ from app.db.validators import (
     validate_bg_color_optional,
     validate_browser_optional,
     validate_browser_version_optional,
-    validate_bucket_key_optional,
-    validate_bucket_key_required,
     validate_bucket_name_optional,
     validate_bucket_name_required,
+    validate_bucket_prefix_optional,
+    validate_bucket_prefix_required,
     validate_caption_optional,
     validate_city_optional,
     validate_clicks_required,
@@ -142,7 +146,7 @@ from app.db.validators import (
 
 @pytest.fixture
 def mock_settings() -> Any:
-    return MagicMock(api=MagicMock(accepted_types=["jpg", "png"]))
+    return MagicMock(api=MagicMock(allowed_mime_types=["jpg", "png"]))
 
 
 def test_validate_mime_type_required(mock_settings: Any) -> None:
@@ -675,53 +679,61 @@ def test_validate_keys_optional() -> None:
         )
 
 
-def test_validate_bucket_key_required() -> None:
-    assert validate_bucket_key_required(cls=None, value="valid_key") == "valid_key"
+def test_validate_bucket_prefix_required() -> None:
+    assert (
+        validate_bucket_prefix_required(cls=None, value="valid/prefix")
+        == "valid/prefix"
+    )
     with pytest.raises(ValueError):
-        validate_bucket_key_required(cls=None, value="")
+        validate_bucket_prefix_required(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_bucket_key_required(
-            cls=None, value="a" * (DB_STR_URLPATH_MAXLEN_INPUT + 1)
+        validate_bucket_prefix_required(
+            cls=None, value="a" * (DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT + 1)
         )
 
 
-def test_validate_bucket_key_optional() -> None:
-    assert validate_bucket_key_optional(cls=None, value=None) is None
-    assert validate_bucket_key_optional(cls=None, value="valid_key") == "valid_key"
+def test_validate_bucket_prefix_optional() -> None:
+    assert validate_bucket_prefix_optional(cls=None, value=None) is None
+    assert (
+        validate_bucket_prefix_optional(cls=None, value="valid/prefix")
+        == "valid/prefix"
+    )
     with pytest.raises(ValueError):
-        validate_bucket_key_optional(cls=None, value="")
+        validate_bucket_prefix_optional(cls=None, value="")
     with pytest.raises(ValueError):
-        validate_bucket_key_optional(
-            cls=None, value="a" * (DB_STR_URLPATH_MAXLEN_INPUT + 1)
+        validate_bucket_prefix_optional(
+            cls=None, value="a" * (DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT + 1)
         )
 
 
 def test_validate_bucket_name_required() -> None:
     assert (
-        validate_bucket_name_required(cls=None, value="valid_bucket_name")
-        == "valid_bucket_name"
+        validate_bucket_name_required(cls=None, value="valid-bucket-name")
+        == "valid-bucket-name"
     )
     with pytest.raises(ValueError):
-        validate_bucket_name_required(cls=None, value="")
+        validate_bucket_name_required(
+            cls=None, value="a" * (DB_STR_BUCKET_NAME_MINLEN_INPUT - 1)
+        )
     with pytest.raises(ValueError):
         validate_bucket_name_required(cls=None, value=None)  # type: ignore
     with pytest.raises(ValueError):
         validate_bucket_name_required(
-            cls=None, value="a" * (DB_STR_SHORTTEXT_MAXLEN_INPUT + 1)
+            cls=None, value="a" * (DB_STR_BUCKET_NAME_MAXLEN_INPUT + 1)
         )
 
 
 def test_validate_bucket_name_optional() -> None:
     assert validate_bucket_name_optional(cls=None, value=None) is None
     assert (
-        validate_bucket_name_optional(cls=None, value="valid_bucket_name")
-        == "valid_bucket_name"
+        validate_bucket_name_optional(cls=None, value="valid-bucket-name")
+        == "valid-bucket-name"
     )
     with pytest.raises(ValueError):
         validate_bucket_name_optional(cls=None, value="")
     with pytest.raises(ValueError):
         validate_bucket_name_optional(
-            cls=None, value="a" * (DB_STR_SHORTTEXT_MAXLEN_INPUT + 1)
+            cls=None, value="a" * (DB_STR_BUCKET_NAME_MAXLEN_INPUT + 1)
         )
 
 
@@ -737,10 +749,12 @@ def test_validate_caption_optional() -> None:
 def test_validate_file_name_required() -> None:
     assert validate_file_name_required(cls=None, value="ValidName") == "ValidName"
     with pytest.raises(ValueError):
-        assert validate_file_name_required(cls=None, value="")
+        assert validate_file_name_required(
+            cls=None, value="a" * (DB_STR_BUCKET_OBJECT_NAME_MINLEN_INPUT - 1)
+        )
     with pytest.raises(ValueError):
         validate_file_name_required(
-            cls=None, value="a" * (DB_STR_SHORTTEXT_MAXLEN_INPUT + 1)
+            cls=None, value="a" * (DB_STR_BUCKET_OBJECT_NAME_MAXLEN_INPUT + 1)
         )
 
 
@@ -748,10 +762,12 @@ def test_validate_file_name_optional() -> None:
     assert validate_file_name_optional(cls=None, value=None) is None
     assert validate_file_name_optional(cls=None, value="ValidName") == "ValidName"
     with pytest.raises(ValueError):
-        validate_file_name_optional(cls=None, value="a")
+        validate_file_name_optional(
+            cls=None, value="a" * (DB_STR_BUCKET_OBJECT_NAME_MINLEN_INPUT - 1)
+        )
     with pytest.raises(ValueError):
         validate_file_name_optional(
-            cls=None, value="a" * (DB_STR_SHORTTEXT_MAXLEN_INPUT + 1)
+            cls=None, value="a" * (DB_STR_BUCKET_OBJECT_NAME_MAXLEN_INPUT + 1)
         )
 
 

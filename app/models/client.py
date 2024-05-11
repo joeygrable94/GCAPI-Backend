@@ -36,8 +36,8 @@ from app.db.constants import DB_STR_DESC_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_I
 
 if TYPE_CHECKING:  # pragma: no cover
     from .bdx_feed import BdxFeed  # noqa: F401
-    from .client_bucket import ClientBucket  # noqa: F401
     from .client_report import ClientReport  # noqa: F401
+    from .data_bucket import DataBucket  # noqa: F401
     from .file_asset import FileAsset  # noqa: F401
     from .gcft import Gcft  # noqa: F401
     from .go_a4 import GoAnalytics4Property  # noqa: F401
@@ -86,6 +86,13 @@ class Client(Base, Timestamp):
     users: Mapped[List["User"]] = relationship(
         "User", secondary="user_client", back_populates="clients"
     )
+    data_bucket: Mapped["DataBucket"] = relationship(
+        "DataBucket", back_populates="client"
+    )
+    file_assets: Mapped[List["FileAsset"]] = relationship(
+        "FileAsset",
+        back_populates="client",
+    )
     websites: Mapped[List["Website"]] = relationship(
         secondary="client_website", back_populates="clients", cascade="all, delete"
     )
@@ -106,13 +113,6 @@ class Client(Base, Timestamp):
     )
     bdx_feeds: Mapped[List["BdxFeed"]] = relationship(
         "BdxFeed", back_populates="client", cascade="all, delete-orphan"
-    )
-    buckets: Mapped[List["ClientBucket"]] = relationship(
-        "ClientBucket", back_populates="client"
-    )
-    file_assets: Mapped[List["FileAsset"]] = relationship(
-        "FileAsset",
-        back_populates="client",
     )
     gcflytours: Mapped[List["Gcft"]] = relationship(
         "Gcft", back_populates="client", cascade="all, delete-orphan"

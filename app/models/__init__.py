@@ -2,10 +2,10 @@ from typing import List
 
 from .bdx_feed import BdxFeed
 from .client import Client
-from .client_bucket import ClientBucket
 from .client_report import ClientReport
 from .client_report_note import ClientReportNote
 from .client_website import ClientWebsite
+from .data_bucket import DataBucket
 from .file_asset import FileAsset
 from .gcft import Gcft
 from .gcft_snap import GcftSnap
@@ -39,7 +39,7 @@ from .website_pagespeedinsights import WebsitePageSpeedInsights
 __all__: List[str] = [
     "BdxFeed",
     "Client",
-    "ClientBucket",
+    "DataBucket",
     "ClientReport",
     "ClientReportNote",
     "ClientWebsite",

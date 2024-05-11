@@ -60,13 +60,13 @@ digraph {
 	Client -> GoAnalytics4Property [label=ga4_accounts color="#1E88E5" style=dashed tooltip="Relation between Client and GoAnalytics4Property"]
 	Client -> GoUniversalAnalyticsProperty [label=gua_accounts color="#1E88E5" style=dashed tooltip="Relation between Client and GoUniversalAnalyticsProperty"]
 	Client -> Sharpspring [label=sharpspring_accounts color="#1E88E5" style=dashed tooltip="Relation between Client and Sharpspring"]
-	Client -> ClientBucket [label=buckets color="#1E88E5" style=dashed tooltip="Relation between Client and ClientBucket"]
+	Client -> DataBucket [label=buckets color="#1E88E5" style=dashed tooltip="Relation between Client and DataBucket"]
 	Client -> BdxFeed [label=bdx_feeds color="#1E88E5" style=dashed tooltip="Relation between Client and BdxFeed"]
 	Client -> FileAsset [label=file_assets color="#1E88E5" style=dashed tooltip="Relation between Client and FileAsset"]
 	Client -> Gcft [label=gcflytours color="#1E88E5" style=dashed tooltip="Relation between Client and Gcft"]
-	ClientBucket [label=<
+	DataBucket [label=<
         <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">ClientBucket</FONT></TD></TR>
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">DataBucket</FONT></TD></TR>
         <TR>
                          <TD BGCOLOR="#BBDEFB">id</TD>
                          <TD BGCOLOR="#BBDEFB">CHAR(32) (Unique)</TD>
@@ -88,9 +88,9 @@ digraph {
                          </TR><TR>
                          <TD BGCOLOR="#BBDEFB">client_id</TD>
                          <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
-                         </TR></TABLE>> URL="http://ClientBucket_details.html"]
-	ClientBucket -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between ClientBucket and Client"]
-	ClientBucket -> FileAsset [label=file_assets color="#1E88E5" style=dashed tooltip="Relation between ClientBucket and FileAsset"]
+                         </TR></TABLE>> URL="http://DataBucket_details.html"]
+	DataBucket -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between DataBucket and Client"]
+	DataBucket -> FileAsset [label=file_assets color="#1E88E5" style=dashed tooltip="Relation between DataBucket and FileAsset"]
 	ClientReport [label=<
         <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
         <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">ClientReport</FONT></TD></TR>
@@ -209,7 +209,7 @@ digraph {
                          <TD BGCOLOR="#BBDEFB">CHAR(32) ()</TD>
                          </TR></TABLE>> URL="http://FileAsset_details.html"]
 	FileAsset -> User [label=user color="#1E88E5" style=dashed tooltip="Relation between FileAsset and User"]
-	FileAsset -> ClientBucket [label=client_bucket color="#1E88E5" style=dashed tooltip="Relation between FileAsset and ClientBucket"]
+	FileAsset -> DataBucket [label=data_bucket color="#1E88E5" style=dashed tooltip="Relation between FileAsset and DataBucket"]
 	FileAsset -> Client [label=client color="#1E88E5" style=dashed tooltip="Relation between FileAsset and Client"]
 	FileAsset -> Geocoord [label=geotag color="#1E88E5" style=dashed tooltip="Relation between FileAsset and Geocoord"]
 	FileAsset -> BdxFeed [label=bdx_feed color="#1E88E5" style=dashed tooltip="Relation between FileAsset and BdxFeed"]

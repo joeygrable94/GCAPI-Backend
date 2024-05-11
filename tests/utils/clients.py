@@ -1,12 +1,20 @@
+from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_lower_string
 
-from app.crud import ClientRepository, ClientWebsiteRepository, UserClientRepository
-from app.models import Client, ClientWebsite, User, UserClient, Website
+from app.crud import (
+    ClientRepository,
+    ClientWebsiteRepository,
+    DataBucketRepository,
+    UserClientRepository,
+)
+from app.models import Client, ClientWebsite, DataBucket, User, UserClient, Website
 from app.schemas import (
     ClientCreate,
     ClientRead,
     ClientWebsiteCreate,
+    DataBucketCreate,
+    DataBucketRead,
     UserClientCreate,
     UserRead,
     WebsiteRead,
@@ -43,3 +51,19 @@ async def assign_website_to_client(
         schema=ClientWebsiteCreate(website_id=website.id, client_id=client.id)
     )
     return client_website
+
+
+async def create_random_data_bucket(
+    db_session: AsyncSession,
+    client_id: UUID4,
+) -> DataBucketRead:
+    repo: DataBucketRepository = DataBucketRepository(session=db_session)
+    data_bucket: DataBucket = await repo.create(
+        schema=DataBucketCreate(
+            bucket_name=random_lower_string(),
+            bucket_prefix=random_lower_string(),
+            description=random_lower_string(),
+            client_id=client_id,
+        )
+    )
+    return DataBucketRead.model_validate(data_bucket)

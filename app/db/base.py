@@ -1,10 +1,10 @@
 from app.db.base_class import Base
 from app.models.bdx_feed import BdxFeed
 from app.models.client import Client
-from app.models.client_bucket import ClientBucket
 from app.models.client_report import ClientReport
 from app.models.client_report_note import ClientReportNote
 from app.models.client_website import ClientWebsite
+from app.models.data_bucket import DataBucket
 from app.models.file_asset import FileAsset
 from app.models.gcft import Gcft
 from app.models.gcft_snap import GcftSnap
@@ -39,7 +39,7 @@ __all__: list[str] = [
     "Base",
     "BdxFeed",
     "Client",
-    "ClientBucket",
+    "DataBucket",
     "ClientReport",
     "ClientReportNote",
     "ClientWebsite",

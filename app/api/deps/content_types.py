@@ -13,7 +13,7 @@ async def verify_content_length(content_length: int = Header(...)) -> None:
 
 
 async def verify_content_type(content_type: str = Header(...)) -> None:
-    if content_type not in settings.api.accepted_types:
+    if content_type not in settings.api.allowed_mime_types:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Invalid file type.",

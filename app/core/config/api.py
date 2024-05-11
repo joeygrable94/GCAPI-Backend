@@ -71,7 +71,7 @@ class ApiSettings(BaseSettings):
         environ.get("API_QUERY_LIMIT_ROWS_DEFAULT", 100)
     )
     query_limit_rows_max: int = int(environ.get("API_QUERY_LIMIT_ROWS_MAX", 10000))
-    accepted_types: List[str] = [
+    allowed_mime_types: List[str] = [
         "webp",
         "gif",
         "jpg",

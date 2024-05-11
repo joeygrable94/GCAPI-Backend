@@ -24,9 +24,7 @@ class FileAssetBase(BaseSchemaRead):
     size_kb: int | None = None
     title: str
     caption: Optional[str] = None
-    is_private: bool = False
     user_id: UUID4
-    bucket_id: UUID4
     client_id: UUID4
     geocoord_id: Optional[UUID4] = None
     bdx_feed_id: Optional[UUID4] = None
@@ -56,9 +54,6 @@ class FileAssetUpdate(BaseSchemaRead):
     size_kb: Optional[int] = None
     title: Optional[str] = None
     caption: Optional[str] = None
-    keys: Optional[str] = None
-    is_private: Optional[bool] = None
-    bucket_id: Optional[UUID4] = None
     client_id: Optional[UUID4] = None
     geocoord_id: Optional[UUID4] = None
     bdx_feed_id: Optional[UUID4] = None

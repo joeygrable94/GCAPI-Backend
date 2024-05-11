@@ -1,9 +1,9 @@
 from .bdx_feed import BdxFeedRepository
 from .client import ClientRepository
-from .client_bucket import ClientBucketRepository
 from .client_report import ClientReportRepository
 from .client_report_note import ClientReportNoteRepository
 from .client_website import ClientWebsiteRepository
+from .data_bucket import DataBucketRepository
 from .file_asset import FileAssetRepository
 from .gcft import GcftRepository
 from .gcft_snap import GcftSnapRepository
@@ -33,7 +33,7 @@ from .website_pagespeedinsights import WebsitePageSpeedInsightsRepository
 __all__: list[str] = [
     "BdxFeedRepository",
     "ClientRepository",
-    "ClientBucketRepository",
+    "DataBucketRepository",
     "ClientReportRepository",
     "ClientReportNoteRepository",
     "ClientWebsiteRepository",

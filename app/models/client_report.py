@@ -65,7 +65,6 @@ class ClientReport(Base, Timestamp):
     )
     url: Mapped[str] = mapped_column(
         String(length=DB_STR_URLPATH_MAXLEN_INPUT),
-        unique=True,
         nullable=False,
     )
     description: Mapped[str] = mapped_column(

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from pydantic import UUID4
 from sqlalchemy import ForeignKey, String
@@ -14,17 +14,19 @@ from app.core.config import settings
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 from app.db.constants import (
+    DB_STR_BUCKET_NAME_MAXLEN_INPUT,
+    DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT,
     DB_STR_DESC_MAXLEN_STORED,
-    DB_STR_SHORTTEXT_MAXLEN_INPUT,
-    DB_STR_TINYTEXT_MAXLEN_INPUT,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
+    from .bdx_feed import BdxFeed  # noqa: F401
     from .client import Client  # noqa: F401
     from .file_asset import FileAsset  # noqa: F401
+    from .gcft import Gcft  # noqa: F401
 
 
-class ClientBucket(Base, Timestamp):
+class DataBucket(Base, Timestamp):
     """
     Bucket Name: The name of the folder where the data is stored.
 
@@ -32,7 +34,7 @@ class ClientBucket(Base, Timestamp):
         This should be unique for each folder.
     """
 
-    __tablename__: str = "client_bucket"
+    __tablename__: str = "data_bucket"
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         unique=True,
@@ -41,12 +43,12 @@ class ClientBucket(Base, Timestamp):
         default=get_uuid(),
     )
     bucket_name: Mapped[str] = mapped_column(
-        String(length=DB_STR_SHORTTEXT_MAXLEN_INPUT),
+        String(length=DB_STR_BUCKET_NAME_MAXLEN_INPUT),
         index=True,
         nullable=False,
     )
-    bucket_key: Mapped[str] = mapped_column(
-        String(length=DB_STR_TINYTEXT_MAXLEN_INPUT),
+    bucket_prefix: Mapped[str] = mapped_column(
+        String(length=DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT),
         index=True,
         unique=True,
         nullable=False,
@@ -68,13 +70,11 @@ class ClientBucket(Base, Timestamp):
         ForeignKey("client.id"),
         nullable=False,
     )
-    client: Mapped["Client"] = relationship(back_populates="buckets")
-    file_assets: Mapped[List["FileAsset"]] = relationship(
-        "FileAsset",
-        back_populates="client_bucket",
+    client: Mapped["Client"] = relationship(
+        back_populates="data_bucket", single_parent=True
     )
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"ClientBucket({self.bucket_name}, [C({self.client_id})])"
+        repr_str: str = f"DataBucket({self.bucket_name}, [C({self.client_id})])"
         return repr_str
