@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import Select
+from taskiq import AsyncTaskiqTask
 
 from app.api.deps import (
     CommonClientQueryParams,
@@ -12,6 +13,8 @@ from app.api.deps import (
     get_permission_controller,
 )
 from app.api.exceptions import BdxFeedAlreadyExists, ClientNotExists
+from app.api.utilities import create_or_read_data_bucket
+from app.core.logger import logger
 from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
 from app.core.security.permissions import (
@@ -33,6 +36,7 @@ from app.core.security.permissions import (
 from app.crud import BdxFeedRepository, ClientRepository
 from app.models import BdxFeed, Client
 from app.schemas import BdxFeedCreate, BdxFeedRead, BdxFeedUpdate
+from app.tasks import task_create_client_data_bucket
 
 router: APIRouter = APIRouter()
 
@@ -128,11 +132,12 @@ async def bdx_feed_create(
         client_id=bdx_in.client_id,
     )
     bdx_repo: BdxFeedRepository = BdxFeedRepository(session=permissions.db)
-    a_bdx: BdxFeed | None = await bdx_repo.exists_by_two(
-        field_name_a="username",
-        field_value_a=bdx_in.username,
-        field_name_b="serverhost",
-        field_value_b=bdx_in.serverhost,
+    a_bdx: BdxFeed | None = await bdx_repo.exists_by_fields(
+        {
+            "username": bdx_in.username,
+            "serverhost": bdx_in.serverhost,
+            "xml_file_key": bdx_in.xml_file_key,
+        }
     )
     if a_bdx:
         raise BdxFeedAlreadyExists()
@@ -141,7 +146,24 @@ async def bdx_feed_create(
     if a_client is None:
         raise ClientNotExists()
     new_bdx_feed: BdxFeed = await bdx_repo.create(bdx_in)
-    # TODO: create data_bucket for the new client's bdx_feed
+    data_bucket = await create_or_read_data_bucket(
+        bucket_prefix=f"client/{a_client.slug}/bdxfeed/{new_bdx_feed.xml_file_key}",
+        client_id=str(a_client.id),
+        bdx_feed_id=str(new_bdx_feed.id),
+        gcft_id=None,
+    )
+    if data_bucket is None:  # pragma: no cover
+        logger.info(
+            "Error creating data bucket for client bdx feed, running in worker..."
+        )
+        create_data_bucket_task: AsyncTaskiqTask = (  # noqa: E501, F841
+            await task_create_client_data_bucket.kiq(
+                bucket_prefix=f"client/{a_client.slug}/bdxfeed/{new_bdx_feed.xml_file_key}",  # noqa: E501
+                client_id=str(a_client.id),
+                bdx_feed_id=str(new_bdx_feed.id),
+                gcft_id=None,
+            )
+        )
     # return role based response
     response_out: BdxFeedRead = permissions.get_resource_response(
         resource=new_bdx_feed,

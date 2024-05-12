@@ -16,6 +16,7 @@ async def create_random_bdx_feed(
             username=random_lower_string(),
             password=random_lower_string(),
             serverhost=random_lower_string(),
+            xml_file_key=random_lower_string(16),
             client_id=client_id,
         )
     )

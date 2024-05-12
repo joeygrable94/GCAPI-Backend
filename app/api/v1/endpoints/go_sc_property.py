@@ -159,11 +159,11 @@ async def go_search_console_property_create(
         field_value=go_sc_in.title,
     )
     a_go_sc_client_website: GoSearchConsoleProperty | None = (
-        await go_sc_repo.exists_by_two(
-            field_name_a="client_id",
-            field_value_a=go_sc_in.client_id,
-            field_name_b="website_id",
-            field_value_b=go_sc_in.website_id,
+        await go_sc_repo.exists_by_fields(
+            {
+                "client_id": go_sc_in.client_id,
+                "website_id": go_sc_in.website_id,
+            }
         )
     )
     if a_go_sc_title is not None or a_go_sc_client_website is not None:
@@ -321,11 +321,11 @@ async def go_search_console_property_update(
         if a_website is None:
             raise WebsiteNotExists()
     if go_sc_in.client_id is not None and go_sc_in.website_id is not None:
-        b_go_sc: GoSearchConsoleProperty | None = await go_sc_repo.exists_by_two(
-            field_name_a="client_id",
-            field_value_a=go_sc_in.client_id,
-            field_name_b="website_id",
-            field_value_b=go_sc_in.website_id,
+        b_go_sc: GoSearchConsoleProperty | None = await go_sc_repo.exists_by_fields(
+            {
+                "client_id": go_sc_in.client_id,
+                "website_id": go_sc_in.website_id,
+            }
         )
         if b_go_sc:
             raise GoSearchConsolePropertyAlreadyExists()

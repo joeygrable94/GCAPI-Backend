@@ -506,6 +506,15 @@ def validate_secret_key_optional(cls: Any, value: str | None) -> str | None:
     )
 
 
+def validate_xml_file_key_required(cls: Any, value: str) -> str:
+    return require_string_name_min_max_len(
+        v=value,
+        name="xml_file_key",
+        min_len=0,
+        max_len=DB_STR_32BIT_MAXLEN_INPUT,
+    )
+
+
 def validate_serverhost_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,

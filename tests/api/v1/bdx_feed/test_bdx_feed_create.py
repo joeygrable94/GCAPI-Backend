@@ -10,7 +10,7 @@ from tests.utils.utils import random_lower_string
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
 from app.core.utilities.uuids import get_uuid_str
-from app.db.constants import DB_STR_TINYTEXT_MAXLEN_INPUT
+from app.db.constants import DB_STR_32BIT_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_INPUT
 from app.models import User
 from app.schemas import ClientRead
 
@@ -26,10 +26,12 @@ async def test_create_bdx_feed_as_superuser(
     username: str = random_lower_string()
     password: str = random_lower_string()
     serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
         "client_id": str(a_client.id),
     }
     response: Response = await client.post(
@@ -54,11 +56,13 @@ async def test_create_bdx_feed_as_superuser_client_not_exists(
     username: str = random_lower_string()
     password: str = random_lower_string()
     serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
         "client_id": fake_client_id,
+        "xml_file_key": xml_file_key,
     }
     response: Response = await client.post(
         "bdx/",
@@ -83,11 +87,13 @@ async def test_create_bdx_feed_as_employee(
     username: str = random_lower_string()
     password: str = random_lower_string()
     serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
         "client_id": str(a_client.id),
+        "xml_file_key": xml_file_key,
     }
     response: Response = await client.post(
         "bdx/",
@@ -110,11 +116,13 @@ async def test_create_bdx_feed_as_employee_forbidden(
     username: str = random_lower_string()
     password: str = random_lower_string()
     serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
         "client_id": str(a_client.id),
+        "xml_file_key": xml_file_key,
     }
     response: Response = await client.post(
         "bdx/",
@@ -135,11 +143,13 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_already_exists(
     username: str = random_lower_string()
     password: str = random_lower_string()
     serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
         "client_id": str(a_client.id),
+        "xml_file_key": xml_file_key,
     }
     response: Response = await client.post(
         "bdx/",
@@ -156,6 +166,7 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_already_exists(
         "username": username,
         "password": password_2,
         "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
         "client_id": str(a_client.id),
     }
     response_2: Response = await client.post(
@@ -177,10 +188,12 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_username_required(
     username: str = ""
     password: str = random_lower_string()
     serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
         "client_id": str(a_client.id),
     }
     response: Response = await client.post(
@@ -202,10 +215,12 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_username_too_short(
     username: str = "a"
     password: str = random_lower_string()
     serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
         "client_id": str(a_client.id),
     }
     response: Response = await client.post(
@@ -230,10 +245,12 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_username_too_long(
     username: str = "a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
     password: str = random_lower_string()
     serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
         "client_id": str(a_client.id),
     }
     response: Response = await client.post(
@@ -258,10 +275,12 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_password_required(
     username: str = random_lower_string()
     password: str = ""
     serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
         "client_id": str(a_client.id),
     }
     response: Response = await client.post(
@@ -283,10 +302,12 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_password_too_short(
     username: str = random_lower_string()
     password: str = "a"
     serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
         "client_id": str(a_client.id),
     }
     response: Response = await client.post(
@@ -311,10 +332,12 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_password_too_long(
     username: str = random_lower_string()
     password: str = "a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
     serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
         "client_id": str(a_client.id),
     }
     response: Response = await client.post(
@@ -339,10 +362,12 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_serverhost_required(
     username: str = random_lower_string()
     password: str = random_lower_string()
     serverhost: str = ""
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
         "client_id": str(a_client.id),
     }
     response: Response = await client.post(
@@ -364,10 +389,12 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_serverhost_too_short(
     username: str = random_lower_string()
     password: str = random_lower_string()
     serverhost: str = "a"
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
         "client_id": str(a_client.id),
     }
     response: Response = await client.post(
@@ -392,10 +419,12 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_serverhost_too_long(
     username: str = random_lower_string()
     password: str = random_lower_string()
     serverhost: str = "a" * (DB_STR_TINYTEXT_MAXLEN_INPUT + 1)
+    xml_file_key: str = random_lower_string(16)
     data_in: Dict[str, Any] = {
         "username": username,
         "password": password,
         "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
         "client_id": str(a_client.id),
     }
     response: Response = await client.post(
@@ -408,4 +437,61 @@ async def test_create_bdx_feed_as_superuser_bdx_feed_serverhost_too_long(
     assert (
         entry["detail"][0]["msg"]
         == f"Value error, serverhost must be {DB_STR_TINYTEXT_MAXLEN_INPUT} characters or less"  # noqa: E501
+    )
+
+
+async def test_create_bdx_feed_as_superuser_bdx_feed_xml_file_key_required(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_token_headers: Dict[str, str],
+) -> None:
+    a_client: ClientRead = await create_random_client(db_session)
+    username: str = random_lower_string()
+    password: str = random_lower_string()
+    serverhost: str = random_lower_string()
+    xml_file_key: str = ""
+    data_in: Dict[str, Any] = {
+        "username": username,
+        "password": password,
+        "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
+        "client_id": str(a_client.id),
+    }
+    response: Response = await client.post(
+        "bdx/",
+        headers=admin_token_headers,
+        json=data_in,
+    )
+    assert response.status_code == 422
+    entry: Dict[str, Any] = response.json()
+    assert entry["detail"][0]["msg"] == "Value error, xml_file_key is required"
+
+
+async def test_create_bdx_feed_as_superuser_bdx_feed_xml_file_key_too_long(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_token_headers: Dict[str, str],
+) -> None:
+    a_client: ClientRead = await create_random_client(db_session)
+    username: str = random_lower_string()
+    password: str = random_lower_string()
+    serverhost: str = random_lower_string()
+    xml_file_key: str = random_lower_string(DB_STR_32BIT_MAXLEN_INPUT + 1)
+    data_in: Dict[str, Any] = {
+        "username": username,
+        "password": password,
+        "serverhost": serverhost,
+        "xml_file_key": xml_file_key,
+        "client_id": str(a_client.id),
+    }
+    response: Response = await client.post(
+        "bdx/",
+        headers=admin_token_headers,
+        json=data_in,
+    )
+    assert response.status_code == 422
+    entry: Dict[str, Any] = response.json()
+    assert (
+        entry["detail"][0]["msg"]
+        == f"Value error, xml_file_key must be {DB_STR_32BIT_MAXLEN_INPUT} characters or less"  # noqa: E501
     )

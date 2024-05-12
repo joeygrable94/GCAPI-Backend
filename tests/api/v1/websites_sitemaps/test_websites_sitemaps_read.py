@@ -28,11 +28,11 @@ async def test_read_website_sitemaps_by_id_as_superuser(
     assert data["id"] == str(sitemap.id)
     assert data["url"] == sitemap.url
     repo: WebsiteMapRepository = WebsiteMapRepository(db_session)
-    existing_data: Any = await repo.exists_by_two(
-        field_name_a="url",
-        field_value_a=sitemap.url,
-        field_name_b="website_id",
-        field_value_b=sitemap.website_id,
+    existing_data: Any = await repo.exists_by_fields(
+        {
+            "url": sitemap.url,
+            "website_id": sitemap.website_id,
+        }
     )
     assert existing_data
     assert existing_data.url == data["url"]

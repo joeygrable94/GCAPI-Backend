@@ -22,6 +22,8 @@ from app.api.exceptions import (
     WebsiteNotExists,
 )
 from app.api.openapi import clients_read_responses
+from app.api.utilities import create_or_read_data_bucket
+from app.core.logger import logger
 from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
 from app.core.security.permissions import (
@@ -57,7 +59,7 @@ from app.schemas import (
     UserClientCreate,
     UserClientRead,
 )
-from app.tasks import task_request_to_delete_client
+from app.tasks import task_create_client_data_bucket, task_request_to_delete_client
 
 router: APIRouter = APIRouter()
 
@@ -165,7 +167,22 @@ async def clients_create(
         if a_client:
             raise ClientAlreadyExists()
     new_client: Client = await clients_repo.create(client_in)
-    # TODO: create data_bucket for the new client
+    data_bucket = await create_or_read_data_bucket(
+        bucket_prefix=f"client/{new_client.slug}",
+        client_id=str(new_client.id),
+        bdx_feed_id=None,
+        gcft_id=None,
+    )
+    if data_bucket is None:  # pragma: no cover
+        logger.info("Error creating data bucket for client, running in worker...")
+        create_data_bucket_task: AsyncTaskiqTask = (  # noqa: E501, F841
+            await task_create_client_data_bucket.kiq(
+                bucket_prefix=f"client/{new_client.slug}",
+                client_id=str(new_client.id),
+                bdx_feed_id=None,
+                gcft_id=None,
+            )
+        )
     # return role based response
     response_out: ClientRead = permissions.get_resource_response(
         resource=new_client,
@@ -388,8 +405,8 @@ async def clients_assign_user(
     user_client_repo: UserClientRepository = UserClientRepository(
         session=permissions.db
     )
-    user_client: UserClient | None = await user_client_repo.exists_by_two(
-        "user_id", user_client_in.user_id, "client_id", user_client_in.client_id
+    user_client: UserClient | None = await user_client_repo.exists_by_fields(
+        {"user_id": user_client_in.user_id, "client_id": user_client_in.client_id}
     )
     if user_client is None:
         user_client = await user_client_repo.create(schema=user_client_in)
@@ -439,8 +456,8 @@ async def clients_remove_user(
     user_client_repo: UserClientRepository = UserClientRepository(
         session=permissions.db
     )
-    user_client: UserClient | None = await user_client_repo.exists_by_two(
-        "user_id", user_client_in.user_id, "client_id", user_client_in.client_id
+    user_client: UserClient | None = await user_client_repo.exists_by_fields(
+        {"user_id": user_client_in.user_id, "client_id": user_client_in.client_id}
     )
     if user_client is None:
         raise ClientRelationshipNotExists()
@@ -492,11 +509,11 @@ async def clients_assign_website(
     client_website_repo: ClientWebsiteRepository = ClientWebsiteRepository(
         session=permissions.db
     )
-    client_website: ClientWebsite | None = await client_website_repo.exists_by_two(
-        "website_id",
-        client_website_in.website_id,
-        "client_id",
-        client_website_in.client_id,
+    client_website: ClientWebsite | None = await client_website_repo.exists_by_fields(
+        {
+            "website_id": client_website_in.website_id,
+            "client_id": client_website_in.client_id,
+        }
     )
     if client_website is None:
         client_website = await client_website_repo.create(schema=client_website_in)
@@ -547,11 +564,11 @@ async def clients_remove_website(
     client_website_repo: ClientWebsiteRepository = ClientWebsiteRepository(
         session=permissions.db
     )
-    client_website: ClientWebsite | None = await client_website_repo.exists_by_two(
-        "website_id",
-        client_website_in.website_id,
-        "client_id",
-        client_website_in.client_id,
+    client_website: ClientWebsite | None = await client_website_repo.exists_by_fields(
+        {
+            "website_id": client_website_in.website_id,
+            "client_id": client_website_in.client_id,
+        }
     )
     if client_website is None:
         raise ClientRelationshipNotExists()

@@ -11,6 +11,7 @@ from app.db.validators import (
     validate_serverhost_required,
     validate_username_optional,
     validate_username_required,
+    validate_xml_file_key_required,
 )
 from app.schemas.base import BaseSchema, BaseSchemaRead
 
@@ -20,6 +21,7 @@ class BdxFeedBase(BaseSchema):
     username: str
     password: str
     serverhost: str
+    xml_file_key: str
     client_id: UUID4
 
     _validate_username = field_validator("username", mode="before")(
@@ -30,6 +32,9 @@ class BdxFeedBase(BaseSchema):
     )
     _validate_serverhost = field_validator("serverhost", mode="before")(
         validate_serverhost_required
+    )
+    _validate_xml_file_key = field_validator("xml_file_key", mode="before")(
+        validate_xml_file_key_required
     )
 
 

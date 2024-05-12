@@ -33,7 +33,7 @@ from app.core.security.permissions import (
 )
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
-from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED
+from app.db.constants import DB_STR_32BIT_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
@@ -82,6 +82,11 @@ class BdxFeed(Base, Timestamp):
             length=DB_STR_TINYTEXT_MAXLEN_STORED,
         ),
         nullable=False,
+    )
+    xml_file_key: Mapped[str] = mapped_column(
+        String(length=DB_STR_32BIT_MAXLEN_INPUT),
+        index=True,
+        unique=True,
     )
 
     # relationships

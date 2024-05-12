@@ -90,22 +90,16 @@ class BaseRepository(
         await self._db.commit()
         return None  # pragma: no cover
 
-    async def exists_by_two(
+    async def exists_by_fields(
         self,
-        field_name_a: str,
-        field_value_a: Any,
-        field_name_b: str,
-        field_value_b: Any,
+        fields: Dict[str, Any],
     ) -> Optional[TABLE]:
         self._db.begin()
-        check_val_a: Any = getattr(self._table, field_name_a)
-        check_val_b: Any = getattr(self._table, field_name_b)
-        stmt: Select = sql_select(self._table).where(  # type: ignore
-            and_(
-                check_val_a == field_value_a,
-                check_val_b == field_value_b,
-            )
-        )
+        conditions = [
+            getattr(self._table, field_name) == field_value
+            for field_name, field_value in fields.items()
+        ]
+        stmt: Select = sql_select(self._table).where(and_(*conditions))  # type: ignore
         entry: Any = await self._get(stmt)
         if not entry:
             return None

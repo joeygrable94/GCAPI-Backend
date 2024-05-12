@@ -314,8 +314,8 @@ async def create_init_data() -> int:  # pragma: no cover
     # assign users to client1: admin1
     async with async_session() as session:
         user_client_repo = UserClientRepository(session)
-        c1_admin1 = await user_client_repo.exists_by_two(
-            "user_id", admin1.id, "client_id", c1.id
+        c1_admin1 = await user_client_repo.exists_by_fields(
+            {"user_id": admin1.id, "client_id": c1.id}
         )
         if not c1_admin1:
             await user_client_repo.create(
@@ -324,8 +324,8 @@ async def create_init_data() -> int:  # pragma: no cover
             i_count += 1
 
         # assign users to client1: manager1
-        c1_manager1 = await user_client_repo.exists_by_two(
-            "user_id", manager1.id, "client_id", c1.id
+        c1_manager1 = await user_client_repo.exists_by_fields(
+            {"user_id": manager1.id, "client_id": c1.id}
         )
         if not c1_manager1:
             await user_client_repo.create(
@@ -334,8 +334,8 @@ async def create_init_data() -> int:  # pragma: no cover
             i_count += 1
 
         # assign users to client1: employee1
-        c1_employee1 = await user_client_repo.exists_by_two(
-            "user_id", employee1.id, "client_id", c1.id
+        c1_employee1 = await user_client_repo.exists_by_fields(
+            {"user_id": employee1.id, "client_id": c1.id}
         )
         if not c1_employee1:
             await user_client_repo.create(
@@ -344,8 +344,8 @@ async def create_init_data() -> int:  # pragma: no cover
             i_count += 1
 
         # assign users to client2: admin1
-        c1_admin1 = await user_client_repo.exists_by_two(
-            "user_id", admin1.id, "client_id", c2.id
+        c1_admin1 = await user_client_repo.exists_by_fields(
+            {"user_id": admin1.id, "client_id": c2.id}
         )
         if not c1_admin1:
             await user_client_repo.create(
@@ -354,8 +354,8 @@ async def create_init_data() -> int:  # pragma: no cover
             i_count += 1
 
         # assign users to client2: manager1
-        c1_manager1 = await user_client_repo.exists_by_two(
-            "user_id", manager1.id, "client_id", c2.id
+        c1_manager1 = await user_client_repo.exists_by_fields(
+            {"user_id": manager1.id, "client_id": c2.id}
         )
         if not c1_manager1:
             await user_client_repo.create(

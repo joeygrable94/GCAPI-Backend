@@ -19,11 +19,11 @@ async def task_fetch_ipinfo(
         # check if the ip_address is valid
         ip = IPvAnyAddress(ip_address)
         # check if the ip_address is already in the database
-        ip_in_db: Ipaddress | None = await get_ipaddress_from_db(ip)
+        ip_in_db: Ipaddress | None = await get_ipaddress_from_db(ip)  # type: ignore
         # if it is not, then fetch the details from ipinfo.io
         if ip_in_db is None:
-            ip_details: IpinfoResponse = get_ipinfo_details(ip)
-            ip_in_db = await create_or_update_ipaddress(ip, ip_details)
+            ip_details: IpinfoResponse = get_ipinfo_details(ip)  # type: ignore
+            ip_in_db = await create_or_update_ipaddress(ip, ip_details)  # type: ignore
         return ip_in_db
     except Exception as e:  # pragma: no cover
         logger.warning(f"Error fetching IP Details: {ip_address}")

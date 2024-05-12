@@ -18,11 +18,11 @@ async def create_or_update_website_map(
         sitemap: WebsiteMap | None
         async with get_db_session() as session:
             sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session)
-            sitemap = await sitemap_repo.exists_by_two(
-                field_name_a="url",
-                field_value_a=sitemap_url,
-                field_name_b="website_id",
-                field_value_b=website_uuid,
+            sitemap = await sitemap_repo.exists_by_fields(
+                {
+                    "url": sitemap_url,
+                    "website_id": website_uuid,
+                }
             )
             if sitemap is not None:
                 sitemap = await sitemap_repo.update(

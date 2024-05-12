@@ -22,11 +22,11 @@ async def create_or_update_website_page(
         pages_repo: WebsitePageRepository
         async with get_db_session() as session:
             pages_repo = WebsitePageRepository(session)
-            website_page = await pages_repo.exists_by_two(
-                field_name_a="url",
-                field_value_a=page.url,
-                field_name_b="website_id",
-                field_value_b=website_uuid,
+            website_page = await pages_repo.exists_by_fields(
+                {
+                    "url": page.url,
+                    "website_id": website_uuid,
+                }
             )
             if website_page is not None:
                 website_page = await pages_repo.update(

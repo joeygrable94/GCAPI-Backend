@@ -142,11 +142,11 @@ async def sitemap_create(
     if not sitemap_url_valid:
         raise WebsiteMapUrlXmlInvalid()
     # check website map url is unique to website_id
-    a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_two(
-        field_name_a="url",
-        field_value_a=sitemap_in.url,
-        field_name_b="website_id",
-        field_value_b=sitemap_in.website_id,
+    a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_fields(
+        {
+            "url": sitemap_in.url,
+            "website_id": sitemap_in.website_id,
+        }
     )
     if a_sitemap is not None:
         raise WebsiteMapAlreadyExists()

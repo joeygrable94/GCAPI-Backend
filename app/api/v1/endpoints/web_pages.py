@@ -139,11 +139,11 @@ async def website_page_create(
     web_pages_repo: WebsitePageRepository = WebsitePageRepository(
         session=permissions.db
     )
-    a_page: WebsitePage | None = await web_pages_repo.exists_by_two(
-        field_name_a="url",
-        field_value_a=website_page_in.url,
-        field_name_b="website_id",
-        field_value_b=website_page_in.website_id,
+    a_page: WebsitePage | None = await web_pages_repo.exists_by_fields(
+        {
+            "url": website_page_in.url,
+            "website_id": website_page_in.website_id,
+        }
     )
     if a_page is not None:
         raise WebsitePageAlreadyExists()

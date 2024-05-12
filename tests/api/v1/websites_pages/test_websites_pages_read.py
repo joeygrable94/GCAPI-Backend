@@ -28,11 +28,11 @@ async def test_read_website_page_by_id_as_superuser(
     assert data["id"] == str(website_page.id)
     assert data["url"] == website_page.url
     repo: WebsitePageRepository = WebsitePageRepository(db_session)
-    existing_data: Any = await repo.exists_by_two(
-        field_name_a="url",
-        field_value_a=website_page.url,
-        field_name_b="website_id",
-        field_value_b=website_page.website_id,
+    existing_data: Any = await repo.exists_by_fields(
+        {
+            "url": website_page.url,
+            "website_id": website_page.website_id,
+        }
     )
     assert existing_data
     assert existing_data.url == data["url"]

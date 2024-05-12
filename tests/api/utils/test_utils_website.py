@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Any
 from unittest.mock import patch
 
@@ -28,7 +29,7 @@ async def test_create_or_update_website_page_create(
     page_url = "https://%s/" % random_domain()
     website: Website | WebsiteRead = await create_random_website(db_session)
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
-    page = WebsiteMapPage(url=page_url, priority=0.5)
+    page = WebsiteMapPage(url=page_url, priority=Decimal(0.5))
     with patch(
         "app.core.utilities.websites.fetch_url_status_code"
     ) as mock_fetch_url_status_code:
@@ -43,8 +44,8 @@ async def test_create_or_update_website_page_create_then_update(
     page_url = "https://%s/" % random_domain()
     website: Website | WebsiteRead = await create_random_website(db_session)
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
-    page = WebsiteMapPage(url=page_url, priority=0.5)
-    page_b = WebsiteMapPage(url=page_url, priority=0.25)
+    page = WebsiteMapPage(url=page_url, priority=Decimal(0.5))
+    page_b = WebsiteMapPage(url=page_url, priority=Decimal(0.25))
     with patch(
         "app.core.utilities.websites.fetch_url_status_code"
     ) as mock_fetch_url_status_code:
@@ -67,7 +68,7 @@ async def test_create_or_update_website_page_create_and_update(
     page_url = "https://getcommunity.com/"
     website: Website | WebsiteRead = await create_random_website(db_session)
     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
-    map_page = WebsiteMapPage(url=page_url, priority=0.5)
+    map_page = WebsiteMapPage(url=page_url, priority=Decimal(0.5))
     output_a = await create_or_update_website_page(str(website.id), str(sitemap.id), map_page)  # type: ignore  # noqa: E501
     assert output_a is None
     output_b = await create_or_update_website_page(str(website.id), str(sitemap.id), map_page)  # type: ignore  # noqa: E501

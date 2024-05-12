@@ -1,3 +1,4 @@
+from .data_buckets import create_or_read_data_bucket
 from .ipaddress import (
     create_or_update_ipaddress,
     get_ipaddress_from_db,
@@ -11,6 +12,7 @@ from .web_pagespeedinsights import (
 from .web_sitemaps import create_or_update_website_map
 
 __all__: list[str] = [
+    "create_or_read_data_bucket",
     "get_ipaddress_from_db",
     "create_or_update_ipaddress",
     "get_ipinfo_details",
