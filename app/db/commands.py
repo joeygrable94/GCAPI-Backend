@@ -1,7 +1,7 @@
 import logging
 from typing import Any  # pragma: no cover
 
-import redis.asyncio as redis
+import redis
 from sqlalchemy import text  # pragma: no cover
 from sqlalchemy.ext.asyncio import AsyncSession
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
@@ -31,13 +31,13 @@ wait_seconds = 3
     before=before_log(logger, logging.INFO),  # type: ignore
     after=after_log(logger, logging.WARN),  # type: ignore
 )
-async def check_redis_connected() -> None:  # pragma: no cover
+def check_redis_connected() -> None:  # pragma: no cover
     try:
         logger.info("Checking Redis Connection")
         redis_conn = redis.from_url(
             settings.redis.uri, decode_responses=True
         )  # pragma: no cover
-        connected = await redis_conn.ping()
+        connected = redis_conn.ping()
         if not connected:
             raise Exception("connection failed")
         logger.info("Redis is connected.")
@@ -288,7 +288,7 @@ async def create_init_data() -> int:  # pragma: no cover
     # first clients data bucket
     async with async_session() as session:
         data_repo = DataBucketRepository(session)
-        db_c1 = await data_repo.read_by("bucket_prefix", f"client/{c1.id}")
+        db_c1 = await data_repo.read_by("bucket_prefix", f"client/{c1.slug}")
         if not db_c1:
             db_c1 = await data_repo.create(
                 DataBucketCreate(
@@ -299,7 +299,7 @@ async def create_init_data() -> int:  # pragma: no cover
                 )
             )
             i_count += 1
-        db_c2 = await data_repo.read_by("bucket_prefix", f"client/{c2.id}")
+        db_c2 = await data_repo.read_by("bucket_prefix", f"client/{c2.slug}")
         if not db_c2:
             db_c2 = await data_repo.create(
                 DataBucketCreate(
@@ -323,9 +323,7 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    # assign users to client1: manager1
-    async with async_session() as session:
-        user_client_repo = UserClientRepository(session)
+        # assign users to client1: manager1
         c1_manager1 = await user_client_repo.exists_by_two(
             "user_id", manager1.id, "client_id", c1.id
         )
@@ -335,9 +333,7 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    # assign users to client1: employee1
-    async with async_session() as session:
-        user_client_repo = UserClientRepository(session)
+        # assign users to client1: employee1
         c1_employee1 = await user_client_repo.exists_by_two(
             "user_id", employee1.id, "client_id", c1.id
         )
@@ -347,9 +343,7 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    # assign users to client2: admin1
-    async with async_session() as session:
-        user_client_repo = UserClientRepository(session)
+        # assign users to client2: admin1
         c1_admin1 = await user_client_repo.exists_by_two(
             "user_id", admin1.id, "client_id", c2.id
         )
@@ -359,9 +353,7 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    # assign users to client2: manager1
-    async with async_session() as session:
-        user_client_repo = UserClientRepository(session)
+        # assign users to client2: manager1
         c1_manager1 = await user_client_repo.exists_by_two(
             "user_id", manager1.id, "client_id", c2.id
         )

@@ -1,11 +1,12 @@
 import base64
 import os
 
-from app.cli.app import AsyncTyper
+from typer import Typer
+
 from app.core.logger import logger
 from app.core.security.encryption.keys import load_api_keys
 
-app = AsyncTyper()
+app = Typer()
 
 
 @app.command()
@@ -29,4 +30,9 @@ def generate_key(length: int = 32) -> None:
 
 
 if __name__ == "__main__":
-    app()
+    try:
+        app()
+    except KeyboardInterrupt:
+        logger.warning("CLI Interrupted")
+    except Exception as e:
+        logger.warning(f"Error running CLI: {e}")

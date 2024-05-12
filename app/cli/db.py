@@ -1,9 +1,10 @@
+from anyio import run
 from sqlalchemy_data_model_visualizer import (
     add_web_font_and_interactivity,
     generate_data_model_diagram,
 )
+from typer import Typer
 
-from app.cli.app import AsyncTyper
 from app.core.config import settings
 from app.core.logger import logger
 from app.db.commands import (
@@ -13,40 +14,40 @@ from app.db.commands import (
     create_init_data,
 )
 
-app = AsyncTyper()
+app = Typer()
 
 
 @app.command()
-async def check_db_connection() -> None:
+def check_db_connection() -> None:
     try:
-        await check_db_connected()
+        run(check_db_connected)
     except Exception as e:
         logger.warning(f"Error checking DB connection: {e}")
 
 
 @app.command()
-async def check_redis_connection() -> None:
+def check_redis_connection() -> None:
     try:
         logger.info("Check Redis Connection")
-        await check_redis_connected()
+        check_redis_connected()
     except Exception as e:
         logger.warning(f"Error checking redis connection: {e}")
 
 
 @app.command()
-async def create_db() -> None:
+def create_db() -> None:
     try:
         logger.info("Create Database")
-        await build_database()
+        run(build_database)
     except Exception as e:
         logger.warning(f"Error building database: {e}")
 
 
 @app.command()
-async def add_initial_data() -> None:
+def add_initial_data() -> None:
     try:
         logger.info("Load Initial Data")
-        count = await create_init_data()
+        count = run(create_init_data)
         logger.info(f"Data Inserted C[{count}]")
     except Exception as e:
         logger.warning(f"Error adding initial DB data: {e}")
@@ -71,4 +72,9 @@ def generate_schema_graph() -> None:
 
 
 if __name__ == "__main__":
-    app()
+    try:
+        app()
+    except KeyboardInterrupt:
+        logger.warning("CLI Interrupted")
+    except Exception as e:
+        logger.warning(f"Error running CLI: {e}")
