@@ -50,8 +50,6 @@ class DataBucket(Base, Timestamp):
     )
     bucket_prefix: Mapped[str] = mapped_column(
         String(length=DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT),
-        index=True,
-        unique=True,
         nullable=False,
     )
     description: Mapped[str] = mapped_column(

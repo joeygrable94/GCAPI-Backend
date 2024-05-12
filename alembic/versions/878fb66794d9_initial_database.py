@@ -128,7 +128,6 @@ def upgrade() -> None:
     sa.UniqueConstraint('id')
     )
     op.create_index(op.f('ix_data_bucket_bucket_name'), 'data_bucket', ['bucket_name'], unique=False)
-    op.create_index(op.f('ix_data_bucket_bucket_prefix'), 'data_bucket', ['bucket_prefix'], unique=True)
     op.create_table('gcft',
     sa.Column('id', UUIDType(binary=False), nullable=False),
     sa.Column('group_name', sa.String(length=255), nullable=False),
