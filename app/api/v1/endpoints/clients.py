@@ -147,15 +147,25 @@ async def clients_create(
     await permissions.verify_user_can_access(privileges=[RoleAdmin, RoleManager])
     clients_repo: ClientRepository = ClientRepository(session=permissions.db)
     data: Dict = client_in.model_dump()
+    check_slug: str | None = data.get("slug")
     check_title: str | None = data.get("title")
+    a_client: Client | None = None
+    if check_slug:
+        a_client = await clients_repo.read_by(
+            field_name="slug",
+            field_value=check_slug,
+        )
+        if a_client:
+            raise ClientAlreadyExists()
     if check_title:
-        a_client: Client | None = await clients_repo.read_by(
+        a_client = await clients_repo.read_by(
             field_name="title",
             field_value=check_title,
         )
         if a_client:
             raise ClientAlreadyExists()
     new_client: Client = await clients_repo.create(client_in)
+    # TODO: create data_bucket for the new client
     # return role based response
     response_out: ClientRead = permissions.get_resource_response(
         resource=new_client,

@@ -2,8 +2,9 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from app.core.cloud.aws import S3Storage
+from app.core.cloud.google import GDRIVE_SCOPES, GoCloudDriveService, GoCloudServiceType
 from app.core.config import Settings, get_settings
-from app.core.gcloud import GDRIVE_SCOPES, GoCloudDriveService, GoCloudServiceType
 
 
 def get_go_cloud_gdrive_service(
@@ -21,3 +22,13 @@ def get_go_cloud_gdrive_service(
 LoadGoCloudDriveService = Annotated[
     GoCloudDriveService, Depends(get_go_cloud_gdrive_service)
 ]
+
+
+def get_aws_s3_service(settings: Settings = Depends(get_settings)) -> S3Storage:
+    return S3Storage(
+        default_region=settings.cloud.aws_default_region,
+        default_bucket=settings.cloud.aws_s3_default_bucket,
+    )
+
+
+LoadAwsS3StorageService = Annotated[S3Storage, Depends(get_aws_s3_service)]

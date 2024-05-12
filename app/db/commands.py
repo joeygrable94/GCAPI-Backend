@@ -9,12 +9,17 @@ from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixe
 from app.core.config import settings
 from app.core.logger import logger
 from app.core.security.permissions import AclPrivilege
-from app.crud import ClientRepository, UserClientRepository, UserRepository
+from app.crud import (
+    ClientRepository,
+    DataBucketRepository,
+    UserClientRepository,
+    UserRepository,
+)
 from app.db.base import Base
 from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
 from app.db.session import async_engine, async_session, engine
-from app.models import Client, User, UserClient
-from app.schemas import ClientCreate, UserClientCreate, UserCreate
+from app.models import Client, DataBucket, User, UserClient
+from app.schemas import ClientCreate, DataBucketCreate, UserClientCreate, UserCreate
 
 max_tries = 60 * 5  # 5 minutes
 wait_seconds = 3
@@ -103,10 +108,13 @@ async def create_init_data() -> int:  # pragma: no cover
     user_unverified: User | None
     c1: Client | None
     c2: Client | None
+    db_c1: DataBucket | None
+    db_c2: DataBucket | None
     c1_admin1: UserClient | None
     c1_manager1: UserClient | None
     c1_employee1: UserClient | None
     user_repo: UserRepository
+    data_repo: DataBucketRepository
     client_repo: ClientRepository
     user_client_repo: UserClientRepository
 
@@ -265,12 +273,42 @@ async def create_init_data() -> int:  # pragma: no cover
         client_repo = ClientRepository(session)
         c1 = await client_repo.read_by("title", "Get Community, Inc.")
         if not c1:
-            c1 = await client_repo.create(ClientCreate(title="Get Community, Inc."))
+            c1 = await client_repo.create(
+                ClientCreate(slug="gcinc", title="Get Community, Inc.")
+            )
             i_count += 1
 
         c2 = await client_repo.read_by("title", "The Grables")
         if not c2:
-            c2 = await client_repo.create(ClientCreate(title="The Grables"))
+            c2 = await client_repo.create(
+                ClientCreate(slug="grable", title="The Grables")
+            )
+            i_count += 1
+
+    # first clients data bucket
+    async with async_session() as session:
+        data_repo = DataBucketRepository(session)
+        db_c1 = await data_repo.read_by("bucket_prefix", f"client/{c1.id}")
+        if not db_c1:
+            db_c1 = await data_repo.create(
+                DataBucketCreate(
+                    bucket_name=settings.cloud.aws_s3_default_bucket,
+                    bucket_prefix=f"client/{c1.slug}",
+                    description="Get Community Inc. Data Bucket",
+                    client_id=c1.id,
+                )
+            )
+            i_count += 1
+        db_c2 = await data_repo.read_by("bucket_prefix", f"client/{c2.id}")
+        if not db_c2:
+            db_c2 = await data_repo.create(
+                DataBucketCreate(
+                    bucket_name=settings.cloud.aws_s3_default_bucket,
+                    bucket_prefix=f"client/{c2.slug}",
+                    description="The Grable's Test Data Bucket",
+                    client_id=c2.id,
+                )
+            )
             i_count += 1
 
     # assign users to client1: admin1

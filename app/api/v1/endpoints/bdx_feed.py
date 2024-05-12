@@ -141,7 +141,7 @@ async def bdx_feed_create(
     if a_client is None:
         raise ClientNotExists()
     new_bdx_feed: BdxFeed = await bdx_repo.create(bdx_in)
-    # TODO: create data_bucket for the new bdx_feed
+    # TODO: create data_bucket for the new client's bdx_feed
     # return role based response
     response_out: BdxFeedRead = permissions.get_resource_response(
         resource=new_bdx_feed,

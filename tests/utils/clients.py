@@ -25,7 +25,9 @@ async def create_random_client(db_session: AsyncSession) -> ClientRead:
     repo: ClientRepository = ClientRepository(session=db_session)
     client: Client = await repo.create(
         schema=ClientCreate(
-            title=random_lower_string(), description=random_lower_string()
+            slug=random_lower_string(8),
+            title=random_lower_string(),
+            description=random_lower_string(),
         )
     )
     return ClientRead.model_validate(client)

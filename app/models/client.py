@@ -32,7 +32,11 @@ from app.core.security.permissions import (
 )
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
-from app.db.constants import DB_STR_DESC_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_INPUT
+from app.db.constants import (
+    DB_STR_64BIT_MAXLEN_INPUT,
+    DB_STR_DESC_MAXLEN_STORED,
+    DB_STR_TINYTEXT_MAXLEN_INPUT,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from .bdx_feed import BdxFeed  # noqa: F401
@@ -59,6 +63,12 @@ class Client(Base, Timestamp):
         primary_key=True,
         nullable=False,
         default=get_uuid(),
+    )
+    slug: Mapped[str] = mapped_column(
+        String(length=DB_STR_64BIT_MAXLEN_INPUT),
+        index=True,
+        unique=True,
+        nullable=False,
     )
     title: Mapped[str] = mapped_column(
         String(length=DB_STR_TINYTEXT_MAXLEN_INPUT),
@@ -87,7 +97,7 @@ class Client(Base, Timestamp):
         "User", secondary="user_client", back_populates="clients"
     )
     data_bucket: Mapped["DataBucket"] = relationship(
-        "DataBucket", back_populates="client"
+        "DataBucket", back_populates="client", lazy="joined"
     )
     file_assets: Mapped[List["FileAsset"]] = relationship(
         "FileAsset",

@@ -119,6 +119,7 @@ from app.db.validators import (
     validate_si_unit_required,
     validate_size_kb_optional,
     validate_size_kb_required,
+    validate_slug_required,
     validate_snap_file_name_optional,
     validate_snap_name_optional,
     validate_snap_name_required,
@@ -162,6 +163,16 @@ def test_validate_mime_type_optional(mock_settings: Any) -> None:
     assert validate_mime_type_optional(cls=None, value="png") == "png"
     with pytest.raises(ValueError):
         validate_mime_type_optional(cls=None, value="exc")
+
+
+def test_validate_slug_required() -> None:
+    assert validate_slug_required(cls=None, value="valid-slug") == "valid-slug"
+    with pytest.raises(ValueError):
+        validate_slug_required(cls=None, value="sl")
+    with pytest.raises(ValueError):
+        validate_slug_required(cls=None, value="a" * (DB_STR_64BIT_MAXLEN_INPUT + 1))
+    with pytest.raises(ValueError):
+        validate_slug_required(cls=None, value=None)  # type: ignore
 
 
 def test_validate_title_required() -> None:

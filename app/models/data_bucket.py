@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from pydantic import UUID4
 from sqlalchemy import ForeignKey, String
@@ -46,6 +46,7 @@ class DataBucket(Base, Timestamp):
         String(length=DB_STR_BUCKET_NAME_MAXLEN_INPUT),
         index=True,
         nullable=False,
+        default=settings.cloud.aws_s3_default_bucket,
     )
     bucket_prefix: Mapped[str] = mapped_column(
         String(length=DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT),
@@ -73,6 +74,20 @@ class DataBucket(Base, Timestamp):
     client: Mapped["Client"] = relationship(
         back_populates="data_bucket", single_parent=True
     )
+    bdx_feed_id: Mapped[UUID4 | None] = mapped_column(
+        UUIDType(binary=False),
+        ForeignKey("bdx_feed.id"),
+        nullable=True,
+        default=None,
+    )
+    bdx_feed: Mapped[Optional["BdxFeed"]] = relationship(back_populates="data_bucket")
+    gcft_id: Mapped[UUID4 | None] = mapped_column(
+        UUIDType(binary=False),
+        ForeignKey("gcft.id"),
+        nullable=True,
+        default=None,
+    )
+    gcflytour: Mapped[Optional["Gcft"]] = relationship(back_populates="data_bucket")
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover

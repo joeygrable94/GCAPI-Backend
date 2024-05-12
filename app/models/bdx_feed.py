@@ -91,6 +91,9 @@ class BdxFeed(Base, Timestamp):
         nullable=False,
     )
     client: Mapped["Client"] = relationship(back_populates="bdx_feeds")
+    data_bucket: Mapped["DataBucket"] = relationship(
+        "DataBucket", back_populates="bdx_feed", lazy="joined"
+    )
     file_assets: Mapped[List["FileAsset"]] = relationship(
         "FileAsset",
         back_populates="bdx_feed",

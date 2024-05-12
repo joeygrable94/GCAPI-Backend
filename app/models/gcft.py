@@ -12,6 +12,7 @@ from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_I
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
+    from .data_bucket import DataBucket  # noqa: F401
     from .gcft_snap import GcftSnap  # noqa: F401
     from .gcft_snap_activeduration import GcftSnapActiveduration  # noqa: F401
     from .gcft_snap_browserreport import GcftSnapBrowserreport  # noqa: F401
@@ -48,6 +49,9 @@ class Gcft(Base, Timestamp):
         UUIDType(binary=False), ForeignKey("client.id"), nullable=False
     )
     client: Mapped["Client"] = relationship("Client", back_populates="gcflytours")
+    data_bucket: Mapped["DataBucket"] = relationship(
+        "DataBucket", back_populates="gcflytour", lazy="joined"
+    )
     gcft_snaps: Mapped[List["GcftSnap"]] = relationship(
         "GcftSnap", back_populates="gcflytour"
     )

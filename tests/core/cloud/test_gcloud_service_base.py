@@ -1,8 +1,11 @@
 import pytest  # noqa: F401
 
+from app.core.cloud.google import GDRIVE_SCOPES, GoCloudServiceType
+from app.core.cloud.google.gcloud_access import (
+    load_gcloud_credentials,
+    load_gcloud_service,
+)
 from app.core.config import settings
-from app.core.gcloud import GDRIVE_SCOPES, GoCloudServiceType
-from app.core.gcloud.gcloud_access import load_gcloud_credentials, load_gcloud_service
 
 
 def test_gcloud_load_gcloud_credentials() -> None:

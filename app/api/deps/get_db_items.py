@@ -255,7 +255,7 @@ async def get_go_cloud_404(
     """Parses uuid/int and fetches google cloud property by id."""
     parsed_id: UUID = parse_id(go_cloud_id)
     go_cloud_repo: GoCloudPropertyRepository = GoCloudPropertyRepository(session=db)
-    go_cloud_acct: Sharpspring | None = await go_cloud_repo.read(parsed_id)
+    go_cloud_acct: GoCloudProperty | None = await go_cloud_repo.read(parsed_id)
     if go_cloud_acct is None:
         raise GoCloudPropertyNotExists()
     return go_cloud_acct

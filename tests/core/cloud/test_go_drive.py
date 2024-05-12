@@ -2,14 +2,14 @@ import os
 
 from tests.utils.utils import get_tests_root_directory
 
-from app.core.config import settings
-from app.core.gcloud import (
+from app.core.cloud.google import (
     GoCloudDriveAsset,
     GoCloudDriveAssetId,
     GoCloudDriveAssetsPage,
     GoCloudDriveService,
     GoCloudDriveSharedAsset,
 )
+from app.core.config import settings
 
 
 def test_gdrive_list_paginated_files_and_folders() -> None:
