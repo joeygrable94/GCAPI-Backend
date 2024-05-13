@@ -1866,17 +1866,17 @@ socks = ["socksio (==1.*)"]
 
 [[package]]
 name = "httpx-oauth"
-version = "0.11.2"
+version = "0.14.1"
 description = "Async OAuth client using HTTPX"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "httpx_oauth-0.11.2-py3-none-any.whl", hash = "sha256:11a2c79111e61a7bd70624606ad6a3013b6756ce4817dd5d5b44f70bacb45940"},
-    {file = "httpx_oauth-0.11.2.tar.gz", hash = "sha256:690e4d0a03b1974b9e600436a6d7a8c064e0707a3d86a41a12153cc797244ac6"},
+    {file = "httpx_oauth-0.14.1-py3-none-any.whl", hash = "sha256:3ccf35760d157a9abbf4a78024b744b5532ec5d4d03fc1db3e71123ce9d33e32"},
+    {file = "httpx_oauth-0.14.1.tar.gz", hash = "sha256:e58c60bce99568b4e98ce88abf0e2111a9b6c7f79c29bea88cc89d9edb78dfbc"},
 ]
 
 [package.dependencies]
-httpx = ">=0.18,<0.24"
+httpx = ">=0.18,<1.0.0"
 
 [[package]]
 name = "idna"
@@ -4389,4 +4389,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "7a3b7eb342e7077331c31beb7998ddbd426966cce4582eb91f79a536bff5bbba"
+content-hash = "9e8d9d6589aa222ddb1883ae1070f6827434298d7493e86ddf41167638564491"
