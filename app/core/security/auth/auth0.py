@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import os
@@ -6,6 +7,11 @@ import urllib.request
 from datetime import datetime
 from typing import Dict, List, Optional, Type
 
+# from jose import jwt  # type: ignore
+import jwt
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 from fastapi import Depends, HTTPException, Request
 from fastapi.openapi.models import OAuthFlowImplicit, OAuthFlows
 from fastapi.security import (
@@ -17,7 +23,14 @@ from fastapi.security import (
     OpenIdConnect,
     SecurityScopes,
 )
-from jose import jwt  # type: ignore
+from jwt.exceptions import (
+    ExpiredSignatureError,
+    ImmatureSignatureError,
+    InvalidAudienceError,
+    InvalidIssuerError,
+    InvalidSignatureError,
+    InvalidTokenError,
+)
 from pydantic import BaseModel, Field, ValidationError
 from typing_extensions import TypedDict
 
@@ -34,6 +47,13 @@ auth0_rule_namespace: str = os.getenv("AUTH0_RULE_NAMESPACE", "gcapi_oauth2")
 unauthenticated_response: Dict = {401: {"model": HTTPAuth0Error}}
 unauthorized_response: Dict = {403: {"model": HTTPAuth0Error}}
 security_responses: Dict = {**unauthenticated_response, **unauthorized_response}
+
+
+def base64url_decode(input: str) -> bytes:
+    rem = len(input) % 4
+    if rem > 0:
+        input += "=" * (4 - rem)
+    return base64.urlsafe_b64decode(input)
 
 
 class Auth0User(BaseModel):
@@ -195,9 +215,17 @@ class Auth0:
                     }
                     break
             if rsa_key:
+                n = int.from_bytes(base64url_decode(rsa_key["n"]), "big")
+                e = int.from_bytes(base64url_decode(rsa_key["e"]), "big")
+                public_numbers = rsa.RSAPublicNumbers(e, n)
+                public_key = public_numbers.public_key(default_backend())
+                pem_key = public_key.public_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PublicFormat.SubjectPublicKeyInfo,
+                )
                 payload = jwt.decode(
                     token,
-                    rsa_key,
+                    pem_key,
                     algorithms=self.algorithms,
                     audience=self.audience,
                     issuer=f"https://{self.domain}/",
@@ -210,7 +238,15 @@ class Auth0:
                     logger.warning(msg)
                     return None
 
-        except jwt.ExpiredSignatureError:  # pragma: no cover
+        except ImmatureSignatureError:  # pragma: no cover
+            msg = "Immature token"
+            if self.auto_error:
+                raise Auth0UnauthenticatedException(detail=msg)
+            else:
+                logger.warning(msg)
+                return None
+
+        except ExpiredSignatureError:  # pragma: no cover
             msg = "Expired token"
             if self.auto_error:
                 raise Auth0UnauthenticatedException(detail=msg)
@@ -218,7 +254,15 @@ class Auth0:
                 logger.warning(msg)
                 return None
 
-        except jwt.JWTClaimsError:  # pragma: no cover
+        except InvalidSignatureError:  # pragma: no cover
+            msg = "Invalid token signature"
+            if self.auto_error:
+                raise Auth0UnauthenticatedException(detail=msg)
+            else:
+                logger.warning(msg)
+                return None
+
+        except (InvalidAudienceError, InvalidIssuerError):  # pragma: no cover
             msg = "Invalid token claims (wrong issuer or audience)"
             if self.auto_error:
                 raise Auth0UnauthenticatedException(detail=msg)
@@ -226,7 +270,7 @@ class Auth0:
                 logger.warning(msg)
                 return None
 
-        except jwt.JWTError:
+        except InvalidTokenError:
             msg = "Malformed token"
             if self.auto_error:
                 raise Auth0UnauthenticatedException(detail=msg)

@@ -38,7 +38,7 @@ async def test_auth0_bad_bearer_token_malformed(
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 401
-    assert data["detail"] == "Malformed token"
+    assert data["detail"] == "Invalid token signature"
 
 
 async def test_auth0_bad_bearer_token_missing_kid(
