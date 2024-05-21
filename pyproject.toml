@@ -10,7 +10,7 @@ python = "^3.11"
 uvicorn = {version = "0.29.0", extras = ["standard"]}
 gunicorn = "^22.0.0"
 greenlet = "3.0.3"
-requests = "^2.31.0"
+requests = "^2.32.0"
 types-requests = "^2.31.0.10"
 cryptography = "42.0.5"
 bcrypt = "^4.1.3"
