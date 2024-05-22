@@ -128,3 +128,21 @@ class UserDelete(BaseSchema):
     message: str
     user_id: UUID4
     task_id: UUID4 | str | Any | None = None
+
+
+class UserAuthRequestToken(BaseSchema):
+    auth_request_token: str
+
+
+class UserLoginRequest(BaseSchema):
+    auth_request_token: str
+    email: str
+    password: str
+    confirm_password: str
+    auth_scope: str
+
+
+class UserSession(BaseSchema):
+    token_type: str
+    access_token: str | None = None
+    expires_in: int | None = None

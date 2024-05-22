@@ -101,9 +101,6 @@ class GoCloudDriveService:
         except HttpError as error:  # pragma: no cover
             success = False
             logger.info(error_message, error.reason)
-        except Exception as error:  # pragma: no cover
-            success = False
-            logger.info(error_message, error)
         finally:
             service.close()
             return GoCloudDriveAssetsPage(

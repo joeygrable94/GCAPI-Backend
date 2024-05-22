@@ -21,7 +21,11 @@ from app.core.security import (
     configure_rate_limiter_exceptions,
 )
 from app.core.templates import static_files
-from app.db.commands import check_db_connected, check_db_disconnected
+from app.db.commands import (
+    check_db_connected,
+    check_db_disconnected,
+    check_redis_connected,
+)
 
 sentry_client: Client | None = configure_monitoring()
 
@@ -29,6 +33,7 @@ sentry_client: Client | None = configure_monitoring()
 @asynccontextmanager  # type: ignore
 async def application_lifespan(app: FastAPI) -> AsyncGenerator:
     # application lifespan actions: startup and shutdown
+    check_redis_connected()
     # check DB connected
     await check_db_connected()
     # check REDIS connected

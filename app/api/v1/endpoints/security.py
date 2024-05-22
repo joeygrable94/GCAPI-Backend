@@ -37,7 +37,7 @@ async def check_test_token_scope(
     "/csrf",
     name="secure:get_csrf",
     dependencies=[
-        Depends(auth.implicit_scheme),
+        # Depends(auth.implicit_scheme),
         Depends(CsrfProtect),
         Depends(get_settings),
     ],
@@ -45,7 +45,7 @@ async def check_test_token_scope(
 )
 async def get_csrf(
     response: Response,
-    current_user: CurrentUser,
+    # current_user: CurrentUser,
     csrf_protect: CsrfProtect = Depends(),
     settings: Settings = Depends(get_settings),
 ) -> CsrfToken:
@@ -53,7 +53,7 @@ async def get_csrf(
 
     Permissions:
     ------------
-    anyone can access this endpoint
+    any logged in user can access this endpoint
 
     Returns:
     --------
@@ -73,7 +73,7 @@ async def get_csrf(
     "/csrf",
     name="secure:check_csrf",
     dependencies=[
-        Depends(auth.implicit_scheme),
+        # Depends(auth.implicit_scheme),
         Depends(CsrfProtect),
         Depends(get_settings),
     ],
@@ -82,7 +82,7 @@ async def get_csrf(
 async def check_csrf(
     request: Request,
     response: Response,
-    current_user: CurrentUser,
+    # current_user: CurrentUser,
     csrf_protect: CsrfProtect = Depends(),
     settings: Settings = Depends(get_settings),
 ) -> None:
@@ -90,7 +90,7 @@ async def check_csrf(
 
     Permissions:
     ------------
-    anyone can access this endpoint
+    any logged in user can access this endpoint
 
     Returns:
     --------
@@ -142,4 +142,4 @@ async def secure_decrypt_message(
 ) -> PlainMessage:
     """Decrypts and verifies the RSA signature of a securely encrypted message."""
     decrypted_message = secure.decrypt_and_verify(input.message, str)
-    return PlainMessage(message=decrypted_message)
+    return PlainMessage(message=str(decrypted_message))

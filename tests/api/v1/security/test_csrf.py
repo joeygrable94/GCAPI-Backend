@@ -19,7 +19,7 @@ async def test_get_csrf_token_as_admin(
     settings: Settings = get_settings()
     response: Response = await client.get(
         "/csrf",
-        headers=admin_token_headers,
+        # headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     data_headers: Headers = response.headers
@@ -41,7 +41,7 @@ async def test_post_csrf_token_as_admin(
     settings: Settings = get_settings()
     response: Response = await client.get(
         "/csrf",
-        headers=admin_token_headers,
+        # headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     data_headers: Headers = response.headers
@@ -58,7 +58,7 @@ async def test_post_csrf_token_as_admin(
     resp_headers = {
         settings.api.csrf_header_key: csrf_from_header,
     }
-    resp_headers.update(admin_token_headers)
+    # resp_headers.update(admin_token_headers)
     resp_cookies = {settings.api.csrf_name_key: csrf_from_cookie}
     response_2: Response = await client.post(
         "/csrf",
@@ -86,7 +86,7 @@ async def test_post_csrf_token_as_admin_token_missing(
     resp_headers = {
         settings.api.csrf_header_key: get_uuid_str(),
     }
-    resp_headers.update(admin_token_headers)
+    # resp_headers.update(admin_token_headers)
     resp_cookies = {settings.api.csrf_name_key: None}
     response_2: Response = await client.post(
         "/csrf",
@@ -106,7 +106,7 @@ async def test_post_csrf_token_as_admin_error_signature_mismatch(
     settings: Settings = get_settings()
     response: Response = await client.get(
         "/csrf",
-        headers=admin_token_headers,
+        # headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     data_headers: Headers = response.headers
@@ -124,7 +124,7 @@ async def test_post_csrf_token_as_admin_error_signature_mismatch(
     resp_headers = {
         settings.api.csrf_header_key: malformed_token,
     }
-    resp_headers.update(admin_token_headers)
+    # resp_headers.update(admin_token_headers)
     resp_cookies = {settings.api.csrf_name_key: csrf_from_cookie}
     response_2: Response = await client.post(
         "/csrf",
@@ -144,7 +144,7 @@ async def test_post_csrf_token_as_admin_error_bad_data(
     settings: Settings = get_settings()
     response: Response = await client.get(
         "/csrf",
-        headers=admin_token_headers,
+        # headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     data_headers: Headers = response.headers
@@ -164,7 +164,7 @@ async def test_post_csrf_token_as_admin_error_bad_data(
     resp_headers = {
         settings.api.csrf_header_key: token,
     }
-    resp_headers.update(admin_token_headers)
+    # resp_headers.update(admin_token_headers)
     resp_cookies = {settings.api.csrf_name_key: signed_token}
     response_2: Response = await client.post(
         "/csrf",
@@ -184,7 +184,7 @@ async def test_post_csrf_token_as_admin_invalid_headers(
     settings: Settings = get_settings()
     response: Response = await client.get(
         "/csrf",
-        headers=admin_token_headers,
+        # headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     data_headers: Headers = response.headers
@@ -206,7 +206,7 @@ async def test_post_csrf_token_as_admin_invalid_headers(
     resp_headers = {
         "x-csrf-bad-header": token,
     }
-    resp_headers.update(admin_token_headers)
+    # resp_headers.update(admin_token_headers)
     resp_cookies = {settings.api.csrf_name_key: signed_token}
     response_2: Response = await client.post(
         "/csrf",
@@ -226,7 +226,7 @@ async def test_post_csrf_token_as_admin_invalid_header_parts(
     settings: Settings = get_settings()
     response: Response = await client.get(
         "/csrf",
-        headers=admin_token_headers,
+        # headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     data_headers: Headers = response.headers
@@ -248,7 +248,7 @@ async def test_post_csrf_token_as_admin_invalid_header_parts(
     resp_headers = {
         "x-csrf-token": "Bearer " + token,
     }
-    resp_headers.update(admin_token_headers)
+    # resp_headers.update(admin_token_headers)
     resp_cookies = {settings.api.csrf_name_key: signed_token}
     response_2: Response = await client.post(
         "/csrf",
@@ -269,7 +269,7 @@ async def test_post_csrf_token_as_admin_valid_header_parts_with_header_type(
     settings: Settings = get_settings()
     response: Response = await client.get(
         "/csrf",
-        headers=admin_token_headers,
+        # headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     data_headers: Headers = response.headers
@@ -291,7 +291,7 @@ async def test_post_csrf_token_as_admin_valid_header_parts_with_header_type(
     resp_headers = {
         "x-csrf-token": "Bearer " + token,
     }
-    resp_headers.update(admin_token_headers)
+    # resp_headers.update(admin_token_headers)
     resp_cookies = {settings.api.csrf_name_key: signed_token}
     response_2: Response = await client.post(
         "/csrf",
@@ -307,6 +307,8 @@ async def test_post_csrf_token_as_admin_valid_header_parts_with_header_type(
     assert csrf_2_from_cookie is None
     assert csrf_2_from_header is not None
     assert len(csrf_2_from_header) == 0
+    # revert to original value
+    CsrfProtect._header_type = None
 
 
 async def test_post_csrf_token_as_admin_invalid_header_parts_with_header_type(
@@ -318,7 +320,7 @@ async def test_post_csrf_token_as_admin_invalid_header_parts_with_header_type(
     settings: Settings = get_settings()
     response: Response = await client.get(
         "/csrf",
-        headers=admin_token_headers,
+        # headers=admin_token_headers,
     )
     data: Dict[str, Any] = response.json()
     data_headers: Headers = response.headers
@@ -340,7 +342,7 @@ async def test_post_csrf_token_as_admin_invalid_header_parts_with_header_type(
     resp_headers = {
         "x-csrf-token": token,
     }
-    resp_headers.update(admin_token_headers)
+    # resp_headers.update(admin_token_headers)
     resp_cookies = {settings.api.csrf_name_key: signed_token}
     response_2: Response = await client.post(
         "/csrf",
@@ -352,3 +354,5 @@ async def test_post_csrf_token_as_admin_invalid_header_parts_with_header_type(
     assert (
         data_2["detail"] == 'Bad x-csrf-token header. Expected value "Bearer <Token>"'
     )
+    # revert to original value
+    CsrfProtect._header_type = None

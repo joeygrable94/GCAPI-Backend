@@ -1,5 +1,5 @@
-import redis.asyncio as redis  # pragma: no cover
-from redis.asyncio.client import Redis  # pragma: no cover
+import redis.asyncio as redis
+from redis.asyncio.client import Redis
 
 from app.core.config import settings  # pragma: no cover
 

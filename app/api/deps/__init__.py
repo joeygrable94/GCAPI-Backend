@@ -2,7 +2,7 @@ from typing import List
 
 from .content_types import verify_content_length, verify_content_type
 from .get_auth import CurrentUser, get_current_user
-from .get_client_ip import get_request_client_ip
+from .get_client_ip import RequestClientIp, get_request_client_ip
 from .get_cloud_service import (
     LoadAwsS3StorageService,
     LoadGoCloudDriveService,
@@ -86,6 +86,7 @@ __all__: List[str] = [
     "verify_content_type",
     "CurrentUser",
     "get_current_user",
+    "RequestClientIp",
     "get_request_client_ip",
     "AsyncDatabaseSession",
     "get_async_db",

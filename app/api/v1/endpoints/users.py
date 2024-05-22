@@ -1,16 +1,28 @@
-from fastapi import APIRouter, Depends, Request
+from os import environ
+from typing import Any, Dict
+
+import requests
+from fastapi import APIRouter, Depends, Request, Response
 from taskiq import AsyncTaskiqTask
 
 from app.api.deps import (
     Permission,
     PermissionController,
+    RequestClientIp,
     get_async_db,
     get_current_user,
     get_permission_controller,
     get_request_client_ip,
     get_user_or_404,
 )
-from app.api.exceptions import UserAlreadyExists
+from app.api.exceptions import (
+    UserAlreadyExists,
+    UserAuthRequestInvalidToken,
+    UserAuthRequestPending,
+    UserAuthRequestRequiresRefresh,
+    UserPasswordsMismatch,
+)
+from app.core.config import Settings, get_settings
 
 # from app.api.openapi import users_read_responses
 from app.core.pagination import (
@@ -19,7 +31,8 @@ from app.core.pagination import (
     PageParamsFromQuery,
     Paginated,
 )
-from app.core.security import auth
+from app.core.redis import redis_conn
+from app.core.security import CsrfProtect, RateLimiter, auth
 from app.core.security.permissions import (
     AccessDelete,
     AccessDeleteSelf,
@@ -33,10 +46,13 @@ from app.core.security.permissions import (
 )
 from app.models import User
 from app.schemas import (
+    UserAuthRequestToken,
     UserDelete,
+    UserLoginRequest,
     UserRead,
     UserReadAsAdmin,
     UserReadAsManager,
+    UserSession,
     UserUpdate,
     UserUpdateAsAdmin,
     UserUpdateAsManager,
@@ -48,21 +64,134 @@ router: APIRouter = APIRouter()
 
 
 @router.get(
+    "/request-auth",
+    name="users:authentication_request_csrf",
+    dependencies=[
+        Depends(CsrfProtect),
+        Depends(get_settings),
+        Depends(get_request_client_ip),
+    ],
+    response_model=UserAuthRequestToken,
+)
+async def get_auth_request_csrf(
+    response: Response,
+    request_ip: RequestClientIp,
+    csrf_protect: CsrfProtect = Depends(),
+    settings: Settings = Depends(get_settings),
+) -> UserAuthRequestToken:
+    """Generate an auth request token to be used in the /login route.
+
+    Permissions:
+    ------------
+    anyone can access this endpoint
+
+    Returns:
+    --------
+    `Dict[str, Any]` : a dictionary containing the CSRF token for the API
+
+    """
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens(
+        settings.api.csrf_secret_key
+    )
+    csrf_protect.set_csrf_cookie(signed_token, response)
+    csrf_protect.set_csrf_header(csrf_token, response)
+
+    auth_request_key = f"auth:request:{request_ip}"
+    auth_request: str | None = await redis_conn.get(auth_request_key)
+    if auth_request is None:
+        # expires in 1 hour
+        await redis_conn.set(auth_request_key, csrf_token, ex=3600)
+    else:
+        raise UserAuthRequestPending()
+
+    return UserAuthRequestToken(auth_request_token=csrf_token)
+
+
+@router.post(
+    "/login",
+    name="users:authentication",
+    dependencies=[
+        # 10 req/sec = 36,000 req/hr
+        Depends(RateLimiter(times=10, seconds=1)),
+        Depends(CsrfProtect),
+        Depends(get_settings),
+        Depends(get_request_client_ip),
+    ],
+    response_model=UserSession,
+)
+async def user_authentication(
+    request: Request,
+    response: Response,
+    request_ip: RequestClientIp,
+    user_login: UserLoginRequest,
+    csrf_protect: CsrfProtect = Depends(),
+    settings: Settings = Depends(get_settings),
+) -> UserSession:
+    auth_request_key = f"auth:request:{request_ip}"
+    auth_request_token: str | None = await redis_conn.get(auth_request_key)
+    if auth_request_token is None:
+        raise UserAuthRequestRequiresRefresh()
+    elif auth_request_token != user_login.auth_request_token:
+        raise UserAuthRequestInvalidToken()
+    else:
+        # delete the auth request token
+        await redis_conn.delete(auth_request_key)
+
+    await csrf_protect.validate_csrf(
+        request,
+        secret_key=settings.api.csrf_secret_key,
+        cookie_key=settings.api.csrf_name_key,
+    )
+    csrf_protect.unset_csrf_cookie(response)
+    csrf_protect.unset_csrf_header(response)
+
+    if user_login.password != user_login.confirm_password:
+        raise UserPasswordsMismatch()
+    clid: str | None = environ.get("AUTH0_M2M_CLIENT_ID", None)
+    clsh: str | None = environ.get("AUTH0_M2M_CLIENT_SECRET", None)
+    if clid is None:  # pragma: no cover
+        raise ValueError("AUTH0_M2M_CLIENT_ID is not set")
+    if clsh is None:  # pragma: no cover
+        raise ValueError("AUTH0_M2M_CLIENT_SECRET is not set")
+    auth_url = f"https://{settings.auth.domain}/oauth/token"
+    auth_data = {
+        "grant_type": "client_credentials",
+        "username": user_login.email,
+        "password": user_login.password,
+        "audience": settings.auth.audience,
+        "scope": user_login.auth_scope,
+    }
+    headers = {"content-type": "application/json"}
+    auth_response = requests.post(
+        auth_url, json=auth_data, headers=headers, auth=(clid, clsh)
+    )
+    data: Dict[str, Any] = auth_response.json()
+    token_type = data.get("token_type", "Bearer")
+    access_token = data.get("access_token", None)
+    access_token_expires = data.get("expires_in", None)
+    return UserSession(
+        token_type=token_type,
+        access_token=access_token,
+        expires_in=access_token_expires,
+    )
+
+
+@router.get(
     "/me",
     name="users:current",
     dependencies=[
+        Depends(get_request_client_ip),
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
-        Depends(get_request_client_ip),
     ],
     response_model=UserReadAsAdmin | UserReadAsManager | UserRead,
 )
 async def users_current(
     request: Request,
+    request_ip: RequestClientIp,
     permissions: PermissionController = Depends(get_permission_controller),
-    request_ip: str = Depends(get_request_client_ip),
 ) -> UserReadAsAdmin | UserReadAsManager | UserRead:
     """Retrieve the profile information about the currently active, verified user.
 

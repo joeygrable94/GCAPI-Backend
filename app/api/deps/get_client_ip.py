@@ -1,4 +1,6 @@
-from fastapi import Request
+from typing import Annotated
+
+from fastapi import Depends, Request
 
 
 def get_request_client_ip(request: Request) -> str:
@@ -8,3 +10,6 @@ def get_request_client_ip(request: Request) -> str:
     elif request.client is not None:
         return request.client.host
     return "127.0.0.1"  # pragma: no cover
+
+
+RequestClientIp = Annotated[str, Depends(get_request_client_ip)]
