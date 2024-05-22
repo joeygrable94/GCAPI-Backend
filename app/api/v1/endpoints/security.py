@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Request, Response, Security
 from app.api.deps import (
     CurrentUser,
     SecureMessageEncryption,
+    get_current_user,
     get_secure_message_encryption,
 )
 from app.core.config import Settings, get_settings
@@ -37,7 +38,8 @@ async def check_test_token_scope(
     "/csrf",
     name="secure:get_csrf",
     dependencies=[
-        # Depends(auth.implicit_scheme),
+        Depends(auth.implicit_scheme),
+        Depends(get_current_user),
         Depends(CsrfProtect),
         Depends(get_settings),
     ],
@@ -45,7 +47,7 @@ async def check_test_token_scope(
 )
 async def get_csrf(
     response: Response,
-    # current_user: CurrentUser,
+    current_user: CurrentUser,
     csrf_protect: CsrfProtect = Depends(),
     settings: Settings = Depends(get_settings),
 ) -> CsrfToken:
@@ -73,7 +75,8 @@ async def get_csrf(
     "/csrf",
     name="secure:check_csrf",
     dependencies=[
-        # Depends(auth.implicit_scheme),
+        Depends(auth.implicit_scheme),
+        Depends(get_current_user),
         Depends(CsrfProtect),
         Depends(get_settings),
     ],
@@ -82,7 +85,7 @@ async def get_csrf(
 async def check_csrf(
     request: Request,
     response: Response,
-    # current_user: CurrentUser,
+    current_user: CurrentUser,
     csrf_protect: CsrfProtect = Depends(),
     settings: Settings = Depends(get_settings),
 ) -> None:
@@ -112,6 +115,7 @@ async def check_csrf(
     name="secure:secure_encrypt_message",
     dependencies=[
         Depends(auth.implicit_scheme),
+        Depends(get_current_user),
         Depends(get_secure_message_encryption),
     ],
 )
@@ -131,6 +135,7 @@ async def secure_encrypt_message(
     name="secure:secure_decrypt_message",
     dependencies=[
         Depends(auth.implicit_scheme),
+        Depends(get_current_user),
         Depends(get_secure_message_encryption),
     ],
 )

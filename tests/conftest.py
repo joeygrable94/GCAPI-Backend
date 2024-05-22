@@ -6,7 +6,7 @@ from typing import Any, AsyncGenerator, Dict, Generator
 import pytest
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 from lxml import etree
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.auth0 import get_auth0_access_token
@@ -71,9 +71,10 @@ async def app() -> AsyncGenerator[FastAPI, None]:
 
 @pytest.fixture(scope="module")
 async def client(app: FastAPI) -> AsyncGenerator:
+    transport = ASGITransport(app=app)  # type: ignore
     async with LifespanManager(app):
         async with AsyncClient(
-            app=app,
+            transport=transport,
             base_url=f"http://0.0.0.0:8888{settings.api.prefix}/v1",
             headers={"Content-Type": "application/json"},
         ) as client:

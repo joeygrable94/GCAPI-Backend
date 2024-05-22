@@ -22,10 +22,8 @@ async def test_login_current_user_admin(
     csrf_data: Dict[str, Any] = csrf_response.json()
     auth_request_token = csrf_data.get("auth_request_token")
     assert 200 <= csrf_response.status_code < 300
-    csrf_from_header = csrf_response.headers.get(settings.api.csrf_header_key, None)
-    csrf_from_cookie = client.cookies.get(settings.api.csrf_name_key, None)
+    csrf_from_header = csrf_response.headers.get(settings.api.csrf_header_key, "")
     auth_headers = {settings.api.csrf_header_key: csrf_from_header}
-    auth_cookies = {settings.api.csrf_name_key: csrf_from_cookie}
     login_data: Dict[str, Any] = dict(
         auth_request_token=auth_request_token,
         email=settings.auth.first_admin,
@@ -37,7 +35,6 @@ async def test_login_current_user_admin(
     response: Response = await client.post(
         "users/login",
         headers=auth_headers,
-        cookies=auth_cookies,  # type: ignore
         json=login_data,
     )
     data: Dict[str, Any] = response.json()
@@ -57,10 +54,8 @@ async def test_login_current_user_passwords_mismatch(
     csrf_data: Dict[str, Any] = csrf_response.json()
     auth_request_token = csrf_data.get("auth_request_token")
     assert 200 <= csrf_response.status_code < 300
-    csrf_from_header = csrf_response.headers.get(settings.api.csrf_header_key, None)
-    csrf_from_cookie = client.cookies.get(settings.api.csrf_name_key, None)
+    csrf_from_header = csrf_response.headers.get(settings.api.csrf_header_key, "")
     auth_headers = {settings.api.csrf_header_key: csrf_from_header}
-    auth_cookies = {settings.api.csrf_name_key: csrf_from_cookie}
     login_data: Dict[str, Any] = dict(
         auth_request_token=auth_request_token,
         email=settings.auth.first_admin,
@@ -72,7 +67,6 @@ async def test_login_current_user_passwords_mismatch(
     response: Response = await client.post(
         "users/login",
         headers=auth_headers,
-        cookies=auth_cookies,  # type: ignore
         json=login_data,
     )
     data: Dict[str, Any] = response.json()
@@ -129,11 +123,9 @@ async def test_login_current_user_auth_request_token_invalid(
     csrf_data: Dict[str, Any] = csrf_response.json()
     auth_request_token = csrf_data.get("auth_request_token")
     assert 200 <= csrf_response.status_code < 300
-    csrf_from_header = csrf_response.headers.get(settings.api.csrf_header_key, None)
-    csrf_from_cookie = client.cookies.get(settings.api.csrf_name_key, None)
+    csrf_from_header = csrf_response.headers.get(settings.api.csrf_header_key, "")
     assert auth_request_token == csrf_from_header
     auth_headers = {settings.api.csrf_header_key: csrf_from_header}
-    auth_cookies = {settings.api.csrf_name_key: csrf_from_cookie}
     invalid_auth_request_token = get_uuid_str()
     login_data: Dict[str, Any] = dict(
         auth_request_token=invalid_auth_request_token,
@@ -146,7 +138,6 @@ async def test_login_current_user_auth_request_token_invalid(
     response: Response = await client.post(
         "users/login",
         headers=auth_headers,
-        cookies=auth_cookies,  # type: ignore
         json=login_data,
     )
     data: Dict[str, Any] = response.json()
