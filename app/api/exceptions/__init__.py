@@ -30,11 +30,7 @@ from .exceptions import (
     SharpspringAlreadyExists,
     SharpspringNotExists,
     UserAlreadyExists,
-    UserAuthRequestInvalidToken,
-    UserAuthRequestPending,
-    UserAuthRequestRequiresRefresh,
     UserNotExists,
-    UserPasswordsMismatch,
     WebsiteAlreadyExists,
     WebsiteDomainInvalid,
     WebsiteMapAlreadyExists,
@@ -86,58 +82,6 @@ def configure_exceptions(app: FastAPI) -> None:
     @app.exception_handler(InvalidID)
     async def invalid_id_exception_handler(
         request: Request, exc: InvalidID
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
-    @app.exception_handler(UserAuthRequestPending)
-    async def user_auth_request_pending_exception_handler(
-        request: Request, exc: UserAuthRequestPending
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
-    @app.exception_handler(UserAuthRequestRequiresRefresh)
-    async def user_auth_request_refresh_required_exception_handler(
-        request: Request, exc: UserAuthRequestRequiresRefresh
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
-    @app.exception_handler(UserAuthRequestInvalidToken)
-    async def user_auth_request_invalid_token_exception_handler(
-        request: Request, exc: UserAuthRequestInvalidToken
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
-    @app.exception_handler(UserPasswordsMismatch)
-    async def user_passwords_mismatch_exception_handler(
-        request: Request, exc: UserPasswordsMismatch
     ) -> Response:  # noqa: E501
         return await http_exception_handler(
             request,
@@ -617,9 +561,5 @@ __all__: List[str] = [
     "GoSearchConsolePropertyNotExists",
     "GoSearchConsoleMetricTypeInvalid",
     "GoSearchConsoleMetricNotExists",
-    "UserPasswordsMismatch",
-    "UserAuthRequestInvalidToken",
-    "UserAuthRequestPending",
-    "UserAuthRequestRequiresRefresh",
     "WebsiteMapUrlXmlInvalid",
 ]

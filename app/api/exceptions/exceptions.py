@@ -16,26 +16,6 @@ class InvalidID(ApiException):
 
 
 # Users
-class UserAuthRequestPending(ApiException):
-    def __init__(self, message: str = ErrorCode.USER_AUTH_REQUEST_PENDING):
-        super().__init__(status.HTTP_401_UNAUTHORIZED, message)
-
-
-class UserAuthRequestRequiresRefresh(ApiException):
-    def __init__(self, message: str = ErrorCode.USER_AUTH_REQUEST_REFRESH_REQUIRED):
-        super().__init__(status.HTTP_401_UNAUTHORIZED, message)
-
-
-class UserAuthRequestInvalidToken(ApiException):
-    def __init__(self, message: str = ErrorCode.USER_AUTH_REQUEST_INVALID_TOKEN):
-        super().__init__(status.HTTP_401_UNAUTHORIZED, message)
-
-
-class UserPasswordsMismatch(ApiException):
-    def __init__(self, message: str = ErrorCode.USER_PASSWORDS_MISMATCH):
-        super().__init__(status.HTTP_401_UNAUTHORIZED, message)
-
-
 class UserAlreadyExists(ApiException):
     def __init__(self, message: str = ErrorCode.USERNAME_EXISTS):
         super().__init__(status.HTTP_400_BAD_REQUEST, message)

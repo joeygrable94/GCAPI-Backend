@@ -65,8 +65,8 @@ class Auth0User(BaseModel):
     roles: List[str] = Field(  # type: ignore [literal-required]
         [], alias=f"{auth0_rule_namespace}/roles"
     )
-    email: Optional[str] = Field(  # type: ignore [literal-required]
-        None, alias=f"{auth0_rule_namespace}/email"
+    email: str = Field(  # type: ignore [literal-required]
+        "", alias=f"{auth0_rule_namespace}/email"
     )
     is_verified: Optional[bool] = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/is_verified"
