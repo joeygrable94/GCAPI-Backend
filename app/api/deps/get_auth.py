@@ -6,6 +6,7 @@ from app.api.exceptions import ErrorCode
 from app.core import logger
 from app.core.security import Auth0User, auth
 from app.core.security.permissions import AclPrivilege, RoleUser
+from app.core.utilities.uuids import get_uuid_str
 from app.crud import UserRepository
 from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
 from app.models import User
@@ -49,11 +50,12 @@ async def get_current_user(
     )
     auth0_scopes = get_acl_scope_list(auth0_user.roles, auth0_user.permissions)
     if not user:
+        new_username = auth0_user.email.split("@")[0] + get_uuid_str()[:4]
         user = await users_repo.create(
             UserCreate(
                 auth_id=auth0_user.auth_id,
                 email=auth0_user.email,
-                username=auth0_user.email,
+                username=new_username,
                 picture=auth0_user.picture or DB_STR_USER_PICTURE_DEFAULT,
                 scopes=auth0_scopes,
                 is_active=True,
