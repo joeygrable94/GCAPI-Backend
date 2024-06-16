@@ -13,6 +13,7 @@ class WorkerSettings(BaseSettings):
     result_backend: str = environ.get(
         "WORKER_RESULT_BACKEND", "redis://localhost:6379/0"
     )
+    result_ex_time: int = int(environ.get("WORKER_RESULT_EXPIRE_TIME", 3600))
     schedule_src: str = environ.get(
         "WORKER_SCHEDULE_SOURCE", "redis://localhost:6379/0"
     )

@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import Select
-from taskiq import AsyncTaskiqTask
 
 from app.api.deps import (
     CommonWebsiteMapQueryParams,
@@ -338,12 +337,10 @@ async def sitemap_process_sitemap_pages(
     if not sitemap_url_valid:
         raise WebsiteMapUrlXmlInvalid()
     # Send the task to the broker.
-    website_map_processing_pages: AsyncTaskiqTask = (
-        await task_website_sitemap_process_xml.kiq(
-            website_id=str(sitemap.website_id),
-            sitemap_id=str(sitemap.id),
-            sitemap_url=str(sitemap.url),
-        )
+    website_map_processing_pages = await task_website_sitemap_process_xml.kiq(
+        website_id=str(sitemap.website_id),
+        sitemap_id=str(sitemap.id),
+        sitemap_url=str(sitemap.url),
     )
     return WebsiteMapProcessing(
         url=sitemap.url,

@@ -1,29 +1,24 @@
-from sentry_sdk import Client
-from taskiq import InMemoryBroker, TaskiqScheduler
+from taskiq import AsyncBroker, AsyncResultBackend, ScheduleSource, TaskiqScheduler
 from taskiq.schedule_sources import LabelScheduleSource
 from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend, RedisScheduleSource
 
-from app.api.monitoring import configure_monitoring
 from app.core.config import settings
-from app.core.utilities import get_uuid_str
 
-sentry_client: Client | None = configure_monitoring()
-
-task_broker: InMemoryBroker | ListQueueBroker = (
-    ListQueueBroker(
-        url=settings.worker.broker_url,
-    )
-    .with_result_backend(
-        RedisAsyncResultBackend(
-            redis_url=settings.worker.result_backend,
-        )
-    )
-    .with_id_generator(get_uuid_str)
+task_broker_results: AsyncResultBackend = RedisAsyncResultBackend(
+    redis_url=settings.worker.result_backend,
+    result_ex_time=settings.worker.result_ex_time,
 )
 
-task_schedule_source = RedisScheduleSource(settings.worker.schedule_src)
+task_broker: AsyncBroker = ListQueueBroker(
+    url=settings.worker.broker_url,
+    result_backend=task_broker_results,
+)
 
-task_scheduler: TaskiqScheduler = TaskiqScheduler(
+task_schedule_source: ScheduleSource = RedisScheduleSource(
+    settings.worker.schedule_src
+)  # pragma: no cover
+
+task_scheduler: TaskiqScheduler = TaskiqScheduler(  # pragma: no cover
     broker=task_broker,
     sources=[LabelScheduleSource(task_broker)],
 )

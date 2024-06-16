@@ -1,7 +1,6 @@
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends
-from taskiq import AsyncTaskiqTask
 
 from app.api.deps import GetPublicQueryParams
 from app.core.security.rate_limiter.deps import RateLimiter
@@ -29,7 +28,7 @@ async def status(query: GetPublicQueryParams) -> Dict[str, Any]:
 
     """
     if query.message:
-        speak_task: AsyncTaskiqTask = await task_speak.kiq(query.message)
+        speak_task = await task_speak.kiq(query.message)
         return {"status": "ok", "speak_task_id": speak_task.task_id}
     return {"status": "ok"}
 

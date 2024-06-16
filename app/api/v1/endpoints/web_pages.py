@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import Select
-from taskiq import AsyncTaskiqTask
 
 from app.api.deps import (
     CommonWebsitePageQueryParams,
@@ -345,21 +344,17 @@ async def website_page_process_website_page_speed_insights(
         raise WebsiteNotExists()
     fetch_page = a_website.get_link() + website_page.url
     # Send the task to the broker.
-    website_page_psi_mobile: AsyncTaskiqTask = (
-        await task_website_page_pagespeedinsights_fetch.kiq(
-            website_id=str(a_website.id),
-            page_id=str(website_page.id),
-            fetch_url=fetch_page,
-            device=PSIDevice.mobile,
-        )
+    website_page_psi_mobile = await task_website_page_pagespeedinsights_fetch.kiq(
+        website_id=str(a_website.id),
+        page_id=str(website_page.id),
+        fetch_url=fetch_page,
+        device=PSIDevice.mobile,
     )
-    website_page_psi_desktop: AsyncTaskiqTask = (
-        await task_website_page_pagespeedinsights_fetch.kiq(
-            website_id=str(a_website.id),
-            page_id=str(website_page.id),
-            fetch_url=fetch_page,
-            device=PSIDevice.desktop,
-        )
+    website_page_psi_desktop = await task_website_page_pagespeedinsights_fetch.kiq(
+        website_id=str(a_website.id),
+        page_id=str(website_page.id),
+        fetch_url=fetch_page,
+        device=PSIDevice.desktop,
     )
     return WebsitePagePSIProcessing(
         page=WebsitePageRead.model_validate(website_page),

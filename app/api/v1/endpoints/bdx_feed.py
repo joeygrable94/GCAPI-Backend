@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import Select
-from taskiq import AsyncTaskiqTask
 
 from app.api.deps import (
     CommonClientQueryParams,
@@ -156,13 +155,11 @@ async def bdx_feed_create(
         logger.info(
             "Error creating data bucket for client bdx feed, running in worker..."
         )
-        create_data_bucket_task: AsyncTaskiqTask = (  # noqa: E501, F841
-            await task_create_client_data_bucket.kiq(
-                bucket_prefix=f"client/{a_client.slug}/bdxfeed/{new_bdx_feed.xml_file_key}",  # noqa: E501
-                client_id=str(a_client.id),
-                bdx_feed_id=str(new_bdx_feed.id),
-                gcft_id=None,
-            )
+        create_data_bucket_task = await task_create_client_data_bucket.kiq(  # noqa: E501, F841
+            bucket_prefix=f"client/{a_client.slug}/bdxfeed/{new_bdx_feed.xml_file_key}",  # noqa: E501
+            client_id=str(a_client.id),
+            bdx_feed_id=str(new_bdx_feed.id),
+            gcft_id=None,
         )
     # return role based response
     response_out: BdxFeedRead = permissions.get_resource_response(

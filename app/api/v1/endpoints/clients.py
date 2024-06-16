@@ -2,7 +2,6 @@ from typing import Dict
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import Select
-from taskiq import AsyncTaskiqTask
 
 from app.api.deps import (
     CommonUserQueryParams,
@@ -175,7 +174,7 @@ async def clients_create(
     )
     if data_bucket is None:  # pragma: no cover
         logger.info("Error creating data bucket for client, running in worker...")
-        create_data_bucket_task: AsyncTaskiqTask = (  # noqa: E501, F841
+        create_data_bucket_task = (  # noqa: E501, F841
             await task_create_client_data_bucket.kiq(
                 bucket_prefix=f"client/{new_client.slug}",
                 client_id=str(new_client.id),
@@ -347,7 +346,7 @@ async def clients_delete(
             client_id=client.id,
         )
     else:
-        delete_client_task: AsyncTaskiqTask = await task_request_to_delete_client.kiq(
+        delete_client_task = await task_request_to_delete_client.kiq(
             user_id=str(permissions.current_user.id), client_id=str(client.id)
         )
         client_delete = ClientDelete(
