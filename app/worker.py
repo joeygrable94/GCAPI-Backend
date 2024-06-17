@@ -11,8 +11,7 @@ task_broker_results: AsyncResultBackend = RedisAsyncResultBackend(
 
 task_broker: AsyncBroker = ListQueueBroker(
     url=settings.worker.broker_url,
-    result_backend=task_broker_results,
-)
+).with_result_backend(task_broker_results)
 
 task_schedule_source: ScheduleSource = RedisScheduleSource(
     settings.worker.schedule_src
