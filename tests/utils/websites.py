@@ -30,8 +30,8 @@ def build_sitemap_page_meta(
     for page in mock_fetch_sitemap_page_urlset:
         page_meta = WebsiteMapPage(
             url=page["url"],
-            lastmod=page["last_modified"],
-            changefreq=SitemapPageChangeFrequency(page["change_frequency"]),
+            last_modified=page["lastmod"],
+            change_frequency=SitemapPageChangeFrequency(page["changefreq"]),
             priority=page["priority"],
         )
         sitemap_pages.append(page_meta)

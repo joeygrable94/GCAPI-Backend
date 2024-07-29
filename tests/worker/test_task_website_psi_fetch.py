@@ -29,5 +29,5 @@ async def test_worker_task_website_page_pagespeedinsights_fetch() -> None:
     assert result.insights == mock_psi_insights_base
     assert result.is_created
     mock_fetch.assert_called_once_with(
-        fetch_url=psi_url, device=PageSpeedInsightsDevice(device="desktop")
+        fetch_url=psi_url, device=PageSpeedInsightsDevice(device=PSIDevice.desktop)
     )

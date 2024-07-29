@@ -4,6 +4,7 @@ from os import path, remove
 from typing import Any, AsyncGenerator, Dict, Generator
 
 import pytest
+import pytest_asyncio
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
@@ -46,7 +47,7 @@ def delete_test_db() -> None:
             pass
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -63,13 +64,13 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.fixture(scope="module")
+@pytest_asyncio.fixture(scope="module")
 async def app() -> AsyncGenerator[FastAPI, None]:
     _app: FastAPI = create_app()
     yield _app
 
 
-@pytest.fixture(scope="module")
+@pytest_asyncio.fixture(scope="module")
 async def client(app: FastAPI) -> AsyncGenerator:
     transport = ASGITransport(app=app)  # type: ignore
     async with LifespanManager(app):

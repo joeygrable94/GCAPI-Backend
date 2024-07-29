@@ -13,7 +13,7 @@ from app.core.config import settings
 from app.core.utilities.uuids import get_uuid_str
 from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT
 from app.models import User
-from app.schemas import ClientRead, WebsiteRead
+from app.schemas import ClientRead
 
 pytestmark = pytest.mark.asyncio
 
@@ -49,7 +49,7 @@ async def test_create_ga4_property_as_superuser_client_not_exists(
     admin_token_headers: Dict[str, str],
 ) -> None:
     fake_client_id = get_uuid_str()
-    a_website: WebsiteRead = await create_random_website(db_session)  # noqa: F841
+    a_website = await create_random_website(db_session)  # noqa: F841
     data_in: Dict[str, Any] = dict(
         title=random_lower_string(),
         measurement_id=random_lower_string(DB_STR_16BIT_MAXLEN_INPUT),
