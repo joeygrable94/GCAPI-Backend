@@ -2,6 +2,7 @@ from .bdx_feed import BdxFeedRepository
 from .client import ClientRepository
 from .client_report import ClientReportRepository
 from .client_report_note import ClientReportNoteRepository
+from .client_tracking_link import ClientTrackingLinkRepository
 from .client_website import ClientWebsiteRepository
 from .data_bucket import DataBucketRepository
 from .file_asset import FileAssetRepository
@@ -21,6 +22,7 @@ from .go_sc_metrics import GoSearchConsoleMetricRepository
 from .ipaddress import IpaddressRepository
 from .note import NoteRepository
 from .sharpspring import SharpspringRepository
+from .tracking_link import TrackingLinkRepository
 from .user import UserRepository
 from .user_client import UserClientRepository
 from .user_ipaddress import UserIpaddressRepository
@@ -36,6 +38,7 @@ __all__: list[str] = [
     "DataBucketRepository",
     "ClientReportRepository",
     "ClientReportNoteRepository",
+    "ClientTrackingLinkRepository",
     "ClientWebsiteRepository",
     "FileAssetRepository",
     "GcftRepository",
@@ -54,6 +57,7 @@ __all__: list[str] = [
     "IpaddressRepository",
     "NoteRepository",
     "SharpspringRepository",
+    "TrackingLinkRepository",
     "UserRepository",
     "UserClientRepository",
     "UserIpaddressRepository",

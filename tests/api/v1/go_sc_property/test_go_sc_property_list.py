@@ -13,7 +13,7 @@ from tests.utils.users import get_user_by_email
 from tests.utils.websites import create_random_website
 
 from app.core.config import settings
-from app.models import ClientWebsite, User
+from app.models import ClientWebsite, User, Website
 from app.schemas import ClientRead, GoSearchConsolePropertyRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
@@ -26,7 +26,7 @@ async def test_list_all_go_sc_property_as_superuser(
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
     b_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     entry_1: GoSearchConsolePropertyRead = (
         await create_random_go_search_console_property(
             db_session, client_id=a_client.id, website_id=a_website.id
@@ -82,7 +82,7 @@ async def test_list_all_go_sc_property_as_superuser_query_client_id(
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
     b_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     entry_1: GoSearchConsolePropertyRead = (
         await create_random_go_search_console_property(
             db_session, client_id=a_client.id, website_id=a_website.id
@@ -131,9 +131,9 @@ async def test_list_all_go_sc_property_as_superuser_query_website_id(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    b_website: WebsiteRead = await create_random_website(db_session)
-    c_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
+    b_website: Website | WebsiteRead = await create_random_website(db_session)
+    c_website: Website | WebsiteRead = await create_random_website(db_session)
     a_client_a_website: ClientWebsite = await assign_website_to_client(
         db_session,
         a_website,
@@ -196,9 +196,9 @@ async def test_list_all_go_sc_property_as_employee(
     a_user: User = await get_user_by_email(db_session, settings.auth.first_employee)
     a_client: ClientRead = await create_random_client(db_session)
     b_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    b_website: WebsiteRead = await create_random_website(db_session)
-    c_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
+    b_website: Website | WebsiteRead = await create_random_website(db_session)
+    c_website: Website | WebsiteRead = await create_random_website(db_session)
     await assign_user_to_client(db_session, a_user, a_client)
     a_client_a_website: ClientWebsite = await assign_website_to_client(
         db_session,

@@ -4,6 +4,7 @@ from .bdx_feed import BdxFeed
 from .client import Client
 from .client_report import ClientReport
 from .client_report_note import ClientReportNote
+from .client_tracking_link import ClientTrackingLink
 from .client_website import ClientWebsite
 from .data_bucket import DataBucket
 from .file_asset import FileAsset
@@ -27,6 +28,7 @@ from .go_sc_searchappearance import GoSearchConsoleSearchappearance
 from .ipaddress import Ipaddress
 from .note import Note
 from .sharpspring import Sharpspring
+from .tracking_link import TrackingLink
 from .user import User
 from .user_client import UserClient
 from .user_ipaddress import UserIpaddress
@@ -42,6 +44,7 @@ __all__: List[str] = [
     "DataBucket",
     "ClientReport",
     "ClientReportNote",
+    "ClientTrackingLink",
     "ClientWebsite",
     "FileAsset",
     "Gcft",
@@ -64,6 +67,7 @@ __all__: List[str] = [
     "Ipaddress",
     "Note",
     "Sharpspring",
+    "TrackingLink",
     "User",
     "UserClient",
     "UserIpaddress",

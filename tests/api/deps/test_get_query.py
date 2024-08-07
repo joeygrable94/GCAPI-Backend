@@ -3,10 +3,12 @@ import uuid
 
 import pytest
 from fastapi import HTTPException, status
+from tests.utils.utils import random_lower_string
 
 from app.api.deps.get_query import (
     ClientIdQueryParams,
     CommonClientQueryParams,
+    CommonClientTrackingLinkQueryParams,
     CommonClientWebsiteQueryParams,
     CommonUserClientQueryParams,
     CommonUserQueryParams,
@@ -204,6 +206,46 @@ def test_common_client_query_params() -> None:
     assert query_params.page == 1
     assert query_params.size == 1000
     assert query_params.client_id is None
+
+
+def test_common_client_tracking_link_query_params() -> None:
+    uuid_1 = get_uuid_str()
+    utm_cmpn = random_lower_string(16)
+    utm_mdm = random_lower_string(16)
+    utm_src = random_lower_string(16)
+    utm_cnt = random_lower_string(16)
+    utm_trm = random_lower_string(16)
+    query_params = CommonClientTrackingLinkQueryParams(
+        page=2,
+        size=10,
+        client_id=uuid_1,
+        utm_campaign=utm_cmpn,
+        utm_medium=utm_mdm,
+        utm_source=utm_src,
+        utm_content=utm_cnt,
+        utm_term=utm_trm,
+        is_active=True,
+    )
+    assert query_params.page == 2
+    assert query_params.size == 10
+    assert str(query_params.client_id) == uuid_1
+    assert query_params.utm_campaign == utm_cmpn
+    assert query_params.utm_medium == utm_mdm
+    assert query_params.utm_source == utm_src
+    assert query_params.utm_content == utm_cnt
+    assert query_params.utm_term == utm_trm
+    assert query_params.is_active is True
+
+    query_params = CommonClientTrackingLinkQueryParams()
+    assert query_params.page == 1
+    assert query_params.size == 1000
+    assert query_params.client_id is None
+    assert query_params.utm_campaign is None
+    assert query_params.utm_medium is None
+    assert query_params.utm_source is None
+    assert query_params.utm_content is None
+    assert query_params.utm_term is None
+    assert query_params.is_active is None
 
 
 def test_common_user_client_query_params() -> None:

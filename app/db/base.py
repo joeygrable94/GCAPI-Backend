@@ -3,6 +3,7 @@ from app.models.bdx_feed import BdxFeed
 from app.models.client import Client
 from app.models.client_report import ClientReport
 from app.models.client_report_note import ClientReportNote
+from app.models.client_tracking_link import ClientTrackingLink
 from app.models.client_website import ClientWebsite
 from app.models.data_bucket import DataBucket
 from app.models.file_asset import FileAsset
@@ -26,6 +27,7 @@ from app.models.go_sc_searchappearance import GoSearchConsoleSearchappearance
 from app.models.ipaddress import Ipaddress
 from app.models.note import Note
 from app.models.sharpspring import Sharpspring
+from app.models.tracking_link import TrackingLink
 from app.models.user import User
 from app.models.user_client import UserClient
 from app.models.user_ipaddress import UserIpaddress
@@ -42,6 +44,7 @@ __all__: list[str] = [
     "DataBucket",
     "ClientReport",
     "ClientReportNote",
+    "ClientTrackingLink",
     "ClientWebsite",
     "FileAsset",
     "Gcft",
@@ -64,6 +67,7 @@ __all__: list[str] = [
     "Ipaddress",
     "Note",
     "Sharpspring",
+    "TrackingLink",
     "User",
     "UserClient",
     "UserIpaddress",

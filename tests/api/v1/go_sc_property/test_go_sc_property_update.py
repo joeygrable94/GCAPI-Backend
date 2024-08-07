@@ -16,7 +16,7 @@ from tests.utils.websites import create_random_website
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
 from app.core.utilities.uuids import get_uuid_str
-from app.models import User
+from app.models import User, Website
 from app.schemas import ClientRead, GoSearchConsolePropertyRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
@@ -28,7 +28,7 @@ async def test_update_go_sc_property_as_superuser(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_go_sc: GoSearchConsolePropertyRead = (
         await create_random_go_search_console_property(
             db_session, a_client.id, a_website.id
@@ -55,7 +55,7 @@ async def test_update_go_sc_property_as_superuser_client_not_exists(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_go_sc: GoSearchConsolePropertyRead = (
         await create_random_go_search_console_property(
             db_session, a_client.id, a_website.id
@@ -80,7 +80,7 @@ async def test_update_go_sc_property_as_superuser_website_not_exists(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_go_sc: GoSearchConsolePropertyRead = (
         await create_random_go_search_console_property(
             db_session, a_client.id, a_website.id
@@ -105,8 +105,8 @@ async def test_update_go_sc_property_as_superuser_title_already_exists(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    b_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
+    b_website: Website | WebsiteRead = await create_random_website(db_session)
     a_go_sc: GoSearchConsolePropertyRead = (
         await create_random_go_search_console_property(
             db_session, a_client.id, a_website.id
@@ -134,9 +134,9 @@ async def test_update_go_sc_property_as_superuser_go_sc_property_already_exists(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    b_website: WebsiteRead = await create_random_website(db_session)
-    c_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
+    b_website: Website | WebsiteRead = await create_random_website(db_session)
+    c_website: Website | WebsiteRead = await create_random_website(db_session)
     a_go_sc: GoSearchConsolePropertyRead
     b_go_sc: GoSearchConsolePropertyRead  # noqa: F841
     c_go_sc: GoSearchConsolePropertyRead  # noqa: F841
@@ -170,7 +170,7 @@ async def test_update_go_sc_property_as_employee(
 ) -> None:
     a_user: User = await get_user_by_email(db_session, settings.auth.first_employee)
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     await assign_user_to_client(db_session, a_user, a_client)
     await assign_website_to_client(db_session, a_website, a_client)
     a_go_sc = await create_random_go_search_console_property(
@@ -200,7 +200,7 @@ async def test_update_go_sc_property_as_employee_forbidden(
         db_session, settings.auth.first_employee
     )
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_go_sc = await create_random_go_search_console_property(
         db_session, a_client.id, a_website.id
     )
@@ -225,8 +225,8 @@ async def test_update_go_sc_property_as_employee_forbidden_client_access(
     a_user: User = await get_user_by_email(db_session, settings.auth.first_employee)
     a_client: ClientRead = await create_random_client(db_session)
     b_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    b_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
+    b_website: Website | WebsiteRead = await create_random_website(db_session)
     await assign_user_to_client(db_session, a_user, a_client)
     await assign_website_to_client(db_session, a_website, a_client)
     await assign_website_to_client(db_session, b_website, a_client)
@@ -254,8 +254,8 @@ async def test_update_go_sc_property_as_employee_forbidden_website_access(
     a_user: User = await get_user_by_email(db_session, settings.auth.first_employee)
     a_client: ClientRead = await create_random_client(db_session)
     b_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    b_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
+    b_website: Website | WebsiteRead = await create_random_website(db_session)
     await assign_user_to_client(db_session, a_user, a_client)
     await assign_website_to_client(db_session, a_website, a_client)
     await assign_website_to_client(db_session, b_website, b_client)

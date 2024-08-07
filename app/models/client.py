@@ -48,6 +48,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .go_cloud import GoCloudProperty  # noqa: F401
     from .go_sc import GoSearchConsoleProperty  # noqa: F401
     from .sharpspring import Sharpspring  # noqa: F401
+    from .tracking_link import TrackingLink  # noqa: F401
     from .user import User  # noqa: F401
     from .website import Website  # noqa: F401
 
@@ -108,6 +109,9 @@ class Client(Base, Timestamp):
     )
     client_reports: Mapped[List["ClientReport"]] = relationship(
         "ClientReport", back_populates="client"
+    )
+    tracking_links: Mapped[List["TrackingLink"]] = relationship(
+        "TrackingLink", secondary="client_tracking_link", back_populates="clients"
     )
     gcloud_accounts: Mapped[List["GoCloudProperty"]] = relationship(
         "GoCloudProperty", back_populates="client", cascade="all, delete-orphan"

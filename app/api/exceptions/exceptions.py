@@ -53,6 +53,22 @@ class ClientReportNotExists(ApiException):
         super().__init__(status.HTTP_404_NOT_FOUND, message)
 
 
+# Tracking Links
+class TrackingLinkAlreadyExists(ApiException):
+    def __init__(self, message: str = ErrorCode.TRACKING_LINK_EXISTS):
+        super().__init__(status.HTTP_400_BAD_REQUEST, message)
+
+
+class TrackingLinkNotExists(ApiException):
+    def __init__(self, message: str = ErrorCode.TRACKING_LINK_NOT_FOUND):
+        super().__init__(status.HTTP_404_NOT_FOUND, message)
+
+
+class TrackingLinkUtmParamsInvalid(ApiException):
+    def __init__(self, message: str = ErrorCode.TRACKING_LINK_UTM_PARAMS_INVALID):
+        super().__init__(status.HTTP_400_BAD_REQUEST, message)
+
+
 # Notes
 class NoteAlreadyExists(ApiException):
     def __init__(self, message: str = ErrorCode.NOTE_EXISTS):

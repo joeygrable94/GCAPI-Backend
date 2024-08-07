@@ -15,6 +15,7 @@ from app.api.exceptions import (
     GoSearchConsolePropertyNotExists,
     NoteNotExists,
     SharpspringNotExists,
+    TrackingLinkNotExists,
     UserNotExists,
     WebsiteMapNotExists,
     WebsiteNotExists,
@@ -34,6 +35,7 @@ from app.crud import (
     GoSearchConsolePropertyRepository,
     NoteRepository,
     SharpspringRepository,
+    TrackingLinkRepository,
     UserRepository,
     WebsiteKeywordCorpusRepository,
     WebsiteMapRepository,
@@ -56,6 +58,7 @@ from app.models import (
     GoSearchConsoleSearchappearance,
     Note,
     Sharpspring,
+    TrackingLink,
     User,
     Website,
     WebsiteKeywordCorpus,
@@ -112,6 +115,22 @@ async def get_client_report_or_404(
 
 
 FetchClientReportOr404 = Annotated[ClientReport, Depends(get_client_report_or_404)]
+
+
+async def get_tracking_link_or_404(
+    db: AsyncDatabaseSession,
+    tracking_link_id: Any,
+) -> TrackingLink | None:
+    """Parses uuid/int and fetches tracking_link by id."""
+    parsed_id: UUID = parse_id(tracking_link_id)
+    link_repo: TrackingLinkRepository = TrackingLinkRepository(session=db)
+    link: TrackingLink | None = await link_repo.read(entry_id=parsed_id)
+    if link is None:
+        raise TrackingLinkNotExists()
+    return link
+
+
+FetchTrackingLinkOr404 = Annotated[TrackingLink, Depends(get_tracking_link_or_404)]
 
 
 async def get_note_or_404(

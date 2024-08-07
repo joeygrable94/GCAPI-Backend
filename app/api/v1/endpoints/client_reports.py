@@ -157,17 +157,17 @@ async def client_report_create(
         client_id=client_report_in.client_id,
     )
     report_repo: ClientReportRepository = ClientReportRepository(session=permissions.db)
-    a_client_title: Client | None = await report_repo.read_by(
+    a_client_title: ClientReport | None = await report_repo.read_by(
         field_name="title",
         field_value=client_report_in.title,
     )
-    a_client_url: Client | None = await report_repo.read_by(
+    a_client_url: ClientReport | None = await report_repo.read_by(
         field_name="url",
         field_value=client_report_in.url,
     )
     if a_client_title is not None or a_client_url is not None:
         raise ClientReportAlreadyExists()
-    new_client: Client = await report_repo.create(client_report_in)
+    new_client: ClientReport = await report_repo.create(client_report_in)
     # return role based response
     response_out: ClientReportRead = permissions.get_resource_response(
         resource=new_client,

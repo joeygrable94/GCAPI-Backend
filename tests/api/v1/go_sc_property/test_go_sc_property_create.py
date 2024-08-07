@@ -15,7 +15,7 @@ from tests.utils.websites import create_random_website
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
 from app.core.utilities.uuids import get_uuid_str
-from app.models import User
+from app.models import User, Website
 from app.schemas import ClientRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
@@ -27,7 +27,7 @@ async def test_create_go_sc_property_as_superuser(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     data_in: Dict[str, Any] = dict(
         title=random_lower_string(),
         website_id=str(a_website.id),
@@ -51,7 +51,9 @@ async def test_create_go_sc_property_as_superuser_client_not_exists(
     admin_token_headers: Dict[str, str],
 ) -> None:
     fake_client_id = get_uuid_str()
-    a_website: WebsiteRead = await create_random_website(db_session)  # noqa: F841
+    a_website: Website | WebsiteRead = await create_random_website(
+        db_session
+    )  # noqa: F841
     data_in: Dict[str, Any] = dict(
         title=random_lower_string(),
         website_id=str(a_website.id),
@@ -96,7 +98,7 @@ async def test_create_go_sc_property_as_employee(
 ) -> None:
     a_user: User = await get_user_by_email(db_session, settings.auth.first_employee)
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_user_a_client = await assign_user_to_client(db_session, a_user, a_client)
     a_client_a_website = await assign_website_to_client(db_session, a_website, a_client)
     data_in: Dict[str, Any] = dict(
@@ -122,7 +124,7 @@ async def test_create_go_sc_property_as_employee_forbidden(
     employee_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     data_in: Dict[str, Any] = dict(
         title=random_lower_string(),
         website_id=str(a_website.id),
@@ -144,7 +146,7 @@ async def test_create_go_sc_property_as_superuser_already_exists(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     data_in: Dict[str, Any] = dict(
         title=random_lower_string(),
         website_id=str(a_website.id),

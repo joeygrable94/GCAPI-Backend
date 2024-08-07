@@ -4,6 +4,7 @@ from app.api.v1.endpoints import (
     bdx_feed,
     client_reports,
     clients,
+    clients_tracking_links,
     go_a4_property,
     go_a4_stream,
     go_cloud,
@@ -55,6 +56,13 @@ router_v1.include_router(
     clients.router,
     prefix="/clients",
     tags=["Clients"],
+)
+
+# Client Tracking Links routes
+router_v1.include_router(
+    clients_tracking_links.router,
+    prefix="/clients/links",
+    tags=["Clients Links"],
 )
 
 # Client Reports routes

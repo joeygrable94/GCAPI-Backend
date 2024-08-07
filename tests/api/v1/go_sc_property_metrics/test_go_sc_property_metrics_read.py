@@ -19,6 +19,7 @@ from app.models import (
     GoSearchConsolePage,
     GoSearchConsoleQuery,
     GoSearchConsoleSearchappearance,
+    Website,
 )
 from app.schemas import (
     ClientRead,
@@ -37,7 +38,7 @@ async def test_read_go_sc_property_metric_by_id_as_superuser_searchappearance(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_gsc: GoSearchConsolePropertyRead = await create_random_go_search_console_property(
         db_session, client_id=a_client.id, website_id=a_website.id
     )
@@ -83,7 +84,7 @@ async def test_read_go_sc_property_metric_by_id_as_superuser_searchappearance_no
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_gsc: GoSearchConsolePropertyRead = await create_random_go_search_console_property(
         db_session, client_id=a_client.id, website_id=a_website.id
     )
@@ -104,7 +105,7 @@ async def test_read_go_sc_property_metric_by_id_as_superuser_query(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_gsc: GoSearchConsolePropertyRead = await create_random_go_search_console_property(
         db_session, client_id=a_client.id, website_id=a_website.id
     )
@@ -150,7 +151,7 @@ async def test_read_go_sc_property_metric_by_id_as_superuser_query_not_found(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_gsc: GoSearchConsolePropertyRead = await create_random_go_search_console_property(
         db_session, client_id=a_client.id, website_id=a_website.id
     )
@@ -171,7 +172,7 @@ async def test_read_go_sc_property_metric_by_id_as_superuser_page(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_gsc: GoSearchConsolePropertyRead = await create_random_go_search_console_property(
         db_session, client_id=a_client.id, website_id=a_website.id
     )
@@ -217,7 +218,7 @@ async def test_read_go_sc_property_metric_by_id_as_superuser_page_not_found(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_gsc: GoSearchConsolePropertyRead = await create_random_go_search_console_property(
         db_session, client_id=a_client.id, website_id=a_website.id
     )
@@ -238,7 +239,7 @@ async def test_read_go_sc_property_metric_by_id_as_superuser_device(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_gsc: GoSearchConsolePropertyRead = await create_random_go_search_console_property(
         db_session, client_id=a_client.id, website_id=a_website.id
     )
@@ -284,7 +285,7 @@ async def test_read_go_sc_property_metric_by_id_as_superuser_device_not_found(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_gsc: GoSearchConsolePropertyRead = await create_random_go_search_console_property(
         db_session, client_id=a_client.id, website_id=a_website.id
     )
@@ -305,7 +306,7 @@ async def test_read_go_sc_property_metric_by_id_as_superuser_country(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_gsc: GoSearchConsolePropertyRead = await create_random_go_search_console_property(
         db_session, client_id=a_client.id, website_id=a_website.id
     )
@@ -351,7 +352,7 @@ async def test_read_go_sc_property_metric_by_id_as_superuser_country_not_found(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_gsc: GoSearchConsolePropertyRead = await create_random_go_search_console_property(
         db_session, client_id=a_client.id, website_id=a_website.id
     )

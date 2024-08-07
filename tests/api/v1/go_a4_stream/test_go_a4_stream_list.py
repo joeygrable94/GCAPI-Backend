@@ -13,7 +13,7 @@ from tests.utils.users import get_user_by_email
 from tests.utils.websites import create_random_website
 
 from app.core.config import settings
-from app.models import User
+from app.models import User, Website
 from app.schemas import (
     ClientRead,
     GoAnalytics4PropertyRead,
@@ -30,10 +30,10 @@ async def test_list_all_ga4_property_as_superuser(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    b_website: WebsiteRead = await create_random_website(db_session)
-    c_website: WebsiteRead = await create_random_website(db_session)
-    d_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
+    b_website: Website | WebsiteRead = await create_random_website(db_session)
+    c_website: Website | WebsiteRead = await create_random_website(db_session)
+    d_website: Website | WebsiteRead = await create_random_website(db_session)
     a_ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
         db_session, client_id=a_client.id
     )
@@ -86,10 +86,10 @@ async def test_list_all_ga4_property_as_superuser_by_ga4_property_id(
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
     b_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    b_website: WebsiteRead = await create_random_website(db_session)
-    c_website: WebsiteRead = await create_random_website(db_session)
-    d_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
+    b_website: Website | WebsiteRead = await create_random_website(db_session)
+    c_website: Website | WebsiteRead = await create_random_website(db_session)
+    d_website: Website | WebsiteRead = await create_random_website(db_session)
     a_ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
         db_session, client_id=a_client.id
     )
@@ -139,10 +139,10 @@ async def test_list_all_ga4_property_as_superuser_query_ga4_id(
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
     b_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    b_website: WebsiteRead = await create_random_website(db_session)
-    c_website: WebsiteRead = await create_random_website(db_session)
-    d_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
+    b_website: Website | WebsiteRead = await create_random_website(db_session)
+    c_website: Website | WebsiteRead = await create_random_website(db_session)
+    d_website: Website | WebsiteRead = await create_random_website(db_session)
     a_ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
         db_session, client_id=a_client.id
     )
@@ -192,10 +192,10 @@ async def test_list_all_ga4_property_as_superuser_query_website_id(
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
     b_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    b_website: WebsiteRead = await create_random_website(db_session)
-    c_website: WebsiteRead = await create_random_website(db_session)
-    d_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
+    b_website: Website | WebsiteRead = await create_random_website(db_session)
+    c_website: Website | WebsiteRead = await create_random_website(db_session)
+    d_website: Website | WebsiteRead = await create_random_website(db_session)
     a_ga4_property: GoAnalytics4PropertyRead = await create_random_ga4_property(
         db_session, client_id=a_client.id
     )
@@ -241,10 +241,10 @@ async def test_list_all_ga4_property_as_employee(
     a_user: User = await get_user_by_email(db_session, settings.auth.first_employee)
     a_client: ClientRead = await create_random_client(db_session)
     b_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
-    b_website: WebsiteRead = await create_random_website(db_session)
-    c_website: WebsiteRead = await create_random_website(db_session)
-    d_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
+    b_website: Website | WebsiteRead = await create_random_website(db_session)
+    c_website: Website | WebsiteRead = await create_random_website(db_session)
+    d_website: Website | WebsiteRead = await create_random_website(db_session)
     a_user_a_client = await assign_user_to_client(db_session, a_user, a_client)
     a_client_a_website = await assign_website_to_client(  # noqa: F841
         db_session, a_website, a_client

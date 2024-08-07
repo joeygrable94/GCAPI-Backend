@@ -29,6 +29,9 @@ from .exceptions import (
     NoteNotExists,
     SharpspringAlreadyExists,
     SharpspringNotExists,
+    TrackingLinkAlreadyExists,
+    TrackingLinkNotExists,
+    TrackingLinkUtmParamsInvalid,
     UserAlreadyExists,
     UserNotExists,
     WebsiteAlreadyExists,
@@ -173,6 +176,45 @@ def configure_exceptions(app: FastAPI) -> None:
     @app.exception_handler(ClientReportNotExists)
     async def client_report_not_exists_exception_handler(
         request: Request, exc: ClientReportNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(TrackingLinkNotExists)
+    async def tracking_link_not_exists_exception_handler(
+        request: Request, exc: TrackingLinkNotExists
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(TrackingLinkUtmParamsInvalid)
+    async def tracking_link_utm_params_invalid_exception_handler(
+        request: Request, exc: TrackingLinkUtmParamsInvalid
+    ) -> Response:  # noqa: E501
+        return await http_exception_handler(
+            request,
+            HTTPException(
+                exc.status_code,
+                detail=exc.message,
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(TrackingLinkAlreadyExists)
+    async def tracking_link_already_exists_exception_handler(
+        request: Request, exc: TrackingLinkAlreadyExists
     ) -> Response:  # noqa: E501
         return await http_exception_handler(
             request,

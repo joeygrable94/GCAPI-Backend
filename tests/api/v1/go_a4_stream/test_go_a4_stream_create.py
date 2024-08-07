@@ -17,7 +17,7 @@ from app.api.exceptions import ErrorCode
 from app.core.config import settings
 from app.core.utilities.uuids import get_uuid_str
 from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT
-from app.models import User
+from app.models import User, Website
 from app.schemas import ClientRead, GoAnalytics4PropertyRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
@@ -29,7 +29,7 @@ async def test_create_ga4_stream_as_superuser(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_client_website = await assign_website_to_client(  # noqa: F841
         db_session, a_website, a_client
     )
@@ -62,7 +62,7 @@ async def test_create_ga4_stream_as_superuser_ga4_property_not_exists(
 ) -> None:
     fake_ga4_id = get_uuid_str()
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_client_website = await assign_website_to_client(  # noqa: F841
         db_session, a_website, a_client
     )
@@ -92,7 +92,7 @@ async def test_create_ga4_stream_as_superuser_website_not_exists(
 ) -> None:
     fake_website_id = get_uuid_str()
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_client_website = await assign_website_to_client(  # noqa: F841
         db_session, a_website, a_client
     )
@@ -122,7 +122,7 @@ async def test_create_ga4_stream_as_employee(
 ) -> None:
     a_user: User = await get_user_by_email(db_session, settings.auth.first_employee)
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_user_a_client = await assign_user_to_client(  # noqa: F841
         db_session, a_user, a_client
     )
@@ -158,7 +158,7 @@ async def test_create_ga4_stream_as_employee_forbidden(
     employee_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_client_website = await assign_website_to_client(  # noqa: F841
         db_session, a_website, a_client
     )
@@ -187,7 +187,7 @@ async def test_create_ga4_stream_as_superuser_already_exists(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     a_client_website = await assign_website_to_client(  # noqa: F841
         db_session, a_website, a_client
     )

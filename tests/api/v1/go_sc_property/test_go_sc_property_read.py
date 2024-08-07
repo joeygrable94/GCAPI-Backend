@@ -10,7 +10,7 @@ from tests.utils.websites import create_random_website
 from app.api.exceptions.errors import ErrorCode
 from app.core.utilities.uuids import get_uuid_str
 from app.crud import GoSearchConsolePropertyRepository
-from app.models import GoSearchConsoleProperty
+from app.models import GoSearchConsoleProperty, Website
 from app.schemas import ClientRead, GoSearchConsolePropertyRead, WebsiteRead
 
 pytestmark = pytest.mark.asyncio
@@ -22,7 +22,7 @@ async def test_read_go_sc_property_by_id_as_superuser(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
-    a_website: WebsiteRead = await create_random_website(db_session)
+    a_website: Website | WebsiteRead = await create_random_website(db_session)
     entry: GoSearchConsolePropertyRead = await create_random_go_search_console_property(
         db_session, client_id=a_client.id, website_id=a_website.id
     )

@@ -8,9 +8,15 @@ from app.api.exceptions import GoSearchConsoleMetricTypeInvalid, InvalidID
 from app.core.config import settings
 from app.core.pagination import PageParamsFromQuery
 from app.core.utilities.uuids import parse_id
-from app.schemas import GoSearchConsoleMetricType, PageSpeedInsightsDevice
+from app.db.constants import DB_STR_TINYTEXT_MAXLEN_INPUT
+from app.schemas import GoSearchConsoleMetricType, PageSpeedInsightsDevice, PSIDevice
 
 # utility query classes
+
+
+class IsActiveQueryParams:
+    def __init__(self, is_active: bool | None = None):
+        self.is_active: bool | None = is_active
 
 
 class DateStartQueryParams:
@@ -109,8 +115,8 @@ class DeviceStrategyQueryParams:
             if strategy is not None:
                 q_devices = []
                 for stg in strategy:
-                    device = PageSpeedInsightsDevice(device=stg)
-                    q_devices.append(device.device)
+                    device = PageSpeedInsightsDevice(device=PSIDevice(stg))
+                    q_devices.append(device.device.value)
         except (TypeError, ValueError):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -150,6 +156,31 @@ class GoSearchConsoleMetricTypeQueryParams:
         except ValueError:
             raise GoSearchConsoleMetricTypeInvalid()
         self.metric_types: list[GoSearchConsoleMetricType] | None = q_metric_types
+
+
+class TrackingLinkUtmCampaignQueryParams:
+    def __init__(self, utm_campaign: str | None = None):
+        self.utm_campaign: str | None = utm_campaign
+
+
+class TrackingLinkUtmMediumQueryParams:
+    def __init__(self, utm_medium: str | None = None):
+        self.utm_medium: str | None = utm_medium
+
+
+class TrackingLinkUtmSourceQueryParams:
+    def __init__(self, utm_source: str | None = None):
+        self.utm_source: str | None = utm_source
+
+
+class TrackingLinkUtmContentQueryParams:
+    def __init__(self, utm_content: str | None = None):
+        self.utm_content: str | None = utm_content
+
+
+class TrackingLinkUtmTermQueryParams:
+    def __init__(self, utm_term: str | None = None):
+        self.utm_term: str | None = utm_term
 
 
 # compound query classes
@@ -426,4 +457,57 @@ class CommonWebsiteGoSearchConsoleQueryParams(
 
 GetWebsiteGoSearchConsoleQueryParams = Annotated[
     CommonWebsiteGoSearchConsoleQueryParams, Depends()
+]
+
+
+class CommonClientTrackingLinkQueryParams(
+    PageParamsFromQuery,
+    ClientIdQueryParams,
+    TrackingLinkUtmCampaignQueryParams,
+    TrackingLinkUtmMediumQueryParams,
+    TrackingLinkUtmSourceQueryParams,
+    TrackingLinkUtmContentQueryParams,
+    TrackingLinkUtmTermQueryParams,
+    IsActiveQueryParams,
+):
+    def __init__(
+        self,
+        page: Annotated[int | None, Query(ge=1)] = 1,
+        size: Annotated[
+            int | None,
+            Query(
+                ge=1,
+                le=settings.api.query_limit_rows_max,
+            ),
+        ] = settings.api.query_limit_rows_default,
+        client_id: Annotated[str | None, Query()] = None,
+        utm_campaign: Annotated[
+            str | None, Query(max_length=DB_STR_TINYTEXT_MAXLEN_INPUT)
+        ] = None,
+        utm_medium: Annotated[
+            str | None, Query(max_length=DB_STR_TINYTEXT_MAXLEN_INPUT)
+        ] = None,
+        utm_source: Annotated[
+            str | None, Query(max_length=DB_STR_TINYTEXT_MAXLEN_INPUT)
+        ] = None,
+        utm_content: Annotated[
+            str | None, Query(max_length=DB_STR_TINYTEXT_MAXLEN_INPUT)
+        ] = None,
+        utm_term: Annotated[
+            str | None, Query(max_length=DB_STR_TINYTEXT_MAXLEN_INPUT)
+        ] = None,
+        is_active: Annotated[bool | None, Query()] = None,
+    ):
+        PageParamsFromQuery.__init__(self, page, size)
+        ClientIdQueryParams.__init__(self, client_id)
+        TrackingLinkUtmCampaignQueryParams.__init__(self, utm_campaign)
+        TrackingLinkUtmMediumQueryParams.__init__(self, utm_medium)
+        TrackingLinkUtmSourceQueryParams.__init__(self, utm_source)
+        TrackingLinkUtmContentQueryParams.__init__(self, utm_content)
+        TrackingLinkUtmTermQueryParams.__init__(self, utm_term)
+        IsActiveQueryParams.__init__(self, is_active)
+
+
+GetClientTrackingLinkQueryParams = Annotated[
+    CommonClientTrackingLinkQueryParams, Depends()
 ]

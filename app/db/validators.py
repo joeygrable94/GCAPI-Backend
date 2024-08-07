@@ -300,6 +300,24 @@ def validate_url_optional(cls: Any, value: str | None) -> str | None:
     )
 
 
+def validate_url_hash_required(cls: Any, value: str) -> str:
+    return require_string_name_min_max_len(
+        v=value,
+        name="url",
+        min_len=1,
+        max_len=DB_STR_64BIT_MAXLEN_INPUT,
+    )
+
+
+def validate_url_hash_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="url",
+        min_len=1,
+        max_len=DB_STR_64BIT_MAXLEN_INPUT,
+    )
+
+
 def validate_device_required(cls: Any, value: str) -> str:
     return required_string_in_list(
         v=value,
