@@ -165,9 +165,10 @@ async def clients_tracking_link_create(
     url_params = parse_url_utm_params(tracking_link_in.url)
     tracking_link = await links_repo.create(
         schema=TrackingLinkCreate(
-            **tracking_link_in.model_dump(),
-            **url_params.model_dump(),
+            url=tracking_link_in.url,
             url_hash=trk_url_hash,
+            is_active=tracking_link_in.is_active or True,
+            **url_params.model_dump(),
         )
     )
     client_tracking_link_repo: ClientTrackingLinkRepository = (
@@ -305,9 +306,10 @@ async def clients_tracking_link_update(
     updated_tracking_link: TrackingLink = await links_repo.update(
         tracked_link,
         schema=TrackingLinkUpdate(
-            **tracking_link_in.model_dump(),
-            **url_params.model_dump(),
+            url=tracking_link_in.url,
+            is_active=tracking_link_in.is_active,
             url_hash=trk_url_hash,
+            **url_params.model_dump(),
         ),
     )
     # return role based response

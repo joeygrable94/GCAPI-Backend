@@ -44,7 +44,7 @@ class TrackingLinkBaseUtmParams(BaseSchema):
 
 class TrackingLinkCreateRequest(BaseSchema):
     url: str
-    is_active: bool = True
+    is_active: bool | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_required)
 
