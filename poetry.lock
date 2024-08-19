@@ -876,13 +876,13 @@ crt = ["awscrt (==0.20.11)"]
 
 [[package]]
 name = "botocore-stubs"
-version = "1.34.150"
+version = "1.35.0"
 description = "Type annotations and code completion for botocore"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "botocore_stubs-1.34.150-py3-none-any.whl", hash = "sha256:5f3d9eca8a7173e450c903ee28b934a7152ab5c2da2bfe71f72f4a9e89ef4923"},
-    {file = "botocore_stubs-1.34.150.tar.gz", hash = "sha256:e2308ec1f983f7c93fc0e42c1b60f91c75746bcb564a9cb8240c742fd7d6483a"},
+    {file = "botocore_stubs-1.35.0-py3-none-any.whl", hash = "sha256:b38fd786c9487258089c689f31f479b03fe0b4a5968ab9ec6e8d8391a1689861"},
+    {file = "botocore_stubs-1.35.0.tar.gz", hash = "sha256:0f3b4ab68042e62ecc6f2e697fa653835a4b8f049be20d7641677894784d17e7"},
 ]
 
 [package.dependencies]
@@ -2556,6 +2556,8 @@ files = [
     {file = "orjson-3.10.6-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:960db0e31c4e52fa0fc3ecbaea5b2d3b58f379e32a95ae6b0ebeaa25b93dfd34"},
     {file = "orjson-3.10.6-cp312-none-win32.whl", hash = "sha256:a6ea7afb5b30b2317e0bee03c8d34c8181bc5a36f2afd4d0952f378972c4efd5"},
     {file = "orjson-3.10.6-cp312-none-win_amd64.whl", hash = "sha256:874ce88264b7e655dde4aeaacdc8fd772a7962faadfb41abe63e2a4861abc3dc"},
+    {file = "orjson-3.10.6-cp313-none-win32.whl", hash = "sha256:efdf2c5cde290ae6b83095f03119bdc00303d7a03b42b16c54517baa3c4ca3d0"},
+    {file = "orjson-3.10.6-cp313-none-win_amd64.whl", hash = "sha256:8e190fe7888e2e4392f52cafb9626113ba135ef53aacc65cd13109eb9746c43e"},
     {file = "orjson-3.10.6-cp38-cp38-macosx_10_15_x86_64.macosx_11_0_arm64.macosx_10_15_universal2.whl", hash = "sha256:66680eae4c4e7fc193d91cfc1353ad6d01b4801ae9b5314f17e11ba55e934183"},
     {file = "orjson-3.10.6-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:caff75b425db5ef8e8f23af93c80f072f97b4fb3afd4af44482905c9f588da28"},
     {file = "orjson-3.10.6-cp38-cp38-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:3722fddb821b6036fd2a3c814f6bd9b57a89dc6337b9924ecd614ebce3271394"},
@@ -4486,4 +4488,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "0483fd7bc6c4f5237c8330d078d5458afc2f97522517278f9a7ac6b40e3ee6f7"
+content-hash = "acedc352581841871539df37bcd9b7e1fa511fb1f14e06b0d8776163c816c92f"
