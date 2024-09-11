@@ -8,7 +8,7 @@ from app.api.exceptions import GoSearchConsoleMetricTypeInvalid, InvalidID
 from app.core.config import settings
 from app.core.pagination import PageParamsFromQuery
 from app.core.utilities.uuids import parse_id
-from app.db.constants import DB_STR_TINYTEXT_MAXLEN_INPUT
+from app.db.constants import DB_STR_TINYTEXT_MAXLEN_INPUT, DB_STR_URLPATH_MAXLEN_INPUT
 from app.schemas import GoSearchConsoleMetricType, PageSpeedInsightsDevice, PSIDevice
 
 # utility query classes
@@ -156,6 +156,11 @@ class GoSearchConsoleMetricTypeQueryParams:
         except ValueError:
             raise GoSearchConsoleMetricTypeInvalid()
         self.metric_types: list[GoSearchConsoleMetricType] | None = q_metric_types
+
+
+class TrackingLinkUrlPathQueryParams:
+    def __init__(self, url_path: str | None = None):
+        self.url_path: str | None = url_path
 
 
 class TrackingLinkUtmCampaignQueryParams:
@@ -463,6 +468,7 @@ GetWebsiteGoSearchConsoleQueryParams = Annotated[
 class CommonClientTrackingLinkQueryParams(
     PageParamsFromQuery,
     ClientIdQueryParams,
+    TrackingLinkUrlPathQueryParams,
     TrackingLinkUtmCampaignQueryParams,
     TrackingLinkUtmMediumQueryParams,
     TrackingLinkUtmSourceQueryParams,
@@ -481,6 +487,9 @@ class CommonClientTrackingLinkQueryParams(
             ),
         ] = settings.api.query_limit_rows_default,
         client_id: Annotated[str | None, Query()] = None,
+        url_path: Annotated[
+            str | None, Query(max_length=DB_STR_URLPATH_MAXLEN_INPUT)
+        ] = None,
         utm_campaign: Annotated[
             str | None, Query(max_length=DB_STR_TINYTEXT_MAXLEN_INPUT)
         ] = None,
@@ -500,6 +509,7 @@ class CommonClientTrackingLinkQueryParams(
     ):
         PageParamsFromQuery.__init__(self, page, size)
         ClientIdQueryParams.__init__(self, client_id)
+        TrackingLinkUrlPathQueryParams.__init__(self, url_path)
         TrackingLinkUtmCampaignQueryParams.__init__(self, utm_campaign)
         TrackingLinkUtmMediumQueryParams.__init__(self, utm_medium)
         TrackingLinkUtmSourceQueryParams.__init__(self, utm_source)

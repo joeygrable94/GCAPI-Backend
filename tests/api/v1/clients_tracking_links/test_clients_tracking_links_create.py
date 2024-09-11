@@ -23,13 +23,14 @@ async def test_create_client_tracking_link_as_superuser(
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
     domain_name = random_domain()
+    url_path = "/%s" % random_lower_string(16)
     utm_cmpn = random_lower_string(16)
     utm_mdm = random_lower_string(16)
     utm_src = random_lower_string(16)
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
     tracked_url = build_utm_link(
-        domain_name, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
         url=tracked_url,
@@ -86,13 +87,14 @@ async def test_create_client_tracking_link_as_superuser_utm_params_invalid(
     )
     a_client: ClientRead = await create_random_client(db_session)
     domain_name = random_domain()
+    url_path = "/%s" % random_lower_string(16)
     utm_cmpn = random_lower_string(256)
     utm_mdm = random_lower_string(16)
     utm_src = random_lower_string(16)
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
     tracked_url = build_utm_link(
-        domain_name, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
         url=tracked_url,
@@ -119,13 +121,14 @@ async def test_create_client_tracking_link_as_employee(
         db_session, a_user, a_client
     )
     domain_name = random_domain()
+    url_path = "/%s" % random_lower_string(16)
     utm_cmpn = random_lower_string(16)
     utm_mdm = random_lower_string(16)
     utm_src = random_lower_string(16)
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
     tracked_url = build_utm_link(
-        domain_name, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
         url=tracked_url,
@@ -158,13 +161,14 @@ async def test_create_client_tracking_link_as_employee_forbidden(
     )
     a_client: ClientRead = await create_random_client(db_session)
     domain_name = random_domain()
+    url_path = "/%s" % random_lower_string(16)
     utm_cmpn = random_lower_string(16)
     utm_mdm = random_lower_string(16)
     utm_src = random_lower_string(16)
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
     tracked_url = build_utm_link(
-        domain_name, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
         url=tracked_url,

@@ -83,6 +83,7 @@ async def clients_tracking_link_list(
     if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
         query_params = {
             "client_id": query.client_id,
+            "url_path": query.url_path,
             "utm_campaign": query.utm_campaign,
             "utm_medium": query.utm_medium,
             "utm_source": query.utm_source,
@@ -94,6 +95,7 @@ async def clients_tracking_link_list(
         query_params = {
             "user_id": permissions.current_user.id,
             "client_id": query.client_id,
+            "url_path": query.url_path,
             "utm_campaign": query.utm_campaign,
             "utm_medium": query.utm_medium,
             "utm_source": query.utm_source,

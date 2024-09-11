@@ -24,7 +24,11 @@ from app.core.security.permissions import (
 )
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
-from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED, DB_STR_URLPATH_MAXLEN_STORED
+from app.db.constants import (
+    DB_STR_TINYTEXT_MAXLEN_STORED,
+    DB_STR_URLPATH_MAXLEN_INPUT,
+    DB_STR_URLPATH_MAXLEN_STORED,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client_report import Client  # noqa: F401
@@ -47,6 +51,11 @@ class TrackingLink(Base, Timestamp):
         String(DB_STR_URLPATH_MAXLEN_STORED),
         nullable=False,
         default="https://getcommunity.com/?UTMLINK",
+    )
+    url_path: Mapped[str] = mapped_column(
+        String(DB_STR_URLPATH_MAXLEN_INPUT),
+        nullable=False,
+        default="/?UTMLINK",
     )
     utm_campaign: Mapped[str] = mapped_column(
         String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True

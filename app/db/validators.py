@@ -300,6 +300,24 @@ def validate_url_optional(cls: Any, value: str | None) -> str | None:
     )
 
 
+def validate_url_path_required(cls: Any, value: str) -> str:
+    return require_string_name_min_max_len(
+        v=value,
+        name="url_path",
+        min_len=1,
+        max_len=DB_STR_URLPATH_MAXLEN_INPUT,
+    )
+
+
+def validate_url_path_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="url",
+        min_len=1,
+        max_len=DB_STR_URLPATH_MAXLEN_INPUT,
+    )
+
+
 def validate_url_hash_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,

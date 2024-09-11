@@ -21,6 +21,7 @@ class TrackingLinkRepository(
         self,
         user_id: UUID | None = None,
         client_id: UUID | None = None,
+        url_path: str | None = None,
         utm_campaign: str | None = None,
         utm_medium: str | None = None,
         utm_source: str | None = None,
@@ -50,6 +51,8 @@ class TrackingLinkRepository(
                 self._table.id == ClientTrackingLink.tracking_link_id,
             ).join(Client, ClientTrackingLink.client_id == Client.id)
             conditions.append(Client.id.like(client_id))
+        if url_path:
+            conditions.append(self._table.url_path.like(url_path))
         if utm_campaign:
             conditions.append(self._table.utm_campaign.like(utm_campaign))
         if utm_medium:

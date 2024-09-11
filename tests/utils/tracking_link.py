@@ -14,13 +14,14 @@ from app.schemas import (
 
 def build_utm_link(
     domain: str,
+    url_path: str,
     utm_campaign: str | None = None,
     utm_medium: str | None = None,
     utm_source: str | None = None,
     utm_content: str | None = None,
     utm_term: str | None = None,
 ) -> str:
-    utm_link = f"https://{domain}/?"
+    utm_link = f"https://{domain}{url_path}?"
     if utm_campaign:
         utm_link += f"utm_campaign={utm_campaign}"
     if utm_medium:
@@ -39,18 +40,20 @@ async def create_random_tracking_link(
 ) -> TrackingLinkRead:
     repo: TrackingLinkRepository = TrackingLinkRepository(session=db_session)
     domain_name = random_domain()
+    url_path = "/%s" % random_lower_string(16)
     utm_cmpn = random_lower_string(16)
     utm_mdm = random_lower_string(16)
     utm_src = random_lower_string(16)
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
     tracked_url = build_utm_link(
-        domain_name, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     hashed_url = hash_url(tracked_url)
     tracking_link: TrackingLink = await repo.create(
         schema=TrackingLinkCreate(
             url=tracked_url,
+            url_path=url_path,
             url_hash=hashed_url,
             utm_campaign=utm_cmpn,
             utm_medium=utm_mdm,

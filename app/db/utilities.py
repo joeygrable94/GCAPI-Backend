@@ -14,6 +14,7 @@ def parse_url_utm_params(url: str) -> TrackingLinkBaseUtmParams:
         utm_params = {}
         parsed_url = urlparse(url)
         parsed_params = parse_qs(parsed_url.query)
+        utm_params["url_path"] = parsed_url.path
         if parsed_params.get("utm_campaign"):
             utm_params["utm_campaign"] = parsed_params["utm_campaign"][0]
         if parsed_params.get("utm_medium"):

@@ -14,7 +14,7 @@ from app.schemas import ClientRead, TrackingLinkRead
 pytestmark = pytest.mark.asyncio
 
 
-async def test_list_all_client_reports_as_superuser_by_not_active(
+async def test_list_all_client_tracking_links_as_superuser_by_not_active(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
@@ -59,7 +59,7 @@ async def test_list_all_client_reports_as_superuser_by_not_active(
         assert item["is_active"] is False
 
 
-async def test_list_all_client_reports_as_superuser_by_is_active(
+async def test_list_all_client_tracking_links_as_superuser_by_is_active(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_token_headers: Dict[str, str],
