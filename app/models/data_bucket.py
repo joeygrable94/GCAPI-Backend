@@ -64,10 +64,10 @@ class DataBucket(Base, Timestamp):
     )
 
     # relationships
-    client_id: Mapped[UUID4] = mapped_column(
+    client_id: Mapped[UUID4 | None] = mapped_column(
         UUIDType(binary=False),
         ForeignKey("client.id"),
-        nullable=False,
+        nullable=True,
     )
     client: Mapped["Client"] = relationship(
         back_populates="data_bucket", single_parent=True

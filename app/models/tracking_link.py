@@ -79,7 +79,7 @@ class TrackingLink(Base, Timestamp):
     )
 
     # relationships
-    client_id: Mapped[UUID4] = mapped_column(
+    client_id: Mapped[UUID4 | None] = mapped_column(
         UUIDType(binary=False), ForeignKey("client.id"), nullable=True
     )
     client: Mapped["Client"] = relationship(back_populates="tracking_links")

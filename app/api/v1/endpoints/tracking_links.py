@@ -344,9 +344,10 @@ async def tracking_link_delete(
     `None` : the client tracking link has been deleted
 
     """
-    await permissions.verify_user_can_access(
-        privileges=[RoleAdmin], client_id=tracked_link.client_id
-    )
+    if tracked_link.client_id is not None:
+        await permissions.verify_user_can_access(
+            privileges=[RoleAdmin], client_id=tracked_link.client_id
+        )
     links_repo = TrackingLinkRepository(permissions.db)
     await links_repo.delete(entry=tracked_link)
     return None
