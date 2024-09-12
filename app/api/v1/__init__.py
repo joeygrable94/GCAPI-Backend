@@ -4,7 +4,6 @@ from app.api.v1.endpoints import (
     bdx_feed,
     client_reports,
     clients,
-    clients_tracking_links,
     go_a4_property,
     go_a4_stream,
     go_cloud,
@@ -15,6 +14,7 @@ from app.api.v1.endpoints import (
     security,
     sharpspring,
     tasks,
+    tracking_links,
     users,
     web_keywordcorpus,
     web_pages,
@@ -58,18 +58,18 @@ router_v1.include_router(
     tags=["Clients"],
 )
 
-# Client Tracking Links routes
-router_v1.include_router(
-    clients_tracking_links.router,
-    prefix="/clients/links",
-    tags=["Clients Links"],
-)
-
 # Client Reports routes
 router_v1.include_router(
     client_reports.router,
     prefix="/clients/reports",
     tags=["Client Reports"],
+)
+
+# Tracking Links routes
+router_v1.include_router(
+    tracking_links.router,
+    prefix="/links",
+    tags=["Tracking Links"],
 )
 
 # Note routes

@@ -2,7 +2,6 @@ from .bdx_feed import BdxFeedRepository
 from .client import ClientRepository
 from .client_report import ClientReportRepository
 from .client_report_note import ClientReportNoteRepository
-from .client_tracking_link import ClientTrackingLinkRepository
 from .client_website import ClientWebsiteRepository
 from .data_bucket import DataBucketRepository
 from .file_asset import FileAssetRepository
@@ -38,7 +37,6 @@ __all__: list[str] = [
     "DataBucketRepository",
     "ClientReportRepository",
     "ClientReportNoteRepository",
-    "ClientTrackingLinkRepository",
     "ClientWebsiteRepository",
     "FileAssetRepository",
     "GcftRepository",

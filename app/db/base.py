@@ -3,7 +3,6 @@ from app.models.bdx_feed import BdxFeed
 from app.models.client import Client
 from app.models.client_report import ClientReport
 from app.models.client_report_note import ClientReportNote
-from app.models.client_tracking_link import ClientTrackingLink
 from app.models.client_website import ClientWebsite
 from app.models.data_bucket import DataBucket
 from app.models.file_asset import FileAsset
@@ -44,7 +43,6 @@ __all__: list[str] = [
     "DataBucket",
     "ClientReport",
     "ClientReportNote",
-    "ClientTrackingLink",
     "ClientWebsite",
     "FileAsset",
     "Gcft",

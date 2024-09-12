@@ -8,11 +8,6 @@ from .client_report_note import (
     ClientReportNoteRead,
     ClientReportNoteUpdate,
 )
-from .client_tracking_link import (
-    ClientTrackingLinkCreate,
-    ClientTrackingLinkRead,
-    ClientTrackingLinkUpdate,
-)
 from .client_website import ClientWebsiteCreate, ClientWebsiteRead, ClientWebsiteUpdate
 from .data_bucket import DataBucketCreate, DataBucketRead, DataBucketUpdate
 from .file_asset import FileAssetCreate, FileAssetRead, FileAssetUpdate
@@ -131,9 +126,6 @@ __all__: List[str] = [
     "ClientDelete",
     "ClientRead",
     "ClientUpdate",
-    "ClientTrackingLinkCreate",
-    "ClientTrackingLinkUpdate",
-    "ClientTrackingLinkRead",
     "DataBucketCreate",
     "DataBucketRead",
     "DataBucketUpdate",

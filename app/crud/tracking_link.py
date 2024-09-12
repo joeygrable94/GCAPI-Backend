@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
 
 from app.crud.base import BaseRepository
-from app.models import Client, ClientTrackingLink, TrackingLink, User, UserClient
+from app.models import Client, TrackingLink, User, UserClient
 from app.schemas import TrackingLinkCreate, TrackingLinkRead, TrackingLinkUpdate
 
 
@@ -36,21 +36,13 @@ class TrackingLinkRepository(
         # append conditions
         if user_id:
             stmt = (
-                stmt.join(
-                    ClientTrackingLink,
-                    self._table.id == ClientTrackingLink.tracking_link_id,
-                )
-                .join(Client, ClientTrackingLink.client_id == Client.id)
+                stmt.join(Client, self._table.client_id == Client.id)
                 .join(UserClient, Client.id == UserClient.client_id)
                 .join(User, UserClient.user_id == User.id)
             )
             conditions.append(User.id.like(user_id))
         if client_id:
-            stmt = stmt.join(
-                ClientTrackingLink,
-                self._table.id == ClientTrackingLink.tracking_link_id,
-            ).join(Client, ClientTrackingLink.client_id == Client.id)
-            conditions.append(Client.id.like(client_id))
+            conditions.append(self._table.client_id.like(client_id))
         if url_path:
             conditions.append(self._table.url_path.like(url_path))
         if utm_campaign:

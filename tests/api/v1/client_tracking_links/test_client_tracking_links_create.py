@@ -10,6 +10,7 @@ from tests.utils.utils import random_domain, random_lower_string
 
 from app.api.exceptions.errors import ErrorCode
 from app.core.config import settings
+from app.core.utilities.uuids import get_uuid_str
 from app.models import User, UserClient
 from app.schemas import ClientRead, TrackingLinkRead
 
@@ -33,11 +34,10 @@ async def test_create_client_tracking_link_as_superuser(
         domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
-        url=tracked_url,
-        is_active=True,
+        url=tracked_url, is_active=True, client_id=str(a_client.id)
     )
     response: Response = await client.post(
-        f"clients/links/{a_client.id}",
+        "links/",
         headers=admin_token_headers,
         json=data_in,
     )
@@ -53,6 +53,32 @@ async def test_create_client_tracking_link_as_superuser(
     assert data["is_active"] is True
 
 
+async def test_create_client_tracking_link_as_superuser_client_not_found(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_token_headers: Dict[str, str],
+) -> None:
+    a_user: User = await get_user_by_email(  # noqa: F841
+        db_session, settings.auth.first_admin
+    )
+    a_client: ClientRead = await create_random_client(db_session)
+    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
+    fake_client_id = get_uuid_str()
+    data_in: Dict[str, Any] = dict(
+        url=a_tacked_link.url, is_active=True, client_id=fake_client_id
+    )
+    response: Response = await client.post(
+        "links/",
+        headers=admin_token_headers,
+        json=data_in,
+    )
+    data: Dict[str, Any] = response.json()
+    assert response.status_code == 404
+    assert data["detail"] == ErrorCode.CLIENT_NOT_FOUND
+
+
 async def test_create_client_tracking_link_as_superuser_url_exists(
     client: AsyncClient,
     db_session: AsyncSession,
@@ -62,13 +88,14 @@ async def test_create_client_tracking_link_as_superuser_url_exists(
         db_session, settings.auth.first_admin
     )
     a_client: ClientRead = await create_random_client(db_session)
-    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
+    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
     data_in: Dict[str, Any] = dict(
-        url=a_tacked_link.url,
-        is_active=True,
+        url=a_tacked_link.url, is_active=True, client_id=str(a_tacked_link.client_id)
     )
     response: Response = await client.post(
-        f"clients/links/{a_client.id}",
+        "links/",
         headers=admin_token_headers,
         json=data_in,
     )
@@ -97,11 +124,10 @@ async def test_create_client_tracking_link_as_superuser_utm_params_invalid(
         domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
-        url=tracked_url,
-        is_active=True,
+        url=tracked_url, is_active=True, client_id=str(a_client.id)
     )
     response: Response = await client.post(
-        f"clients/links/{a_client.id}",
+        "links/",
         headers=admin_token_headers,
         json=data_in,
     )
@@ -131,11 +157,10 @@ async def test_create_client_tracking_link_as_employee(
         domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
-        url=tracked_url,
-        is_active=True,
+        url=tracked_url, is_active=True, client_id=str(a_client.id)
     )
     response: Response = await client.post(
-        f"clients/links/{a_client.id}",
+        "links/",
         headers=employee_token_headers,
         json=data_in,
     )
@@ -171,11 +196,10 @@ async def test_create_client_tracking_link_as_employee_forbidden(
         domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
-        url=tracked_url,
-        is_active=True,
+        url=tracked_url, is_active=True, client_id=str(a_client.id)
     )
     response: Response = await client.post(
-        f"clients/links/{a_client.id}",
+        "links/",
         headers=employee_token_headers,
         json=data_in,
     )

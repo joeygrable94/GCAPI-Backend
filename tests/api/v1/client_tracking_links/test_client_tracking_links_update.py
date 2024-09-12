@@ -11,7 +11,7 @@ from tests.utils.utils import random_lower_string
 
 from app.api.exceptions.errors import ErrorCode
 from app.core.config import settings
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities.uuids import get_uuid
 from app.models import User, UserClient
 from app.schemas import ClientRead, TrackingLinkRead
 
@@ -27,17 +27,18 @@ async def test_update_client_tracking_link_by_id_as_superuser(
         db_session, settings.auth.first_admin
     )
     a_client: ClientRead = await create_random_client(db_session)
-    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
+    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
     parsed_url = urlparse(a_tacked_link.url)
     old_utm_cmpn = parse_qs(parsed_url.query)["utm_campaign"][0]
     new_utm_cmpn = "new_utm_campaign"
     new_url = a_tacked_link.url.replace(old_utm_cmpn, new_utm_cmpn)
     data_in: Dict[str, Any] = dict(
-        url=new_url,
-        is_active=True,
+        url=new_url, is_active=True, client_id=str(a_tacked_link.client_id)
     )
     response: Response = await client.patch(
-        f"clients/links/{a_client.id}/{a_tacked_link.id}",
+        f"links/{a_tacked_link.id}",
         headers=admin_token_headers,
         json=data_in,
     )
@@ -62,18 +63,19 @@ async def test_update_client_tracking_link_by_id_as_superuser_client_not_found(
     a_user: User = await get_user_by_email(  # noqa: F841
         db_session, settings.auth.first_admin
     )
-    a_fake_client = get_uuid_str()
-    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
+    a_fake_client = get_uuid()
+    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_fake_client
+    )
     parsed_url = urlparse(a_tacked_link.url)
     old_utm_cmpn = parse_qs(parsed_url.query)["utm_campaign"][0]
     new_utm_cmpn = "new_utm_campaign"
     new_url = a_tacked_link.url.replace(old_utm_cmpn, new_utm_cmpn)
     data_in: Dict[str, Any] = dict(
-        url=new_url,
-        is_active=True,
+        url=new_url, is_active=True, client_id=str(a_tacked_link.client_id)
     )
     response: Response = await client.patch(
-        f"clients/links/{a_fake_client}/{a_tacked_link.id}",
+        f"links/{a_tacked_link.id}",
         headers=admin_token_headers,
         json=data_in,
     )
@@ -91,14 +93,17 @@ async def test_update_client_tracking_link_by_id_as_superuser_url_exists(
         db_session, settings.auth.first_admin
     )
     a_client: ClientRead = await create_random_client(db_session)
-    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
-    b_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
+    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
+    b_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
     data_in: Dict[str, Any] = dict(
-        url=b_tacked_link.url,
-        is_active=False,
+        url=b_tacked_link.url, is_active=False, client_id=str(a_tacked_link.client_id)
     )
     response: Response = await client.patch(
-        f"clients/links/{a_client.id}/{a_tacked_link.id}",
+        f"links/{a_tacked_link.id}",
         headers=admin_token_headers,
         json=data_in,
     )
@@ -116,17 +121,18 @@ async def test_update_client_tracking_link_by_id_as_superuser_utm_params_invalid
         db_session, settings.auth.first_admin
     )
     a_client: ClientRead = await create_random_client(db_session)
-    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
+    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
     parsed_url = urlparse(a_tacked_link.url)
     old_utm_cmpn = parse_qs(parsed_url.query)["utm_campaign"][0]
     new_utm_cmpn = random_lower_string(256)
     new_url = a_tacked_link.url.replace(old_utm_cmpn, new_utm_cmpn)
     data_in: Dict[str, Any] = dict(
-        url=new_url,
-        is_active=False,
+        url=new_url, is_active=False, client_id=str(a_tacked_link.client_id)
     )
     response: Response = await client.patch(
-        f"clients/links/{a_client.id}/{a_tacked_link.id}",
+        f"links/{a_tacked_link.id}",
         headers=admin_token_headers,
         json=data_in,
     )
@@ -145,17 +151,18 @@ async def test_update_client_tracking_link_by_id_as_employee(
     a_user_client: UserClient = await assign_user_to_client(  # noqa: F841
         db_session, a_user, a_client
     )
-    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
+    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
     parsed_url = urlparse(a_tacked_link.url)
     old_utm_cmpn = parse_qs(parsed_url.query)["utm_campaign"][0]
     new_utm_cmpn = "new_utm_campaign"
     new_url = a_tacked_link.url.replace(old_utm_cmpn, new_utm_cmpn)
     data_in: Dict[str, Any] = dict(
-        url=new_url,
-        is_active=True,
+        url=new_url, is_active=True, client_id=str(a_tacked_link.client_id)
     )
     response: Response = await client.patch(
-        f"clients/links/{a_client.id}/{a_tacked_link.id}",
+        f"links/{a_tacked_link.id}",
         headers=employee_token_headers,
         json=data_in,
     )
@@ -181,17 +188,18 @@ async def test_update_client_tracking_link_by_id_as_employee_forbidden(
     a_user: User = await get_user_by_email(  # noqa: F841
         db_session, settings.auth.first_employee
     )
-    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
+    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
     parsed_url = urlparse(a_tacked_link.url)
     old_utm_cmpn = parse_qs(parsed_url.query)["utm_campaign"][0]
     new_utm_cmpn = "new_utm_campaign"
     new_url = a_tacked_link.url.replace(old_utm_cmpn, new_utm_cmpn)
     data_in: Dict[str, Any] = dict(
-        url=new_url,
-        is_active=True,
+        url=new_url, is_active=True, client_id=str(a_tacked_link.client_id)
     )
     response: Response = await client.patch(
-        f"clients/links/{a_client.id}/{a_tacked_link.id}",
+        f"links/{a_tacked_link.id}",
         headers=employee_token_headers,
         json=data_in,
     )
@@ -209,19 +217,20 @@ async def test_update_client_tracking_link_by_id_as_employee_forbidden_client(
     b_client: ClientRead = await create_random_client(db_session)
     a_user: User = await get_user_by_email(db_session, settings.auth.first_employee)
     a_user_client: UserClient = await assign_user_to_client(  # noqa: F841
-        db_session, a_user, a_client
+        db_session, a_user, b_client
     )
-    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
-    parsed_url = urlparse(a_tacked_link.url)
+    a_tracked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
+    parsed_url = urlparse(a_tracked_link.url)
     old_utm_cmpn = parse_qs(parsed_url.query)["utm_campaign"][0]
     new_utm_cmpn = "new_utm_campaign"
-    new_url = a_tacked_link.url.replace(old_utm_cmpn, new_utm_cmpn)
+    new_url = a_tracked_link.url.replace(old_utm_cmpn, new_utm_cmpn)
     data_in: Dict[str, Any] = dict(
-        url=new_url,
-        is_active=True,
+        url=new_url, is_active=True, client_id=str(a_tracked_link.client_id)
     )
     response: Response = await client.patch(
-        f"clients/links/{b_client.id}/{a_tacked_link.id}",
+        f"links/{a_tracked_link.id}",
         headers=employee_token_headers,
         json=data_in,
     )

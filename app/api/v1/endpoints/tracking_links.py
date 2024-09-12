@@ -9,19 +9,16 @@ from app.api.deps import (
     Permission,
     PermissionController,
     get_async_db,
-    get_client_or_404,
     get_current_user,
     get_permission_controller,
     get_tracking_link_or_404,
 )
-from app.api.exceptions import TrackingLinkAlreadyExists
+from app.api.exceptions import ClientNotExists, TrackingLinkAlreadyExists
 from app.core.pagination import PageParams, Paginated
 from app.core.security import auth
 from app.core.security.permissions import (
     AccessDelete,
     AccessDeleteRelated,
-    AccessRead,
-    AccessReadRelated,
     AccessUpdate,
     AccessUpdateRelated,
     RoleAdmin,
@@ -30,11 +27,10 @@ from app.core.security.permissions import (
     RoleManager,
     RoleUser,
 )
-from app.crud import ClientTrackingLinkRepository, TrackingLinkRepository
+from app.crud import TrackingLinkRepository
 from app.db.utilities import hash_url, parse_url_utm_params
-from app.models import Client, ClientTrackingLink, TrackingLink
+from app.models import TrackingLink
 from app.schemas import (
-    ClientTrackingLinkCreate,
     TrackingLinkBaseUtmParams,
     TrackingLinkCreate,
     TrackingLinkCreateRequest,
@@ -48,7 +44,7 @@ router: APIRouter = APIRouter()
 
 @router.get(
     "/",
-    name="clients_tracking_link:list",
+    name="tracking_link:list",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
@@ -58,7 +54,7 @@ router: APIRouter = APIRouter()
     ],
     response_model=Paginated[TrackingLinkRead],
 )
-async def clients_tracking_link_list(
+async def tracking_link_list(
     query: GetClientTrackingLinkQueryParams,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> Paginated[TrackingLinkRead]:
@@ -122,21 +118,19 @@ async def clients_tracking_link_list(
 
 
 @router.post(
-    "/{client_id}",
-    name="clients_tracking_link:create",
+    "/",
+    name="tracking_link:create",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
-        Depends(get_client_or_404),
     ],
     response_model=TrackingLinkRead,
 )
-async def clients_tracking_link_create(
+async def tracking_link_create(
     tracking_link_in: TrackingLinkCreateRequest,
     permissions: PermissionController = Depends(get_permission_controller),
-    client: Client = Permission([AccessRead, AccessReadRelated], get_client_or_404),
 ) -> TrackingLinkRead:
     """Create a new tracking link and assign it to the client.
 
@@ -154,9 +148,11 @@ async def clients_tracking_link_create(
     """
     # verify current user has permission to take this action
     await permissions.verify_user_can_access(
-        privileges=[RoleAdmin, RoleManager],
-        client_id=client.id,
+        privileges=[RoleAdmin, RoleManager], client_id=tracking_link_in.client_id
     )
+    client_exists = await permissions.client_repo.read(tracking_link_in.client_id)
+    if client_exists is None:
+        raise ClientNotExists()
     links_repo = TrackingLinkRepository(permissions.db)
     trk_url_hash = hash_url(tracking_link_in.url)
     tracking_link: TrackingLink | None = await links_repo.exists_by_fields(
@@ -170,24 +166,10 @@ async def clients_tracking_link_create(
             url=tracking_link_in.url,
             url_hash=trk_url_hash,
             is_active=tracking_link_in.is_active or True,
+            client_id=tracking_link_in.client_id,
             **url_params.model_dump(),
         )
     )
-    client_tracking_link_repo: ClientTrackingLinkRepository = (
-        ClientTrackingLinkRepository(session=permissions.db)
-    )
-    client_tracking_link: ClientTrackingLink | None = (
-        await client_tracking_link_repo.exists_by_fields(
-            {"tracking_link_id": tracking_link.id, "client_id": client.id}
-        )
-    )
-    if client_tracking_link is None:
-        client_tracking_link = await client_tracking_link_repo.create(
-            schema=ClientTrackingLinkCreate(
-                tracking_link_id=tracking_link.id,
-                client_id=client.id,
-            )
-        )
     # return role based response
     response_out: TrackingLinkRead = permissions.get_resource_response(
         resource=tracking_link,
@@ -199,21 +181,19 @@ async def clients_tracking_link_create(
 
 
 @router.get(
-    "/{client_id}/{tracking_link_id}",
-    name="clients_tracking_link:read",
+    "/{tracking_link_id}",
+    name="tracking_link:read",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
-        Depends(get_client_or_404),
         Depends(get_tracking_link_or_404),
     ],
     response_model=TrackingLinkRead,
 )
-async def clients_tracking_link_read(
+async def tracking_link_read(
     permissions: PermissionController = Depends(get_permission_controller),
-    client: Client = Permission([AccessRead, AccessReadRelated], get_client_or_404),
     tracked_link: TrackingLink = Permission(
         [AccessUpdate, AccessUpdateRelated], get_tracking_link_or_404
     ),
@@ -235,7 +215,7 @@ async def clients_tracking_link_read(
     # verify current user has permission to take this action
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
-        client_id=client.id,
+        client_id=tracked_link.client_id,
     )
     # return role based response
     response_out: TrackingLinkRead = permissions.get_resource_response(
@@ -248,22 +228,20 @@ async def clients_tracking_link_read(
 
 
 @router.patch(
-    "/{client_id}/{tracking_link_id}",
-    name="clients_tracking_link:update",
+    "/{tracking_link_id}",
+    name="tracking_link:update",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
-        Depends(get_client_or_404),
         Depends(get_tracking_link_or_404),
     ],
     response_model=TrackingLinkRead,
 )
-async def clients_tracking_link_update(
+async def tracking_link_update(
     tracking_link_in: TrackingLinkUpdateRequest,
     permissions: PermissionController = Depends(get_permission_controller),
-    client: Client = Permission([AccessRead, AccessReadRelated], get_client_or_404),
     tracked_link: TrackingLink = Permission(
         [AccessUpdate, AccessUpdateRelated], get_tracking_link_or_404
     ),
@@ -292,8 +270,16 @@ async def clients_tracking_link_update(
     # verify current user has permission to take this action
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
-        client_id=client.id,
+        client_id=tracked_link.client_id,
     )
+    if tracking_link_in.client_id is not None:
+        await permissions.verify_user_can_access(
+            privileges=[RoleAdmin, RoleManager],
+            client_id=tracking_link_in.client_id,
+        )
+        client_exists = await permissions.client_repo.read(tracking_link_in.client_id)
+        if client_exists is None:
+            raise ClientNotExists()
     links_repo = TrackingLinkRepository(permissions.db)
     url_params: TrackingLinkBaseUtmParams = TrackingLinkBaseUtmParams()
     trk_url_hash: None | str = None
@@ -311,6 +297,7 @@ async def clients_tracking_link_update(
             url=tracking_link_in.url,
             is_active=tracking_link_in.is_active,
             url_hash=trk_url_hash,
+            client_id=tracking_link_in.client_id,
             **url_params.model_dump(),
         ),
     )
@@ -325,21 +312,19 @@ async def clients_tracking_link_update(
 
 
 @router.delete(
-    "/{client_id}/{tracking_link_id}",
-    name="clients_tracking_link:delete",
+    "/{tracking_link_id}",
+    name="tracking_link:delete",
     dependencies=[
         Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
-        Depends(get_client_or_404),
         Depends(get_tracking_link_or_404),
     ],
     response_model=None,
 )
-async def clients_tracking_link_delete(
+async def tracking_link_delete(
     permissions: PermissionController = Depends(get_permission_controller),
-    client: Client = Permission([AccessRead, AccessReadRelated], get_client_or_404),
     tracked_link: TrackingLink = Permission(
         [AccessDelete, AccessDeleteRelated], get_tracking_link_or_404
     ),
@@ -359,7 +344,7 @@ async def clients_tracking_link_delete(
 
     """
     await permissions.verify_user_can_access(
-        privileges=[RoleAdmin], client_id=client.id
+        privileges=[RoleAdmin], client_id=tracked_link.client_id
     )
     links_repo = TrackingLinkRepository(permissions.db)
     await links_repo.delete(entry=tracked_link)

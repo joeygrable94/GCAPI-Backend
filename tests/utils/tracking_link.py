@@ -1,15 +1,11 @@
+from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_domain, random_lower_string
 
-from app.crud import ClientTrackingLinkRepository, TrackingLinkRepository
+from app.crud import TrackingLinkRepository
 from app.db.utilities import hash_url
-from app.models import Client, ClientTrackingLink, TrackingLink
-from app.schemas import (
-    ClientRead,
-    ClientTrackingLinkCreate,
-    TrackingLinkCreate,
-    TrackingLinkRead,
-)
+from app.models import TrackingLink
+from app.schemas import TrackingLinkCreate, TrackingLinkRead
 
 
 def build_utm_link(
@@ -36,7 +32,7 @@ def build_utm_link(
 
 
 async def create_random_tracking_link(
-    db_session: AsyncSession, is_active: bool | None = None
+    db_session: AsyncSession, client_id: UUID4, is_active: bool | None = None
 ) -> TrackingLinkRead:
     repo: TrackingLinkRepository = TrackingLinkRepository(session=db_session)
     domain_name = random_domain()
@@ -61,22 +57,7 @@ async def create_random_tracking_link(
             utm_content=utm_cnt,
             utm_term=utm_trm,
             is_active=is_active if is_active is not None else True,
+            client_id=client_id,
         )
     )
     return TrackingLinkRead.model_validate(tracking_link)
-
-
-async def assign_tracking_link_to_client(
-    db_session: AsyncSession,
-    tracking_link: TrackingLink | TrackingLinkRead,
-    client: Client | ClientRead,
-) -> ClientTrackingLink:
-    repo: ClientTrackingLinkRepository = ClientTrackingLinkRepository(
-        session=db_session
-    )
-    client_tracking_link: ClientTrackingLink = await repo.create(
-        schema=ClientTrackingLinkCreate(
-            tracking_link_id=tracking_link.id, client_id=client.id
-        )
-    )
-    return client_tracking_link

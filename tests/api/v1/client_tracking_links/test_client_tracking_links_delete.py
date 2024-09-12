@@ -24,13 +24,15 @@ async def test_delete_client_tracking_link_by_id_as_superuser(
         db_session, settings.auth.first_admin
     )
     a_client: ClientRead = await create_random_client(db_session)
-    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
+    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
     response: Response = await client.delete(
-        f"clients/links/{a_client.id}/{a_tacked_link.id}", headers=admin_token_headers
+        f"links/{a_tacked_link.id}", headers=admin_token_headers
     )
     assert 200 <= response.status_code < 300
     response: Response = await client.get(
-        f"clients/links/{a_client.id}/{a_tacked_link.id}",
+        f"links/{a_tacked_link.id}",
         headers=admin_token_headers,
     )
     assert response.status_code == 404
@@ -48,14 +50,16 @@ async def test_delete_client_tracking_link_by_id_as_employee(
     a_user_client: UserClient = await assign_user_to_client(  # noqa: F841
         db_session, a_user, a_client
     )
-    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
+    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
     response: Response = await client.delete(
-        f"clients/links/{a_client.id}/{a_tacked_link.id}",
+        f"links/{a_tacked_link.id}",
         headers=employee_token_headers,
     )
     assert 200 <= response.status_code < 300
     response: Response = await client.get(
-        f"clients/links/{a_client.id}/{a_tacked_link.id}",
+        f"links/{a_tacked_link.id}",
         headers=employee_token_headers,
     )
     assert response.status_code == 404

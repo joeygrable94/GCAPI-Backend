@@ -1,5 +1,6 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
+from tests.utils.clients import create_random_client
 from tests.utils.tracking_link import create_random_tracking_link
 
 from app.api.deps import get_tracking_link_or_404
@@ -11,7 +12,10 @@ from app.schemas import TrackingLinkRead
 
 async def test_get_tracking_link_or_404(db_session: AsyncSession) -> None:
     # Test with valid tracking_link_id
-    test_link: TrackingLinkRead = await create_random_tracking_link(db_session)
+    a_client = await create_random_client(db_session)
+    test_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
     result: TrackingLink | None = await get_tracking_link_or_404(
         db_session, test_link.id
     )

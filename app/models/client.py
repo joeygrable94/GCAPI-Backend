@@ -111,7 +111,7 @@ class Client(Base, Timestamp):
         "ClientReport", back_populates="client"
     )
     tracking_links: Mapped[List["TrackingLink"]] = relationship(
-        "TrackingLink", secondary="client_tracking_link", back_populates="clients"
+        "TrackingLink", back_populates="client", cascade="all, delete-orphan"
     )
     gcloud_accounts: Mapped[List["GoCloudProperty"]] = relationship(
         "GoCloudProperty", back_populates="client", cascade="all, delete-orphan"

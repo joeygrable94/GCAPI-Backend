@@ -26,10 +26,12 @@ async def test_read_client_tracking_link_by_id_as_superuser(
         db_session, settings.auth.first_admin
     )
     a_client: ClientRead = await create_random_client(db_session)
-    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(db_session)
+    a_tacked_link: TrackingLinkRead = await create_random_tracking_link(
+        db_session, a_client.id
+    )
     a_hashed_url = hash_url(a_tacked_link.url)
     response: Response = await client.get(
-        f"clients/links/{a_client.id}/{a_tacked_link.id}", headers=admin_token_headers
+        f"links/{a_tacked_link.id}", headers=admin_token_headers
     )
     assert 200 <= response.status_code < 300
     data: Dict[str, Any] = response.json()
@@ -54,10 +56,10 @@ async def test_read_client_tracking_link_by_id_as_superuser_not_found(
     )
     a_client: ClientRead = await create_random_client(db_session)
     a_tacked_link: TrackingLinkRead = await create_random_tracking_link(  # noqa: F841
-        db_session
+        db_session, a_client.id
     )
     response: Response = await client.get(
-        f"clients/links/{a_client.id}/{fake_id}", headers=admin_token_headers
+        f"links/{fake_id}", headers=admin_token_headers
     )
     assert response.status_code == 404
     data: Dict[str, Any] = response.json()

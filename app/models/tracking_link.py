@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, List, Tuple
 
 from pydantic import UUID4
-from sqlalchemy import Boolean, String
+from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import Timestamp  # type: ignore
 from sqlalchemy_utils import UUIDType
@@ -79,9 +79,10 @@ class TrackingLink(Base, Timestamp):
     )
 
     # relationships
-    clients: Mapped[List["Client"]] = relationship(
-        "Client", secondary="client_tracking_link", back_populates="tracking_links"
+    client_id: Mapped[UUID4] = mapped_column(
+        UUIDType(binary=False), ForeignKey("client.id"), nullable=False
     )
+    client: Mapped["Client"] = relationship(back_populates="tracking_links")
 
     # ACL
     def __acl__(

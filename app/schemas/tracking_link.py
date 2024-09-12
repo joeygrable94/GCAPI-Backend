@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import field_validator
+from pydantic import UUID4, field_validator
 
 from app.db.validators import (
     validate_url_hash_optional,
@@ -51,6 +51,7 @@ class TrackingLinkBaseUtmParams(BaseSchema):
 class TrackingLinkCreateRequest(BaseSchema):
     url: str
     is_active: bool | None = None
+    client_id: UUID4
 
     _validate_url = field_validator("url", mode="before")(validate_url_required)
 
@@ -65,6 +66,7 @@ class TrackingLinkCreate(BaseSchema):
     utm_content: str | None = None
     utm_term: str | None = None
     is_active: bool = True
+    client_id: UUID4
 
     _validate_url = field_validator("url", mode="before")(validate_url_required)
     _validate_url_hash = field_validator("url_hash", mode="before")(
@@ -93,6 +95,7 @@ class TrackingLinkCreate(BaseSchema):
 class TrackingLinkUpdateRequest(BaseSchema):
     url: str | None = None
     is_active: bool | None = None
+    client_id: UUID4 | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_optional)
 
@@ -107,6 +110,7 @@ class TrackingLinkUpdate(BaseSchema):
     utm_content: str | None = None
     utm_term: str | None = None
     is_active: bool | None = None
+    client_id: UUID4 | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_optional)
     _validate_url_hash = field_validator("url_hash", mode="before")(
@@ -142,6 +146,7 @@ class TrackingLinkRead(BaseSchemaRead):
     utm_content: str | None = None
     utm_term: str | None = None
     is_active: bool = True
+    client_id: UUID4
 
     _validate_url = field_validator("url", mode="before")(validate_url_required)
     _validate_url_hash = field_validator("url_hash", mode="before")(
