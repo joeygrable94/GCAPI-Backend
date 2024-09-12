@@ -51,7 +51,7 @@ class TrackingLinkBaseUtmParams(BaseSchema):
 class TrackingLinkCreateRequest(BaseSchema):
     url: str
     is_active: bool | None = None
-    client_id: UUID4
+    client_id: UUID4 | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_required)
 
@@ -66,7 +66,7 @@ class TrackingLinkCreate(BaseSchema):
     utm_content: str | None = None
     utm_term: str | None = None
     is_active: bool = True
-    client_id: UUID4
+    client_id: UUID4 | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_required)
     _validate_url_hash = field_validator("url_hash", mode="before")(
@@ -146,7 +146,7 @@ class TrackingLinkRead(BaseSchemaRead):
     utm_content: str | None = None
     utm_term: str | None = None
     is_active: bool = True
-    client_id: UUID4
+    client_id: UUID4 | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_required)
     _validate_url_hash = field_validator("url_hash", mode="before")(

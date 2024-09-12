@@ -150,9 +150,10 @@ async def tracking_link_create(
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager], client_id=tracking_link_in.client_id
     )
-    client_exists = await permissions.client_repo.read(tracking_link_in.client_id)
-    if client_exists is None:
-        raise ClientNotExists()
+    if tracking_link_in.client_id is not None:
+        client_exists = await permissions.client_repo.read(tracking_link_in.client_id)
+        if client_exists is None:
+            raise ClientNotExists()
     links_repo = TrackingLinkRepository(permissions.db)
     trk_url_hash = hash_url(tracking_link_in.url)
     tracking_link: TrackingLink | None = await links_repo.exists_by_fields(

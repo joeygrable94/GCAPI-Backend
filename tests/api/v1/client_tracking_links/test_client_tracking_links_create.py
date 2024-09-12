@@ -53,6 +53,39 @@ async def test_create_client_tracking_link_as_superuser(
     assert data["is_active"] is True
 
 
+async def test_create_client_tracking_link_as_superuser_no_client_assigned(
+    client: AsyncClient,
+    db_session: AsyncSession,  # noqa: F841
+    admin_token_headers: Dict[str, str],
+) -> None:
+    domain_name = random_domain()
+    url_path = "/%s" % random_lower_string(16)
+    utm_cmpn = random_lower_string(16)
+    utm_mdm = random_lower_string(16)
+    utm_src = random_lower_string(16)
+    utm_cnt = random_lower_string(16)
+    utm_trm = random_lower_string(16)
+    tracked_url = build_utm_link(
+        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+    )
+    data_in: Dict[str, Any] = dict(url=tracked_url, is_active=True)
+    response: Response = await client.post(
+        "links/",
+        headers=admin_token_headers,
+        json=data_in,
+    )
+    assert 200 <= response.status_code < 300
+    data: Dict[str, Any] = response.json()
+    assert len(data["url_hash"]) == 64
+    assert data["url"] == tracked_url
+    assert data["utm_campaign"] == utm_cmpn
+    assert data["utm_medium"] == utm_mdm
+    assert data["utm_source"] == utm_src
+    assert data["utm_content"] == utm_cnt
+    assert data["utm_term"] == utm_trm
+    assert data["is_active"] is True
+
+
 async def test_create_client_tracking_link_as_superuser_client_not_found(
     client: AsyncClient,
     db_session: AsyncSession,
