@@ -1,4 +1,7 @@
+import json
 from typing import Any, List, Union
+
+from pydantic import Json
 
 from app.core.config import settings
 from app.core.security.permissions import AclPrivilege, Scope
@@ -10,6 +13,7 @@ from app.db.constants import (
     DB_STR_32BIT_MAXLEN_INPUT,
     DB_STR_64BIT_MAXLEN_INPUT,
     DB_STR_BLOB_MAXLEN_INPUT,
+    DB_STR_BLOB_MAXLEN_STORED,
     DB_STR_BUCKET_NAME_MAXLEN_INPUT,
     DB_STR_BUCKET_NAME_MINLEN_INPUT,
     DB_STR_BUCKET_OBJECT_NAME_MAXLEN_INPUT,
@@ -238,6 +242,16 @@ def validate_description_optional(cls: Any, value: str | None) -> str | None:
         name="description",
         max_len=DB_STR_DESC_MAXLEN_INPUT,
     )
+
+
+def validate_style_guide_optional(cls: Any, value: Json | None) -> Json | None:
+    json_str = json.dumps(value)
+    json_str_valid = optional_string_name_min_max_len(
+        v=json_str,
+        name="style_guide",
+        max_len=DB_STR_BLOB_MAXLEN_STORED,
+    )
+    return json.loads(json_str_valid) if json_str_valid else None
 
 
 def validate_domain_required(cls: Any, value: str) -> str:

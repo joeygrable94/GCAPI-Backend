@@ -44,42 +44,42 @@ Create a virtual environment, activate it, then install the backend python pip `
 
 ## Application Structure
 
-```bash
-main.py                 # Main entry point for the application
-worker.py               # Taskiq worker entry point
-tasks/                  # Taskiq task definitions
-cli/                    # Command line interface
-    db.py                   # Manages database operations
-    secure.py               # Manages secure cipher operations
-core/                   # Core application code shared
-    config/                 # Configuration settings
-    logger/                 # Logger configuration
-    pagination/             # Pagination settings
-    security/               # Security protocols and utilities
-        auth/                   # Authentication protocols (Auth0)
-        csrf/                   # Cross Site Request Forgery protection
-        encryption/             # Encryption protocols (RSA, AES)
-        permissions/            # Permissions protocols
-        rate_limiter/           # Rate limiting protocols
-        schemas.py              # Security models
-    utilities/              # Core service layer utilities
-    email.py                # FastAPI email service
-    redis.py                # Redis connection settings
-    templates.py            # Jinja2 templates
-db/                     # Database operations layer
-crud/                   # CRUD Layer for data models
-models/                 # Database models
-schemas/                # Pydantic models for data validation
-api/                    # API Layer
-    v1/endpoints/           # Version controlled endpoints
-    deps/                   # Dependencies injected into endpoints
-    exceptions/             # Error and exception handling
-    middleware/             # API Middleware
-    openapi.py              # OpenAPI schema
-    utilities.py            # API layer utilities
-public/static/          # Public static assets: images, styles, scripts
-templates/email/        # Jinja2 email templates
-```
+    ```bash
+    main.py                 # Main entry point for the application
+    worker.py               # Taskiq worker entry point
+    tasks/                  # Taskiq task definitions
+    cli/                    # Command line interface
+        db.py                   # Manages database operations
+        secure.py               # Manages secure cipher operations
+    core/                   # Core application code shared
+        config/                 # Configuration settings
+        logger/                 # Logger configuration
+        pagination/             # Pagination settings
+        security/               # Security protocols and utilities
+            auth/                   # Authentication protocols (Auth0)
+            csrf/                   # Cross Site Request Forgery protection
+            encryption/             # Encryption protocols (RSA, AES)
+            permissions/            # Permissions protocols
+            rate_limiter/           # Rate limiting protocols
+            schemas.py              # Security models
+        utilities/              # Core service layer utilities
+        email.py                # FastAPI email service
+        redis.py                # Redis connection settings
+        templates.py            # Jinja2 templates
+    db/                     # Database operations layer
+    crud/                   # CRUD Layer for data models
+    models/                 # Database models
+    schemas/                # Pydantic models for data validation
+    api/                    # API Layer
+        v1/endpoints/           # Version controlled endpoints
+        deps/                   # Dependencies injected into endpoints
+        exceptions/             # Error and exception handling
+        middleware/             # API Middleware
+        openapi.py              # OpenAPI schema
+        utilities.py            # API layer utilities
+    public/static/          # Public static assets: images, styles, scripts
+    templates/email/        # Jinja2 email templates
+    ```
 
 ---
 

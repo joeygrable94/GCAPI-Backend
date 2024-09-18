@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, Any, List, Tuple
 
 from pydantic import UUID4
-from sqlalchemy import Boolean, String
+from sqlalchemy import JSON, Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import Timestamp  # type: ignore
-from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils import JSONType, UUIDType
 from sqlalchemy_utils.types.encrypted.encrypted_type import (  # type: ignore  # noqa: E501
     AesEngine,
     StringEncryptedType,
@@ -85,6 +85,10 @@ class Client(Base, Timestamp):
             "pkcs5",
             length=DB_STR_DESC_MAXLEN_STORED,
         ),
+        nullable=True,
+    )
+    style_guide: Mapped[JSON] = mapped_column(
+        JSONType,
         nullable=True,
     )
     is_active: Mapped[bool] = mapped_column(

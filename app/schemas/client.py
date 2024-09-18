@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from pydantic import UUID4, field_validator
+from pydantic import UUID4, Json, field_validator
 
 from app.db.validators import (
     validate_description_optional,
     validate_slug_required,
+    validate_style_guide_optional,
     validate_title_optional,
     validate_title_required,
 )
@@ -19,11 +20,15 @@ class ClientBase(BaseSchema):
     title: str
     description: Optional[str] = None
     is_active: bool = True
+    style_guide: Optional[Json] = None
 
     _validate_slug = field_validator("slug", mode="before")(validate_slug_required)
     _validate_title = field_validator("title", mode="before")(validate_title_required)
     _validate_description = field_validator("description", mode="before")(
         validate_description_optional
+    )
+    _validate_style_guide = field_validator("style_guide", mode="before")(
+        validate_style_guide_optional
     )
 
 
@@ -31,16 +36,21 @@ class ClientCreate(ClientBase):
     title: str
     description: Optional[str] = None
     is_active: bool = True
+    style_guide: Optional[Json] = None
 
 
 class ClientUpdate(BaseSchema):
     title: Optional[str] = None
     description: Optional[str] = None
     is_active: Optional[bool] = None
+    style_guide: Optional[Json] = None
 
     _validate_title = field_validator("title", mode="before")(validate_title_optional)
     _validate_description = field_validator("description", mode="before")(
         validate_description_optional
+    )
+    _validate_style_guide = field_validator("style_guide", mode="before")(
+        validate_style_guide_optional
     )
 
 
