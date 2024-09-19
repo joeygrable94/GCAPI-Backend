@@ -20,7 +20,7 @@ class ClientBase(BaseSchema):
     title: str
     description: Optional[str] = None
     is_active: bool = True
-    style_guide: Optional[Json] = None
+    style_guide: Optional[str] = None
 
     _validate_slug = field_validator("slug", mode="before")(validate_slug_required)
     _validate_title = field_validator("title", mode="before")(validate_title_required)
@@ -43,7 +43,7 @@ class ClientUpdate(BaseSchema):
     title: Optional[str] = None
     description: Optional[str] = None
     is_active: Optional[bool] = None
-    style_guide: Optional[Json] = None
+    style_guide: Optional[str] = None
 
     _validate_title = field_validator("title", mode="before")(validate_title_optional)
     _validate_description = field_validator("description", mode="before")(
@@ -54,8 +54,22 @@ class ClientUpdate(BaseSchema):
     )
 
 
+class ClientUpdateStyleGuide(BaseSchema):
+    style_guide: Optional[str] = None
+
+    _validate_style_guide = field_validator("style_guide", mode="before")(
+        validate_style_guide_optional
+    )
+
+
 class ClientRead(ClientBase, BaseSchemaRead):
     id: UUID4
+
+
+class ClientReadPublic(BaseSchema):
+    id: UUID4
+    title: str
+    style_guide: Optional[str] = None
 
 
 class ClientDelete(BaseSchema):

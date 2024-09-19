@@ -1,7 +1,14 @@
 from typing import List
 
 from .bdx_feed import BdxFeedCreate, BdxFeedRead, BdxFeedUpdate
-from .client import ClientCreate, ClientDelete, ClientRead, ClientUpdate
+from .client import (
+    ClientCreate,
+    ClientDelete,
+    ClientRead,
+    ClientReadPublic,
+    ClientUpdate,
+    ClientUpdateStyleGuide,
+)
 from .client_report import ClientReportCreate, ClientReportRead, ClientReportUpdate
 from .client_report_note import (
     ClientReportNoteCreate,
@@ -125,7 +132,9 @@ __all__: List[str] = [
     "ClientCreate",
     "ClientDelete",
     "ClientRead",
+    "ClientReadPublic",
     "ClientUpdate",
+    "ClientUpdateStyleGuide",
     "DataBucketCreate",
     "DataBucketRead",
     "DataBucketUpdate",

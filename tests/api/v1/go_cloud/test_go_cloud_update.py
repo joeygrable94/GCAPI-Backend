@@ -193,7 +193,7 @@ async def test_update_go_cloud_as_superuser_service_account_exists(
     entry_b: GoCloudPropertyRead = await create_random_go_cloud(
         db_session, client_id=a_client.id, is_service_account=True
     )
-    update_data: Dict[str, str] = {
+    update_data: Dict[str, str | None] = {
         "service_account": entry_b.service_account,
     }
     response: Response = await client.patch(

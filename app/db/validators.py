@@ -1,8 +1,6 @@
 import json
 from typing import Any, List, Union
 
-from pydantic import Json
-
 from app.core.config import settings
 from app.core.security.permissions import AclPrivilege, Scope
 from app.core.utilities import domain_name_regex, email_regex
@@ -94,6 +92,17 @@ def optional_string_name_min_max_len(
             raise ValueError(f"{name} must be {min_len} characters or more")
     if v is not None and len(v) > max_len:
         raise ValueError(f"{name} must be {max_len} characters or less")
+    return v
+
+
+def valid_json_str(
+    v: str,
+    name: str = "style_guide",
+) -> str:
+    try:
+        json.loads(v)
+    except json.JSONDecodeError:
+        raise ValueError(f"{name} must be a valid JSON string")
     return v
 
 
@@ -244,14 +253,14 @@ def validate_description_optional(cls: Any, value: str | None) -> str | None:
     )
 
 
-def validate_style_guide_optional(cls: Any, value: Json | None) -> Json | None:
-    json_str = json.dumps(value)
-    json_str_valid = optional_string_name_min_max_len(
-        v=json_str,
+def validate_style_guide_optional(cls: Any, value: str | None) -> str | None:
+    if value is not None:
+        value = valid_json_str(v=value, name="style_guide")
+    return optional_string_name_min_max_len(
+        v=value,
         name="style_guide",
         max_len=DB_STR_BLOB_MAXLEN_STORED,
     )
-    return json.loads(json_str_valid) if json_str_valid else None
 
 
 def validate_domain_required(cls: Any, value: str) -> str:

@@ -16,6 +16,7 @@ class ClientRepository(BaseRepository[ClientCreate, ClientRead, ClientUpdate, Cl
     def query_list(
         self,
         user_id: UUID | None = None,
+        is_active: bool | None = None,
     ) -> Select:
         # create statement joins
         stmt: Select = sql_select(self._table)
@@ -27,6 +28,8 @@ class ClientRepository(BaseRepository[ClientCreate, ClientRead, ClientUpdate, Cl
                 User, UserClient.user_id == User.id
             )
             conditions.append(User.id.like(user_id))
+        if is_active is not None:
+            stmt = stmt.where(Client.is_active == is_active)
         # apply conditions
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))

@@ -52,7 +52,9 @@ from app.schemas import (
     ClientCreate,
     ClientDelete,
     ClientRead,
+    ClientReadPublic,
     ClientUpdate,
+    ClientUpdateStyleGuide,
     ClientWebsiteCreate,
     ClientWebsiteRead,
     UserClientCreate,
@@ -112,6 +114,48 @@ async def clients_list(
                 RoleManager: ClientRead,
                 RoleClient: ClientRead,
                 RoleEmployee: ClientRead,
+            },
+        )
+    )
+    return response_out
+
+
+@router.get(
+    "/public",
+    name="clients:list_public",
+    dependencies=[
+        Depends(CommonUserQueryParams),
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
+    ],
+    response_model=Paginated[ClientReadPublic],
+)
+async def clients_list_public(
+    query: GetUserQueryParams,
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> Paginated[ClientReadPublic]:
+    """Retrieve a paginated list of clients.
+
+    Permissions:
+    ------------
+    `role=user` : all active clients, but only public column data
+
+    Returns:
+    --------
+    `Paginated[ClientReadPublic]` : a paginated list of active clients public data
+
+    """
+    select_stmt: Select
+    select_stmt = permissions.client_repo.query_list(is_active=True)
+    response_out: Paginated[ClientReadPublic] = (
+        await permissions.get_paginated_resource_response(
+            table_name=Client.__tablename__,
+            stmt=select_stmt,
+            page_params=PageParams(page=query.page, size=query.size),
+            responses={
+                RoleUser: ClientReadPublic,
             },
         )
     )
@@ -298,6 +342,64 @@ async def clients_update(
         resource=updated_client if updated_client else client,
         responses={
             RoleUser: ClientRead,
+        },
+    )
+    return response_out
+
+
+@router.patch(
+    "/{client_id}/style-guide",
+    name="clients:update_style_guide",
+    dependencies=[
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_client_or_404),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
+    ],
+    response_model=ClientReadPublic,
+)
+async def clients_update_style_guide(
+    client_in: ClientUpdateStyleGuide,
+    client: Client = Permission(
+        [AccessUpdate, AccessUpdateSelf, AccessUpdateRelated], get_client_or_404
+    ),
+    permissions: PermissionController = Depends(get_permission_controller),
+) -> ClientReadPublic:
+    """Update a client by id.
+
+    Permissions:
+    ------------
+    `role=admin|manager` : all clients
+
+    `role=user` : only clients associated with the user via `user_client`
+
+    Returns:
+    --------
+    `ClientReadPublic` : the updated client public data
+
+    """
+    # verify the input schema is valid for the current user's role
+    permissions.verify_input_schema_by_role(
+        input_object=client_in,
+        schema_privileges={
+            RoleUser: ClientUpdateStyleGuide,
+        },
+    )
+    # verify current user has permission to take this action
+    await permissions.verify_user_can_access(
+        privileges=[RoleAdmin, RoleManager],
+        client_id=client.id,
+    )
+    clients_repo: ClientRepository = ClientRepository(session=permissions.db)
+    updated_client: Client | None = await clients_repo.update(
+        entry=client, schema=ClientUpdate(style_guide=client_in.style_guide)
+    )
+    # return role based response
+    response_out: ClientReadPublic = permissions.get_resource_response(
+        resource=updated_client if updated_client else client,
+        responses={
+            RoleUser: ClientReadPublic,
         },
     )
     return response_out
