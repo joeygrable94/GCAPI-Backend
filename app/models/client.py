@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Tuple
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import JSON, Boolean, String
@@ -87,9 +87,10 @@ class Client(Base, Timestamp):
         ),
         nullable=True,
     )
-    style_guide: Mapped[JSON] = mapped_column(
-        JSONType,
+    style_guide: Mapped[Optional[JSON]] = mapped_column(
+        JSONType(),
         nullable=True,
+        default=None,
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean(),

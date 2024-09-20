@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from pydantic import UUID4, Json, field_validator
+from pydantic import UUID4, field_validator
 
 from app.db.validators import (
     validate_description_optional,
@@ -36,7 +36,7 @@ class ClientCreate(ClientBase):
     title: str
     description: Optional[str] = None
     is_active: bool = True
-    style_guide: Optional[Json] = None
+    style_guide: Optional[str] = None
 
 
 class ClientUpdate(BaseSchema):
@@ -70,6 +70,10 @@ class ClientReadPublic(BaseSchema):
     id: UUID4
     title: str
     style_guide: Optional[str] = None
+
+    _validate_style_guide = field_validator("style_guide", mode="before")(
+        validate_style_guide_optional
+    )
 
 
 class ClientDelete(BaseSchema):
