@@ -8,7 +8,11 @@ from app.api.exceptions import GoSearchConsoleMetricTypeInvalid, InvalidID
 from app.core.config import settings
 from app.core.pagination import PageParamsFromQuery
 from app.core.utilities.uuids import parse_id
-from app.db.constants import DB_STR_TINYTEXT_MAXLEN_INPUT, DB_STR_URLPATH_MAXLEN_INPUT
+from app.db.constants import (
+    DB_STR_16BIT_MAXLEN_INPUT,
+    DB_STR_TINYTEXT_MAXLEN_INPUT,
+    DB_STR_URLPATH_MAXLEN_INPUT,
+)
 from app.schemas import GoSearchConsoleMetricType, PageSpeedInsightsDevice, PSIDevice
 
 # utility query classes
@@ -156,6 +160,21 @@ class GoSearchConsoleMetricTypeQueryParams:
         except ValueError:
             raise GoSearchConsoleMetricTypeInvalid()
         self.metric_types: list[GoSearchConsoleMetricType] | None = q_metric_types
+
+
+class TrackingLinkSchemeQueryParams:
+    def __init__(self, scheme: str | None = None):
+        self.scheme: str | None = scheme
+
+
+class TrackingLinkDomainQueryParams:
+    def __init__(self, domain: str | None = None):
+        self.domain: str | None = domain
+
+
+class TrackingLinkDestinationQueryParams:
+    def __init__(self, destination: str | None = None):
+        self.destination: str | None = destination
 
 
 class TrackingLinkUrlPathQueryParams:
@@ -468,6 +487,9 @@ GetWebsiteGoSearchConsoleQueryParams = Annotated[
 class CommonClientTrackingLinkQueryParams(
     PageParamsFromQuery,
     ClientIdQueryParams,
+    TrackingLinkSchemeQueryParams,
+    TrackingLinkDomainQueryParams,
+    TrackingLinkDestinationQueryParams,
     TrackingLinkUrlPathQueryParams,
     TrackingLinkUtmCampaignQueryParams,
     TrackingLinkUtmMediumQueryParams,
@@ -487,6 +509,15 @@ class CommonClientTrackingLinkQueryParams(
             ),
         ] = settings.api.query_limit_rows_default,
         client_id: Annotated[str | None, Query()] = None,
+        scheme: Annotated[
+            str | None, Query(max_length=DB_STR_16BIT_MAXLEN_INPUT)
+        ] = None,
+        domain: Annotated[
+            str | None, Query(max_length=DB_STR_TINYTEXT_MAXLEN_INPUT)
+        ] = None,
+        destination: Annotated[
+            str | None, Query(max_length=DB_STR_URLPATH_MAXLEN_INPUT)
+        ] = None,
         url_path: Annotated[
             str | None, Query(max_length=DB_STR_URLPATH_MAXLEN_INPUT)
         ] = None,
@@ -509,6 +540,9 @@ class CommonClientTrackingLinkQueryParams(
     ):
         PageParamsFromQuery.__init__(self, page, size)
         ClientIdQueryParams.__init__(self, client_id)
+        TrackingLinkSchemeQueryParams.__init__(self, scheme)
+        TrackingLinkDomainQueryParams.__init__(self, domain)
+        TrackingLinkDestinationQueryParams.__init__(self, destination)
         TrackingLinkUrlPathQueryParams.__init__(self, url_path)
         TrackingLinkUtmCampaignQueryParams.__init__(self, utm_campaign)
         TrackingLinkUtmMediumQueryParams.__init__(self, utm_medium)

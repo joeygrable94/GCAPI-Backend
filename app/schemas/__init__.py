@@ -70,7 +70,7 @@ from .note import NoteCreate, NoteRead, NoteUpdate
 from .sharpspring import SharpspringCreate, SharpspringRead, SharpspringUpdate
 from .task import TaskState, TaskStatus
 from .tracking_link import (
-    TrackingLinkBaseUtmParams,
+    TrackingLinkBaseParams,
     TrackingLinkCreate,
     TrackingLinkCreateRequest,
     TrackingLinkRead,
@@ -206,7 +206,7 @@ __all__: List[str] = [
     "TrackingLinkCreate",
     "TrackingLinkCreateRequest",
     "TrackingLinkUpdateRequest",
-    "TrackingLinkBaseUtmParams",
+    "TrackingLinkBaseParams",
     "TrackingLinkUpdate",
     "TrackingLinkRead",
     "UserAuthRequestToken",

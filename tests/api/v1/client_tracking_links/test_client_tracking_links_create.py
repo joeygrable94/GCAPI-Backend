@@ -23,6 +23,7 @@ async def test_create_client_tracking_link_as_superuser(
     admin_token_headers: Dict[str, str],
 ) -> None:
     a_client: ClientRead = await create_random_client(db_session)
+    url_scheme = "https"
     domain_name = random_domain()
     url_path = "/%s" % random_lower_string(16)
     utm_cmpn = random_lower_string(16)
@@ -31,7 +32,7 @@ async def test_create_client_tracking_link_as_superuser(
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
     tracked_url = build_utm_link(
-        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+        url_scheme, domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
         url=tracked_url, is_active=True, client_id=str(a_client.id)
@@ -58,6 +59,7 @@ async def test_create_client_tracking_link_as_superuser_no_client_assigned(
     db_session: AsyncSession,  # noqa: F841
     admin_token_headers: Dict[str, str],
 ) -> None:
+    url_scheme = "https"
     domain_name = random_domain()
     url_path = "/%s" % random_lower_string(16)
     utm_cmpn = random_lower_string(16)
@@ -66,7 +68,7 @@ async def test_create_client_tracking_link_as_superuser_no_client_assigned(
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
     tracked_url = build_utm_link(
-        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+        url_scheme, domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(url=tracked_url, is_active=True)
     response: Response = await client.post(
@@ -146,6 +148,7 @@ async def test_create_client_tracking_link_as_superuser_utm_params_invalid(
         db_session, settings.auth.first_admin
     )
     a_client: ClientRead = await create_random_client(db_session)
+    url_scheme = "https"
     domain_name = random_domain()
     url_path = "/%s" % random_lower_string(16)
     utm_cmpn = random_lower_string(256)
@@ -154,7 +157,7 @@ async def test_create_client_tracking_link_as_superuser_utm_params_invalid(
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
     tracked_url = build_utm_link(
-        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+        url_scheme, domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
         url=tracked_url, is_active=True, client_id=str(a_client.id)
@@ -179,6 +182,7 @@ async def test_create_client_tracking_link_as_employee(
     a_user_client: UserClient = await assign_user_to_client(  # noqa: F841
         db_session, a_user, a_client
     )
+    url_scheme = "https"
     domain_name = random_domain()
     url_path = "/%s" % random_lower_string(16)
     utm_cmpn = random_lower_string(16)
@@ -187,7 +191,7 @@ async def test_create_client_tracking_link_as_employee(
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
     tracked_url = build_utm_link(
-        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+        url_scheme, domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
         url=tracked_url, is_active=True, client_id=str(a_client.id)
@@ -218,6 +222,7 @@ async def test_create_client_tracking_link_as_employee_forbidden(
         db_session, settings.auth.first_employee
     )
     a_client: ClientRead = await create_random_client(db_session)
+    url_scheme = "https"
     domain_name = random_domain()
     url_path = "/%s" % random_lower_string(16)
     utm_cmpn = random_lower_string(16)
@@ -226,7 +231,7 @@ async def test_create_client_tracking_link_as_employee_forbidden(
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
     tracked_url = build_utm_link(
-        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+        url_scheme, domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     data_in: Dict[str, Any] = dict(
         url=tracked_url, is_active=True, client_id=str(a_client.id)

@@ -31,7 +31,7 @@ from app.crud import TrackingLinkRepository
 from app.db.utilities import hash_url, parse_url_utm_params
 from app.models import TrackingLink
 from app.schemas import (
-    TrackingLinkBaseUtmParams,
+    TrackingLinkBaseParams,
     TrackingLinkCreate,
     TrackingLinkCreateRequest,
     TrackingLinkRead,
@@ -79,6 +79,9 @@ async def tracking_link_list(
     if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
         query_params = {
             "client_id": query.client_id,
+            "scheme": query.scheme,
+            "domain": query.domain,
+            "destination": query.destination,
             "url_path": query.url_path,
             "utm_campaign": query.utm_campaign,
             "utm_medium": query.utm_medium,
@@ -91,6 +94,9 @@ async def tracking_link_list(
         query_params = {
             "user_id": permissions.current_user.id,
             "client_id": query.client_id,
+            "scheme": query.scheme,
+            "domain": query.domain,
+            "destination": query.destination,
             "url_path": query.url_path,
             "utm_campaign": query.utm_campaign,
             "utm_medium": query.utm_medium,
@@ -282,7 +288,7 @@ async def tracking_link_update(
         if client_exists is None:
             raise ClientNotExists()
     links_repo = TrackingLinkRepository(permissions.db)
-    url_params: TrackingLinkBaseUtmParams = TrackingLinkBaseUtmParams()
+    url_params: TrackingLinkBaseParams | None
     trk_url_hash: None | str = None
     if tracking_link_in.url is not None:
         trk_url_hash = hash_url(tracking_link_in.url)
@@ -292,15 +298,25 @@ async def tracking_link_update(
         if a_tracking_link:
             raise TrackingLinkAlreadyExists()
         url_params = parse_url_utm_params(tracking_link_in.url)
-    updated_tracking_link: TrackingLink = await links_repo.update(
-        tracked_link,
-        schema=TrackingLinkUpdate(
+    update_schema = (
+        TrackingLinkUpdate(
             url=tracking_link_in.url,
-            is_active=tracking_link_in.is_active,
             url_hash=trk_url_hash,
+            is_active=tracking_link_in.is_active,
+            client_id=tracking_link_in.client_id,
+        )
+        if url_params is None
+        else TrackingLinkUpdate(
+            url=tracking_link_in.url,
+            url_hash=trk_url_hash,
+            is_active=tracking_link_in.is_active,
             client_id=tracking_link_in.client_id,
             **url_params.model_dump(),
-        ),
+        )
+    )
+    updated_tracking_link: TrackingLink = await links_repo.update(
+        tracked_link,
+        schema=update_schema,
     )
     # return role based response
     response_out: TrackingLinkRead = permissions.get_resource_response(

@@ -9,6 +9,7 @@ from app.schemas import TrackingLinkCreate, TrackingLinkRead
 
 
 def build_utm_link(
+    scheme: str,
     domain: str,
     url_path: str,
     utm_campaign: str | None = None,
@@ -17,7 +18,7 @@ def build_utm_link(
     utm_content: str | None = None,
     utm_term: str | None = None,
 ) -> str:
-    utm_link = f"https://{domain}{url_path}?"
+    utm_link = f"{scheme}://{domain}{url_path}?"
     if utm_campaign:
         utm_link += f"utm_campaign={utm_campaign}"
     if utm_medium:
@@ -32,25 +33,35 @@ def build_utm_link(
 
 
 async def create_random_tracking_link(
-    db_session: AsyncSession, client_id: UUID4, is_active: bool | None = None
+    db_session: AsyncSession,
+    client_id: UUID4,
+    is_active: bool | None = None,
+    scheme: str | None = None,
+    domain: str | None = None,
+    path: str | None = None,
 ) -> TrackingLinkRead:
     repo: TrackingLinkRepository = TrackingLinkRepository(session=db_session)
-    domain_name = random_domain()
-    url_path = "/%s" % random_lower_string(16)
+    scheme = scheme if scheme is not None else "https"
+    domain_name = domain if domain is not None else random_domain()
+    url_path = path if path is not None else "/%s" % random_lower_string(16)
     utm_cmpn = random_lower_string(16)
     utm_mdm = random_lower_string(16)
     utm_src = random_lower_string(16)
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
+    destination = f"{scheme}://{domain_name}{url_path}"
     tracked_url = build_utm_link(
-        domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+        scheme, domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
     )
     hashed_url = hash_url(tracked_url)
     tracking_link: TrackingLink = await repo.create(
         schema=TrackingLinkCreate(
             url=tracked_url,
-            url_path=url_path,
             url_hash=hashed_url,
+            scheme=scheme,
+            domain=domain_name,
+            destination=destination,
+            url_path=url_path,
             utm_campaign=utm_cmpn,
             utm_medium=utm_mdm,
             utm_source=utm_src,

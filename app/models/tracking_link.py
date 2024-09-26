@@ -25,6 +25,8 @@ from app.core.security.permissions import (
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 from app.db.constants import (
+    DB_STR_16BIT_MAXLEN_INPUT,
+    DB_STR_TINYTEXT_MAXLEN_INPUT,
     DB_STR_TINYTEXT_MAXLEN_STORED,
     DB_STR_URLPATH_MAXLEN_INPUT,
     DB_STR_URLPATH_MAXLEN_STORED,
@@ -50,12 +52,27 @@ class TrackingLink(Base, Timestamp):
     url: Mapped[str] = mapped_column(
         String(DB_STR_URLPATH_MAXLEN_STORED),
         nullable=False,
-        default="https://getcommunity.com/?UTMLINK",
+        default="https://getcommunity.com/path-to-destination/?UTMLINK",
+    )
+    scheme: Mapped[str] = mapped_column(
+        String(DB_STR_16BIT_MAXLEN_INPUT),
+        nullable=False,
+        default="http",
+    )
+    domain: Mapped[str] = mapped_column(
+        String(DB_STR_TINYTEXT_MAXLEN_INPUT),
+        nullable=False,
+        default="getcommunity.com",
+    )
+    destination: Mapped[str] = mapped_column(
+        String(DB_STR_URLPATH_MAXLEN_INPUT),
+        nullable=False,
+        default="https://getcommunity.com/path-to-destination/",
     )
     url_path: Mapped[str] = mapped_column(
         String(DB_STR_URLPATH_MAXLEN_INPUT),
         nullable=False,
-        default="/?UTMLINK",
+        default="/path-to-destination/",
     )
     utm_campaign: Mapped[str] = mapped_column(
         String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True

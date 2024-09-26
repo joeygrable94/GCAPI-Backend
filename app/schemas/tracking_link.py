@@ -3,6 +3,12 @@ from __future__ import annotations
 from pydantic import UUID4, field_validator
 
 from app.db.validators import (
+    validate_destination_optional,
+    validate_destination_required,
+    validate_domain_optional,
+    validate_domain_required,
+    validate_scheme_optional,
+    validate_scheme_required,
     validate_url_hash_optional,
     validate_url_hash_required,
     validate_url_optional,
@@ -20,7 +26,10 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 # schemas
 
 
-class TrackingLinkBaseUtmParams(BaseSchema):
+class TrackingLinkBaseParams(BaseSchema):
+    scheme: str
+    domain: str
+    destination: str
     url_path: str = "/"
     utm_campaign: str | None = None
     utm_medium: str | None = None
@@ -28,6 +37,15 @@ class TrackingLinkBaseUtmParams(BaseSchema):
     utm_content: str | None = None
     utm_term: str | None = None
 
+    _validate_scheme = field_validator("scheme", mode="before")(
+        validate_scheme_required
+    )
+    _validate_domain = field_validator("domain", mode="before")(
+        validate_domain_required
+    )
+    _validate_destination = field_validator("destination", mode="before")(
+        validate_destination_required
+    )
     _validate_url_path = field_validator("url_path", mode="before")(
         validate_url_path_required
     )
@@ -59,6 +77,9 @@ class TrackingLinkCreateRequest(BaseSchema):
 class TrackingLinkCreate(BaseSchema):
     url: str
     url_hash: str
+    scheme: str
+    domain: str
+    destination: str
     url_path: str
     utm_campaign: str | None = None
     utm_medium: str | None = None
@@ -71,6 +92,15 @@ class TrackingLinkCreate(BaseSchema):
     _validate_url = field_validator("url", mode="before")(validate_url_required)
     _validate_url_hash = field_validator("url_hash", mode="before")(
         validate_url_hash_required
+    )
+    _validate_scheme = field_validator("scheme", mode="before")(
+        validate_scheme_required
+    )
+    _validate_domain = field_validator("domain", mode="before")(
+        validate_domain_required
+    )
+    _validate_destination = field_validator("destination", mode="before")(
+        validate_destination_required
     )
     _validate_url_path = field_validator("url_path", mode="before")(
         validate_url_path_required
@@ -103,6 +133,9 @@ class TrackingLinkUpdateRequest(BaseSchema):
 class TrackingLinkUpdate(BaseSchema):
     url: str | None = None
     url_hash: str | None = None
+    scheme: str | None = None
+    domain: str | None = None
+    destination: str | None = None
     url_path: str | None = None
     utm_campaign: str | None = None
     utm_medium: str | None = None
@@ -115,6 +148,15 @@ class TrackingLinkUpdate(BaseSchema):
     _validate_url = field_validator("url", mode="before")(validate_url_optional)
     _validate_url_hash = field_validator("url_hash", mode="before")(
         validate_url_hash_optional
+    )
+    _validate_scheme = field_validator("scheme", mode="before")(
+        validate_scheme_optional
+    )
+    _validate_domain = field_validator("domain", mode="before")(
+        validate_domain_optional
+    )
+    _validate_destination = field_validator("destination", mode="before")(
+        validate_destination_optional
     )
     _validate_url_path = field_validator("url_path", mode="before")(
         validate_url_path_optional
@@ -139,6 +181,9 @@ class TrackingLinkUpdate(BaseSchema):
 class TrackingLinkRead(BaseSchemaRead):
     url: str
     url_hash: str
+    scheme: str | None = None
+    domain: str | None = None
+    destination: str | None = None
     url_path: str
     utm_campaign: str | None = None
     utm_medium: str | None = None
@@ -151,6 +196,15 @@ class TrackingLinkRead(BaseSchemaRead):
     _validate_url = field_validator("url", mode="before")(validate_url_required)
     _validate_url_hash = field_validator("url_hash", mode="before")(
         validate_url_hash_required
+    )
+    _validate_scheme = field_validator("scheme", mode="before")(
+        validate_scheme_optional
+    )
+    _validate_domain = field_validator("domain", mode="before")(
+        validate_domain_optional
+    )
+    _validate_destination = field_validator("destination", mode="before")(
+        validate_destination_optional
     )
     _validate_url_path = field_validator("url_path", mode="before")(
         validate_url_path_required

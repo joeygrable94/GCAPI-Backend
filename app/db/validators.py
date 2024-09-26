@@ -263,6 +263,24 @@ def validate_style_guide_optional(cls: Any, value: str | None) -> str | None:
     )
 
 
+def validate_scheme_required(cls: Any, value: str) -> str:
+    return require_string_name_min_max_len(
+        v=value,
+        name="scheme",
+        min_len=1,
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
+    )
+
+
+def validate_scheme_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="scheme",
+        min_len=1,
+        max_len=DB_STR_16BIT_MAXLEN_INPUT,
+    )
+
+
 def validate_domain_required(cls: Any, value: str) -> str:
     return require_string_domain(v=value)
 
@@ -302,6 +320,24 @@ def validate_rawtext_optional(cls: Any, value: str | None) -> str | None:
         v=value,
         name="rawtext",
         max_len=DB_STR_LONGTEXT_MAXLEN_STORED,
+    )
+
+
+def validate_destination_required(cls: Any, value: str) -> str:
+    return require_string_name_min_max_len(
+        v=value,
+        name="destination",
+        min_len=1,
+        max_len=DB_STR_URLPATH_MAXLEN_INPUT,
+    )
+
+
+def validate_destination_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="destination",
+        min_len=1,
+        max_len=DB_STR_URLPATH_MAXLEN_INPUT,
     )
 
 
