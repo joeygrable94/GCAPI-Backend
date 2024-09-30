@@ -7,7 +7,7 @@ from fastapi_profiler import PyInstrumentProfilerMiddleware  # type: ignore
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.api.deps.get_client_ip import get_request_client_ip
+# from app.api.deps.get_client_ip import get_request_client_ip
 from app.core.config import settings
 
 
@@ -16,7 +16,7 @@ def configure_middleware(app: FastAPI) -> None:
     app.add_middleware(
         PyInstrumentProfilerMiddleware,
         # Required to output the profile on server shutdown
-        server_app=app,
+        server_app=app.router,
         profiler_output_type="html",
         # Set to True to show request profile on stdout on each request
         is_print_each_request=False,
