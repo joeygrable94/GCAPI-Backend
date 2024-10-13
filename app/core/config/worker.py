@@ -17,7 +17,7 @@ class WorkerSettings(BaseSettings):
     schedule_src: str = environ.get(
         "WORKER_SCHEDULE_SOURCE", "redis://localhost:6379/0"
     )
-    sentry_dsn: Optional[str] = environ.get("WORKER_SENTRY_DSN", None)
+    sentry_dsn: Optional[str] = environ.get("SENTRY_DSN", None)
 
     # pydantic settings config
     model_config = SettingsConfigDict(

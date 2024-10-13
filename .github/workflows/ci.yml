@@ -54,7 +54,7 @@ jobs:
       AUTH0_M2M_CLIENT_SECRET: ${{ secrets.AUTH0_M2M_CLIENT_SECRET }}
       AUTH0_SPA_CLIENT_ID: ${{ secrets.AUTH0_SPA_CLIENT_ID }}
       AUTH0_SPA_CLIENT_SECRET: ${{ secrets.AUTH0_SPA_CLIENT_SECRET }}
-      WORKER_SENTRY_DSN: ${{ secrets.WORKER_SENTRY_DSN }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       CLOUDKEY_GOOGLE_API: ${{ secrets.CLOUDKEY_GOOGLE_API }}
       EMAIL_ENABLED: ${{ secrets.EMAIL_ENABLED }}
       EMAIL_FROM_EMAIL: ${{ secrets.EMAIL_FROM_EMAIL }}

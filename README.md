@@ -25,61 +25,65 @@
 
 First check to ensure Python 3.11 is installed and is the current version in use.
 
-    python3 --version
-    > python3.11
+```bash
+python3 --version
+> python3.11
+```
 
 Create a virtual environment, activate it, then install the backend python pip `requirements.dev.txt` file.
 
-    python3.11 -m venv venv
-    source venv/bin/activate
-    python -m pip install --upgrade pip
-    python -m pip install poetry
-    poetry install
-    uvicorn app.main:app --host 0.0.0.0 --port 8888 --log-level info --reload
-    > ... App Running at 0.0.0.0:8888
-    > :q
-    source venv/bin/deactivate
+```bash
+python3.11 -m venv venv
+source venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install poetry
+poetry install
+uvicorn app.main:app --host 0.0.0.0 --port 8888 --log-level info --reload
+> ... App Running at 0.0.0.0:8888
+> :q
+source venv/bin/deactivate
+```
 
 ---
 
 ## Application Structure
 
-    ```bash
-    main.py                 # Main entry point for the application
-    worker.py               # Taskiq worker entry point
-    tasks/                  # Taskiq task definitions
-    cli/                    # Command line interface
-        db.py                   # Manages database operations
-        secure.py               # Manages secure cipher operations
-    core/                   # Core application code shared
-        config/                 # Configuration settings
-        logger/                 # Logger configuration
-        pagination/             # Pagination settings
-        security/               # Security protocols and utilities
-            auth/                   # Authentication protocols (Auth0)
-            csrf/                   # Cross Site Request Forgery protection
-            encryption/             # Encryption protocols (RSA, AES)
-            permissions/            # Permissions protocols
-            rate_limiter/           # Rate limiting protocols
-            schemas.py              # Security models
-        utilities/              # Core service layer utilities
-        email.py                # FastAPI email service
-        redis.py                # Redis connection settings
-        templates.py            # Jinja2 templates
-    db/                     # Database operations layer
-    crud/                   # CRUD Layer for data models
-    models/                 # Database models
-    schemas/                # Pydantic models for data validation
-    api/                    # API Layer
-        v1/endpoints/           # Version controlled endpoints
-        deps/                   # Dependencies injected into endpoints
-        exceptions/             # Error and exception handling
-        middleware/             # API Middleware
-        openapi.py              # OpenAPI schema
-        utilities.py            # API layer utilities
-    public/static/          # Public static assets: images, styles, scripts
-    templates/email/        # Jinja2 email templates
-    ```
+```bash
+main.py                 # Main entry point for the application
+worker.py               # Taskiq worker entry point
+tasks/                  # Taskiq task definitions
+cli/                    # Command line interface
+    db.py                   # Manages database operations
+    secure.py               # Manages secure cipher operations
+core/                   # Core application code shared
+    config/                 # Configuration settings
+    logger/                 # Logger configuration
+    pagination/             # Pagination settings
+    security/               # Security protocols and utilities
+        auth/                   # Authentication protocols (Auth0)
+        csrf/                   # Cross Site Request Forgery protection
+        encryption/             # Encryption protocols (RSA, AES)
+        permissions/            # Permissions protocols
+        rate_limiter/           # Rate limiting protocols
+        schemas.py              # Security models
+    utilities/              # Core service layer utilities
+    email.py                # FastAPI email service
+    redis.py                # Redis connection settings
+    templates.py            # Jinja2 templates
+db/                     # Database operations layer
+crud/                   # CRUD Layer for data models
+models/                 # Database models
+schemas/                # Pydantic models for data validation
+api/                    # API Layer
+    v1/endpoints/           # Version controlled endpoints
+    deps/                   # Dependencies injected into endpoints
+    exceptions/             # Error and exception handling
+    middleware/             # API Middleware
+    openapi.py              # OpenAPI schema
+    utilities.py            # API layer utilities
+public/static/          # Public static assets: images, styles, scripts
+templates/email/        # Jinja2 email templates
+```
 
 ---
 
@@ -117,12 +121,16 @@ Examples:
 
 First, run the alembic init command and specify where the migrations are to be stored.
 
-    alembic init alembic
+```bash
+alembic init alembic
+```
 
 Next edit the `alembic.ini` file to the location of the initialized alembic directory
 
-    [alembic]
-    script_location = alembic
+```ini
+[alembic]
+script_location = alembic
+```
 
 Last, edit the `env.py` file in the migrations directory to include your config and db base to migrate.
 
@@ -130,16 +138,20 @@ Last, edit the `env.py` file in the migrations directory to include your config 
 
 Check current db version.
 
-    alembic current
+```bash
+alembic current
+```
 
 After changing db models/tables, run revision, and autogenerate.
 Always add a message about what changed in the db models/tables.
 
-    alembic revision --autogenerate -m "added table ____"
-    alembic upgrade head
-    alembic upgrade +1
-    alembic downgrade -1
-    alembic downgrade base
+```bash
+alembic revision --autogenerate -m "added table ____"
+alembic upgrade head
+alembic upgrade +1
+alembic downgrade -1
+alembic downgrade base
+```
 
 ---
 
@@ -160,9 +172,11 @@ Always add a message about what changed in the db models/tables.
 
 ### PyTest Commands
 
-    pytest
-    pytest tests/crud
-    pytest tests/api/api_v1/test_websites.py
+```bash
+pytest
+pytest tests/crud
+pytest tests/api/api_v1/test_websites.py
+```
 
 ### PyTest Resources
 
