@@ -1960,13 +1960,13 @@ socks = ["socksio (==1.*)"]
 
 [[package]]
 name = "httpx-oauth"
-version = "0.14.1"
+version = "0.15.1"
 description = "Async OAuth client using HTTPX"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "httpx_oauth-0.14.1-py3-none-any.whl", hash = "sha256:3ccf35760d157a9abbf4a78024b744b5532ec5d4d03fc1db3e71123ce9d33e32"},
-    {file = "httpx_oauth-0.14.1.tar.gz", hash = "sha256:e58c60bce99568b4e98ce88abf0e2111a9b6c7f79c29bea88cc89d9edb78dfbc"},
+    {file = "httpx_oauth-0.15.1-py3-none-any.whl", hash = "sha256:89b45f250e93e42bbe9631adf349cab0e3d3ced958c07e06651735198d1bdf00"},
+    {file = "httpx_oauth-0.15.1.tar.gz", hash = "sha256:4094cf0938fc7252b5f5dfd62cd1ab5aee2fcb6734e621942ee17d1af4806b74"},
 ]
 
 [package.dependencies]
@@ -4712,4 +4712,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "65ff67ef75cc341f84a71c189debefafdc0fa370aba0e8c9884a18244a3f06bc"
+content-hash = "85c038d362420b1daa27f6eaba17a84eda8aa1c656eded4823bf48818f3b9038"
