@@ -8,6 +8,8 @@ from app.core.utilities.uuids import get_uuid_str
 from app.models import Client
 from app.schemas import ClientRead
 
+pytestmark = pytest.mark.asyncio
+
 
 async def test_get_client_or_404(db_session: AsyncSession) -> None:
     # Test with valid client_id
