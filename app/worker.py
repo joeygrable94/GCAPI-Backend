@@ -1,4 +1,12 @@
-from taskiq import AsyncBroker, AsyncResultBackend, ScheduleSource, TaskiqScheduler
+from os import environ
+
+from taskiq import (
+    AsyncBroker,
+    AsyncResultBackend,
+    InMemoryBroker,
+    ScheduleSource,
+    TaskiqScheduler,
+)
 from taskiq.schedule_sources import LabelScheduleSource
 from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend, RedisScheduleSource
 
@@ -12,6 +20,11 @@ task_broker_results: AsyncResultBackend = RedisAsyncResultBackend(
 task_broker: AsyncBroker = ListQueueBroker(
     url=settings.worker.broker_url,
 ).with_result_backend(task_broker_results)
+
+env = environ.get("ENVIRONMENT")
+
+if env and env == "pytest":
+    task_broker = InMemoryBroker()
 
 task_schedule_source: ScheduleSource = RedisScheduleSource(
     settings.worker.schedule_src

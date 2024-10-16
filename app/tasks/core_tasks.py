@@ -1,4 +1,6 @@
-from app.core.logger import logger
+import asyncio
+
+from app.core import logger
 from app.worker import task_broker
 
 """
@@ -20,9 +22,10 @@ async def task_test_log_schedule(value: int) -> int:
 
 
 @task_broker.task(task_name="tasks:task_speak")
-def task_speak(
+async def task_speak(
     word: str,
 ) -> str:
+    await asyncio.sleep(5)
     return f"I say, {word}!"
 
 

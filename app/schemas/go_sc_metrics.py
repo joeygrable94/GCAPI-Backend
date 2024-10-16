@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict
 
 from pydantic import UUID4, field_validator
 
-from app.core.pagination.core import Paginated
 from app.db.validators import (
     validate_clicks_optional,
     validate_clicks_required,
@@ -84,8 +84,8 @@ class GoSearchConsoleMetricRead(
 
 
 class GoSearchConsoleMetricPages(BaseSchema):
-    searchappearance: Paginated[GoSearchConsoleMetricRead] | None = None
-    query: Paginated[GoSearchConsoleMetricRead] | None = None
-    page: Paginated[GoSearchConsoleMetricRead] | None = None
-    device: Paginated[GoSearchConsoleMetricRead] | None = None
-    country: Paginated[GoSearchConsoleMetricRead] | None = None
+    searchappearance: Dict[str, Any] | None = None
+    query: Dict[str, Any] | None = None
+    page: Dict[str, Any] | None = None
+    device: Dict[str, Any] | None = None
+    country: Dict[str, Any] | None = None

@@ -30,12 +30,6 @@ from .permissions import (
     has_permission,
     list_permissions,
 )
-from .rate_limiter import (
-    FastAPILimiter,
-    RateLimitedRequestException,
-    RateLimiter,
-    configure_rate_limiter_exceptions,
-)
 from .schemas import CsrfToken, EncryptedMessage, PlainMessage, RateLimitedToken
 
 __all__: List[str] = [
@@ -50,7 +44,6 @@ __all__: List[str] = [
     "configure_authorization_exceptions",
     "configure_csrf_exceptions",
     "configure_encryption_exceptions",
-    "configure_rate_limiter_exceptions",
     "CipherError",
     "CsrfProtect",
     "CsrfProtectError",
@@ -71,7 +64,4 @@ __all__: List[str] = [
     "configure_permissions",
     "has_permission",
     "list_permissions",
-    "FastAPILimiter",
-    "RateLimiter",
-    "RateLimitedRequestException",
 ]

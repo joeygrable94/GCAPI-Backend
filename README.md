@@ -64,7 +64,6 @@ core/                   # Core application code shared
         csrf/                   # Cross Site Request Forgery protection
         encryption/             # Encryption protocols (RSA, AES)
         permissions/            # Permissions protocols
-        rate_limiter/           # Rate limiting protocols
         schemas.py              # Security models
     utilities/              # Core service layer utilities
     email.py                # FastAPI email service

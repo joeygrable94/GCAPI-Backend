@@ -1,7 +1,6 @@
-import asyncio
 import json
 from os import path, remove
-from typing import Any, AsyncGenerator, Dict, Generator
+from typing import Any, AsyncGenerator, Dict
 
 import pytest
 import pytest_asyncio
@@ -18,22 +17,10 @@ from app.db.commands import create_init_data
 from app.db.session import async_engine, async_session
 from app.main import create_app
 
-pytestmark = pytest.mark.asyncio
 
-
-@pytest.fixture(scope="session")
+@pytest.fixture
 def anyio_backend() -> str:
     return "asyncio"
-
-
-@pytest.fixture(scope="session")
-def event_loop() -> Generator:
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -64,13 +51,13 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture(scope="session")
 async def app() -> AsyncGenerator[FastAPI, None]:
     _app: FastAPI = create_app()
     yield _app
 
 
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture(scope="session")
 async def client(app: FastAPI) -> AsyncGenerator:
     transport = ASGITransport(app=app)  # type: ignore
     async with LifespanManager(app):
