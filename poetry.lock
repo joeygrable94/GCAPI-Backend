@@ -1634,13 +1634,13 @@ tool = ["click (>=6.0.0)"]
 
 [[package]]
 name = "google-auth-stubs"
-version = "0.2.0"
+version = "0.3.0"
 description = "Type stubs for google-auth"
 optional = false
-python-versions = ">=3.6.2,<4.0.0"
+python-versions = "<4.0.0,>=3.6.2"
 files = [
-    {file = "google-auth-stubs-0.2.0.tar.gz", hash = "sha256:96085d3b7f704f44231a19683a57f7e77e964168ad2251302beae9136405d0d7"},
-    {file = "google_auth_stubs-0.2.0-py3-none-any.whl", hash = "sha256:98ed66dfd75687569c257a0cbb09c0f614eed22106955edcb2f05c6617899c6a"},
+    {file = "google_auth_stubs-0.3.0-py3-none-any.whl", hash = "sha256:0afb7d537956447774d98879dd5fddd0543e0a5f1b582787adb6ce392d6fdd25"},
+    {file = "google_auth_stubs-0.3.0.tar.gz", hash = "sha256:0e8834a7130c99d4338d28892df082c64c6dc3bc57abdab9a095d93e6a3d737e"},
 ]
 
 [package.dependencies]
@@ -4640,4 +4640,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "56328ef900f9edc21f0aae8cbd0c2b9cc9fbeb887d6bde36cd81b9e12b98aedc"
+content-hash = "cd9c0ab5249e3d7434f3a8c62829d384d77d7bb5043c8877532b001ba73ddfc1"
