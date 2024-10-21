@@ -42,7 +42,7 @@ asyncio = "3.4.3"
 aiohttp = "3.10.5"
 aiosqlite = "0.20.0"
 aiomysql = "0.2.0"
-aiofiles = "23.2.1"
+aiofiles = "24.1.0"
 ultimate-sitemap-parser = "^0.5"
 tenacity = "^8.2.2"
 sentry-sdk = {version = "^2.11.0", extras = ["fastapi"]}
