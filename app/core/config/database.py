@@ -115,14 +115,13 @@ class DatabaseSettings(BaseSettings):
         if isinstance(v, str):
             if len(v) > 0:
                 return "{}://{}".format(info.data.get("connector"), v)
-        return "{}://{}:{}@{}:{}/{}?charset={}".format(
+        return "{}://{}:{}@{}:{}/{}".format(
             info.data.get("connector"),
             info.data.get("user"),
             info.data.get("password"),
             info.data.get("server"),
             info.data.get("port"),
             info.data.get("name"),
-            info.data.get("charset"),
         )
 
     @field_validator("uri_async", mode="before")
@@ -134,12 +133,11 @@ class DatabaseSettings(BaseSettings):
         if isinstance(v, str):
             if len(v) > 0:
                 return "{}://{}".format(info.data.get("connector_async"), v)
-        return "{}://{}:{}@{}:{}/{}?charset={}".format(
+        return "{}://{}:{}@{}:{}/{}".format(
             info.data.get("connector_async"),
             info.data.get("user"),
             info.data.get("password"),
             info.data.get("server"),
             info.data.get("port"),
             info.data.get("name"),
-            info.data.get("charset"),
         )

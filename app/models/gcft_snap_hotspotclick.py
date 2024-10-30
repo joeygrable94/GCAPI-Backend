@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from pydantic import UUID4
-from sqlalchemy import BLOB, DateTime, ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import Timestamp  # type: ignore
 from sqlalchemy_utils import UUIDType
@@ -10,6 +10,7 @@ from sqlalchemy_utils import UUIDType
 from app.core.utilities.uuids import get_uuid  # type: ignore
 from app.db.base_class import Base
 from app.db.constants import DB_STR_32BIT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_STORED
+from app.db.custom_types import LongText
 
 if TYPE_CHECKING:  # pragma: no cover
     from .gcft import Gcft  # noqa: F401
@@ -35,7 +36,7 @@ class GcftSnapHotspotclick(Base, Timestamp):
     hotspot_type_name: Mapped[str] = mapped_column(
         String(DB_STR_32BIT_MAXLEN_STORED), nullable=True
     )
-    hotspot_content: Mapped[str] = mapped_column(BLOB, nullable=True)
+    hotspot_content: Mapped[str] = mapped_column(LongText, nullable=True)
     hotspot_icon_name: Mapped[str] = mapped_column(
         String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
     )

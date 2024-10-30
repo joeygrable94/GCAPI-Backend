@@ -18,7 +18,47 @@ class S3Storage:
         self.s3_client = client("s3", self.region)
         self.default_bucket: str = default_bucket
 
-    async def read_file_content(
+    def file_exists(self, object_name: str, bucket_name: str | None = None) -> bool:
+        """Check if file exists in S3.
+
+        Args:
+            object_name (str): Object name to check.
+            bucket_name (str, optional): Bucket name to check.
+                Defaults to default bucket.
+
+        Returns:
+            bytes | None: The content of file as bytes, None if error occurs.
+        """
+        try:
+            from_bucket = self.default_bucket if bucket_name is None else bucket_name
+            self.s3_client.head_object(Bucket=from_bucket, Key=object_name)
+            return True
+        except Exception:
+            logger.exception("File not found: %s B[%s]", object_name, bucket_name)
+            return False
+
+    def read_file_bytes(
+        self, object_name: str, bucket_name: str | None = None
+    ) -> bytes | None:
+        """Read file content from S3.
+
+        Args:
+            object_name (str): Object name to read from.
+            bucket_name (str, optional): Bucket name to read from.
+                Defaults to default bucket.
+
+        Returns:
+            bytes | None: The content of file as bytes, None if error occurs.
+        """
+        try:
+            from_bucket = self.default_bucket if bucket_name is None else bucket_name
+            response = self.s3_client.get_object(Bucket=from_bucket, Key=object_name)
+            return response["Body"].read()
+        except ClientError as e:
+            logger.exception(e)
+            return None
+
+    def read_file_content(
         self, object_name: str, bucket_name: str | None = None
     ) -> str | None:
         """Read file content from S3.
@@ -32,14 +72,15 @@ class S3Storage:
             str | None: The content of file as string, None if error occurs.
         """
         try:
-            from_bucket = self.default_bucket if bucket_name is None else bucket_name
-            response = self.s3_client.get_object(Bucket=from_bucket, Key=object_name)
-            return response["Body"].read().decode("utf-8")
-        except ClientError as e:
+            response = self.read_file_bytes(object_name, bucket_name)
+            if response is None:
+                raise Exception(f"ERROR: File not found: {object_name}")
+            return response.decode("utf-8")
+        except Exception as e:
             logger.exception(e)
             return None
 
-    async def upload_file(
+    def upload_file(
         self,
         file_path: str,
         object_name: str | None = None,
@@ -74,7 +115,7 @@ class S3Storage:
             return False
         return True
 
-    async def download_file(
+    def download_file(
         self,
         file_path: str,
         object_key: str,
@@ -105,7 +146,7 @@ class S3Storage:
             return False
         return True
 
-    async def list_objects(
+    def list_objects(
         self, prefix: str | None = None, bucket_name: str | None = None
     ) -> Iterator:
         """List objects in Bucket.
@@ -128,7 +169,7 @@ class S3Storage:
         return page_iterator
 
     '''
-    async def list_buckets(self) -> list[str]:
+    def list_buckets(self) -> list[str]:
         """[List existing buckets]
 
         Returns:
@@ -139,7 +180,7 @@ class S3Storage:
             buckets.append(bucket.name)
         return buckets
 
-    async def create_bucket(self, bucket_name: str) -> bool:
+    def create_bucket(self, bucket_name: str) -> bool:
         """Create an S3 bucket in a specified region
 
         If a region is not specified, the bucket is created in the S3 default

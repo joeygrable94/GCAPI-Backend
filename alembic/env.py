@@ -3,12 +3,12 @@ from __future__ import with_statement
 
 import os
 import sys
-
-from dotenv import load_dotenv
+from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
-from logging.config import fileConfig
+from dotenv import load_dotenv
+from pydantic_core import Url
+from sqlalchemy import URL, engine_from_config, pool
 
 load_dotenv()
 
@@ -22,7 +22,7 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name)
+fileConfig(str(config.config_file_name))
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -30,8 +30,8 @@ fileConfig(config.config_file_name)
 # target_metadata = mymodel.Base.metadata
 # target_metadata = None
 
-from app.db.base import Base  # noqa
 from app.core.config import settings  # noqa
+from app.db.base import Base  # noqa
 
 target_metadata = Base.metadata
 
@@ -41,10 +41,10 @@ target_metadata = Base.metadata
 # ... etc.
 
 # database uri
-def get_url() -> str:
+def get_url() -> str | URL:
     return settings.db.uri
 
-def get_async_url() -> str:
+def get_async_url() -> str | URL:
     return settings.db.uri_async
 
 
@@ -78,7 +78,8 @@ def run_migrations_online():
     """
     url = get_url()
     configuration = config.get_section(config.config_ini_section)
-    configuration["sqlalchemy.url"] = url
+    assert configuration
+    configuration["sqlalchemy.url"] = str(url)
     connectable = engine_from_config(
         configuration, prefix="sqlalchemy.", poolclass=pool.NullPool,
     )

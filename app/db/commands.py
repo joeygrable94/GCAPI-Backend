@@ -17,7 +17,7 @@ from app.crud import (
 )
 from app.db.base import Base
 from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
-from app.db.session import async_engine, async_session, engine
+from app.db.session import async_session, engine
 from app.models import Client, DataBucket, User, UserClient
 from app.schemas import ClientCreate, DataBucketCreate, UserClientCreate, UserCreate
 
@@ -54,9 +54,13 @@ def check_redis_connected() -> None:  # pragma: no cover
 async def check_db_connected() -> None:  # pragma: no cover
     try:
         dburl: str = str(settings.db.uri_async)
+        logger.info("ATTEMPTING TO CONNECT TO DATABASE...")
+        logger.info(settings.db.uri)
+        logger.info(settings.db.uri_async)
         stmt: Any = text("select 1")
         if not dburl.__contains__("sqlite"):
             with engine.connect() as connection:
+                logger.info("database connection", connection)
                 result: Any = connection.execute(stmt)
                 if result is not None:
                     logger.info("+ ASYCN F(X) --> MYSQL CONNECTED!")
@@ -84,15 +88,20 @@ async def check_db_disconnected() -> None:  # pragma: no cover
 
 async def create_db_tables() -> None:  # pragma: no cover
     logger.info("Creating Database Tables")
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # create the tables
+    # async with async_engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.create_all, checkfirst=True)
+    with engine.begin() as conn:
+        Base.metadata.create_all(conn, checkfirst=True)
     logger.info("Database Tables Created")
 
 
 async def drop_db_tables() -> None:  # pragma: no cover
     logger.info("Dropping Database Tables")
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+    # async with async_engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.drop_all, checkfirst=True)
+    with engine.begin() as conn:
+        Base.metadata.drop_all(conn, checkfirst=True)
     logger.info("Database Tables Dropped")
 
 
