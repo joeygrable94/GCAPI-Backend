@@ -1,7 +1,6 @@
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends
-from fastapi_limiter.depends import RateLimiter
 
 from app.api.deps import (
     GetPublicQueryParams,
@@ -11,27 +10,21 @@ from app.api.deps import (
     get_current_user,
     get_permission_controller,
 )
-from app.core.config import ApiModes, settings
 from app.core.security import auth
 
 router: APIRouter = APIRouter()
-
-deps = [
-    Depends(PublicQueryParams),
-    Depends(auth.implicit_scheme),
-    Depends(get_async_db),
-    Depends(get_current_user),
-    Depends(get_permission_controller),
-]
-if settings.api.mode == ApiModes.production.value:  # pragma: no cover
-    # 1 req per 5 seconds
-    deps.append(RateLimiter(times=1, seconds=5))
 
 
 @router.get(
     "/status",
     name="public:status",
-    dependencies=deps,
+    dependencies=[
+        Depends(PublicQueryParams),
+        Depends(auth.implicit_scheme),
+        Depends(get_async_db),
+        Depends(get_current_user),
+        Depends(get_permission_controller),
+    ],
     response_model=Dict[str, Any],
 )
 async def status(

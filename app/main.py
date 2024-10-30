@@ -2,13 +2,12 @@ from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator
 
 from fastapi import Depends, FastAPI
-from fastapi_limiter.depends import RateLimiter
 from sentry_sdk import Client
 
 from app.api.exceptions import configure_exceptions
 from app.api.middleware import configure_middleware
 from app.api.monitoring import configure_monitoring
-from app.core.config import ApiModes, settings
+from app.core.config import settings
 from app.core.security import (
     CsrfProtect,
     CsrfSettings,
@@ -51,22 +50,7 @@ def configure_static(app: FastAPI) -> None:
 
 
 def create_app() -> FastAPI:
-    deps = []
-    if settings.api.mode == ApiModes.production.value:  # pragma: no cover
-        deps = [
-            # 114.15 req/hr over 1 year
-            RateLimiter(times=1000000, hours=8760),
-            # 595.23 req/hr over 1 week
-            RateLimiter(times=100000, hours=168),
-            # 833.33 req/hr over 1 day
-            RateLimiter(times=20000, hours=24),
-            # 1,000 req/hr
-            RateLimiter(times=1000, hours=1),
-            # 120 req/min = 7,200 req/hr
-            RateLimiter(times=120, minutes=1),
-            # 10 req/sec = 36,000 req/hr
-            RateLimiter(times=10, seconds=1),
-        ]
+    deps: list = []
     app: FastAPI = FastAPI(
         title=settings.api.name,
         version=settings.api.version,
