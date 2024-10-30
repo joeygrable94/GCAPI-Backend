@@ -17,10 +17,6 @@ class CloudKeySettings(BaseSettings):
     aws_access_key_id: str = environ.get("CLOUDKEY_AWS_ACCESS_KEY_ID", "")
     aws_secret_access_key: str = environ.get("CLOUDKEY_AWS_SECRET_ACCESS_KEY", "")
     aws_default_region: str = environ.get("CLOUDKEY_AWS_DEFAULT_REGION", "")
-    aws_config_file: str = environ.get("CLOUDKEY_AWS_CONFIG_FILE", "~/.aws/config")
-    aws_shared_credentials_file: str = environ.get(
-        "CLOUDKEY_AWS_SHARED_CREDENTIALS_FILE", "~/.aws/credentials"
-    )
     aws_s3_default_bucket: str = environ.get("CLOUDKEY_AWS_S3_DEFAULT_BUCKET", "")
 
     # pydantic settings config
@@ -58,24 +54,6 @@ class CloudKeySettings(BaseSettings):
             if len(v) > 0:
                 return v
         raise ValueError("AWS Default Region not set.")
-
-    @field_validator("aws_config_file", mode="before")
-    def validate_aws_config_file(
-        cls, v: str, info: ValidationInfo
-    ) -> str:  # pragma: no cover
-        if isinstance(v, str):
-            if len(v) > 0:
-                return v
-        raise ValueError("AWS Config File path not set.")
-
-    @field_validator("aws_shared_credentials_file", mode="before")
-    def validate_aws_shared_credentials_file(
-        cls, v: str, info: ValidationInfo
-    ) -> str:  # pragma: no cover
-        if isinstance(v, str):
-            if len(v) > 0:
-                return v
-        raise ValueError("AWS Shared Credentials File path not set.")
 
     @field_validator("aws_s3_default_bucket", mode="before")
     def validate_aws_s3_default_bucket(
