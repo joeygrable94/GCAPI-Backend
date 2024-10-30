@@ -87,8 +87,9 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
+          audience: "sts.amazonaws.com"
           aws-region: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
+          role-to-assume: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
