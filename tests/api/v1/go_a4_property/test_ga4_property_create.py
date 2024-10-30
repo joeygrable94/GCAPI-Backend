@@ -10,7 +10,7 @@ from tests.utils.websites import create_random_website
 
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT
 from app.models import User
 from app.schemas import ClientRead

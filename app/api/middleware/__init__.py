@@ -1,7 +1,6 @@
 import time
 from typing import Any, List
 
-from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI, Request
 from fastapi_profiler import PyInstrumentProfilerMiddleware  # type: ignore
 from starlette.middleware.cors import CORSMiddleware
@@ -12,7 +11,6 @@ from app.core.config import settings
 
 
 def configure_middleware(app: FastAPI) -> None:
-    app.add_middleware(CorrelationIdMiddleware)
     app.add_middleware(
         PyInstrumentProfilerMiddleware,
         # Required to output the profile on server shutdown

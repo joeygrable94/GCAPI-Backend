@@ -1,6 +1,5 @@
 from typing import Dict, List
 
-from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
 
@@ -49,7 +48,6 @@ from .exceptions import (
 
 def get_global_headers(inject_headers: Dict[str, str] | None = None) -> Dict[str, str]:
     global_headers = {
-        "x-request-id": correlation_id.get() or "",
         "Access-Control-Expose-Headers": "x-request-id",
     }
     if inject_headers is not None:

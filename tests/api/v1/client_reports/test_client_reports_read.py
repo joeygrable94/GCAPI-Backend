@@ -7,7 +7,7 @@ from tests.utils.client_reports import create_random_client_report
 from tests.utils.clients import create_random_client
 
 from app.api.exceptions.errors import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.schemas import ClientRead, ClientReportRead
 
 pytestmark = pytest.mark.asyncio

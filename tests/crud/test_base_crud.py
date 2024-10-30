@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.utils import random_boolean, random_email, random_lower_string
 
 from app.core.security.permissions import AclPrivilege
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.crud import ClientRepository, UserRepository
 from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
 from app.schemas import ClientCreate, UserCreate

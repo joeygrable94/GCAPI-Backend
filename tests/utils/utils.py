@@ -46,3 +46,7 @@ def random_email() -> EmailStr:
 
 def random_domain(chars: int = 16, top_level: str = "com") -> str:
     return "".join(random.choices(string.ascii_lowercase, k=chars)) + "." + top_level
+
+
+def random_ipaddress() -> str:
+    return ".".join(str(random.randint(0, 255)) for _ in range(4))

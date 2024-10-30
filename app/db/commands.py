@@ -1,7 +1,6 @@
 import logging
 from typing import Any  # pragma: no cover
 
-import redis
 from sqlalchemy import text  # pragma: no cover
 from sqlalchemy.ext.asyncio import AsyncSession
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
@@ -23,26 +22,6 @@ from app.schemas import ClientCreate, DataBucketCreate, UserClientCreate, UserCr
 
 max_tries = 60 * 5  # 5 minutes
 wait_seconds = 3
-
-
-@retry(
-    stop=stop_after_attempt(max_tries),
-    wait=wait_fixed(wait_seconds),
-    before=before_log(logger, logging.INFO),  # type: ignore
-    after=after_log(logger, logging.WARN),  # type: ignore
-)
-def check_redis_connected() -> None:  # pragma: no cover
-    try:
-        logger.info("Checking Redis Connection")
-        redis_conn = redis.from_url(
-            settings.redis.uri, decode_responses=True
-        )  # pragma: no cover
-        connected = redis_conn.ping()
-        if not connected:
-            raise Exception("connection failed")
-        logger.info("Redis is connected.")
-    except Exception as e:
-        logger.info("Error connecting to Redis:", e)
 
 
 @retry(

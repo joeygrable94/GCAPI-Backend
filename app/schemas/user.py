@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 from pydantic import UUID4, field_validator
 
 from app.core.security.permissions import AclPrivilege
@@ -127,7 +125,6 @@ class UserReadAsAdmin(UserBase, BaseSchemaRead):
 class UserDelete(BaseSchema):
     message: str
     user_id: UUID4
-    task_id: UUID4 | str | Any | None = None
 
 
 class UserAuthRequestToken(BaseSchema):

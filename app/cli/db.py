@@ -7,12 +7,7 @@ from typer import Typer
 
 from app.core.config import settings
 from app.core.logger import logger
-from app.db.commands import (
-    build_database,
-    check_db_connected,
-    check_redis_connected,
-    create_init_data,
-)
+from app.db.commands import build_database, check_db_connected, create_init_data
 
 app = Typer()
 
@@ -23,15 +18,6 @@ def check_db_connection() -> None:
         run(check_db_connected)
     except Exception as e:
         logger.warning(f"Error checking DB connection: {e}")
-
-
-@app.command()
-def check_redis_connection() -> None:
-    try:
-        logger.info("Check Redis Connection")
-        check_redis_connected()
-    except Exception as e:
-        logger.warning(f"Error checking redis connection: {e}")
 
 
 @app.command()

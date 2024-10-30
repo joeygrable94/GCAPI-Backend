@@ -1,4 +1,3 @@
-from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
 
@@ -34,15 +33,10 @@ def configure_encryption_exceptions(app: FastAPI) -> None:
     async def cipher_security_exception_handler(
         request: Request, exc: CipherError
     ) -> Response:  # noqa: E501
-        request_headers = {  # pragma: no cover
-            "x-request-id": correlation_id.get() or "",
-            "Access-Control-Expose-Headers": "x-request-id",
-        }
         return await http_exception_handler(  # pragma: no cover
             request,
             HTTPException(
                 exc.status_code,
                 detail=exc.message,
-                headers=request_headers,
             ),
         )

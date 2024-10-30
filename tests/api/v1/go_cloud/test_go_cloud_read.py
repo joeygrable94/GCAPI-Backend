@@ -7,7 +7,7 @@ from tests.utils.clients import create_random_client
 from tests.utils.go_cloud import create_random_go_cloud
 
 from app.api.exceptions.errors import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.crud import GoCloudPropertyRepository
 from app.models import GoCloudProperty
 from app.schemas import ClientRead, GoCloudPropertyRead

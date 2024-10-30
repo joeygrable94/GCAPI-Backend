@@ -1,4 +1,3 @@
-from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
 
@@ -22,10 +21,7 @@ def configure_permissions_exceptions(app: FastAPI) -> None:
     async def permissions_exception_handler(
         request: Request, exc: AuthPermissionException
     ) -> Response:  # noqa: E501
-        request_headers = {
-            "x-request-id": correlation_id.get() or "",
-            "Access-Control-Expose-Headers": "x-request-id",
-        }
+        request_headers = {}
         if exc.headers:
             request_headers.update(exc.headers)
         return await http_exception_handler(

@@ -7,7 +7,7 @@ from tests.utils.utils import random_boolean
 from tests.utils.website_pagespeedinsights import generate_psi_base
 
 from app.api.exceptions import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.schemas import (
     WebsiteMapRead,
     WebsitePageRead,

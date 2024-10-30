@@ -1,49 +1,23 @@
-import sys
-
 from ipinfo.details import Details  # type: ignore
+from pydantic import UUID4
 from pydantic.networks import IPvAnyAddress
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
 from app.core.ipinfo import ipinfo_handler
 from app.core.logger import logger
-from app.crud import IpaddressRepository
+from app.crud import IpaddressRepository, UserIpaddressRepository
 from app.db.session import get_db_session
-from app.models import Ipaddress
-from app.schemas import IpaddressCreate, IpinfoResponse
-
-mock_details = Details(
-    details=dict(  # pragma: no cover
-        address="8.8.8.8",
-        hostname="dns.google",
-        anycast=True,
-        city="Mountain View",
-        region="California",
-        country="US",
-        loc="37.4056,-122.0775",
-        org="AS15169 Google LLC",
-        postal="94043",
-        timezone="America/Los_Angeles",
-        country_name="United States",
-        isEU=False,
-        country_flag_url="https://cdn.ipinfo.io/static/images/countries-flags/US.svg",
-        country_flag_unicode="U+1F1FA U+1F1F8",
-        country_currency_code="USD",
-        continent_code="NA",
-        continent_name="North America",
-        latitude="37.4056",
-        longitude="-122.0775",
-    )
+from app.models import Ipaddress, UserIpaddress
+from app.schemas import (
+    IpaddressCreate,
+    IpaddressRead,
+    IpinfoResponse,
+    UserIpaddressCreate,
 )
 
 
 def get_ipinfo_details(ip_address: IPvAnyAddress) -> IpinfoResponse:
-    ip_data: Details
-    ip_data = (
-        mock_details
-        if "pytest" in sys.modules and settings.api.mode in ["development", "test"]
-        else ipinfo_handler.getDetails(ip_address)
-    )  # pragma: no cover  # noqa: E501
+    ip_data: Details = ipinfo_handler.getDetails(ip_address)
     country_flag_unicode_value: dict = ip_data.details.get(
         "country_flag", dict(unicode=None)
     )
@@ -132,4 +106,33 @@ async def create_or_update_ipaddress(
         return fetch_ip
     except Exception as e:  # pragma: no cover
         logger.warning("Error fetching or creating Website Page: %s" % e)
+        return None
+
+
+async def assign_ip_address_to_user(
+    ipaddress: Ipaddress | IpaddressRead, user_id: UUID4
+) -> None:
+    try:
+        session: AsyncSession
+        user_ip_repo: UserIpaddressRepository
+        async with get_db_session() as session:
+            user_ip_repo = UserIpaddressRepository(session)
+            user_ip: UserIpaddress | None = await user_ip_repo.exists_by_fields(
+                {
+                    "user_id": user_id,
+                    "ipaddress_id": ipaddress.id,
+                }
+            )
+            if user_ip is None:
+                user_ip = await user_ip_repo.create(
+                    schema=UserIpaddressCreate(
+                        user_id=user_id,
+                        ipaddress_id=ipaddress.id,
+                    )
+                )
+            logger.info(
+                f"User({user_id}) assigned IP({ipaddress.address}) to their account."
+            )
+    except Exception as e:  # pragma: no cover
+        logger.warning("Error assigning IP Address to User: %s" % e)
         return None

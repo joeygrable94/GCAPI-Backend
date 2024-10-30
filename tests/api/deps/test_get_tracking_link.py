@@ -5,7 +5,7 @@ from tests.utils.tracking_link import create_random_tracking_link
 
 from app.api.deps import get_tracking_link_or_404
 from app.api.exceptions.exceptions import InvalidID, TrackingLinkNotExists
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.models import TrackingLink
 from app.schemas import TrackingLinkRead
 

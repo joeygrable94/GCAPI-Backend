@@ -7,7 +7,7 @@ from pydantic import UUID4
 from app.api.exceptions import GoSearchConsoleMetricTypeInvalid, InvalidID
 from app.core.config import settings
 from app.core.pagination import PageParamsFromQuery
-from app.core.utilities.uuids import parse_id
+from app.core.utilities import parse_id
 from app.db.constants import (
     DB_STR_16BIT_MAXLEN_INPUT,
     DB_STR_TINYTEXT_MAXLEN_INPUT,

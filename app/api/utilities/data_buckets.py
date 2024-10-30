@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.logger import logger
-from app.core.utilities.uuids import parse_id
+from app.core.utilities import parse_id
 from app.crud import DataBucketRepository
 from app.db.session import get_db_session
 from app.models import DataBucket

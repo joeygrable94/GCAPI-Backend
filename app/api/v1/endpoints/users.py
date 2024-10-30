@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Request
 
 from app.api.deps import (
     Permission,
@@ -11,8 +11,6 @@ from app.api.deps import (
     get_user_or_404,
 )
 from app.api.exceptions import UserAlreadyExists
-
-# from app.api.openapi import users_read_responses
 from app.core.pagination import (
     GetPaginatedQueryParams,
     PageParams,
@@ -42,7 +40,7 @@ from app.schemas import (
     UserUpdateAsManager,
     UserUpdatePrivileges,
 )
-from app.tasks import task_request_to_delete_user
+from app.tasks import bg_task_request_to_delete_user, bg_task_track_user_ipinfo
 
 router: APIRouter = APIRouter()
 
@@ -60,6 +58,7 @@ router: APIRouter = APIRouter()
     response_model=UserReadAsAdmin | UserReadAsManager | UserRead,
 )
 async def users_current(
+    bg_tasks: BackgroundTasks,
     request: Request,
     request_ip: RequestClientIp,
     permissions: PermissionController = Depends(get_permission_controller),
@@ -83,7 +82,12 @@ async def users_current(
     request.session["user_id"] = str(permissions.current_user.id)
     req_sess_ip = request.session.get("ip_address", False)
     if not req_sess_ip:
-        request.session["ip_address"] = str(request_ip)
+        request.session["ip_address"] = request_ip
+        bg_tasks.add_task(
+            bg_task_track_user_ipinfo,
+            ip_address=request_ip,
+            user_id=str(permissions.current_user.id),
+        )
     # return role based response
     response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
         permissions.get_resource_response(
@@ -294,6 +298,7 @@ async def users_update(
     response_model=None,
 )
 async def users_delete(
+    bg_tasks: BackgroundTasks,
     user: User = Permission([AccessDelete, AccessDeleteSelf], get_user_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> UserDelete:
@@ -313,18 +318,17 @@ async def users_delete(
     """
     # verify current user has permission to take this action
     await permissions.verify_user_can_access(privileges=[RoleAdmin], user_id=user.id)
-    user_delete: UserDelete
+    output_message: str
     if permissions.current_user.id == user.id:
-        delete_user_task = await task_request_to_delete_user.kiq(user_id=str(user.id))
-        user_delete = UserDelete(
-            message="User requested to be deleted",
-            user_id=user.id,
-            task_id=delete_user_task.task_id,
-        )
+        bg_tasks.add_task(bg_task_request_to_delete_user, user_id=str(user.id))
+        output_message = "User requested to be deleted"
     else:
         await permissions.user_repo.delete(entry=user)
-        user_delete = UserDelete(message="User deleted", user_id=user.id)
-    return user_delete
+        output_message = "User deleted"
+    return UserDelete(
+        message=output_message,
+        user_id=user.id,
+    )
 
 
 @router.post(

@@ -7,7 +7,7 @@ from tests.utils.clients import create_random_client
 from tests.utils.sharpspring import create_random_sharpspring
 
 from app.api.exceptions.errors import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.crud import SharpspringRepository
 from app.models import Sharpspring
 from app.schemas import ClientRead, SharpspringRead

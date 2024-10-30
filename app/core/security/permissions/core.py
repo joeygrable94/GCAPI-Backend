@@ -172,7 +172,7 @@ def normalize_acl(
     """
     acl = getattr(resource, "__acl__", None)
     if callable(acl):
-        return acl()
+        return acl()  # type: ignore
     elif acl is not None:
         return acl
     elif is_like_list(resource):

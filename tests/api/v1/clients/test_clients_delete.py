@@ -55,4 +55,3 @@ async def test_delete_client_by_id_as_client_a(
     assert data["message"] == "Client requested to be deleted"
     assert data["user_id"] == str(client_a.id)
     assert data["client_id"] == str(a_client.id)
-    assert isinstance(data["task_id"], str)

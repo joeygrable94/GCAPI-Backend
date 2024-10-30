@@ -4,7 +4,7 @@ from tests.utils.website_maps import create_random_website_map
 
 from app.api.deps import get_website_map_or_404
 from app.api.exceptions.exceptions import InvalidID, WebsiteMapNotExists
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.models import WebsiteMap
 from app.schemas import WebsiteMapRead
 

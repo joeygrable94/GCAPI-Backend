@@ -4,7 +4,7 @@ from tests.utils.websites import create_random_website
 
 from app.api.deps import get_website_or_404
 from app.api.exceptions.exceptions import InvalidID, WebsiteNotExists
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.models import Website
 from app.schemas import WebsiteRead
 

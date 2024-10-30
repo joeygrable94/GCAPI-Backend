@@ -6,10 +6,10 @@ from app.core.config import ApiModes, settings
 def configure_monitoring() -> Client | None:
     sentry_client: Client | None = None
     if (
-        settings.worker.sentry_dsn and settings.api.mode == ApiModes.production.value
+        settings.sentry.sentry_dsn and settings.api.mode == ApiModes.production.value
     ):  # pragma: no cover
         sentry_client = init(
-            settings.worker.sentry_dsn,
+            settings.sentry.sentry_dsn,
             # Set traces_sample_rate to 1.0 to capture 100%
             # of transactions for performance monitoring.
             traces_sample_rate=1.0,

@@ -9,7 +9,7 @@ from tests.utils.users import get_user_by_email
 
 from app.api.exceptions.errors import ErrorCode
 from app.core.config import settings
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.db.utilities import hash_url
 from app.models import User
 from app.schemas import ClientRead, TrackingLinkRead

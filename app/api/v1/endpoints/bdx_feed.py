@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from sqlalchemy import Select
 
 from app.api.deps import (
@@ -35,7 +35,7 @@ from app.core.security.permissions import (
 from app.crud import BdxFeedRepository, ClientRepository
 from app.models import BdxFeed, Client
 from app.schemas import BdxFeedCreate, BdxFeedRead, BdxFeedUpdate
-from app.tasks import task_create_client_data_bucket
+from app.tasks.background import bg_task_create_client_data_bucket
 
 router: APIRouter = APIRouter()
 
@@ -108,6 +108,7 @@ async def bdx_feed_list(
     response_model=BdxFeedRead,
 )
 async def bdx_feed_create(
+    bg_tasks: BackgroundTasks,
     bdx_in: BdxFeedCreate,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> BdxFeedRead:
@@ -155,7 +156,8 @@ async def bdx_feed_create(
         logger.info(
             "Error creating data bucket for client bdx feed, running in worker..."
         )
-        create_data_bucket_task = await task_create_client_data_bucket.kiq(  # noqa: E501, F841
+        bg_tasks.add_task(
+            bg_task_create_client_data_bucket,
             bucket_prefix=f"client/{a_client.slug}/bdxfeed/{new_bdx_feed.xml_file_key}",  # noqa: E501
             client_id=str(a_client.id),
             bdx_feed_id=str(new_bdx_feed.id),

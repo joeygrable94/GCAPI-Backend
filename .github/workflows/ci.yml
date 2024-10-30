@@ -17,7 +17,6 @@ jobs:
       matrix:
         os: ["ubuntu-latest"]
         python-version: ["3.11"]
-        redis-version: ["7"]
     env:
       API_MODE: "test"
       ENVIRONMENT: "pytest"
@@ -56,12 +55,6 @@ jobs:
       AUTH0_SPA_CLIENT_SECRET: ${{ secrets.AUTH0_SPA_CLIENT_SECRET }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       CLOUDKEY_GOOGLE_API: ${{ secrets.CLOUDKEY_GOOGLE_API }}
-      EMAIL_ENABLED: ${{ secrets.EMAIL_ENABLED }}
-      EMAIL_FROM_EMAIL: ${{ secrets.EMAIL_FROM_EMAIL }}
-      EMAIL_FROM_NAME: ${{ secrets.EMAIL_FROM_NAME }}
-      EMAIL_SMTP_PASSWORD: ${{ secrets.EMAIL_SMTP_PASSWORD }}
-      EMAIL_SMTP_USER: ${{ secrets.EMAIL_SMTP_USER }}
-      EMAIL_TEST_USER: ${{ secrets.EMAIL_TEST_USER }}
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
@@ -70,10 +63,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.7.0
-        with:
-          redis-version: ${{ matrix.redis-version }}
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip \

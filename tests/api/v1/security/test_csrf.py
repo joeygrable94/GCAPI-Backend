@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings, get_settings
 from app.core.security.csrf.core import CsrfProtect
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 
 pytestmark = pytest.mark.asyncio
 

@@ -16,10 +16,7 @@ __version__ = "0.1"
 __license__ = "GPLv3"
 
 import logging
-import sys
 from typing import Any
-
-from asgi_correlation_id.log_filters import CeleryTracingIdsFilter, CorrelationIdFilter
 
 from app.core.config import settings
 
@@ -141,23 +138,12 @@ class Logger:
     def __init__(
         self, name: str = settings.api.logger_name, level: str = "INFO"
     ) -> None:
-        self.process_id_filter: CorrelationIdFilter = CorrelationIdFilter(
-            name="correlation_id",
-            uuid_length=8 if not settings.api.debug else 32,
-        )
-        self.worker_process_id_filter: CeleryTracingIdsFilter = CeleryTracingIdsFilter(
-            name="celery_tracing",
-            uuid_length=8 if not settings.api.debug else 32,
-        )
         # exception
         self.file_frmt: logging.Formatter = logging.Formatter(
-            "%(levelname)-11s\b%(asctime)s [%(correlation_id)s] %(name)s:%(lineno)d %(message)s"  # noqa: E501
+            "%(levelname)-11s\b%(asctime)s %(name)s:%(lineno)d %(message)s"  # noqa: E501
         )
         self.stream_frmt: logging.Formatter = logging.Formatter(
-            "%(levelname)-11s\b%(asctime)-6s [%(correlation_id)s] %(name)s:%(lineno)d %(message)s"  # noqa: E501
-        )
-        self.worker_frmt: logging.Formatter = logging.Formatter(
-            "%(levelname)-11s\b%(asctime)-6s [%(correlation_id)s] [%(celery_parent_id)s-%(celery_current_id)s] %(name)s:%(lineno)d %(name)s %(message)s"  # noqa: E501
+            "%(levelname)-11s\b%(asctime)-6s %(name)s:%(lineno)d %(message)s"  # noqa: E501
         )
         self.logger: logging.Logger = logging.getLogger(name)
         self.logger.setLevel(logging.getLevelName(level))
@@ -165,23 +151,12 @@ class Logger:
         self.fh: logging.FileHandler = logging.FileHandler(f"{name}.log")
         # stream handler
         self.ch: logging.StreamHandler = logging.StreamHandler()
-        # add filter
-        self.fh.addFilter(self.process_id_filter)
-        self.ch.addFilter(self.process_id_filter)
-        self.fh.addFilter(self.worker_process_id_filter)
-        self.ch.addFilter(self.worker_process_id_filter)
         # set formatter
-        if any("celery" in i for i in sys.argv):  # pragma: no cover
-            self.fh.setFormatter(self.worker_frmt)
-            self.ch.setFormatter(self.worker_frmt)
-        else:
-            self.fh.setFormatter(self.file_frmt)
-            self.ch.setFormatter(self.stream_frmt)
-
+        self.fh.setFormatter(self.file_frmt)
+        self.ch.setFormatter(self.stream_frmt)
         # add handlers
         self.logger.addHandler(self.fh)
         self.logger.addHandler(self.ch)
-        # self.logger.addHandler(self.worker_frmt)
 
     def log(self, *args: Any) -> Any:  # pragma: no cover
         self.logger.info(

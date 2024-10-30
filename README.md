@@ -66,8 +66,6 @@ core/                   # Core application code shared
         permissions/            # Permissions protocols
         schemas.py              # Security models
     utilities/              # Core service layer utilities
-    email.py                # FastAPI email service
-    redis.py                # Redis connection settings
     templates.py            # Jinja2 templates
 db/                     # Database operations layer
 crud/                   # CRUD Layer for data models

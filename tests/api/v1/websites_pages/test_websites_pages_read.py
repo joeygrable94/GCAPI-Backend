@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tests.utils.website_pages import create_random_website_page
 
 from app.api.exceptions import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.crud import WebsitePageRepository
 from app.schemas import WebsitePageRead
 

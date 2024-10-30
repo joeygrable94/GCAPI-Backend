@@ -7,7 +7,7 @@ from tests.utils.clients import assign_website_to_client, create_random_client
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions.errors import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.schemas import ClientWebsiteRead
 
 pytestmark = pytest.mark.asyncio

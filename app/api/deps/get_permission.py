@@ -111,7 +111,7 @@ class PermissionController(Generic[T]):
 
     def get_resource_response(
         self,
-        resource: B,
+        resource: B,  # type: ignore
         responses: Dict[AclPrivilege, Type[T]],
     ) -> T:
         for privilege, response_schema in responses.items():

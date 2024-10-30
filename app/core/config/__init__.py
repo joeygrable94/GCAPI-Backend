@@ -8,8 +8,7 @@ from .auth import AuthSettings
 from .cloud import CloudKeySettings
 from .database import DatabaseSettings
 from .mail import EmailSettings
-from .redis import RedisSettings
-from .worker import WorkerSettings
+from .sentry import SentrySettings
 
 load_dotenv()
 
@@ -19,8 +18,7 @@ class Settings(BaseSettings):
     auth: AuthSettings
     db: DatabaseSettings
     email: EmailSettings
-    redis: RedisSettings
-    worker: WorkerSettings
+    sentry: SentrySettings
     cloud: CloudKeySettings
 
 
@@ -31,8 +29,7 @@ def get_settings() -> Settings:
         auth=AuthSettings(),
         db=DatabaseSettings(),
         email=EmailSettings(),
-        redis=RedisSettings(),
-        worker=WorkerSettings(),
+        sentry=SentrySettings(),
         cloud=CloudKeySettings(),
     )
 

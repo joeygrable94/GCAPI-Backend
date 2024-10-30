@@ -8,22 +8,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 load_dotenv()
 
 
-class WorkerSettings(BaseSettings):
-    broker_url: str = environ.get("WORKER_BROKER_URL", "redis://localhost:6379/0")
-    result_backend: str = environ.get(
-        "WORKER_RESULT_BACKEND", "redis://localhost:6379/0"
-    )
-    result_ex_time: int = int(environ.get("WORKER_RESULT_EXPIRE_TIME", 3600))
-    schedule_src: str = environ.get(
-        "WORKER_SCHEDULE_SOURCE", "redis://localhost:6379/0"
-    )
+class SentrySettings(BaseSettings):
     sentry_dsn: Optional[str] = environ.get("SENTRY_DSN", None)
 
     # pydantic settings config
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        env_prefix="WORKER_",
+        env_prefix="SENTRY_",
         case_sensitive=False,
         extra="ignore",
     )

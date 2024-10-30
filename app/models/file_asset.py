@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import Timestamp  # type: ignore
 from sqlalchemy_utils import UUIDType
 
-from app.core.utilities.uuids import get_uuid
+from app.core.utilities import get_uuid
 from app.db.base_class import Base
 from app.db.constants import (
     DB_STR_BUCKET_OBJECT_NAME_MAXLEN_INPUT,

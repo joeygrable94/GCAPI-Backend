@@ -1,6 +1,6 @@
 from typing import Dict
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from sqlalchemy import Select
 
 from app.api.deps import (
@@ -20,7 +20,6 @@ from app.api.exceptions import (
     UserNotExists,
     WebsiteNotExists,
 )
-from app.api.openapi import clients_read_responses
 from app.api.utilities import create_or_read_data_bucket
 from app.core.logger import logger
 from app.core.pagination import PageParams, Paginated
@@ -60,7 +59,10 @@ from app.schemas import (
     UserClientCreate,
     UserClientRead,
 )
-from app.tasks import task_create_client_data_bucket, task_request_to_delete_client
+from app.tasks import (
+    bg_task_create_client_data_bucket,
+    bg_task_request_to_delete_client,
+)
 
 router: APIRouter = APIRouter()
 
@@ -174,6 +176,7 @@ async def clients_list_public(
     response_model=ClientRead,
 )
 async def clients_create(
+    bg_tasks: BackgroundTasks,
     client_in: ClientCreate,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> ClientRead:
@@ -217,14 +220,13 @@ async def clients_create(
         gcft_id=None,
     )
     if data_bucket is None:  # pragma: no cover
-        logger.info("Error creating data bucket for client, running in worker...")
-        create_data_bucket_task = (  # noqa: E501, F841
-            await task_create_client_data_bucket.kiq(
-                bucket_prefix=f"client/{new_client.slug}",
-                client_id=str(new_client.id),
-                bdx_feed_id=None,
-                gcft_id=None,
-            )
+        logger.info("Error creating data bucket for client, running in background...")
+        bg_tasks.add_task(
+            bg_task_create_client_data_bucket,
+            bucket_prefix=f"client/{new_client.slug}",
+            client_id=str(new_client.id),
+            bdx_feed_id=None,
+            gcft_id=None,
         )
     # return role based response
     response_out: ClientRead = permissions.get_resource_response(
@@ -246,7 +248,6 @@ async def clients_create(
         Depends(get_current_user),
         Depends(get_permission_controller),
     ],
-    responses=clients_read_responses,
     response_model=ClientRead,
 )
 async def clients_read(
@@ -418,6 +419,7 @@ async def clients_update_style_guide(
     response_model=ClientDelete,
 )
 async def clients_delete(
+    bg_tasks: BackgroundTasks,
     client: Client = Permission([AccessDelete, AccessDeleteSelf], get_client_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> ClientDelete:
@@ -438,26 +440,23 @@ async def clients_delete(
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin], client_id=client.id
     )
-    client_delete: ClientDelete
+    output_message: str
     if RoleAdmin in permissions.privileges:
         clients_repo: ClientRepository = ClientRepository(session=permissions.db)
         await clients_repo.delete(entry=client)
-        client_delete = ClientDelete(
-            message="Client deleted",
-            user_id=permissions.current_user.id,
-            client_id=client.id,
-        )
+        output_message = "Client deleted"
     else:
-        delete_client_task = await task_request_to_delete_client.kiq(
-            user_id=str(permissions.current_user.id), client_id=str(client.id)
+        bg_tasks.add_task(
+            bg_task_request_to_delete_client,
+            user_id=str(permissions.current_user.id),
+            client_id=str(client.id),
         )
-        client_delete = ClientDelete(
-            message="Client requested to be deleted",
-            user_id=permissions.current_user.id,
-            client_id=client.id,
-            task_id=delete_client_task.task_id,
-        )
-    return client_delete
+        output_message = "Client requested to be deleted"
+    return ClientDelete(
+        message=output_message,
+        user_id=permissions.current_user.id,
+        client_id=client.id,
+    )
 
 
 # client relationships

@@ -31,7 +31,10 @@ async def test_sitemap_process_sitemap_pages_as_superuser(
         assert response.status_code == 200
         assert "url" in data
         assert "website_id" in data
-        assert "task_id" in data
+        assert "sitemap_id" in data
+        assert data["url"] == a_sitemap.url
+        assert data["website_id"] == str(a_sitemap.website_id)
+        assert data["sitemap_id"] == str(a_sitemap.id)
 
 
 async def test_sitemap_process_sitemap_pages_as_superuser_xml_url_status_code_error(

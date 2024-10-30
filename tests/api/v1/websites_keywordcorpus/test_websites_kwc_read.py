@@ -8,7 +8,7 @@ from tests.utils.website_pages import create_random_website_page
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions.errors import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.models import Website
 from app.schemas import WebsiteKeywordCorpusRead, WebsitePageRead, WebsiteRead
 

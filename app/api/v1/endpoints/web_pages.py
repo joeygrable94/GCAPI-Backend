@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from sqlalchemy import Select
 
 from app.api.deps import (
@@ -24,14 +24,8 @@ from app.core.security.permissions import (
 )
 from app.crud import WebsitePageRepository, WebsiteRepository
 from app.models import Website, WebsitePage
-from app.schemas import (
-    PSIDevice,
-    WebsitePageCreate,
-    WebsitePagePSIProcessing,
-    WebsitePageRead,
-    WebsitePageUpdate,
-)
-from app.tasks import task_website_page_pagespeedinsights_fetch
+from app.schemas import PSIDevice, WebsitePageCreate, WebsitePageRead, WebsitePageUpdate
+from app.tasks import bg_task_website_page_pagespeedinsights_fetch
 
 router: APIRouter = APIRouter()
 
@@ -311,12 +305,13 @@ async def website_page_delete(
         Depends(get_current_user),
         Depends(get_permission_controller),
     ],
-    response_model=WebsitePagePSIProcessing,
+    response_model=WebsitePageRead,
 )
 async def website_page_process_website_page_speed_insights(
+    bg_tasks: BackgroundTasks,
     website_page: WebsitePage = Permission(AccessUpdate, get_website_page_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
-) -> WebsitePagePSIProcessing:
+) -> WebsitePageRead:
     """A webhook to initiate processing a website page's page speed insights.
 
     Permissions:
@@ -343,21 +338,19 @@ async def website_page_process_website_page_speed_insights(
     if a_website is None:
         raise WebsiteNotExists()
     fetch_page = a_website.get_link() + website_page.url
-    # Send the task to the broker.
-    website_page_psi_mobile = await task_website_page_pagespeedinsights_fetch.kiq(
+    # Send the task to the background.
+    bg_tasks.add_task(
+        bg_task_website_page_pagespeedinsights_fetch,
         website_id=str(a_website.id),
         page_id=str(website_page.id),
         fetch_url=fetch_page,
         device=PSIDevice.mobile,
     )
-    website_page_psi_desktop = await task_website_page_pagespeedinsights_fetch.kiq(
+    bg_tasks.add_task(
+        bg_task_website_page_pagespeedinsights_fetch,
         website_id=str(a_website.id),
         page_id=str(website_page.id),
         fetch_url=fetch_page,
         device=PSIDevice.desktop,
     )
-    return WebsitePagePSIProcessing(
-        page=WebsitePageRead.model_validate(website_page),
-        psi_mobile_task_id=website_page_psi_mobile.task_id,
-        psi_desktop_task_id=website_page_psi_desktop.task_id,
-    )
+    return WebsitePageRead.model_validate(website_page)

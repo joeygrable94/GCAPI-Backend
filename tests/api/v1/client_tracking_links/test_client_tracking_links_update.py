@@ -11,7 +11,7 @@ from tests.utils.utils import random_lower_string
 
 from app.api.exceptions.errors import ErrorCode
 from app.core.config import settings
-from app.core.utilities.uuids import get_uuid
+from app.core.utilities import get_uuid
 from app.models import User, UserClient
 from app.schemas import ClientRead, TrackingLinkRead
 

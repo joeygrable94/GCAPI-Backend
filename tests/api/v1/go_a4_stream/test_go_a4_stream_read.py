@@ -8,7 +8,7 @@ from tests.utils.ga4 import create_random_ga4_property, create_random_ga4_stream
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions.errors import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.crud import GoAnalytics4StreamRepository
 from app.models import GoAnalytics4Stream, Website
 from app.schemas import (

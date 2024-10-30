@@ -49,19 +49,19 @@ class WebsiteMapRepository(
             stmt = stmt.where(and_(*conditions))
         return stmt
 
-    async def is_sitemap_url_xml_valid(
+    def is_sitemap_url_xml_valid(
         self,
         url: str,
     ) -> bool:
         is_valid: bool = False
         try:
             # check if the URL is valid
-            status_code: int = await fetch_url_status_code(url)
+            status_code: int = fetch_url_status_code(url)
             if status_code != 200:
                 return is_valid
-            page_text: str = await fetch_url_page_text(url)
-            page_xml = await parse_sitemap_xml(page_text)
-            is_valid = await check_is_xml_valid_sitemap(page_xml)
+            page_text: str = fetch_url_page_text(url)
+            page_xml = parse_sitemap_xml(page_text)
+            is_valid = check_is_xml_valid_sitemap(page_xml)
             if not is_valid:  # pragma: no cover
                 raise Exception("Invalid Sitemap XML")
         except Exception as e:  # pragma: no cover

@@ -6,7 +6,7 @@ from tests.utils.website_pagespeedinsights import generate_psi_base
 from tests.utils.websites import create_random_website
 
 from app.api.utilities import create_website_pagespeedinsights
-from app.core.utilities.uuids import get_uuid
+from app.core.utilities import get_uuid
 from app.schemas import WebsitePageSpeedInsightsBase
 
 

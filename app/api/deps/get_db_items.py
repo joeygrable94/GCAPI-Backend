@@ -23,7 +23,7 @@ from app.api.exceptions import (
     WebsitePageNotExists,
     WebsitePageSpeedInsightsNotExists,
 )
-from app.core.utilities.uuids import parse_id
+from app.core.utilities import parse_id
 from app.crud import (
     BdxFeedRepository,
     ClientReportRepository,

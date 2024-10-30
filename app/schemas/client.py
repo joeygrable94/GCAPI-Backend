@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Optional
 
 from pydantic import UUID4, field_validator
 
@@ -80,4 +80,3 @@ class ClientDelete(BaseSchema):
     message: str
     user_id: UUID4
     client_id: UUID4
-    task_id: UUID4 | str | Any | None = None

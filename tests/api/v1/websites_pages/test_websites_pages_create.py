@@ -10,7 +10,7 @@ from tests.utils.website_pages import create_random_website_page
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions import ErrorCode
-from app.core.utilities.uuids import get_uuid
+from app.core.utilities import get_uuid
 from app.db.constants import DB_STR_URLPATH_MAXLEN_INPUT
 from app.models import Website
 from app.schemas import WebsiteMapRead, WebsitePageRead, WebsiteRead

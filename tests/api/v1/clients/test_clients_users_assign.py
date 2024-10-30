@@ -8,7 +8,7 @@ from tests.utils.users import get_user_by_email
 
 from app.api.exceptions.errors import ErrorCode
 from app.core.config import settings
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.schemas import UserClientRead
 
 pytestmark = pytest.mark.asyncio

@@ -6,7 +6,7 @@ from app.api.exceptions import ErrorCode
 from app.core import logger
 from app.core.security import Auth0User, auth
 from app.core.security.permissions import AclPrivilege, RoleUser
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.crud import UserRepository
 from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
 from app.models import User

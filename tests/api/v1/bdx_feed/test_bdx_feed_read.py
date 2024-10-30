@@ -7,7 +7,7 @@ from tests.utils.bdx_feed import create_random_bdx_feed
 from tests.utils.clients import create_random_client
 
 from app.api.exceptions.errors import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.crud import BdxFeedRepository
 from app.models import BdxFeed
 from app.schemas import BdxFeedRead, ClientRead

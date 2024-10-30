@@ -1,6 +1,21 @@
 from typing import Any, Dict
 
-from app.schemas import IpinfoResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+from tests.utils.utils import random_ipaddress
+
+from app.crud import IpaddressRepository
+from app.models.ipaddress import Ipaddress
+from app.schemas import IpaddressRead, IpinfoResponse
+from app.schemas.ipaddress import IpaddressCreate
+
+
+async def create_random_ipaddress(
+    db_session: AsyncSession, ip_address: str | None = None
+) -> IpaddressRead:
+    ip: str = ip_address if ip_address is not None else random_ipaddress()
+    repo: IpaddressRepository = IpaddressRepository(session=db_session)
+    ipaddress: Ipaddress = await repo.create(schema=IpaddressCreate(address=ip))
+    return IpaddressRead.model_validate(ipaddress)
 
 
 def get_ipinfo_response(data: Dict[str, Any]) -> IpinfoResponse:  # pragma: no cover

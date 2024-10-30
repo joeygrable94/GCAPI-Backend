@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from sqlalchemy import Select
 
 from app.api.deps import (
@@ -34,7 +34,7 @@ from app.schemas import (
     WebsiteMapRead,
     WebsiteMapUpdate,
 )
-from app.tasks import task_website_sitemap_process_xml
+from app.tasks import bg_task_website_sitemap_process_xml
 
 router: APIRouter = APIRouter()
 
@@ -135,9 +135,7 @@ async def sitemap_create(
         raise WebsiteNotExists()
     # check website map url is a valid XML document
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=permissions.db)
-    sitemap_url_valid: bool = await sitemap_repo.is_sitemap_url_xml_valid(
-        sitemap_in.url
-    )
+    sitemap_url_valid: bool = sitemap_repo.is_sitemap_url_xml_valid(sitemap_in.url)
     if not sitemap_url_valid:
         raise WebsiteMapUrlXmlInvalid()
     # check website map url is unique to website_id
@@ -309,6 +307,7 @@ async def sitemap_delete(
     response_model=WebsiteMapProcessing,
 )
 async def sitemap_process_sitemap_pages(
+    bg_tasks: BackgroundTasks,
     sitemap: WebsiteMap = Permission(AccessUpdate, get_website_map_or_404),
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> WebsiteMapProcessing:
@@ -333,11 +332,12 @@ async def sitemap_process_sitemap_pages(
     )
     # check website map url is a valid XML document
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=permissions.db)
-    sitemap_url_valid: bool = await sitemap_repo.is_sitemap_url_xml_valid(sitemap.url)
+    sitemap_url_valid: bool = sitemap_repo.is_sitemap_url_xml_valid(sitemap.url)
     if not sitemap_url_valid:
         raise WebsiteMapUrlXmlInvalid()
     # Send the task to the broker.
-    website_map_processing_pages = await task_website_sitemap_process_xml.kiq(
+    bg_tasks.add_task(
+        bg_task_website_sitemap_process_xml,
         website_id=str(sitemap.website_id),
         sitemap_id=str(sitemap.id),
         sitemap_url=str(sitemap.url),
@@ -346,5 +346,4 @@ async def sitemap_process_sitemap_pages(
         url=sitemap.url,
         website_id=sitemap.website_id,
         sitemap_id=sitemap.id,
-        task_id=website_map_processing_pages.task_id,
     )

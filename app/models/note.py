@@ -27,7 +27,7 @@ from app.core.security.permissions import (
     RoleManager,
     RoleUser,
 )
-from app.core.utilities.uuids import get_uuid  # type: ignore
+from app.core.utilities import get_uuid  # type: ignore
 from app.db.base_class import Base
 from app.db.constants import (
     DB_STR_32BIT_MAXLEN_STORED,

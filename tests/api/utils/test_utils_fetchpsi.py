@@ -4,12 +4,12 @@ from unittest.mock import MagicMock, patch
 
 from app.api.utilities import fetch_pagespeedinsights
 from app.core.config import settings
-from app.schemas import PageSpeedInsightsDevice
+from app.schemas import PageSpeedInsightsDevice, PSIDevice
 
 
 def test_fetch_pagespeedinsights(mock_fetch_psi: Dict[str, Any]) -> None:
     fetch_url: str = "https://getcommunity.com"  # type: ignore
-    strategy: PageSpeedInsightsDevice = PageSpeedInsightsDevice(device="mobile")
+    strategy: PageSpeedInsightsDevice = PageSpeedInsightsDevice(device=PSIDevice.mobile)
     api_key: str | None = settings.cloud.googleapi
     if api_key is None:
         raise Exception("Google Cloud API Key not found in environment variables")

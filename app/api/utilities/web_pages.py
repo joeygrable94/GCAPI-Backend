@@ -16,7 +16,7 @@ async def create_or_update_website_page(
     try:
         website_uuid = parse_id(website_id)
         sitemap_uuid = parse_id(sitemap_id)
-        status_code: int = await fetch_url_status_code(page.url)
+        status_code: int = fetch_url_status_code(page.url)
         session: AsyncSession
         website_page: WebsitePage | None
         pages_repo: WebsitePageRepository

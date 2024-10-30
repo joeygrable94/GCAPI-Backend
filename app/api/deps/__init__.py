@@ -3,12 +3,7 @@ from typing import List
 from .content_types import verify_content_length, verify_content_type
 from .get_auth import CurrentUser, get_current_user
 from .get_client_ip import RequestClientIp, get_request_client_ip
-from .get_cloud_service import (
-    LoadAwsS3StorageService,
-    LoadGoCloudDriveService,
-    get_aws_s3_service,
-    get_go_cloud_gdrive_service,
-)
+from .get_cloud_service import LoadAwsS3StorageService, get_aws_s3_service
 from .get_db import AsyncDatabaseSession, get_async_db
 from .get_db_items import (
     FetchClientOr404,
@@ -82,8 +77,6 @@ from .get_query import (
 )
 
 __all__: List[str] = [
-    "get_go_cloud_gdrive_service",
-    "LoadGoCloudDriveService",
     "get_aws_s3_service",
     "LoadAwsS3StorageService",
     "verify_content_length",

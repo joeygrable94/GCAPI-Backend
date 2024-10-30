@@ -8,7 +8,7 @@ from tests.utils.website_maps import create_random_website_map
 from tests.utils.website_pages import create_random_website_page
 
 from app.api.exceptions import ErrorCode
-from app.core.utilities.uuids import get_uuid
+from app.core.utilities import get_uuid
 from app.schemas import WebsiteMapRead, WebsitePageRead
 
 pytestmark = pytest.mark.asyncio
@@ -26,10 +26,13 @@ async def test_fetch_website_page_speed_insights_by_id_as_superuser(
     )
     data: Dict[str, Any] = response.json()
     assert response.status_code == 200
-    assert "page" in data
-    assert "psi_mobile_task_id" in data
-    assert "psi_desktop_task_id" in data
-    assert data["page"]["id"] == str(entry.id)
+    assert data["id"] == str(entry.id)
+    assert data["is_active"] == entry.is_active
+    assert data["url"] == entry.url
+    assert data["status"] == entry.status
+    assert data["priority"] == entry.priority
+    assert data["website_id"] == str(entry.website_id)
+    assert data["sitemap_id"] == str(entry.sitemap_id)
 
 
 async def test_fetch_website_page_psi_by_id_as_superuser_website_not_found(

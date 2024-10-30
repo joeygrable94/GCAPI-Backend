@@ -11,7 +11,7 @@ from tests.utils.go_sc import (
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions.errors import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.crud import GoSearchConsoleMetricRepository
 from app.models import (
     GoSearchConsoleCountry,

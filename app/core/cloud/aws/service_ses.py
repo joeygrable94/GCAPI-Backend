@@ -2,24 +2,29 @@ import os
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from typing import Any
 
-from boto3 import Session, client
+from boto3 import client
 
 from app.core import logger
+from app.core.config import settings
 
 from .service_s3 import S3Storage
 
 
 class SimpleEmailService:
+    region: str
+    s3_client: S3Storage
+    ses_client: Any
+
     def __init__(self, default_region: str, s3_storage: S3Storage) -> None:
         self.region: str = default_region
-        self.session: Session = Session()
         self.ses_client = client("ses", region_name=default_region)
         self.s3_client = s3_storage
 
     def load_s3_file_attachment(
         self, object_key: str, bucket_name: str | None = None
-    ) -> MIMEApplication | None:
+    ) -> MIMEApplication:
         try:
             s3_bucket = (
                 bucket_name
@@ -28,16 +33,18 @@ class SimpleEmailService:
             )
             file_name = os.path.basename(object_key)
             if not self.s3_client.file_exists(object_key, s3_bucket):
-                return None
+                raise Exception("The requested attachment file does not exist.")
             file_data = self.s3_client.read_file_bytes(object_key, s3_bucket)
             if file_data is None:  # pragma: no cover
-                return None
+                raise Exception(
+                    "The requested attachment file content is empty and cannot be attached."  # noqa: E501
+                )
             part = MIMEApplication(file_data)
             part.add_header("Content-Disposition", "attachment", filename=file_name)
             return part
         except Exception as e:  # pragma: no cover
-            logger.warning("Error in load_s3_file_attachment()", e)
-            return None
+            logger.warning("Error attempting to load_s3_file_attachment() for email.")
+            raise e
 
     def create_message_data(
         self,
@@ -65,8 +72,7 @@ class SimpleEmailService:
             # email attachments
             for attachment in attatchments:
                 part = self.load_s3_file_attachment(attachment, bucket_name)
-                if part is not None:
-                    message.attach(part)
+                message.attach(part)
             return message.as_string()
         except Exception as e:  # pragma: no cover
             logger.warning("Error in create_message()", e)
@@ -83,6 +89,17 @@ class SimpleEmailService:
         attatchments: list[str] = [],
     ) -> str | None:
         try:
+            allowed_emails = (
+                [settings.email.allowed_from_emails]
+                if isinstance(settings.email.allowed_from_emails, str)
+                else settings.email.allowed_from_emails
+            )
+            email_allowed = False
+            for email in allowed_emails:
+                if email in addr_from:
+                    email_allowed = True
+            if not email_allowed:
+                raise Exception(f"Email({addr_from}) is not allowed to send emails.")
             email_msg_bytes = self.create_message_data(
                 sender=addr_from,
                 to=addr_to,

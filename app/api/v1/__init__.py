@@ -13,7 +13,6 @@ from app.api.v1.endpoints import (
     public,
     security,
     sharpspring,
-    tasks,
     tracking_links,
     users,
     web_keywordcorpus,
@@ -35,13 +34,6 @@ router_v1.include_router(
 router_v1.include_router(
     security.router,
     tags=["Security"],
-)
-
-# Task routes
-router_v1.include_router(
-    tasks.router,
-    prefix="/tasks",
-    tags=["Tasks"],
 )
 
 # User routes

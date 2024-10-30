@@ -19,7 +19,7 @@ async def test_website_map_repo_is_sitemap_url_xml_invalid(
     db_session: AsyncSession,
 ) -> None:
     repo: WebsiteMapRepository = WebsiteMapRepository(session=db_session)
-    is_valid: bool = await repo.is_sitemap_url_xml_valid(
+    is_valid: bool = repo.is_sitemap_url_xml_valid(
         url="https://example.com/sitemap.xml"
     )
     assert is_valid is False
@@ -41,7 +41,7 @@ async def test_website_map_repo_is_sitemap_url_xml_invalid_xml_parse(
             "app.core.utilities.websites.parse_sitemap_xml"
         ) as mock_parse_sitemap_xml:
             mock_parse_sitemap_xml.return_value = mock_invalid_sitemap_xml
-            is_valid: bool = await repo.is_sitemap_url_xml_valid(
+            is_valid: bool = repo.is_sitemap_url_xml_valid(
                 url="https://example.com/sitemap.xml"
             )
             assert is_valid is False
@@ -68,7 +68,7 @@ async def test_website_map_repo_is_sitemap_url_xml_invalid_xml_exception_raised(
             ) as mock_check_is_xml_valid_sitemap:
                 mock_check_is_xml_valid_sitemap.return_value = False
                 with pytest.raises(Exception) as exc_info:
-                    is_valid: bool = await repo.is_sitemap_url_xml_valid(
+                    is_valid: bool = repo.is_sitemap_url_xml_valid(
                         url="https://example.com/sitemap.xml"
                     )
                     assert is_valid is False

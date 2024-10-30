@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator
 
 from fastapi import Depends, FastAPI
-from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
 from sentry_sdk import Client
 
@@ -10,7 +9,6 @@ from app.api.exceptions import configure_exceptions
 from app.api.middleware import configure_middleware
 from app.api.monitoring import configure_monitoring
 from app.core.config import ApiModes, settings
-from app.core.redis import redis_conn
 from app.core.security import (
     CsrfProtect,
     CsrfSettings,
@@ -20,11 +18,7 @@ from app.core.security import (
     configure_permissions_exceptions,
 )
 from app.core.templates import static_files
-from app.db.commands import (
-    check_db_connected,
-    check_db_disconnected,
-    check_redis_connected,
-)
+from app.db.commands import check_db_connected, check_db_disconnected
 
 sentry_client: Client | None = configure_monitoring()
 
@@ -32,12 +26,8 @@ sentry_client: Client | None = configure_monitoring()
 @asynccontextmanager  # type: ignore
 async def application_lifespan(app: FastAPI) -> AsyncGenerator:
     # application lifespan actions: startup and shutdown
-    # check REDIS connected
-    check_redis_connected()
     # check DB connected
     await check_db_connected()
-    # init Rate Limiter
-    await FastAPILimiter.init(redis_conn, prefix="gcapi-limit")
 
     # load CSRF settings
     @CsrfProtect.load_config
@@ -46,8 +36,6 @@ async def application_lifespan(app: FastAPI) -> AsyncGenerator:
 
     # yeild the application
     yield
-    # close REDIS connection
-    await FastAPILimiter.close()
     # close DB connection
     await check_db_disconnected()
 

@@ -32,7 +32,7 @@ from app.api.deps.get_query import (
 )
 from app.api.exceptions.exceptions import GoSearchConsoleMetricTypeInvalid
 from app.core.config import settings
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.schemas import GoSearchConsoleMetricType
 
 

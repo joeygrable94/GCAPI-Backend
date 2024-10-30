@@ -27,7 +27,6 @@ async def test_delete_other_user_as_admin(
     user_deleted: UserDelete = UserDelete.model_validate(data)
     assert user_deleted.message == "User deleted"
     assert user_deleted.user_id == user1.id
-    assert user_deleted.task_id is None
 
 
 async def test_delete_other_user_as_manager(
@@ -62,4 +61,3 @@ async def test_delete_user_request_to_delete_self(
     assert 200 <= response.status_code < 300
     assert user_deleted.message == "User requested to be deleted"
     assert user_deleted.user_id == verified1.id
-    assert user_deleted.task_id is not None

@@ -8,7 +8,7 @@ from tests.utils.go_cloud import create_random_go_cloud
 from tests.utils.utils import random_lower_string
 
 from app.api.exceptions import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.db.constants import DB_STR_TINYTEXT_MAXLEN_INPUT
 from app.schemas import ClientRead, GoCloudPropertyRead
 

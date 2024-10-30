@@ -8,7 +8,7 @@ from tests.utils.go_sc import create_random_go_search_console_property
 from tests.utils.websites import create_random_website
 
 from app.api.exceptions.errors import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.crud import GoSearchConsolePropertyRepository
 from app.models import GoSearchConsoleProperty, Website
 from app.schemas import ClientRead, GoSearchConsolePropertyRead, WebsiteRead

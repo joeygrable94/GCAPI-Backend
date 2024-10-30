@@ -7,7 +7,7 @@ from tests.utils.clients import create_random_client
 from tests.utils.ga4 import create_random_ga4_property
 
 from app.api.exceptions.errors import ErrorCode
-from app.core.utilities.uuids import get_uuid_str
+from app.core.utilities import get_uuid_str
 from app.crud import GoAnalytics4PropertyRepository
 from app.models import GoAnalytics4Property
 from app.schemas import ClientRead, GoAnalytics4PropertyRead
