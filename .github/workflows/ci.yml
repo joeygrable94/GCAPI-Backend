@@ -13,7 +13,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    environment: GCAPI-Backend
+    # environment: GCAPI-Backend
     strategy:
       fail-fast: true
       matrix:
@@ -88,6 +88,8 @@ jobs:
         with:
           aws-region: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
           role-to-assume: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
+      - name: Load AWS Account
+        run: aws sts get-caller-identity
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -99,8 +101,6 @@ jobs:
           && python -m pip install poetry \
           && poetry config virtualenvs.create false \
           && poetry install --no-root
-      - name: Load AWS Account
-        run: aws sts get-caller-identity
       - name: Run Python Tests
         run: |
           bash ./scripts/test-cov.sh
