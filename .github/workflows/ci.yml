@@ -86,8 +86,12 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
+          aws-access-key-id: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
           role-to-assume: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
+          role-duration-seconds: 1200
+          role-session-name: GithubCiActionSession
       - name: Load AWS Account
         run: aws sts get-caller-identity
       - name: Setup Python
