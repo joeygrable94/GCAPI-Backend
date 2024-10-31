@@ -80,17 +80,19 @@ jobs:
       CLOUDKEY_AWS_DEFAULT_REGION: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
       CLOUDKEY_AWS_S3_DEFAULT_BUCKET: ${{ secrets.CLOUDKEY_AWS_S3_DEFAULT_BUCKET }}
       AWS_GITHUB_OIDC_ROLE_ARN: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.CLOUDKEY_AWS_S3_DEFAULT_BUCKET }}
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@v4
-      #   with:
-      #     aws-region: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
-      #     role-to-assume: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
-      #     role-session-name: GithubCiActionSession
-      # - name: Load AWS Account
-      #   run: aws sts get-caller-identity
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
+          role-to-assume: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
+      - name: Load AWS Account
+        run: aws sts get-caller-identity
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
