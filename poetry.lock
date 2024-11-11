@@ -888,13 +888,13 @@ xray = ["mypy-boto3-xray (>=1.35.0,<1.36.0)"]
 
 [[package]]
 name = "botocore"
-version = "1.35.52"
+version = "1.35.57"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.35.52-py3-none-any.whl", hash = "sha256:cdbb5e43c9c3a977763e2a10d3b8b9c405d51279f9fcfd4ca4800763b22acba5"},
-    {file = "botocore-1.35.52.tar.gz", hash = "sha256:1fe7485ea13d638b089103addd818c12984ff1e4d208de15f180b1e25ad944c5"},
+    {file = "botocore-1.35.57-py3-none-any.whl", hash = "sha256:92ddd02469213766872cb2399269dd20948f90348b42bf08379881d5e946cc34"},
+    {file = "botocore-1.35.57.tar.gz", hash = "sha256:d96306558085baf0bcb3b022d7a8c39c93494f031edb376694d2b2dcd0e81327"},
 ]
 
 [package.dependencies]
@@ -4301,4 +4301,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "988f5466155cf40e0aa99b47cac7e0047b6aa5a76a066e5ba9baa1f755dff7e5"
+content-hash = "6f5c74f39007f1486cd774bc3752abc3c70a73ac1823d5e7f27a43f39abd391f"
