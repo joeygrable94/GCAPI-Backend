@@ -69,7 +69,7 @@ async def bg_task_create_client_data_bucket(
         logger.warning(e)
 
 
-async def bg_task_track_user_ipinfo(ip_address: str, user_id: str) -> None:
+async def bg_task_track_user_ipinfo(ip_address: IPvAnyAddress, user_id: str) -> None:
     """A background task to track the IP Address of a user.
 
     This function will:
@@ -80,7 +80,7 @@ async def bg_task_track_user_ipinfo(ip_address: str, user_id: str) -> None:
     """
     try:
         user_uuid = parse_id(user_id)
-        ip = IPvAnyAddress(ip_address)
+        ip: IPvAnyAddress = ip_address
         ip_in_db: Ipaddress | None = await get_ipaddress_from_db(ip)  # type: ignore
         if ip_in_db is None:
             ip_details: IpinfoResponse = get_ipinfo_details(ip)  # type: ignore

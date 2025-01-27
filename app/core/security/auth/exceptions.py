@@ -22,12 +22,11 @@ class HTTPAuth0Error(BaseModel):
 
 
 def configure_authorization_exceptions(app: FastAPI) -> None:
-
     @app.exception_handler(Auth0UnauthenticatedException)
     async def auth0_unauthenticated_exception_handler(
         request: Request, exc: Auth0UnauthenticatedException
     ) -> Response:  # noqa: E501
-        request_headers = {}
+        request_headers: dict = {}
         if exc.headers is not None:
             request_headers.update(exc.headers)  # pragma: no cover
         return await http_exception_handler(
@@ -43,7 +42,7 @@ def configure_authorization_exceptions(app: FastAPI) -> None:
     async def auth0_unauthorized_exception_handler(
         request: Request, exc: Auth0UnauthorizedException
     ) -> Response:  # noqa: E501
-        request_headers = {}
+        request_headers: dict = {}
         if exc.headers is not None:
             request_headers.update(exc.headers)
         return await http_exception_handler(

@@ -8,7 +8,7 @@ from tests.utils.users import get_user_by_email
 
 from app.api.exceptions import ErrorCode
 from app.core.config import settings
-from app.models import User, UserClient
+from app.models import User
 from app.schemas import ClientRead
 
 pytestmark = pytest.mark.asyncio
@@ -43,9 +43,7 @@ async def test_delete_client_by_id_as_client_a(
         db_session=db_session, email=settings.auth.first_client_a
     )
     a_client: ClientRead = await create_random_client(db_session)
-    user_client: UserClient = await assign_user_to_client(  # noqa: F841
-        db_session, client_a, a_client
-    )
+    await assign_user_to_client(db_session, client_a, a_client)
     response: Response = await client.delete(
         f"clients/{a_client.id}",
         headers=client_a_token_headers,
