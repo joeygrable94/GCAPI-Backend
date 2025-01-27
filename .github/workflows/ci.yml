@@ -78,18 +78,21 @@ jobs:
       # cloudkeys
       CLOUDKEY_IPINFO: ${{ secrets.CLOUDKEY_IPINFO }}
       CLOUDKEY_GOOGLE_API: ${{ secrets.CLOUDKEY_GOOGLE_API }}
-      AWS_ROLE_TO_ASSUME: ${{ secrets.CLOUDKEY_AWS_ROLE_TO_ASSUME }}
-      AWS_REGION: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
-      AWS_S3_DEFAULT_BUCKET: ${{ secrets.CLOUDKEY_AWS_S3_DEFAULT_BUCKET }}
+      # aws
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      CLOUDKEY_AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
+      CLOUDKEY_AWS_DEFAULT_REGION: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
+      CLOUDKEY_AWS_S3_DEFAULT_BUCKET: ${{ secrets.CLOUDKEY_AWS_S3_DEFAULT_BUCKET }}
+      
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
-          role-session-name: GCAPIBackendGitHubActionRunnerSession
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GCAPIBackend-GitHubAction-AssumeRoleWithAction
+          aws-region: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
           role-duration-seconds: 1200
       - name: Load AWS Account
         run: aws sts get-caller-identity
