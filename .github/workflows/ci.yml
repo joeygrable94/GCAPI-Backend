@@ -80,7 +80,8 @@ jobs:
       CLOUDKEY_GOOGLE_API: ${{ secrets.CLOUDKEY_GOOGLE_API }}
       # aws
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-      CLOUDKEY_AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}
       CLOUDKEY_AWS_DEFAULT_REGION: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
       CLOUDKEY_AWS_S3_DEFAULT_BUCKET: ${{ secrets.CLOUDKEY_AWS_S3_DEFAULT_BUCKET }}
       
@@ -90,10 +91,16 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
+          aws-access-key-id: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: GCAPIBackend-GitHubAction-AssumeRoleWithAction
           aws-region: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
-          role-duration-seconds: 1200
+      - name: Debug credentials
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}"
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}"
+          aws sts get-caller-identity
       - name: Load AWS Account
         run: aws sts get-caller-identity
       - name: Setup Python
