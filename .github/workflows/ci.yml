@@ -78,6 +78,7 @@ jobs:
       CLOUDKEY_IPINFO: ${{ secrets.CLOUDKEY_IPINFO }}
       CLOUDKEY_GOOGLE_API: ${{ secrets.CLOUDKEY_GOOGLE_API }}
       CLOUDKEY_AWS_S3_DEFAULT_BUCKET: ${{ secrets.CLOUDKEY_AWS_S3_DEFAULT_BUCKET }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.CLOUDKEY_AWS_ROLE_TO_ASSUME }}
       AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
@@ -90,8 +91,11 @@ jobs:
           aws-access-key-id: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
-      # - name: Load AWS Account
-      #   run: aws sts get-caller-identity
+          role-to-assume: ${{ secrets.CLOUDKEY_AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 1200
+          role-session-name: GCAPIGitHubActionRunnerSession
+      - name: Load AWS Account
+        run: aws sts get-caller-identity
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
