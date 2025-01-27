@@ -96,11 +96,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: GCAPIBackend-GitHubAction-AssumeRoleWithAction
           aws-region: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
-      - name: Debug credentials
-        run: |
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}"
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}"
-          aws sts get-caller-identity
       - name: Load AWS Account
         run: aws sts get-caller-identity
       - name: Setup Python
