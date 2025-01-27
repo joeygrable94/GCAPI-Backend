@@ -79,7 +79,6 @@ jobs:
       CLOUDKEY_IPINFO: ${{ secrets.CLOUDKEY_IPINFO }}
       CLOUDKEY_GOOGLE_API: ${{ secrets.CLOUDKEY_GOOGLE_API }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.CLOUDKEY_AWS_ROLE_TO_ASSUME }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
       AWS_REGION: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
       AWS_S3_DEFAULT_BUCKET: ${{ secrets.CLOUDKEY_AWS_S3_DEFAULT_BUCKET }}
     steps:
@@ -88,7 +87,6 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
           role-session-name: GCAPIBackendGitHubActionRunnerSession
           aws-region: ${{ env.AWS_REGION }}
