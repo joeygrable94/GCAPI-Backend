@@ -77,21 +77,19 @@ jobs:
       # cloudkeys
       CLOUDKEY_IPINFO: ${{ secrets.CLOUDKEY_IPINFO }}
       CLOUDKEY_GOOGLE_API: ${{ secrets.CLOUDKEY_GOOGLE_API }}
-      CLOUDKEY_AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
-      CLOUDKEY_AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}
-      CLOUDKEY_AWS_DEFAULT_REGION: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
       CLOUDKEY_AWS_S3_DEFAULT_BUCKET: ${{ secrets.CLOUDKEY_AWS_S3_DEFAULT_BUCKET }}
       AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ${{ secrets.CLOUDKEY_AWS_S3_DEFAULT_BUCKET }}
+      AWS_DEFAULT_REGION: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
+          aws-access-key-id: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
-          role-to-assume: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
       - name: Load AWS Account
         run: aws sts get-caller-identity
       - name: Setup Python
