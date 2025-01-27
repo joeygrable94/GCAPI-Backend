@@ -14,7 +14,6 @@ class CloudKeySettings(BaseSettings):
     googleapi: str | None = environ.get("CLOUDKEY_GOOGLE_API", None)
     # AWS
     aws_access_key_id: str = environ.get("CLOUDKEY_AWS_ACCESS_KEY_ID", "")
-    aws_secret_access_key: str = environ.get("CLOUDKEY_AWS_SECRET_ACCESS_KEY", "")
     aws_default_region: str = environ.get("CLOUDKEY_AWS_DEFAULT_REGION", "")
     aws_s3_default_bucket: str = environ.get("CLOUDKEY_AWS_S3_DEFAULT_BUCKET", "")
 
@@ -35,15 +34,6 @@ class CloudKeySettings(BaseSettings):
             if len(v) > 0:
                 return v
         raise ValueError("AWS Access Key ID not set.")
-
-    @field_validator("aws_secret_access_key", mode="before")
-    def validate_aws_secret_access_key(
-        cls, v: str, info: ValidationInfo
-    ) -> str:  # pragma: no cover
-        if isinstance(v, str):
-            if len(v) > 0:
-                return v
-        raise ValueError("AWS Secret Access Key not set.")
 
     @field_validator("aws_default_region", mode="before")
     def validate_aws_default_region(
