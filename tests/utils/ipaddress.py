@@ -1,12 +1,11 @@
-from typing import Any, Dict
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.utils import random_ipaddress
 
 from app.crud import IpaddressRepository
-from app.models.ipaddress import Ipaddress
-from app.schemas import IpaddressRead, IpinfoResponse
-from app.schemas.ipaddress import IpaddressCreate
+from app.models import Ipaddress
+from app.schemas import IpaddressCreate, IpaddressRead, IpinfoResponse
+from tests.utils.utils import random_ipaddress
 
 
 async def create_random_ipaddress(
@@ -18,7 +17,7 @@ async def create_random_ipaddress(
     return IpaddressRead.model_validate(ipaddress)
 
 
-def get_ipinfo_response(data: Dict[str, Any]) -> IpinfoResponse:  # pragma: no cover
+def get_ipinfo_response(data: dict[str, Any]) -> IpinfoResponse:  # pragma: no cover
     country_flag_unicode_value: dict = data.get("country_flag", dict(unicode=None))
     country_currency_code_value: dict = data.get("country_currency", dict(code=None))
     continent_code_value: dict = data.get("continent", dict(code=None))

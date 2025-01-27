@@ -1,5 +1,3 @@
-from typing import Type
-
 from app.crud.base import BaseRepository
 from app.models import GcftSnapTrafficsource
 from app.schemas import (
@@ -18,5 +16,5 @@ class GcftSnapTrafficsourceRepository(
     ]
 ):
     @property
-    def _table(self) -> Type[GcftSnapTrafficsource]:  # type: ignore
+    def _table(self) -> GcftSnapTrafficsource:
         return GcftSnapTrafficsource

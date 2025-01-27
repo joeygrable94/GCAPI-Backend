@@ -1,10 +1,10 @@
 import datetime as dt
-from typing import Annotated, List
+from typing import Annotated
 
 from fastapi import Depends, HTTPException, Query, status
 from pydantic import UUID4
 
-from app.api.exceptions import GoSearchConsoleMetricTypeInvalid, InvalidID
+from app.api.exceptions import InvalidID
 from app.core.config import settings
 from app.core.pagination import PageParamsFromQuery
 from app.core.utilities import parse_id
@@ -13,7 +13,7 @@ from app.db.constants import (
     DB_STR_TINYTEXT_MAXLEN_INPUT,
     DB_STR_URLPATH_MAXLEN_INPUT,
 )
-from app.schemas import GoSearchConsoleMetricType, PageSpeedInsightsDevice, PSIDevice
+from app.schemas import PageSpeedInsightsDevice, PSIDevice
 
 # utility query classes
 
@@ -113,8 +113,8 @@ class WebsitePageIdQueryParams:
 
 
 class DeviceStrategyQueryParams:
-    def __init__(self, strategy: List[str] | None = None):
-        q_devices: List[str] | None = None
+    def __init__(self, strategy: list[str] | None = None):
+        q_devices: list[str] | None = None
         try:
             if strategy is not None:
                 q_devices = []
@@ -126,7 +126,7 @@ class DeviceStrategyQueryParams:
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Invalid device strategy, must be 'mobile' or 'desktop'",
             )
-        self.strategy: List[str] | None = q_devices
+        self.strategy: list[str] | None = q_devices
 
 
 class Ga4QueryParams:
@@ -140,26 +140,6 @@ class Ga4QueryParams:
                 detail="Invalid ga4 property ID",
             )
         self.ga4_id: UUID4 | None = q_ga4_id
-
-
-class GoSearchConsoleMetricTypeQueryParams:
-    def __init__(self, metric_types: str | None = None):
-        s_metric_types: List[str] | None = None
-        q_metric_types: List[GoSearchConsoleMetricType] | None = None
-        try:
-            s_metric_types = (
-                None
-                if metric_types is None or metric_types == ""
-                else metric_types.split(",") if "," in metric_types else [metric_types]
-            )
-            q_metric_types = (
-                None
-                if s_metric_types is None
-                else [GoSearchConsoleMetricType(metric) for metric in s_metric_types]
-            )
-        except ValueError:
-            raise GoSearchConsoleMetricTypeInvalid()
-        self.metric_types: list[GoSearchConsoleMetricType] | None = q_metric_types
 
 
 class TrackingLinkSchemeQueryParams:
@@ -238,7 +218,9 @@ class CommonUserQueryParams(PageParamsFromQuery, UserIdQueryParams):
 GetUserQueryParams = Annotated[CommonUserQueryParams, Depends()]
 
 
-class CommonClientQueryParams(PageParamsFromQuery, ClientIdQueryParams):
+class CommonClientPlatformQueryParams(
+    PageParamsFromQuery, ClientIdQueryParams, IsActiveQueryParams
+):
     def __init__(
         self,
         page: Annotated[int | None, Query(ge=1)] = 1,
@@ -250,12 +232,14 @@ class CommonClientQueryParams(PageParamsFromQuery, ClientIdQueryParams):
             ),
         ] = settings.api.query_limit_rows_default,
         client_id: Annotated[str | None, Query()] = None,
+        is_active: Annotated[bool | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         ClientIdQueryParams.__init__(self, client_id)
+        IsActiveQueryParams.__init__(self, is_active)
 
 
-GetClientQueryParams = Annotated[CommonClientQueryParams, Depends()]
+GetClientPlatformQueryParams = Annotated[CommonClientPlatformQueryParams, Depends()]
 
 
 class CommonUserClientQueryParams(
@@ -299,7 +283,7 @@ class CommonWebsiteQueryParams(PageParamsFromQuery, WebsiteIdQueryParams):
         WebsiteIdQueryParams.__init__(self, website_id)
 
 
-GetWebsiteQueryParams = Annotated[CommonClientQueryParams, Depends()]
+GetWebsiteQueryParams = Annotated[CommonClientPlatformQueryParams, Depends()]
 
 
 class CommonClientWebsiteQueryParams(
@@ -388,7 +372,7 @@ class CommonWebsitePageSpeedInsightsQueryParams(
         ] = settings.api.query_limit_rows_default,
         website_id: Annotated[str | None, Query()] = None,
         page_id: Annotated[str | None, Query()] = None,
-        strategy: Annotated[List[str] | None, Query()] = None,
+        strategy: Annotated[list[str] | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         WebsiteIdQueryParams.__init__(self, website_id)
@@ -451,37 +435,6 @@ class CommonWebsiteGa4QueryParams(
 
 
 GetWebsiteGa4QueryParams = Annotated[CommonWebsiteGa4QueryParams, Depends()]
-
-
-class CommonWebsiteGoSearchConsoleQueryParams(
-    PageParamsFromQuery,
-    GoSearchConsoleMetricTypeQueryParams,
-    DateStartQueryParams,
-    DateEndQueryParams,
-):
-    def __init__(
-        self,
-        page: Annotated[int | None, Query(ge=1)] = 1,
-        size: Annotated[
-            int | None,
-            Query(
-                ge=1,
-                le=settings.api.query_limit_rows_max,
-            ),
-        ] = settings.api.query_limit_rows_default,
-        metric_types: Annotated[str | None, Query()] = None,
-        date_start: Annotated[str | None, Query()] = None,
-        date_end: Annotated[str | None, Query()] = None,
-    ):
-        PageParamsFromQuery.__init__(self, page, size)
-        GoSearchConsoleMetricTypeQueryParams.__init__(self, metric_types)
-        DateStartQueryParams.__init__(self, date_start)
-        DateEndQueryParams.__init__(self, date_end)
-
-
-GetWebsiteGoSearchConsoleQueryParams = Annotated[
-    CommonWebsiteGoSearchConsoleQueryParams, Depends()
-]
 
 
 class CommonClientTrackingLinkQueryParams(

@@ -37,11 +37,11 @@ class SecureMessage:
     def _deserialize_value(
         self, serialized_value: bytes, data_type: type[bool] | type[str] | type[int]
     ) -> object:
-        if data_type == bool:
+        if data_type is bool:
             return serialized_value == b"1"
-        elif data_type == str:
+        elif data_type is str:
             return serialized_value.decode("utf-8")
-        elif data_type == int:
+        elif data_type is int:
             return int(serialized_value.decode("utf-8"))
         else:
             raise TypeError("Unsupported data type for decryption")

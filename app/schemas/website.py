@@ -1,7 +1,3 @@
-from __future__ import annotations
-
-from typing import Optional
-
 from pydantic import UUID4, field_validator
 
 from app.db.validators import validate_domain_optional, validate_domain_required
@@ -24,9 +20,9 @@ class WebsiteCreate(WebsiteBase):
 
 
 class WebsiteUpdate(BaseSchema):
-    domain: Optional[str] = None
-    is_secure: Optional[bool] = None
-    is_active: Optional[bool] = None
+    domain: str | None = None
+    is_secure: bool | None = None
+    is_active: bool | None = None
 
     _validate_domain = field_validator("domain", mode="before")(
         validate_domain_optional

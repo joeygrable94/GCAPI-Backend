@@ -1,12 +1,12 @@
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.utils import random_lower_string
-from tests.utils.website_pages import create_random_website_page
-from tests.utils.websites import create_random_website
 
 from app.crud import WebsiteKeywordCorpusRepository
 from app.models import WebsiteKeywordCorpus
 from app.schemas import WebsiteKeywordCorpusCreate, WebsiteKeywordCorpusRead
+from tests.utils.utils import random_lower_string
+from tests.utils.website_pages import create_random_website_page
+from tests.utils.websites import create_random_website
 
 
 async def create_random_website_keywordcorpus(

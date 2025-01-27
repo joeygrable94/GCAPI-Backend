@@ -1,18 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from app.api.v1.endpoints import (
-    bdx_feed,
-    client_reports,
     clients,
-    go_a4_property,
-    go_a4_stream,
-    go_cloud,
-    go_sc_metrics,
-    go_sc_property,
-    notes,
+    go_property,
+    platform,
     public,
     security,
-    sharpspring,
     tracking_links,
     users,
     web_keywordcorpus,
@@ -21,8 +14,9 @@ from app.api.v1.endpoints import (
     web_sitemaps,
     websites,
 )
+from app.core.security import auth
 
-router_v1 = APIRouter(prefix="/v1")
+router_v1 = APIRouter(prefix="/v1", dependencies=[Depends(auth.implicit_scheme)])
 
 
 # Public routes
@@ -50,72 +44,25 @@ router_v1.include_router(
     tags=["Clients"],
 )
 
-# Client Reports routes
+# Platforms routes
 router_v1.include_router(
-    client_reports.router,
-    prefix="/clients/reports",
-    tags=["Client Reports"],
+    platform.router,
+    prefix="/platforms",
+    tags=["Platforms"],
 )
 
 # Tracking Links routes
 router_v1.include_router(
     tracking_links.router,
-    prefix="/links",
+    prefix="/utmlinks",
     tags=["Tracking Links"],
 )
 
-# Note routes
+# Google Properties routes
 router_v1.include_router(
-    notes.router,
-    prefix="/notes",
-    tags=["Notes"],
-)
-
-# Bdx Feed routes
-router_v1.include_router(
-    bdx_feed.router,
-    prefix="/bdx",
-    tags=["BDX Feeds"],
-)
-
-# Sharpspring routes
-router_v1.include_router(
-    sharpspring.router,
-    prefix="/sharpspring",
-    tags=["SharpSpring Accounts"],
-)
-
-# Google Cloud routes
-router_v1.include_router(
-    go_cloud.router,
-    prefix="/go/cloud",
-    tags=["Google Cloud Accounts"],
-)
-
-# GA4 routes
-router_v1.include_router(
-    go_a4_property.router,
-    prefix="/ga4/property",
-    tags=["Google Analytics 4 Properties"],
-)
-
-router_v1.include_router(
-    go_a4_stream.router,
-    prefix="/ga4/stream",
-    tags=["Google Analytics 4 Property Streams"],
-)
-
-# GSC routes
-router_v1.include_router(
-    go_sc_property.router,
-    prefix="/go/search/property",
-    tags=["Google Search Console Properties"],
-)
-
-router_v1.include_router(
-    go_sc_metrics.router,
-    prefix="/go/search/metric",
-    tags=["Google Search Console Property Metrics"],
+    go_property.router,
+    prefix="/go/property",
+    tags=["Google Properties"],
 )
 
 # website routes

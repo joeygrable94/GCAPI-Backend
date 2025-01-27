@@ -1,5 +1,3 @@
-from typing import List
-
 from .access import (
     AccessAll,
     AccessCreate,
@@ -34,7 +32,7 @@ from .core import (
 from .exceptions import AuthPermissionException, configure_permissions_exceptions
 from .scope import AclPermission, AclPrivilege, Scope
 
-__all__: List[str] = [
+__all__: list[str] = [
     "Scope",
     "AclPermission",
     "AclPrivilege",

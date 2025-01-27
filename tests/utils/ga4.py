@@ -1,6 +1,5 @@
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.utils import random_lower_string
 
 from app.crud import GoAnalytics4PropertyRepository, GoAnalytics4StreamRepository
 from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT
@@ -11,6 +10,7 @@ from app.schemas import (
     GoAnalytics4StreamCreate,
     GoAnalytics4StreamRead,
 )
+from tests.utils.utils import random_lower_string
 
 
 async def create_random_ga4_property(

@@ -74,8 +74,8 @@ class SimpleEmailService:
                 part = self.load_s3_file_attachment(attachment, bucket_name)
                 message.attach(part)
             return message.as_string()
-        except Exception as e:  # pragma: no cover
-            logger.warning("Error in create_message()", e)
+        except Exception:
+            logger.warning("Error in create_message()")
             return None
 
     def send_message(
@@ -118,6 +118,6 @@ class SimpleEmailService:
                 return response["MessageId"]
             else:  # pragma: no cover
                 raise Exception("Failed to send email.")
-        except Exception as e:  # pragma: no cover
+        except Exception as e:
             logger.warning("An error occurred: %s" % e)
             return None

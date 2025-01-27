@@ -1,7 +1,7 @@
-from typing import List, Type
 from uuid import UUID
 
-from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
+from sqlalchemy import BinaryExpression, Select, and_
+from sqlalchemy import select as sql_select
 
 from app.crud.base import BaseRepository
 from app.models import Client, GoAnalytics4Property, User, UserClient
@@ -21,7 +21,7 @@ class GoAnalytics4PropertyRepository(
     ]
 ):
     @property
-    def _table(self) -> Type[GoAnalytics4Property]:  # type: ignore
+    def _table(self) -> GoAnalytics4Property:
         return GoAnalytics4Property
 
     def query_list(
@@ -29,11 +29,8 @@ class GoAnalytics4PropertyRepository(
         user_id: UUID | None = None,
         client_id: UUID | None = None,
     ) -> Select:
-        # create statement joins
         stmt: Select = sql_select(self._table)
-        # create conditions
-        conditions: List[BinaryExpression[bool]] = []
-        # append conditions
+        conditions: list[BinaryExpression[bool]] = []
         if user_id:
             stmt = (
                 stmt.join(Client, GoAnalytics4Property.client_id == Client.id)
@@ -44,7 +41,6 @@ class GoAnalytics4PropertyRepository(
         if client_id:
             stmt = stmt.join(Client, GoAnalytics4Property.client_id == Client.id)
             conditions.append(Client.id.like(client_id))
-        # apply conditions
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
         return stmt

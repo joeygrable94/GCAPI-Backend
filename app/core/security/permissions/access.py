@@ -6,9 +6,9 @@ Everyone: AclPrivilege = AclPrivilege("system:everyone")
 Authenticated: AclPrivilege = AclPrivilege("system:authenticated")
 # role based privileges: client, employee, manager, user
 RoleAdmin: AclPrivilege = AclPrivilege("role:admin")
+RoleManager: AclPrivilege = AclPrivilege("role:manager")
 RoleClient: AclPrivilege = AclPrivilege("role:client")
 RoleEmployee: AclPrivilege = AclPrivilege("role:employee")
-RoleManager: AclPrivilege = AclPrivilege("role:manager")
 RoleUser: AclPrivilege = AclPrivilege("role:user")
 
 

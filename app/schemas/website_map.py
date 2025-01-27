@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum, unique
@@ -27,7 +25,7 @@ class SitemapPageChangeFrequency(Enum):
     NEVER = "never"
 
     @classmethod
-    def has_value(cls, value: str) -> bool:  # pragma: no cover
+    def has_value(cls, value: str) -> bool:
         """Test if enum has specified value."""
         return any(value == item.value for item in cls)
 

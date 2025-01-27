@@ -3,6 +3,7 @@
 [![CodeQL](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql.yml) [![GitHub CI](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/joeygrable94/GCAPI-Backend/branch/main/graph/badge.svg?token=8FCB50574D)](https://codecov.io/gh/joeygrable94/GCAPI-Backend)
 
 - [GCAPI Backend](#gcapi-backend)
+  - [Pytest](#pytest)
   - [Getting Started](#getting-started)
   - [Application Structure](#application-structure)
   - [Security Resources](#security-resources)
@@ -14,12 +15,30 @@
     - [Commands](#commands)
   - [SQLAlchemy ORM](#sqlalchemy-orm)
     - [Pagination](#pagination)
-  - [PyTest](#pytest)
+  - [PyTest](#pytest-1)
     - [PyTest Commands](#pytest-commands)
     - [PyTest Resources](#pytest-resources)
   - [External Resources](#external-resources)
+  - [Useful Commands](#useful-commands)
 
 ---
+
+## Pytest
+
+```bash
+crud
+
+core/pagination/core
+core/security/auth/exceptions
+core/security/csrf/core
+core/security/csrf/csrf_config
+core/security/csrf/exceptions
+core/security/permissions/exceptions
+
+api/deps
+api/exceptions
+api/v1/endpoints
+```
 
 ## Getting Started
 
@@ -185,3 +204,19 @@ pytest tests/api/api_v1/test_websites.py
 ## External Resources
 
 - [IPInfo.io](https://ipinfo.io/)
+
+---
+
+## Useful Commands
+
+Delete DS_Store files
+
+```bash
+find . -name '.DS_Store' -type f -delete
+```
+
+Delete all python cache files
+
+```bash
+find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf
+```

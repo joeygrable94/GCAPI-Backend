@@ -2,8 +2,7 @@
 # Float
 DB_FLOAT_MAXLEN_STORED = 20
 # Integer
-# DB_INT_INTEGER_MAXLEN_STORED = 2147483647
-DB_INT_INTEGER_MAXLEN_STORED = 4294967295
+DB_INT_INTEGER_MAXLEN_STORED = 2147483646
 # Strings
 DB_STR_16BIT_MAXLEN_INPUT = 16
 DB_STR_16BIT_MAXLEN_STORED = 408
@@ -36,3 +35,31 @@ DB_STR_IPADDRESS_MAXLEN_INPUT = 50
 DB_STR_USER_PICTURE_DEFAULT = "https://www.gravatar.com/avatar/?d=identicon"
 # GCFT
 DB_INT_ALTITUDE_MAX = 1000
+
+
+# first platforms
+MASTER_PLATFORM_INDEX = {
+    "gcft": "GC Fly Tours",
+    "gctxt": "GC Text",
+    "ga4": "Google Analytics 4",
+    "gsc": "Google Search Console",
+    "gads": "Google Ads",
+    "spsp": "SharpSpring",
+    "bdx": "BDX: Builder Digital Experience",
+    "email": "Internal Email",
+    # "bdxads": "BDX Ads",
+    # "bdxxml": "BDX XML Pricing Data",
+    # "hseofe": "House of Eblast",
+    # "sitempct": "Site Impact",
+    # "meta": "Meta Inc.",
+    # "mfb": "Facebook",
+    # "mig": "Instagram",
+    # "lnkn": "LinkedIn",
+    # "pin": "Pinterest",
+    # "tktk": "TikTok",
+    # "xtw": "X-Twitter",
+    # "gyt": "YouTube",
+    # "nhs": "New Home Source",
+    # "realtor": "Realtor Ads",
+    # "zillow": "Zillow Ads",
+}

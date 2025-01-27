@@ -4,37 +4,13 @@ from uuid import UUID
 from fastapi import Depends
 
 from app.api.deps.get_db import AsyncDatabaseSession
-from app.api.exceptions import (
-    BdxFeedNotExists,
-    ClientNotExists,
-    ClientReportNotExists,
-    Ga4PropertyNotExists,
-    Ga4StreamNotExists,
-    GoCloudPropertyNotExists,
-    GoSearchConsoleMetricNotExists,
-    GoSearchConsolePropertyNotExists,
-    NoteNotExists,
-    SharpspringNotExists,
-    TrackingLinkNotExists,
-    UserNotExists,
-    WebsiteMapNotExists,
-    WebsiteNotExists,
-    WebsitePageKeywordCorpusNotExists,
-    WebsitePageNotExists,
-    WebsitePageSpeedInsightsNotExists,
-)
+from app.api.exceptions import ClientNotFound, EntityNotFound, UserNotFound
 from app.core.utilities import parse_id
 from app.crud import (
-    BdxFeedRepository,
-    ClientReportRepository,
     ClientRepository,
     GoAnalytics4PropertyRepository,
-    GoAnalytics4StreamRepository,
-    GoCloudPropertyRepository,
-    GoSearchConsoleMetricRepository,
     GoSearchConsolePropertyRepository,
-    NoteRepository,
-    SharpspringRepository,
+    PlatformRepository,
     TrackingLinkRepository,
     UserRepository,
     WebsiteKeywordCorpusRepository,
@@ -43,21 +19,13 @@ from app.crud import (
     WebsitePageSpeedInsightsRepository,
     WebsiteRepository,
 )
+from app.crud.go_a4_stream import GoAnalytics4StreamRepository
+from app.crud.go_ads import GoAdsPropertyRepository
 from app.models import (
-    BdxFeed,
     Client,
-    ClientReport,
     GoAnalytics4Property,
-    GoAnalytics4Stream,
-    GoCloudProperty,
-    GoSearchConsoleCountry,
-    GoSearchConsoleDevice,
-    GoSearchConsolePage,
     GoSearchConsoleProperty,
-    GoSearchConsoleQuery,
-    GoSearchConsoleSearchappearance,
-    Note,
-    Sharpspring,
+    Platform,
     TrackingLink,
     User,
     Website,
@@ -66,7 +34,9 @@ from app.models import (
     WebsitePage,
     WebsitePageSpeedInsights,
 )
-from app.schemas import GoSearchConsoleMetricType
+from app.models.go_a4_stream import GoAnalytics4Stream
+from app.models.go_ads import GoAdsProperty
+from app.schemas.go import GooglePlatformType
 
 
 async def get_user_or_404(
@@ -78,7 +48,7 @@ async def get_user_or_404(
     user_repo: UserRepository = UserRepository(session=db)
     user: User | None = await user_repo.read(entry_id=parsed_id)
     if user is None:
-        raise UserNotExists()
+        raise UserNotFound()
     return user
 
 
@@ -94,27 +64,27 @@ async def get_client_or_404(
     client_repo: ClientRepository = ClientRepository(session=db)
     client: Client | None = await client_repo.read(entry_id=parsed_id)
     if client is None:
-        raise ClientNotExists()
+        raise ClientNotFound()
     return client
 
 
 FetchClientOr404 = Annotated[Client, Depends(get_client_or_404)]
 
 
-async def get_client_report_or_404(
+async def get_platform_404(
     db: AsyncDatabaseSession,
-    report_id: Any,
-) -> ClientReport | None:
-    """Parses uuid/int and fetches client report by id."""
-    parsed_id: UUID = parse_id(report_id)
-    report_repo: ClientReportRepository = ClientReportRepository(session=db)
-    client_report: ClientReport | None = await report_repo.read(entry_id=parsed_id)
-    if client_report is None:
-        raise ClientReportNotExists()
-    return client_report
+    platform_id: Any,
+) -> Platform | None:
+    """Parses uuid/int and fetches platform by id."""
+    parsed_id: UUID = parse_id(platform_id)
+    platform_repo: PlatformRepository = PlatformRepository(session=db)
+    platform: Platform | None = await platform_repo.read(parsed_id)
+    if platform is None:
+        raise EntityNotFound(entity_info="Platform {}".format(parsed_id))
+    return platform
 
 
-FetchClientReportOr404 = Annotated[ClientReport, Depends(get_client_report_or_404)]
+FetchPlatformOr404 = Annotated[Client, Depends(get_platform_404)]
 
 
 async def get_tracking_link_or_404(
@@ -126,27 +96,11 @@ async def get_tracking_link_or_404(
     link_repo: TrackingLinkRepository = TrackingLinkRepository(session=db)
     link: TrackingLink | None = await link_repo.read(entry_id=parsed_id)
     if link is None:
-        raise TrackingLinkNotExists()
+        raise EntityNotFound(entity_info="TrackingLink {}".format(parsed_id))
     return link
 
 
 FetchTrackingLinkOr404 = Annotated[TrackingLink, Depends(get_tracking_link_or_404)]
-
-
-async def get_note_or_404(
-    db: AsyncDatabaseSession,
-    note_id: Any,
-) -> Note | None:
-    """Parses uuid/int and fetches note by id."""
-    parsed_id: UUID = parse_id(note_id)
-    note_repo: NoteRepository = NoteRepository(session=db)
-    note: Note | None = await note_repo.read(entry_id=parsed_id)
-    if note is None:
-        raise NoteNotExists()
-    return note
-
-
-FetchNoteOr404 = Annotated[Note, Depends(get_note_or_404)]
 
 
 async def get_website_or_404(
@@ -158,7 +112,7 @@ async def get_website_or_404(
     website_repo: WebsiteRepository = WebsiteRepository(session=db)
     website: Website | None = await website_repo.read(entry_id=parsed_id)
     if website is None:
-        raise WebsiteNotExists()
+        raise EntityNotFound(entity_info="Website {}".format(parsed_id))
     return website
 
 
@@ -174,7 +128,7 @@ async def get_website_map_or_404(
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=db)
     sitemap: WebsiteMap | None = await sitemap_repo.read(entry_id=parsed_id)
     if sitemap is None:
-        raise WebsiteMapNotExists()
+        raise EntityNotFound(entity_info="WebsiteMap {}".format(parsed_id))
     return sitemap
 
 
@@ -190,7 +144,7 @@ async def get_website_page_or_404(
     website_page_repo: WebsitePageRepository = WebsitePageRepository(session=db)
     website_page: WebsitePage | None = await website_page_repo.read(entry_id=parsed_id)
     if website_page is None:
-        raise WebsitePageNotExists()
+        raise EntityNotFound(entity_info="WebsitePage {}".format(parsed_id))
     return website_page
 
 
@@ -206,11 +160,13 @@ async def get_website_page_psi_or_404(
     website_page_psi_repo: WebsitePageSpeedInsightsRepository = (
         WebsitePageSpeedInsightsRepository(session=db)
     )
-    website_page_speed_insights: WebsitePageSpeedInsights | None = (
-        await website_page_psi_repo.read(parsed_id)
-    )
+    website_page_speed_insights: (
+        WebsitePageSpeedInsights | None
+    ) = await website_page_psi_repo.read(parsed_id)
     if website_page_speed_insights is None:
-        raise WebsitePageSpeedInsightsNotExists()
+        raise EntityNotFound(
+            entity_info="WebsitePageSpeedInsights {}".format(parsed_id)
+        )
     return website_page_speed_insights
 
 
@@ -228,11 +184,13 @@ async def get_website_page_kwc_or_404(
     website_page_kwc_repo: WebsiteKeywordCorpusRepository = (
         WebsiteKeywordCorpusRepository(session=db)
     )
-    website_keyword_corpus: WebsiteKeywordCorpus | None = (
-        await website_page_kwc_repo.read(parsed_id)
-    )
+    website_keyword_corpus: (
+        WebsiteKeywordCorpus | None
+    ) = await website_page_kwc_repo.read(parsed_id)
     if website_keyword_corpus is None:
-        raise WebsitePageKeywordCorpusNotExists()
+        raise EntityNotFound(
+            entity_info="WebsitePageKeywordCorpus {}".format(parsed_id)
+        )
     return website_keyword_corpus
 
 
@@ -241,115 +199,42 @@ FetchWebsiteKeywordCorpusOr404 = Annotated[
 ]
 
 
-async def get_bdx_feed_404(
+async def get_go_property_or_404(
     db: AsyncDatabaseSession,
-    bdx_id: Any,
-) -> BdxFeed | None:
-    """Parses uuid/int and fetches bdx_feed by id."""
-    parsed_id: UUID = parse_id(bdx_id)
-    bdx_repo: BdxFeedRepository = BdxFeedRepository(session=db)
-    bdx_feed: BdxFeed | None = await bdx_repo.read(parsed_id)
-    if bdx_feed is None:
-        raise BdxFeedNotExists()
-    return bdx_feed
-
-
-async def get_sharpspring_404(
-    db: AsyncDatabaseSession,
-    ss_id: Any,
-) -> Sharpspring | None:
-    """Parses uuid/int and fetches sharpspring account by id."""
-    parsed_id: UUID = parse_id(ss_id)
-    ss_repo: SharpspringRepository = SharpspringRepository(session=db)
-    ss_acct: Sharpspring | None = await ss_repo.read(parsed_id)
-    if ss_acct is None:
-        raise SharpspringNotExists()
-    return ss_acct
-
-
-async def get_go_cloud_404(
-    db: AsyncDatabaseSession,
-    go_cloud_id: Any,
-) -> GoCloudProperty | None:
-    """Parses uuid/int and fetches google cloud property by id."""
-    parsed_id: UUID = parse_id(go_cloud_id)
-    go_cloud_repo: GoCloudPropertyRepository = GoCloudPropertyRepository(session=db)
-    go_cloud_acct: GoCloudProperty | None = await go_cloud_repo.read(parsed_id)
-    if go_cloud_acct is None:
-        raise GoCloudPropertyNotExists()
-    return go_cloud_acct
-
-
-async def get_ga4_property_404(
-    db: AsyncDatabaseSession,
-    ga4_id: Any,
-) -> GoAnalytics4Property | None:
-    """Parses uuid/int and fetches ga4 property by id."""
-    parsed_id: UUID = parse_id(ga4_id)
-    ga4_repo: GoAnalytics4PropertyRepository = GoAnalytics4PropertyRepository(
-        session=db
-    )
-    ga4_property: GoAnalytics4Property | None = await ga4_repo.read(parsed_id)
-    if ga4_property is None:
-        raise Ga4PropertyNotExists()
-    return ga4_property
-
-
-async def get_ga4_stream_404(
-    db: AsyncDatabaseSession,
-    ga4_stream_id: Any,
-) -> GoAnalytics4Stream | None:
-    """Parses uuid/int and fetches ga4 stream by id."""
-    parsed_id: UUID = parse_id(ga4_stream_id)
-    ga4_stream_repo: GoAnalytics4StreamRepository = GoAnalytics4StreamRepository(
-        session=db
-    )
-    ga4_stream: GoAnalytics4Stream | None = await ga4_stream_repo.read(parsed_id)
-    if ga4_stream is None:
-        raise Ga4StreamNotExists()
-    return ga4_stream
-
-
-async def get_go_search_console_property_404(
-    db: AsyncDatabaseSession,
-    gsc_id: Any,
-) -> GoSearchConsoleProperty | None:
-    """Parses uuid/int and fetches google search console property by id."""
-    parsed_id: UUID = parse_id(gsc_id)
-    gsc_repo: GoSearchConsolePropertyRepository = GoSearchConsolePropertyRepository(
-        session=db
-    )
-    gsc_property: GoSearchConsoleProperty | None = await gsc_repo.read(parsed_id)
-    if gsc_property is None:
-        raise GoSearchConsolePropertyNotExists()
-    return gsc_property
-
-
-async def get_go_search_console_metric_404(
-    db: AsyncDatabaseSession,
-    metric_type: GoSearchConsoleMetricType,
-    metric_id: Any,
+    platform_type: GooglePlatformType,
+    go_property_id: Any,
 ) -> (
-    GoSearchConsoleSearchappearance
-    | GoSearchConsoleQuery
-    | GoSearchConsolePage
-    | GoSearchConsoleDevice
-    | GoSearchConsoleCountry
+    GoAnalytics4Property | GoAnalytics4Stream | GoSearchConsoleProperty | GoAdsProperty
 ):
-    """
-    Parses uuid/int and fetches google search console metric by metric type and id.
-    """
-    parsed_metric_id: UUID = parse_id(metric_id)
-    gsc_metric_response: (
-        GoSearchConsoleSearchappearance
-        | GoSearchConsoleQuery
-        | GoSearchConsolePage
-        | GoSearchConsoleDevice
-        | GoSearchConsoleCountry
-        | None
-    ) = None
-    gsc_metric_repo = GoSearchConsoleMetricRepository(db, metric_type=metric_type)
-    gsc_metric_response = await gsc_metric_repo.read(parsed_metric_id)
-    if gsc_metric_response is None:
-        raise GoSearchConsoleMetricNotExists()
-    return gsc_metric_response
+    """Parses uuid/int and fetches go property by platform_type and id."""
+    parsed_id: UUID = parse_id(go_property_id)
+    go_property = None
+    go_entity: str | None = None
+    if platform_type == GooglePlatformType.ga4:
+        ga4_repo = GoAnalytics4PropertyRepository(session=db)
+        go_property: GoAnalytics4Property | None = await ga4_repo.read(parsed_id)
+        go_entity = "GoAnalytics4Property"
+        return go_property
+    elif platform_type == GooglePlatformType.ga4_stream:
+        ga4_stream_repo = GoAnalytics4StreamRepository(session=db)
+        go_property: GoAnalytics4Stream | None = await ga4_stream_repo.read(parsed_id)
+        go_entity = "GoAnalytics4Stream"
+        return go_property
+    elif platform_type == GooglePlatformType.gsc:
+        gsc_repo = GoSearchConsolePropertyRepository(session=db)
+        go_property: GoSearchConsoleProperty | None = await gsc_repo.read(parsed_id)
+        go_entity = "GoSearchConsoleProperty"
+        return go_property
+    elif platform_type == GooglePlatformType.gads:
+        gads_repo = GoAdsPropertyRepository(session=db)
+        go_property: GoAdsProperty | None = await gads_repo.read(parsed_id)
+        go_entity = "GoAdsProperty"
+        return go_property
+    if go_property is None:
+        raise EntityNotFound(entity_info="{} {}".format(go_entity, parsed_id))
+
+
+FetchGooglePropertyOr404 = Annotated[
+    GoAnalytics4Property | GoAnalytics4Stream | GoSearchConsoleProperty | GoAdsProperty,
+    Depends(get_go_property_or_404),
+]

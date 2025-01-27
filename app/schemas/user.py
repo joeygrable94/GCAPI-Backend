@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from pydantic import UUID4, field_validator
 
 from app.core.security.permissions import AclPrivilege

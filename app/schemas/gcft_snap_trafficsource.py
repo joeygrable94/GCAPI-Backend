@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import UUID4, field_validator
 
@@ -18,11 +17,11 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 class GcftSnapTrafficsourceBase(BaseSchema):
     session_id: UUID4
     referrer: str
-    utm_campaign: Optional[str] = None
-    utm_content: Optional[str] = None
-    utm_medium: Optional[str] = None
-    utm_source: Optional[str] = None
-    utm_term: Optional[str] = None
+    utm_campaign: str | None = None
+    utm_content: str | None = None
+    utm_medium: str | None = None
+    utm_source: str | None = None
+    utm_term: str | None = None
     visit_date: datetime
     gcft_id: UUID4
     snap_id: UUID4

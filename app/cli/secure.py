@@ -36,3 +36,4 @@ if __name__ == "__main__":
         logger.warning("CLI Interrupted")
     except Exception as e:
         logger.warning(f"Error running CLI: {e}")
+        logger.warning(f"Error running CLI: {e}")

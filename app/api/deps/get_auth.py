@@ -1,10 +1,10 @@
-from typing import Annotated, List
+from typing import Annotated
 
 from fastapi import Depends, HTTPException, Security, status
 
 from app.api.exceptions import ErrorCode
 from app.core import logger
-from app.core.security import Auth0User, auth
+from app.core.security import AuthUser, auth
 from app.core.security.permissions import AclPrivilege, RoleUser
 from app.core.utilities import get_uuid_str
 from app.crud import UserRepository
@@ -15,8 +15,8 @@ from app.schemas import UserCreate, UserUpdatePrivileges
 from .get_db import AsyncDatabaseSession
 
 
-def get_acl_scope_list(roles: List[str], permissions: List[str]) -> List[AclPrivilege]:
-    user_scopes: List[AclPrivilege] = [RoleUser]
+def get_acl_scope_list(roles: list[str], permissions: list[str]) -> list[AclPrivilege]:
+    user_scopes: list[AclPrivilege] = [RoleUser]
     if roles:
         for auth0_role in roles:
             auth0_scope = AclPrivilege(auth0_role)
@@ -32,34 +32,34 @@ def get_acl_scope_list(roles: List[str], permissions: List[str]) -> List[AclPriv
 
 async def get_current_user(
     db: AsyncDatabaseSession,
-    auth0_user: Auth0User | None = Security(auth.get_user),
+    auth_user: AuthUser | None = Security(auth.get_user),
 ) -> User:
-    if auth0_user is None:
+    if auth_user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ErrorCode.UNAUTHORIZED,
         )
-    if auth0_user.is_verified is False:
+    if auth_user.is_verified is False:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=ErrorCode.UNVERIFIED_ACCESS_DENIED,
         )
     users_repo: UserRepository = UserRepository(session=db)
     user: User | None = await users_repo.read_by(
-        field_name="auth_id", field_value=auth0_user.auth_id
+        field_name="auth_id", field_value=auth_user.auth_id
     )
-    auth0_scopes = get_acl_scope_list(auth0_user.roles, auth0_user.permissions)
+    auth0_scopes = get_acl_scope_list(auth_user.roles, auth_user.permissions)
     if not user:
-        new_username = auth0_user.email.split("@")[0] + get_uuid_str()[:4]
+        new_username = auth_user.email.split("@")[0] + get_uuid_str()[:4]
         user = await users_repo.create(
             UserCreate(
-                auth_id=auth0_user.auth_id,
-                email=auth0_user.email,
+                auth_id=auth_user.auth_id,
+                email=auth_user.email,
                 username=new_username,
-                picture=auth0_user.picture or DB_STR_USER_PICTURE_DEFAULT,
+                picture=auth_user.picture or DB_STR_USER_PICTURE_DEFAULT,
                 scopes=auth0_scopes,
                 is_active=True,
-                is_verified=auth0_user.is_verified or False,
+                is_verified=auth_user.is_verified or False,
                 is_superuser=False,
             )
         )

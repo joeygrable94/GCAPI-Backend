@@ -11,7 +11,6 @@
 import re
 from hashlib import sha1
 from os import urandom
-from typing import Optional, Tuple
 
 from fastapi.requests import Request
 from fastapi.responses import Response
@@ -25,7 +24,7 @@ from .exceptions import InvalidHeaderError, MissingTokenError, TokenValidationEr
 
 
 class CsrfProtect(CsrfConfig):
-    def generate_csrf_tokens(self, secret_key: Optional[str] = None) -> Tuple[str, str]:
+    def generate_csrf_tokens(self, secret_key: str | None = None) -> tuple[str, str]:
         """
         Generate a CSRF token and a signed CSRF token using server's secret key to be
         stored in cookie.
@@ -127,9 +126,9 @@ class CsrfProtect(CsrfConfig):
     async def validate_csrf(
         self,
         request: Request,
-        cookie_key: Optional[str] = None,
-        secret_key: Optional[str] = None,
-        time_limit: Optional[int] = None,
+        cookie_key: str | None = None,
+        secret_key: str | None = None,
+        time_limit: int | None = None,
     ) -> None:
         """
         Check if the given data is a valid CSRF token. This compares the given

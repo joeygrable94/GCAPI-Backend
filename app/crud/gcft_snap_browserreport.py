@@ -1,5 +1,3 @@
-from typing import Type
-
 from app.crud.base import BaseRepository
 from app.models import GcftSnapBrowserreport
 from app.schemas import (
@@ -18,5 +16,5 @@ class GcftSnapBrowserreportRepository(
     ]
 ):
     @property
-    def _table(self) -> Type[GcftSnapBrowserreport]:  # type: ignore
+    def _table(self) -> GcftSnapBrowserreport:
         return GcftSnapBrowserreport

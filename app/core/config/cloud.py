@@ -1,5 +1,4 @@
 from os import environ
-from typing import Optional
 
 from dotenv import load_dotenv
 from pydantic import ValidationInfo, field_validator
@@ -10,9 +9,9 @@ load_dotenv()
 
 class CloudKeySettings(BaseSettings):
     # IP Info
-    ipinfo: Optional[str] = environ.get("CLOUDKEY_IPINFO", None)
+    ipinfo: str | None = environ.get("CLOUDKEY_IPINFO", None)
     # Google Cloud
-    googleapi: Optional[str] = environ.get("CLOUDKEY_GOOGLE_API", None)
+    googleapi: str | None = environ.get("CLOUDKEY_GOOGLE_API", None)
     # AWS
     aws_access_key_id: str = environ.get("CLOUDKEY_AWS_ACCESS_KEY_ID", "")
     aws_secret_access_key: str = environ.get("CLOUDKEY_AWS_SECRET_ACCESS_KEY", "")

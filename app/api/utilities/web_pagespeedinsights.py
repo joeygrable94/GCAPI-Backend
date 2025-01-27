@@ -1,10 +1,9 @@
 import json
-from typing import Optional
 from urllib import request
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.exceptions.exceptions import WebsiteNotExists, WebsitePageNotExists
+from app.api.exceptions.exceptions import EntityNotFound
 from app.core.config import settings
 from app.core.logger import logger
 from app.core.utilities import parse_id
@@ -24,9 +23,9 @@ from app.schemas import (
 
 def fetch_pagespeedinsights(
     fetch_url: str, device: PageSpeedInsightsDevice
-) -> Optional[WebsitePageSpeedInsightsBase]:
+) -> WebsitePageSpeedInsightsBase | None:
     try:
-        api_key: Optional[str] = settings.cloud.googleapi
+        api_key: str | None = settings.cloud.googleapi
         if api_key is None:  # pragma: no cover
             raise Exception("Google Cloud API Key not found in environment variables")
         fetch_req = "https://%s/%s/%s?url=%s&key=%s&strategy=%s" % (
@@ -77,30 +76,8 @@ def fetch_pagespeedinsights(
                     ]
         psi_base: WebsitePageSpeedInsightsBase = WebsitePageSpeedInsightsBase(
             strategy=device.device,
-            ps_weight=results["performance-score"]["weight"],
-            ps_grade=results["performance-score"]["score"],
-            ps_value=results["performance-score"]["value"],
-            ps_unit=results["performance-score"]["unit"],
-            fcp_weight=results["first-contentful-paint"]["weight"],
-            fcp_grade=results["first-contentful-paint"]["score"],
-            fcp_value=results["first-contentful-paint"]["value"],
-            fcp_unit=results["first-contentful-paint"]["unit"],
-            lcp_weight=results["largest-contentful-paint"]["weight"],
-            lcp_grade=results["largest-contentful-paint"]["score"],
-            lcp_value=results["largest-contentful-paint"]["value"],
-            lcp_unit=results["largest-contentful-paint"]["unit"],
-            cls_weight=results["cumulative-layout-shift"]["weight"],
-            cls_grade=results["cumulative-layout-shift"]["score"],
-            cls_value=results["cumulative-layout-shift"]["value"],
-            cls_unit=results["cumulative-layout-shift"]["unit"],
-            si_weight=results["speed-index"]["weight"],
-            si_grade=results["speed-index"]["score"],
-            si_value=results["speed-index"]["value"],
-            si_unit=results["speed-index"]["unit"],
-            tbt_weight=results["total-blocking-time"]["weight"],
-            tbt_grade=results["total-blocking-time"]["score"],
-            tbt_value=results["total-blocking-time"]["value"],
-            tbt_unit=results["total-blocking-time"]["unit"],
+            score_grade=results["performance-score"]["score"],
+            grade_data=json.dumps(results),
         )
         logger.info("Finished Fetching Page Speed Insights")
         return psi_base
@@ -127,7 +104,7 @@ async def create_website_pagespeedinsights(
                 entry_id=website_uuid,
             )
         if website is None:
-            raise WebsiteNotExists()
+            raise EntityNotFound(entity_info=f"Website {website_id}")
         # check if page exists
         async with get_db_session() as session:
             pages_repo: WebsitePageRepository = WebsitePageRepository(session)
@@ -135,7 +112,7 @@ async def create_website_pagespeedinsights(
                 entry_id=page_uuid,
             )
         if website_page is None:
-            raise WebsitePageNotExists()
+            raise EntityNotFound(entity_info=f"WebsitePage {page_id}")
         # create website page speed insights
         async with get_db_session() as session:
             psi_repo: WebsitePageSpeedInsightsRepository = (
@@ -143,33 +120,11 @@ async def create_website_pagespeedinsights(
             )
             website_page_psi = await psi_repo.create(
                 schema=WebsitePageSpeedInsightsCreate(
+                    strategy=insights.strategy,
+                    score_grade=insights.score_grade,
+                    grade_data=insights.grade_data,
                     page_id=website_page.id,
                     website_id=website.id,
-                    strategy=insights.strategy,
-                    ps_weight=insights.ps_weight,
-                    ps_grade=insights.ps_grade,
-                    ps_value=insights.ps_value,
-                    ps_unit=insights.ps_unit,
-                    fcp_weight=insights.fcp_weight,
-                    fcp_grade=insights.fcp_grade,
-                    fcp_value=insights.fcp_value,
-                    fcp_unit=insights.fcp_unit,
-                    lcp_weight=insights.lcp_weight,
-                    lcp_grade=insights.lcp_grade,
-                    lcp_value=insights.lcp_value,
-                    lcp_unit=insights.lcp_unit,
-                    cls_weight=insights.cls_weight,
-                    cls_grade=insights.cls_grade,
-                    cls_value=insights.cls_value,
-                    cls_unit=insights.cls_unit,
-                    si_weight=insights.si_weight,
-                    si_grade=insights.si_grade,
-                    si_value=insights.si_value,
-                    si_unit=insights.si_unit,
-                    tbt_weight=insights.tbt_weight,
-                    tbt_grade=insights.tbt_grade,
-                    tbt_value=insights.tbt_value,
-                    tbt_unit=insights.tbt_unit,
                 )
             )
             logger.info(

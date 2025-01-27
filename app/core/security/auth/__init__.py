@@ -5,33 +5,35 @@ from app.core.config import settings
 from .auth0 import (
     Auth0,
     Auth0HTTPBearer,
-    Auth0User,
+    AuthUser,
     JwksDict,
     JwksKeyDict,
     OAuth2ImplicitBearer,
 )
 from .exceptions import (
-    Auth0UnauthenticatedException,
-    Auth0UnauthorizedException,
-    HTTPAuth0Error,
+    AuthUnauthenticatedException,
+    AuthUnauthorizedException,
+    HTTPAuthError,
     configure_authorization_exceptions,
 )
 
 auth = Auth0(
     domain=settings.auth.domain,
     api_audience=settings.auth.audience,
-    scopes=settings.auth.scopes,
+    scopes={
+        "permission:test": "Grant GCAPI Permission to test the API using your email credentials."
+    },
 )
 
 
 __all__: List[str] = [
     "Auth0",
     "Auth0HTTPBearer",
-    "Auth0UnauthenticatedException",
-    "Auth0UnauthorizedException",
-    "Auth0User",
+    "AuthUnauthenticatedException",
+    "AuthUnauthorizedException",
+    "AuthUser",
     "configure_authorization_exceptions",
-    "HTTPAuth0Error",
+    "HTTPAuthError",
     "JwksDict",
     "JwksKeyDict",
     "OAuth2ImplicitBearer",

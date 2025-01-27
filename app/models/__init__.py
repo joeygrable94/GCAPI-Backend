@@ -1,12 +1,7 @@
-from typing import List
-
-from .bdx_feed import BdxFeed
 from .client import Client
-from .client_report import ClientReport
-from .client_report_note import ClientReportNote
+from .client_platform import ClientPlatform
+from .client_styleguide import ClientStyleguide
 from .client_website import ClientWebsite
-from .data_bucket import DataBucket
-from .file_asset import FileAsset
 from .gcft import Gcft
 from .gcft_snap import GcftSnap
 from .gcft_snap_activeduration import GcftSnapActiveduration
@@ -17,36 +12,30 @@ from .gcft_snap_view import GcftSnapView
 from .geocoord import Geocoord
 from .go_a4 import GoAnalytics4Property
 from .go_a4_stream import GoAnalytics4Stream
-from .go_cloud import GoCloudProperty
+from .go_ads import GoAdsProperty
 from .go_sc import GoSearchConsoleProperty
-from .go_sc_country import GoSearchConsoleCountry
-from .go_sc_device import GoSearchConsoleDevice
-from .go_sc_page import GoSearchConsolePage
-from .go_sc_query import GoSearchConsoleQuery
-from .go_sc_searchappearance import GoSearchConsoleSearchappearance
 from .ipaddress import Ipaddress
-from .note import Note
-from .sharpspring import Sharpspring
+from .platform import Platform
 from .tracking_link import TrackingLink
 from .user import User
 from .user_client import UserClient
 from .user_ipaddress import UserIpaddress
 from .website import Website
+from .website_go_a4 import WebsiteGoAnalytics4Property
+from .website_go_ads import WebsiteGoAdsProperty
 from .website_keywordcorpus import WebsiteKeywordCorpus
 from .website_map import WebsiteMap
 from .website_page import WebsitePage
 from .website_pagespeedinsights import WebsitePageSpeedInsights
 
-__all__: List[str] = [
-    "BdxFeed",
+__all__: list[str] = [
     "Client",
-    "DataBucket",
-    "ClientReport",
-    "ClientReportNote",
+    "ClientStyleguide",
     "ClientWebsite",
-    "FileAsset",
+    "ClientPlatform",
     "Gcft",
     "GcftSnap",
+    "Platform",
     "GcftSnapActiveduration",
     "GcftSnapBrowserreport",
     "GcftSnapHotspotclick",
@@ -54,22 +43,17 @@ __all__: List[str] = [
     "GcftSnapView",
     "Geocoord",
     "GoAnalytics4Property",
+    "GoAdsProperty",
     "GoAnalytics4Stream",
-    "GoCloudProperty",
     "GoSearchConsoleProperty",
-    "GoSearchConsoleCountry",
-    "GoSearchConsoleDevice",
-    "GoSearchConsolePage",
-    "GoSearchConsoleQuery",
-    "GoSearchConsoleSearchappearance",
     "Ipaddress",
-    "Note",
-    "Sharpspring",
     "TrackingLink",
     "User",
     "UserClient",
     "UserIpaddress",
     "Website",
+    "WebsiteGoAnalytics4Property",
+    "WebsiteGoAdsProperty",
     "WebsiteKeywordCorpus",
     "WebsiteMap",
     "WebsitePage",

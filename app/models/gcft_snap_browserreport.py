@@ -1,13 +1,12 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from pydantic import UUID4
 from sqlalchemy import Boolean, DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import Timestamp  # type: ignore
-from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils import Timestamp, UUIDType
 
-from app.core.utilities import get_uuid  # type: ignore
+from app.core.utilities import get_uuid
 from app.db.base_class import Base
 from app.db.constants import DB_STR_TINYTEXT_MAXLEN_STORED
 
@@ -18,15 +17,15 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class GcftSnapBrowserreport(Base, Timestamp):
     __tablename__: str = "gcft_snap_browserreport"
-    __table_args__: Any = {"mysql_engine": "InnoDB"}
-    __mapper_args__: Any = {"always_refresh": True}
+    __table_args__: dict = {"mysql_engine": "InnoDB"}
+    __mapper_args__: dict = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         index=True,
         primary_key=True,
         unique=True,
         nullable=False,
-        default=get_uuid(),
+        default=get_uuid,
     )
     session_id: Mapped[UUID4] = mapped_column(UUIDType(binary=False), nullable=False)
     browser: Mapped[str] = mapped_column(
@@ -56,7 +55,9 @@ class GcftSnapBrowserreport(Base, Timestamp):
     language: Mapped[str] = mapped_column(
         String(DB_STR_TINYTEXT_MAXLEN_STORED), nullable=True
     )
-    visit_date: Mapped[datetime] = mapped_column(DateTime(), nullable=False)
+    visit_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
 
     # relationships
     gcft_id: Mapped[UUID4] = mapped_column(
@@ -72,8 +73,6 @@ class GcftSnapBrowserreport(Base, Timestamp):
 
     # represenation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = (
-            f"GcftSnapBrowserreport({self.session_id} \
+        repr_str: str = f"GcftSnapBrowserreport({self.session_id} \
             on {self.visit_date}, browser={self.browser}, V.{self.browser_version})"
-        )
         return repr_str

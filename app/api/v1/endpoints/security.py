@@ -1,5 +1,3 @@
-from typing import Any
-
 from fastapi import APIRouter, Depends, Request, Response, Security
 
 from app.api.deps import (
@@ -10,13 +8,13 @@ from app.api.deps import (
 )
 from app.core.config import Settings, get_settings
 from app.core.security import (
+    AuthUser,
     CsrfProtect,
     CsrfToken,
     EncryptedMessage,
     PlainMessage,
     auth,
 )
-from app.core.security.auth.auth0 import Auth0User
 
 router: APIRouter = APIRouter()
 
@@ -24,13 +22,10 @@ router: APIRouter = APIRouter()
 @router.get(
     "/test-scope",
     name="secure:test_security_scope",
-    dependencies=[
-        Depends(auth.implicit_scheme),
-    ],
 )
 async def check_test_token_scope(
-    user: Auth0User = Security(auth.get_user, scopes=["access:test"])
-) -> Any:
+    user: AuthUser = Security(auth.get_user, scopes=["access:test"]),
+) -> dict[str, str]:
     return {"status": "ok"}
 
 
@@ -38,7 +33,6 @@ async def check_test_token_scope(
     "/csrf",
     name="secure:get_csrf",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_current_user),
         Depends(CsrfProtect),
         Depends(get_settings),
@@ -59,7 +53,7 @@ async def get_csrf(
 
     Returns:
     --------
-    `Dict[str, Any]` : a dictionary containing the CSRF token for the API
+    `dict[str, Any]` : a dictionary containing the CSRF token for the API
 
     """
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens(
@@ -75,7 +69,6 @@ async def get_csrf(
     "/csrf",
     name="secure:check_csrf",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_current_user),
         Depends(CsrfProtect),
         Depends(get_settings),
@@ -97,7 +90,7 @@ async def check_csrf(
 
     Returns:
     --------
-    `Dict[str, Any]` : a dictionary containing the CSRF token for the API
+    `dict[str, Any]` : a dictionary containing the CSRF token for the API
 
     """
     await csrf_protect.validate_csrf(
@@ -114,7 +107,6 @@ async def check_csrf(
     "/encrypt/message",
     name="secure:secure_encrypt_message",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_current_user),
         Depends(get_secure_message_encryption),
     ],
@@ -134,7 +126,6 @@ async def secure_encrypt_message(
     "/decrypt/message",
     name="secure:secure_decrypt_message",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_current_user),
         Depends(get_secure_message_encryption),
     ],

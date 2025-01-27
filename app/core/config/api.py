@@ -1,6 +1,6 @@
 from enum import Enum
 from os import environ
-from typing import Any, List, Optional, Union
+from typing import Any, Union
 
 from dotenv import load_dotenv
 from pydantic import ValidationInfo, field_validator
@@ -23,7 +23,7 @@ class ApiSettings(BaseSettings):
     root_dir: str = get_root_directory(__file__)
     name: str = environ.get("API_NAME", "GCAPI")
     key: str = environ.get("API_KEY", "gcapi")
-    version: str = environ.get("API_TAG", "0.0.3")
+    version: str = environ.get("API_TAG", "0.0.0")
     mode: str = environ.get("API_MODE", "development")
     debug: bool = bool(
         environ.get("API_MODE", "development") == "test"
@@ -31,16 +31,16 @@ class ApiSettings(BaseSettings):
         or environ.get("API_MODE", "development") == "staging"
         or environ.get("API_DEBUG", True)
     )
-    host: str = environ.get("API_HOST_IP", "0.0.0.0")
-    port: int = int(environ.get("API_HOST_PORT", 8888))
     prefix: str = "/api"
-    domain_name: str = environ.get("API_DOMAIN", "localhost")
     timezone: str = environ.get("API_TIMEZONE", "America/Los_Angeles")
+    domain_name: str = environ.get("API_DOMAIN", "localhost")
+    host_ip: str = environ.get("API_HOST_IP", "0.0.0.0")
+    host_port: int = int(environ.get("API_HOST_PORT", "8888"))
     logging_level: str = environ.get("API_LOG_LEVEL", "debug").upper()
     logger_name: str = environ.get("API_NAME", "GCAPI").lower()
     # Security
     asgi_header_key: str = "x-request-id"
-    allowed_cors: Optional[Union[str, List[str]]] = environ.get("API_ALLOWED_CORS")
+    allowed_cors: Union[str, list[str]] | None = environ.get("API_ALLOWED_CORS")
     rsa_public_key: str = environ.get("API_RSA_PUBLIC_KEY", "")
     rsa_private_key: str = environ.get("API_RSA_PRIVATE_KEY", "")
     session_secret_key: str = environ.get(
@@ -71,7 +71,7 @@ class ApiSettings(BaseSettings):
         environ.get("API_QUERY_LIMIT_ROWS_DEFAULT", 100)
     )
     query_limit_rows_max: int = int(environ.get("API_QUERY_LIMIT_ROWS_MAX", 10000))
-    allowed_mime_types: List[str] = [
+    allowed_mime_types: list[str] = [
         "webp",
         "gif",
         "jpg",
@@ -98,8 +98,8 @@ class ApiSettings(BaseSettings):
     # pydantic field validators
     @field_validator("allowed_cors", mode="before")
     def assemble_cors_origins(
-        cls: Any, v: Union[str, List[str]], info: ValidationInfo
-    ) -> List[str]:  # pragma: no cover
+        cls: Any, v: Union[str, list[str]], info: ValidationInfo
+    ) -> list[str]:  # pragma: no cover
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, list):

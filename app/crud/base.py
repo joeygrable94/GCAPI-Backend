@@ -1,8 +1,9 @@
 import abc
-from typing import Any, Dict, Generic, Optional, TypeVar, Union
+from typing import Any, Generic, TypeVar, Union
 
 from pydantic import UUID4
-from sqlalchemy import Select, and_, select as sql_select
+from sqlalchemy import Select, and_
+from sqlalchemy import select as sql_select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.utilities import get_uuid
@@ -24,18 +25,18 @@ class BaseRepository(
 
     @property
     @abc.abstractmethod
-    def _table(self) -> TABLE:
-        pass  # pragma: no cover
+    def _table(self) -> Generic[TABLE]:  # pragma: no cover
+        pass
 
     def gen_uuid(self) -> UUID4:
         return get_uuid()
 
-    def _preprocess_create(self, values: Dict) -> Dict:  # pragma: no cover
+    def _preprocess_create(self, values: dict) -> dict:  # pragma: no cover
         if "id" not in values:
             values["id"] = self.gen_uuid()
         return values
 
-    async def _get(self, query: Any) -> Optional[TABLE]:
+    async def _get(self, query: Any) -> TABLE | None:
         results: Any = await self._db.execute(query)
         data: Any = results.first()
         if data is None:
@@ -43,29 +44,29 @@ class BaseRepository(
         return data[0]
 
     def query_list(self) -> Select:
-        stmt = sql_select(self._table)  # type: ignore
+        stmt = sql_select(self._table)
         return stmt
 
     async def create(self, schema: Union[SCHEMA_CREATE, Any]) -> TABLE:
         self._db.begin()
-        entry: Any = self._table(id=self.gen_uuid(), **schema.model_dump())  # type: ignore  # noqa: E501
+        entry: Any = self._table(id=self.gen_uuid(), **schema.model_dump())  # noqa: E501
         self._db.add(entry)
         await self._db.commit()
         await self._db.refresh(entry)
         return entry
 
-    async def read_by(self, field_name: str, field_value: Any) -> Optional[TABLE]:
+    async def read_by(self, field_name: str, field_value: Any) -> TABLE | None:
         self._db.begin()
         check_val: Any = getattr(self._table, field_name)
-        query: Any = sql_select(self._table).where(check_val == field_value)  # type: ignore  # noqa: E501
+        query: Any = sql_select(self._table).where(check_val == field_value)  # noqa: E501
         entry: Any = await self._get(query)
         if not entry:
             return None
         return entry
 
-    async def read(self, entry_id: UUID4) -> Optional[TABLE]:
+    async def read(self, entry_id: UUID4) -> TABLE | None:
         self._db.begin()
-        query: Any = sql_select(self._table).where(self._table.id == entry_id)  # type: ignore  # noqa: E501
+        query: Any = sql_select(self._table).where(self._table.id == entry_id)  # noqa: E501
         entry: Any = await self._get(query)
         if not entry:
             return None
@@ -92,14 +93,14 @@ class BaseRepository(
 
     async def exists_by_fields(
         self,
-        fields: Dict[str, Any],
-    ) -> Optional[TABLE]:
+        fields: dict[str, Any],
+    ) -> TABLE | None:
         self._db.begin()
         conditions = [
             getattr(self._table, field_name) == field_value
             for field_name, field_value in fields.items()
         ]
-        stmt: Select = sql_select(self._table).where(and_(*conditions))  # type: ignore
+        stmt: Select = sql_select(self._table).where(and_(*conditions))
         entry: Any = await self._get(stmt)
         if not entry:
             return None

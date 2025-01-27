@@ -1,30 +1,28 @@
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING
 
 from pydantic import UUID4
 from sqlalchemy import Float, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import Timestamp  # type: ignore
-from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils import Timestamp, UUIDType
 
-from app.core.utilities import get_uuid  # type: ignore
+from app.core.utilities import get_uuid
 from app.db.base_class import Base
 from app.db.constants import DB_FLOAT_MAXLEN_STORED, DB_STR_TINYTEXT_MAXLEN_STORED
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .file_asset import FileAsset  # noqa: F401
     from .gcft_snap import GcftSnap  # noqa: F401
     from .ipaddress import Ipaddress  # noqa: F401
 
 
 class Geocoord(Base, Timestamp):
     __tablename__: str = "geocoord"
-    __table_args__: Any = {"mysql_engine": "InnoDB"}
-    __mapper_args__: Any = {"always_refresh": True}
+    __table_args__: dict = {"mysql_engine": "InnoDB"}
+    __mapper_args__: dict = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         unique=True,
         nullable=False,
-        default=get_uuid(),
+        default=get_uuid,
     )
     address: Mapped[str] = mapped_column(
         String(DB_STR_TINYTEXT_MAXLEN_STORED),
@@ -42,14 +40,10 @@ class Geocoord(Base, Timestamp):
     )
 
     # relationships
-    file_assets: Mapped[List["FileAsset"]] = relationship(
-        "FileAsset",
-        back_populates="geotag",
-    )
-    gcft_snaps: Mapped[List["GcftSnap"]] = relationship(
+    gcft_snaps: Mapped[list["GcftSnap"]] = relationship(
         "GcftSnap", back_populates="geotag"
     )
-    ipaddresses: Mapped[List["Ipaddress"]] = relationship(
+    ipaddresses: Mapped[list["Ipaddress"]] = relationship(
         "Ipaddress", back_populates="geotag"
     )
 

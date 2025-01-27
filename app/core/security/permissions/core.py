@@ -16,7 +16,7 @@ __version__ = "0.2.7"
 
 import functools
 from enum import StrEnum
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from fastapi import Depends
 
@@ -37,12 +37,12 @@ class AclAction(StrEnum):
 
 
 # ACL Tuples: Action, Privilege, Permission
-DENY_ALL: Tuple[AclAction, AclPrivilege, AclPermission] = (
+DENY_ALL: tuple[AclAction, AclPrivilege, AclPermission] = (
     AclAction.deny,
     Everyone,
     AccessAll,
 )
-ALOW_ALL: Tuple[AclAction, AclPrivilege, AclPermission] = (
+ALOW_ALL: tuple[AclAction, AclPrivilege, AclPermission] = (
     AclAction.allow,
     Everyone,
     AccessAll,
@@ -69,7 +69,7 @@ def configure_permissions(
 
 
 def permission_dependency_factory(
-    permission: AclPermission | List[AclPermission],
+    permission: AclPermission | list[AclPermission],
     resource: Any,
     active_privileges_func: Any,
 ) -> Any:
@@ -98,7 +98,7 @@ def permission_dependency_factory(
     # the permission itself is available through the outer function scope
     def permission_dependency(
         resource: Any = dependable_resource,
-        privileges: List[AclPrivilege] = active_privileges_func,
+        privileges: list[AclPrivilege] = active_privileges_func,
     ) -> Any:  # pragma: no cover
         if isinstance(permission, list):
             for perm in permission:
@@ -113,7 +113,7 @@ def permission_dependency_factory(
 
 
 def has_permission(
-    user_privileges: List[AclPrivilege],
+    user_privileges: list[AclPrivilege],
     requested_permission: AclPermission,
     resource: Any,
 ) -> bool:
@@ -137,8 +137,8 @@ def has_permission(
 
 
 def list_permissions(
-    user_privileges: List[AclPrivilege], resource: Any
-) -> Dict[AclPermission, bool]:
+    user_privileges: list[AclPrivilege], resource: Any
+) -> dict[AclPermission, bool]:
     """lists all permissions of a user for a resouce
 
     user_privileges: the privileges of a user
@@ -160,7 +160,7 @@ def list_permissions(
 
 def normalize_acl(
     resource: Any,
-) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:
+) -> list[tuple[AclAction, AclPrivilege, AclPermission]]:
     """returns the access controll list for a resource
 
     If the resource is not an acl list itself it needs to have an "__acl__"
@@ -172,7 +172,7 @@ def normalize_acl(
     """
     acl = getattr(resource, "__acl__", None)
     if callable(acl):
-        return acl()  # type: ignore
+        return acl()
     elif acl is not None:
         return acl
     elif is_like_list(resource):

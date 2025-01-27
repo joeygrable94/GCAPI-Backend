@@ -1,7 +1,3 @@
-from __future__ import annotations
-
-from typing import Optional
-
 from pydantic import UUID4, field_validator
 
 from app.db.validators import (
@@ -31,8 +27,8 @@ class GcftCreate(GcftBase):
 
 
 class GcftUpdate(BaseSchema):
-    group_name: Optional[str] = None
-    client_id: Optional[UUID4] = None
+    group_name: str | None = None
+    client_id: UUID4 | None = None
 
     _validate_group_name = field_validator("group_name", mode="before")(
         validate_group_name_optional

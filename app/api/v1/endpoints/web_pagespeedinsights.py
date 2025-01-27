@@ -11,10 +11,9 @@ from app.api.deps import (
     get_permission_controller,
     get_website_page_psi_or_404,
 )
-from app.api.exceptions import WebsiteNotExists, WebsitePageNotExists
-from app.core.logger import logger
+from app.api.exceptions import EntityNotFound
+from app.api.exceptions.exceptions import EntityRelationshipNotFound
 from app.core.pagination import PageParams, Paginated
-from app.core.security import auth
 from app.core.security.permissions import (
     AccessDelete,
     AccessRead,
@@ -44,7 +43,6 @@ router: APIRouter = APIRouter()
     name="website_page_speed_insights:list",
     dependencies=[
         Depends(CommonWebsitePageSpeedInsightsQueryParams),
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
@@ -89,18 +87,18 @@ async def website_page_speed_insights_list(
             page_id=query.page_id,
             devices=query.strategy,
         )
-    response_out: Paginated[WebsitePageSpeedInsightsRead] = (
-        await permissions.get_paginated_resource_response(
-            table_name=WebsitePageSpeedInsights.__tablename__,
-            stmt=select_stmt,
-            page_params=PageParams(page=query.page, size=query.size),
-            responses={
-                RoleAdmin: WebsitePageSpeedInsightsRead,
-                RoleManager: WebsitePageSpeedInsightsRead,
-                RoleClient: WebsitePageSpeedInsightsRead,
-                RoleEmployee: WebsitePageSpeedInsightsRead,
-            },
-        )
+    response_out: Paginated[
+        WebsitePageSpeedInsightsRead
+    ] = await permissions.get_paginated_resource_response(
+        table_name=WebsitePageSpeedInsights.__tablename__,
+        stmt=select_stmt,
+        page_params=PageParams(page=query.page, size=query.size),
+        responses={
+            RoleAdmin: WebsitePageSpeedInsightsRead,
+            RoleManager: WebsitePageSpeedInsightsRead,
+            RoleClient: WebsitePageSpeedInsightsRead,
+            RoleEmployee: WebsitePageSpeedInsightsRead,
+        },
     )
     return response_out
 
@@ -109,7 +107,6 @@ async def website_page_speed_insights_list(
     "/",
     name="website_page_speed_insights:create",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
@@ -141,8 +138,10 @@ async def website_page_speed_insights_create(
     """
     # check if website_id provided
     if query.website_id is None:
-        raise WebsiteNotExists()
-    # verify current user has permission to take this action
+        raise EntityNotFound(
+            entity_info="Website id {}".format(query.website_id),
+        )
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=query.website_id,
@@ -151,14 +150,33 @@ async def website_page_speed_insights_create(
     website_repo: WebsiteRepository = WebsiteRepository(permissions.db)
     a_website: Website | None = await website_repo.read(entry_id=query.website_id)
     if a_website is None:
-        raise WebsiteNotExists()
+        raise EntityNotFound(
+            entity_info="Website id {}".format(query.website_id),
+        )
     # check if page exists
     if query.page_id is None:
-        raise WebsitePageNotExists()
+        raise EntityNotFound(
+            entity_info="WebsitePage id {}".format(query.page_id),
+        )
     web_page_repo: WebsitePageRepository = WebsitePageRepository(permissions.db)
     a_web_page: WebsitePage | None = await web_page_repo.read(entry_id=query.page_id)
     if a_web_page is None:
-        raise WebsitePageNotExists()
+        raise EntityNotFound(
+            entity_info="WebsitePage id {}".format(query.page_id),
+        )
+    a_web_page: WebsitePage | None = await web_page_repo.exists_by_fields(
+        {
+            "id": query.page_id,
+            "website_id": query.website_id,
+        }
+    )
+    if a_web_page is None:
+        raise EntityRelationshipNotFound(
+            entity_info="WebsitePage id = {}, website_id = {}".format(
+                query.page_id,
+                query.website_id,
+            )
+        )
     web_psi_repo: WebsitePageSpeedInsightsRepository
     web_psi_repo = WebsitePageSpeedInsightsRepository(permissions.db)
     psi_create: WebsitePageSpeedInsightsCreate = WebsitePageSpeedInsightsCreate(
@@ -167,11 +185,6 @@ async def website_page_speed_insights_create(
         website_id=query.website_id,
     )
     psi_in_db: WebsitePageSpeedInsights = await web_psi_repo.create(schema=psi_create)
-    logger.info(
-        "Created Website Page Speed Insights:",
-        psi_in_db.id,
-        psi_in_db.created,
-    )
     return WebsitePageSpeedInsightsRead.model_validate(psi_in_db)
 
 
@@ -179,7 +192,6 @@ async def website_page_speed_insights_create(
     "/{psi_id}",
     name="website_page_speed_insights:read",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_page_psi_or_404),
         Depends(get_current_user),
@@ -211,12 +223,12 @@ async def website_page_speed_insights_read(
     `WebsitePageSpeedInsightsRead` : the website page speed insights requested by psi_id
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=web_page_psi.website_id,
     )
-    # return role based response
+
     response_out: WebsitePageSpeedInsightsRead = permissions.get_resource_response(
         resource=web_page_psi,
         responses={
@@ -230,7 +242,6 @@ async def website_page_speed_insights_read(
     "/{psi_id}",
     name="website_page_speed_insights:delete",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_page_psi_or_404),
         Depends(get_current_user),
@@ -262,7 +273,7 @@ async def website_page_speed_insights_delete(
     `None`
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=web_page_psi.website_id,

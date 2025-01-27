@@ -17,7 +17,6 @@ from app.core.pagination import (
     PageParamsFromQuery,
     Paginated,
 )
-from app.core.security import auth
 from app.core.security.permissions import (
     AccessDelete,
     AccessDeleteSelf,
@@ -50,7 +49,6 @@ router: APIRouter = APIRouter()
     name="users:current",
     dependencies=[
         Depends(get_request_client_ip),
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
@@ -85,10 +83,10 @@ async def users_current(
         request.session["ip_address"] = request_ip
         bg_tasks.add_task(
             bg_task_track_user_ipinfo,
-            ip_address=request_ip,
+            ip_address=str(request_ip),
             user_id=str(permissions.current_user.id),
         )
-    # return role based response
+
     response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
         permissions.get_resource_response(
             resource=permissions.current_user,
@@ -107,17 +105,16 @@ async def users_current(
     name="users:list",
     dependencies=[
         Depends(PageParamsFromQuery),
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
     ],
-    response_model=Paginated[UserReadAsAdmin] | Paginated[UserReadAsManager],
+    response_model=Paginated[UserReadAsAdmin | UserReadAsManager],
 )
 async def users_list(
     query: GetPaginatedQueryParams,
     permissions: PermissionController = Depends(get_permission_controller),
-) -> Paginated[UserReadAsAdmin] | Paginated[UserReadAsManager]:
+) -> Paginated[UserReadAsAdmin | UserReadAsManager]:
     """Retrieve a paginated list of users.
 
     Permissions:
@@ -133,19 +130,19 @@ async def users_list(
         manager role
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(privileges=[RoleAdmin, RoleManager])
-    # return role based response
-    response_out: Paginated[UserReadAsAdmin] | Paginated[UserReadAsManager] = (
-        await permissions.get_paginated_resource_response(
-            table_name=permissions.user_repo._table.__tablename__,
-            stmt=permissions.user_repo.query_list(),
-            page_params=PageParams(page=query.page, size=query.size),
-            responses={
-                RoleAdmin: UserReadAsAdmin,
-                RoleManager: UserReadAsManager,
-            },
-        )
+
+    response_out: Paginated[
+        UserReadAsAdmin | UserReadAsManager
+    ] = await permissions.get_paginated_resource_response(
+        table_name=permissions.user_repo._table.__tablename__,
+        stmt=permissions.user_repo.query_list(),
+        page_params=PageParams(page=query.page, size=query.size),
+        responses={
+            RoleAdmin: UserReadAsAdmin,
+            RoleManager: UserReadAsManager,
+        },
     )
     return response_out
 
@@ -154,7 +151,6 @@ async def users_list(
     "/{user_id}",
     name="users:read",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_user_or_404),
         Depends(get_current_user),
@@ -190,11 +186,11 @@ async def users_read(
     - `UserRead` : only publically accessible fields
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager], user_id=user.id
     )
-    # return role based response
+
     response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
         permissions.get_resource_response(
             resource=user,
@@ -212,7 +208,6 @@ async def users_read(
     "/{user_id}",
     name="users:update",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_user_or_404),
         Depends(get_current_user),
@@ -245,7 +240,6 @@ async def users_update(
     - `UserRead` : only publically accessible fields
 
     """
-    # verify the input schema is valid for the current user's role
     permissions.verify_input_schema_by_role(
         input_object=user_in,
         schema_privileges={
@@ -254,7 +248,6 @@ async def users_update(
             RoleUser: UserUpdate,
         },
     )
-    # verify current user has permission to take this action
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager], user_id=user.id
     )
@@ -271,8 +264,7 @@ async def users_update(
     )
     if updated_user is None:  # pragma: no cover
         updated_user = user
-    # permissions.db.refresh(updated_user)
-    # return role based response
+
     response_out: UserReadAsAdmin | UserReadAsManager | UserRead = (
         permissions.get_resource_response(
             resource=updated_user,
@@ -290,10 +282,10 @@ async def users_update(
     "/{user_id}",
     name="users:delete",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_user_or_404),
         Depends(get_current_user),
+        Depends(get_permission_controller),
     ],
     response_model=None,
 )
@@ -316,7 +308,7 @@ async def users_delete(
         deleted with the user id and corresponding task id
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(privileges=[RoleAdmin], user_id=user.id)
     output_message: str
     if permissions.current_user.id == user.id:
@@ -335,7 +327,6 @@ async def users_delete(
     "/{user_id}/privileges/add",
     name="users:add_privileges",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_user_or_404),
         Depends(get_current_user),
@@ -364,11 +355,11 @@ async def users_update_add_privileges(
     - `UserReadAsManager` : only fields accessible to the manager role
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(privileges=[RoleAdmin, RoleManager])
     # update the user data
     updated_user: User = await permissions.add_privileges(to_user=user, schema=user_in)
-    # return role based response
+
     response_out: UserReadAsAdmin | UserReadAsManager = (
         permissions.get_resource_response(
             resource=updated_user,
@@ -385,7 +376,6 @@ async def users_update_add_privileges(
     "/{user_id}/privileges/remove",
     name="users:remove_privileges",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_user_or_404),
         Depends(get_current_user),
@@ -412,13 +402,13 @@ async def users_update_remove_privileges(
     - `UserReadAsManager` : only fields accessible to the manager role
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(privileges=[RoleAdmin, RoleManager])
     # update the user data
     updated_user: User = await permissions.remove_privileges(
         to_user=user, schema=user_in
     )
-    # return role based response
+
     response_out: UserReadAsAdmin | UserReadAsManager = (
         permissions.get_resource_response(
             resource=updated_user,

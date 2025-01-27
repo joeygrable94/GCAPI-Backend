@@ -1,7 +1,3 @@
-from __future__ import annotations
-
-from typing import Optional
-
 from pydantic import UUID4, field_validator
 
 from app.db.validators import (
@@ -33,10 +29,10 @@ class WebsiteKeywordCorpusCreate(WebsiteKeywordCorpusBase):
 
 
 class WebsiteKeywordCorpusUpdate(BaseSchema):
-    corpus: Optional[str] = None
-    rawtext: Optional[str] = None
-    website_id: Optional[UUID4] = None
-    page_id: Optional[UUID4] = None
+    corpus: str | None = None
+    rawtext: str | None = None
+    website_id: UUID4 | None = None
+    page_id: UUID4 | None = None
 
     _validate_corpus = field_validator("corpus", mode="before")(
         validate_corpus_optional

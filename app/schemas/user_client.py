@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import UUID4
 
 from app.schemas.base import BaseSchema, BaseSchemaRead
@@ -16,8 +14,8 @@ class UserClientCreate(UserClientBase):
 
 
 class UserClientUpdate(BaseSchema):
-    user_id: Optional[UUID4] = None
-    client_id: Optional[UUID4] = None
+    user_id: UUID4 | None = None
+    client_id: UUID4 | None = None
 
 
 class UserClientRead(UserClientBase, BaseSchemaRead):

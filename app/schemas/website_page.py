@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 from pydantic import UUID4, BaseModel, field_validator
 
@@ -16,35 +14,35 @@ class WebsitePageBase(BaseSchema):
     url: str
     status: int
     priority: Union[float, Decimal]
-    last_modified: Optional[datetime] = None
-    change_frequency: Optional[SitemapPageChangeFrequency] = None
+    last_modified: datetime | None = None
+    change_frequency: SitemapPageChangeFrequency | None = None
     is_active: bool
     website_id: UUID4
-    sitemap_id: Optional[UUID4] = None
+    sitemap_id: UUID4 | None = None
 
 
 class WebsitePageCreate(WebsitePageBase, BaseSchema):
     url: str
     status: int
     priority: Union[float, Decimal]
-    last_modified: Optional[datetime] = None
-    change_frequency: Optional[SitemapPageChangeFrequency] = None
+    last_modified: datetime | None = None
+    change_frequency: SitemapPageChangeFrequency | None = None
     is_active: bool = True
     website_id: UUID4
-    sitemap_id: Optional[UUID4] = None
+    sitemap_id: UUID4 | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_required)
 
 
 class WebsitePageUpdate(BaseSchema):
-    url: Optional[str] = None
-    status: Optional[int] = None
-    priority: Optional[Union[float, Decimal]] = None
-    last_modified: Optional[datetime] = None
-    change_frequency: Optional[SitemapPageChangeFrequency] = None
-    is_active: Optional[bool] = True
-    website_id: Optional[UUID4] = None
-    sitemap_id: Optional[UUID4] = None
+    url: str | None = None
+    status: int | None = None
+    priority: Union[float, Decimal] | None = None
+    last_modified: datetime | None = None
+    change_frequency: SitemapPageChangeFrequency | None = None
+    is_active: bool | None = True
+    website_id: UUID4 | None = None
+    sitemap_id: UUID4 | None = None
 
     _validate_url = field_validator("url", mode="before")(validate_url_optional)
 

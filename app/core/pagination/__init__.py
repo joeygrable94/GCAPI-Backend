@@ -7,8 +7,6 @@ https://github.com/dialoguemd/fastapi-sqla/blob/master/fastapi_sqla/asyncio_supp
 
 """
 
-from typing import List
-
 from .core import (
     GetPaginatedQueryParams,
     PageParams,
@@ -17,7 +15,7 @@ from .core import (
     paginated_query,
 )
 
-__all__: List[str] = [
+__all__: list[str] = [
     "PageParams",
     "PageParamsFromQuery",
     "GetPaginatedQueryParams",

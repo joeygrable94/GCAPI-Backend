@@ -1,14 +1,13 @@
 from typing import Any
 
 from sqlalchemy.engine.interfaces import Dialect
-from sqlalchemy_utils import ScalarListType  # type: ignore
+from sqlalchemy_utils import ScalarListType
 
 from app.core.utilities import scope_regex
 from app.db.constants import DB_STR_BLOB_MAXLEN_INPUT
 
 
 class Scopes(ScalarListType):
-
     def process_bind_param(self, value: Any, dialect: Dialect) -> str:
         processed_value: str | None = None
         if value is not None:

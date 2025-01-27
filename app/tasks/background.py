@@ -1,9 +1,6 @@
-from pydantic import IPvAnyAddress
-
 from app.api.exceptions.exceptions import InvalidID
 from app.api.utilities import (
     assign_ip_address_to_user,
-    create_or_read_data_bucket,
     create_or_update_ipaddress,
     create_or_update_website_map,
     create_or_update_website_page,
@@ -12,7 +9,6 @@ from app.api.utilities import (
     get_ipaddress_from_db,
     get_ipinfo_details,
 )
-from app.core.config import settings
 from app.core.logger import logger
 from app.core.utilities import (
     check_is_sitemap_index,
@@ -49,27 +45,7 @@ async def bg_task_request_to_delete_client(user_id: str, client_id: str) -> None
     )  # pragma: no cover
 
 
-async def bg_task_create_client_data_bucket(
-    bucket_prefix: str,
-    client_id: str,
-    bdx_feed_id: str | None = None,
-    gcft_id: str | None = None,
-    bucket_name: str = settings.cloud.aws_s3_default_bucket,
-) -> None:
-    try:
-        await create_or_read_data_bucket(
-            bucket_prefix=bucket_prefix,
-            client_id=client_id,
-            bdx_feed_id=bdx_feed_id,
-            gcft_id=gcft_id,
-            bucket_name=bucket_name,
-        )
-    except Exception as e:  # pragma: no cover
-        logger.warning("Error creating client data bucket")
-        logger.warning(e)
-
-
-async def bg_task_track_user_ipinfo(ip_address: IPvAnyAddress, user_id: str) -> None:
+async def bg_task_track_user_ipinfo(ip_address: str, user_id: str) -> None:
     """A background task to track the IP Address of a user.
 
     This function will:
@@ -80,11 +56,10 @@ async def bg_task_track_user_ipinfo(ip_address: IPvAnyAddress, user_id: str) -> 
     """
     try:
         user_uuid = parse_id(user_id)
-        ip: IPvAnyAddress = ip_address
-        ip_in_db: Ipaddress | None = await get_ipaddress_from_db(ip)  # type: ignore
+        ip_in_db: Ipaddress | None = await get_ipaddress_from_db(ip_address)
         if ip_in_db is None:
-            ip_details: IpinfoResponse = get_ipinfo_details(ip)  # type: ignore
-            ip_in_db = await create_or_update_ipaddress(ip, ip_details)  # type: ignore
+            ip_details: IpinfoResponse = get_ipinfo_details(ip_address)
+            ip_in_db = await create_or_update_ipaddress(ip_address, ip_details)
 
         if ip_in_db is not None:
             await assign_ip_address_to_user(ipaddress=ip_in_db, user_id=user_uuid)
@@ -151,7 +126,7 @@ async def bg_task_website_page_pagespeedinsights_fetch(
         logger.info(
             f"Successfully fetched PageSpeedInsights for website {website_id}, page {page_id}, URL[{fetch_url}]"  # noqa: E501
         )
-    else:
+    else:  # pragma: no cover
         logger.warning(
             f"Failed to fetch PageSpeedInsights for website {website_id}, page {page_id}, URL[{fetch_url}]"  # noqa: E501
         )

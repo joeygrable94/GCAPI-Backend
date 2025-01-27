@@ -11,9 +11,9 @@ from app.api.deps import (
     get_permission_controller,
     get_website_page_or_404,
 )
-from app.api.exceptions import WebsiteNotExists, WebsitePageAlreadyExists
+from app.api.exceptions import EntityAlreadyExists, EntityNotFound
+from app.api.exceptions.exceptions import EntityRelationshipNotFound
 from app.core.pagination import PageParams, Paginated
-from app.core.security import auth
 from app.core.security.permissions import (
     AccessDelete,
     AccessRead,
@@ -23,7 +23,9 @@ from app.core.security.permissions import (
     RoleUser,
 )
 from app.crud import WebsitePageRepository, WebsiteRepository
+from app.crud.website_map import WebsiteMapRepository
 from app.models import Website, WebsitePage
+from app.models.website_map import WebsiteMap
 from app.schemas import PSIDevice, WebsitePageCreate, WebsitePageRead, WebsitePageUpdate
 from app.tasks import bg_task_website_page_pagespeedinsights_fetch
 
@@ -35,7 +37,6 @@ router: APIRouter = APIRouter()
     name="website_pages:list",
     dependencies=[
         Depends(CommonWebsitePageQueryParams),
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
@@ -79,15 +80,15 @@ async def website_page_list(
             website_id=query.website_id,
             sitemap_id=query.sitemap_id,
         )
-    response_out: Paginated[WebsitePageRead] = (
-        await permissions.get_paginated_resource_response(
-            table_name=WebsitePage.__tablename__,
-            stmt=select_stmt,
-            page_params=PageParams(page=query.page, size=query.size),
-            responses={
-                RoleUser: WebsitePageRead,
-            },
-        )
+    response_out: Paginated[
+        WebsitePageRead
+    ] = await permissions.get_paginated_resource_response(
+        table_name=WebsitePage.__tablename__,
+        stmt=select_stmt,
+        page_params=PageParams(page=query.page, size=query.size),
+        responses={
+            RoleUser: WebsitePageRead,
+        },
     )
     return response_out
 
@@ -96,7 +97,6 @@ async def website_page_list(
     "/",
     name="website_pages:create",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
@@ -122,7 +122,7 @@ async def website_page_create(
     `WebsitePageRead` : the newly created website page
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=website_page_in.website_id,
@@ -139,14 +139,35 @@ async def website_page_create(
         }
     )
     if a_page is not None:
-        raise WebsitePageAlreadyExists()
+        raise EntityAlreadyExists(
+            entity_info="WebsitePage url = {}".format(website_page_in.url),
+        )
     # check website page is assigned to a website
     a_website: Website | None = await website_repo.read(website_page_in.website_id)
     if a_website is None:
-        raise WebsiteNotExists()
+        raise EntityNotFound(
+            entity_info="Website id = {}".format(website_page_in.website_id),
+        )
+    # if sitemap id provided, only create page if the sitemap is assigned to the website
+    if website_page_in.sitemap_id is not None:
+        sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(
+            session=permissions.db
+        )
+        a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_fields(
+            {
+                "id": website_page_in.sitemap_id,
+                "website_id": website_page_in.website_id,
+            }
+        )
+        if a_sitemap is None:
+            raise EntityRelationshipNotFound(
+                entity_info="Website id = {}, WebsiteMap id = {}".format(
+                    website_page_in.website_id, website_page_in.sitemap_id
+                ),
+            )
     # create the website page
     website_page: WebsitePage = await web_pages_repo.create(website_page_in)
-    # return role based response
+
     response_out: WebsitePageRead = permissions.get_resource_response(
         resource=website_page,
         responses={
@@ -160,7 +181,6 @@ async def website_page_create(
     "/{page_id}",
     name="website_pages:read",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_page_or_404),
         Depends(get_current_user),
@@ -186,12 +206,12 @@ async def website_page_read(
     `WebsitePageRead` : the website page requested by page_id
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=website_page.website_id,
     )
-    # return role based response
+
     response_out: WebsitePageRead = permissions.get_resource_response(
         resource=website_page,
         responses={
@@ -205,7 +225,6 @@ async def website_page_read(
     "/{page_id}",
     name="website_pages:update",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_page_or_404),
         Depends(get_current_user),
@@ -232,18 +251,71 @@ async def website_page_update(
     `WebsitePageRead` : the updated website page
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=website_page.website_id,
     )
+
     web_pages_repo: WebsitePageRepository = WebsitePageRepository(
         session=permissions.db
     )
+
+    query_page: dict | None = None
+    if website_page_in.url is not None:
+        query_page = {
+            "url": website_page_in.url,
+            "website_id": website_page.website_id,
+        }
+
+    # if website id provided, only update page if the website page exists
+    if website_page_in.website_id is not None:
+        website_repo = WebsiteRepository(session=permissions.db)
+        a_website: Website | None = await website_repo.read(website_page_in.website_id)
+        if a_website is None:
+            raise EntityNotFound(
+                entity_info="Website id = {}".format(website_page_in.website_id)
+            )
+        if website_page_in.url is not None:
+            query_page["website_id"] = website_page_in.website_id
+
+    if query_page is not None:
+        a_page: WebsitePage | None = await web_pages_repo.exists_by_fields(query_page)
+        if a_page is not None:
+            raise EntityAlreadyExists(
+                entity_info="WebsitePage url = {}, website_id = {}".format(
+                    query_page["url"], query_page["website_id"]
+                )
+            )
+
+    # if sitemap id provided, only update page if the sitemap is
+    # assigned to the existing or the updated website id
+    if website_page_in.sitemap_id is not None:
+        query_sitemap = {
+            "id": website_page_in.sitemap_id,
+        }
+        if website_page_in.website_id is not None:
+            query_sitemap["website_id"] = website_page_in.website_id
+        else:
+            query_sitemap["website_id"] = website_page.website_id
+        sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(
+            session=permissions.db
+        )
+        a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_fields(
+            query_sitemap
+        )
+        if a_sitemap is None:
+            raise EntityRelationshipNotFound(
+                entity_info="Website id = {}, WebsiteMap id = {}".format(
+                    query_sitemap["website_id"], query_sitemap["id"]
+                ),
+            )
+
+    web_pages_repo = WebsitePageRepository(session=permissions.db)
     updated_website_page: WebsitePage | None = await web_pages_repo.update(
         entry=website_page, schema=website_page_in
     )
-    # return role based response
+
     response_out: WebsitePageRead = permissions.get_resource_response(
         resource=updated_website_page if updated_website_page else website_page,
         responses={
@@ -257,7 +329,6 @@ async def website_page_update(
     "/{page_id}",
     name="website_pages:delete",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_page_or_404),
         Depends(get_current_user),
@@ -283,7 +354,7 @@ async def website_page_delete(
     `None`
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=website_page.website_id,
@@ -299,7 +370,6 @@ async def website_page_delete(
     "/{page_id}/process-psi",
     name="website_pages:process_website_page_speed_insights",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_page_or_404),
         Depends(get_current_user),
@@ -327,7 +397,7 @@ async def website_page_process_website_page_speed_insights(
         task_id's for the mobile and desktop page speed insights tasks
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=website_page.website_id,
@@ -336,7 +406,9 @@ async def website_page_process_website_page_speed_insights(
     website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
     a_website: Website | None = await website_repo.read(website_page.website_id)
     if a_website is None:
-        raise WebsiteNotExists()
+        raise EntityNotFound(
+            entity_info="Website id = {}".format(website_page.website_id),
+        )
     fetch_page = a_website.get_link() + website_page.url
     # Send the task to the background.
     bg_tasks.add_task(

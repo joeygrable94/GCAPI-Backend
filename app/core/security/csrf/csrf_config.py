@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, Set
+from collections.abc import Callable
 
 from pydantic import ValidationError
 
@@ -10,20 +10,20 @@ from .load_config import CookieSamesite, LoadConfig
 class CsrfConfig(object):  # type: ignore
     _cookie_key: str = "gcapi-csrf-token"
     _cookie_path: str = "/"
-    _cookie_domain: Optional[str] = None
-    _cookie_samesite: Optional[CookieSamesite] = "lax"
+    _cookie_domain: str | None = None
+    _cookie_samesite: CookieSamesite | None = "lax"
     _cookie_secure: bool = False
     _header_name: str = "x-csrf-Token"
-    _header_type: Optional[str] = None
+    _header_type: str | None = None
     _httponly: bool = True
     _max_age: int = 3600
-    _methods: Set[str] = {"POST", "PUT", "PATCH", "DELETE"}
+    _methods: set[str] = {"POST", "PUT", "PATCH", "DELETE"}
     _secret_key: str = "super-secret-key"
     _token_location: str = "header"
     _token_key: str = "gcapi-csrf-token"
 
     @classmethod
-    def load_config(cls, settings: Callable[..., List[tuple]]) -> None:
+    def load_config(cls, settings: Callable[..., list[tuple]]) -> None:
         try:
             config = LoadConfig(**{key.lower(): value for key, value in settings()})
             cls._cookie_key = config.cookie_key or cls._cookie_key
@@ -44,5 +44,5 @@ class CsrfConfig(object):  # type: ignore
         except Exception as err:  # pragma: no cover
             logger.warning(err)
             raise TypeError(
-                'CsrfConfig must be pydantic "BaseSettings" or list of tuple'
+                'CsrfConfig must be pydantic "Basesettings" or list of tuple'
             )

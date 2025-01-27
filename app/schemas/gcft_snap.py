@@ -1,7 +1,3 @@
-from __future__ import annotations
-
-from typing import Optional
-
 from pydantic import UUID4, field_validator
 
 from app.db.validators import (
@@ -21,7 +17,7 @@ class GcftSnapBase(BaseSchema):
     altitude: int
     gcft_id: UUID4
     geocoord_id: UUID4
-    file_asset_id: Optional[UUID4] = None
+    file_asset_id: UUID4 | None = None
 
     _validate_snap_name = field_validator("snap_name", mode="before")(
         validate_snap_name_required
@@ -39,11 +35,11 @@ class GcftSnapCreate(GcftSnapBase):
 
 
 class GcftSnapUpdate(BaseSchema):
-    snap_name: Optional[str] = None
-    altitude: Optional[int] = None
-    gcft_id: Optional[UUID4] = None
-    geocoord_id: Optional[UUID4] = None
-    file_asset_id: Optional[UUID4] = None
+    snap_name: str | None = None
+    altitude: int | None = None
+    gcft_id: UUID4 | None = None
+    geocoord_id: UUID4 | None = None
+    file_asset_id: UUID4 | None = None
 
     _validate_snap_name = field_validator("snap_name", mode="before")(
         validate_snap_name_optional

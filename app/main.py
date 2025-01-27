@@ -1,5 +1,5 @@
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Any, AsyncGenerator
 
 from fastapi import Depends, FastAPI
 from sentry_sdk import Client
@@ -22,20 +22,18 @@ from app.db.commands import check_db_connected, check_db_disconnected
 sentry_client: Client | None = configure_monitoring()
 
 
-@asynccontextmanager  # type: ignore
-async def application_lifespan(app: FastAPI) -> AsyncGenerator:
-    # application lifespan actions: startup and shutdown
-    # check DB connected
+@asynccontextmanager
+async def application_lifespan(app: FastAPI) -> AsyncGenerator:  # pragma: no cover
+    # startup
     await check_db_connected()
 
-    # load CSRF settings
     @CsrfProtect.load_config
-    def get_csrf_config() -> Any:  # type: ignore
+    def get_csrf_config() -> CsrfSettings:
         return CsrfSettings()
 
-    # yeild the application
     yield
-    # close DB connection
+
+    # shutdown
     await check_db_disconnected()
 
 
@@ -43,6 +41,13 @@ def configure_routers(app: FastAPI) -> None:
     from app.api.v1 import router_v1
 
     app.include_router(router_v1, prefix=settings.api.prefix)
+
+    # endpoints = []
+    # for route in app.routes:
+    #     if isinstance(route, APIRoute):
+    #         endpoints.append(route.path)
+    # with open("docs/endpoints.txt", "w") as f:
+    #     f.write("\n".join(endpoints))
 
 
 def configure_static(app: FastAPI) -> None:

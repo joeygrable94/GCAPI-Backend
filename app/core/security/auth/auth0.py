@@ -5,7 +5,7 @@ import os
 import urllib.parse
 import urllib.request
 from datetime import datetime
-from typing import Dict, List, Optional, Type
+from typing import Type
 
 # from jose import jwt  # type: ignore
 import jwt
@@ -35,18 +35,18 @@ from pydantic import BaseModel, Field, ValidationError
 from typing_extensions import TypedDict
 
 from .exceptions import (
-    Auth0UnauthenticatedException,
-    Auth0UnauthorizedException,
-    HTTPAuth0Error,
+    AuthUnauthenticatedException,
+    AuthUnauthorizedException,
+    HTTPAuthError,
 )
 
 logger = logging.getLogger("fastapi_auth0")
 
-auth0_rule_namespace: str = os.getenv("AUTH0_RULE_NAMESPACE", "gcapi_oauth2")
+auth0_rule_namespace: str = os.getenv("AUTH_RULE_NAMESPACE", "gcapi_oauth2")
 
-unauthenticated_response: Dict = {401: {"model": HTTPAuth0Error}}
-unauthorized_response: Dict = {403: {"model": HTTPAuth0Error}}
-security_responses: Dict = {**unauthenticated_response, **unauthorized_response}
+unauthenticated_response: dict = {401: {"model": HTTPAuthError}}
+unauthorized_response: dict = {403: {"model": HTTPAuthError}}
+security_responses: dict = {**unauthenticated_response, **unauthorized_response}
 
 
 def base64url_decode(input: str) -> bytes:
@@ -56,33 +56,31 @@ def base64url_decode(input: str) -> bytes:
     return base64.urlsafe_b64decode(input)
 
 
-class Auth0User(BaseModel):
+class AuthUser(BaseModel):
     auth_id: str = Field(..., alias="sub")
-    picture: Optional[str] = Field(  # type: ignore [literal-required]
+    picture: str | None = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/picture"
     )
-    permissions: List[str] = []  # type: ignore [literal-required]
-    roles: List[str] = Field(  # type: ignore [literal-required]
+    permissions: list[str] = []  # type: ignore [literal-required]
+    roles: list[str] = Field(  # type: ignore [literal-required]
         [], alias=f"{auth0_rule_namespace}/roles"
     )
     email: str = Field(  # type: ignore [literal-required]
         "", alias=f"{auth0_rule_namespace}/email"
     )
-    is_verified: Optional[bool] = Field(  # type: ignore [literal-required]
+    is_verified: bool | None = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/is_verified"
     )
-    created: Optional[datetime] = Field(  # type: ignore [literal-required]
+    created: datetime | None = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/created_on"
     )
-    updated: Optional[datetime] = Field(  # type: ignore [literal-required]
+    updated: datetime | None = Field(  # type: ignore [literal-required]
         None, alias=f"{auth0_rule_namespace}/updated_on"
     )
 
 
 class Auth0HTTPBearer(HTTPBearer):
-    async def __call__(
-        self, request: Request
-    ) -> Optional[HTTPAuthorizationCredentials]:
+    async def __call__(self, request: Request) -> HTTPAuthorizationCredentials | None:
         return await super().__call__(request)
 
 
@@ -90,8 +88,8 @@ class OAuth2ImplicitBearer(OAuth2):
     def __init__(
         self,
         authorizationUrl: str,
-        scopes: Dict[str, str] = {},
-        scheme_name: Optional[str] = None,
+        scopes: dict[str, str] = {},
+        scheme_name: str | None = None,
         auto_error: bool = True,
     ):
         flows = OAuthFlows(
@@ -99,7 +97,7 @@ class OAuth2ImplicitBearer(OAuth2):
         )
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
-    async def __call__(self, request: Request) -> Optional[str]:
+    async def __call__(self, request: Request) -> str | None:
         """
         Overwrite parent call to prevent useless overhead,
         the actual auth is done in Auth0.get_user
@@ -117,7 +115,7 @@ class JwksKeyDict(TypedDict):
 
 
 class JwksDict(TypedDict):
-    keys: List[JwksKeyDict]
+    keys: list[JwksKeyDict]
 
 
 class Auth0:
@@ -125,11 +123,11 @@ class Auth0:
         self,
         domain: str,
         api_audience: str,
-        scopes: Dict[str, str] = {},
+        scopes: dict[str, str] = {},
         auto_error: bool = True,
         scope_auto_error: bool = True,
         email_auto_error: bool = False,
-        auth0user_model: Type[Auth0User] = Auth0User,
+        auth0user_model: Type[AuthUser] = AuthUser,
     ):
         self.domain = domain
         self.audience = api_audience
@@ -166,20 +164,20 @@ class Auth0:
     async def get_user(
         self,
         security_scopes: SecurityScopes,
-        creds: Optional[HTTPAuthorizationCredentials] = Depends(
+        creds: HTTPAuthorizationCredentials | None = Depends(
             Auth0HTTPBearer(auto_error=False)
         ),
-    ) -> Optional[Auth0User]:
+    ) -> AuthUser | None:
         """
         Verify the Authorization: Bearer token and return the user.
         If there is any problem and auto_error = True then
-        raise Auth0UnauthenticatedException or Auth0UnauthorizedException,
+        raise AuthUnauthenticatedException or AuthUnauthorizedException,
         otherwise return None.
 
         Not to be called directly, but to be placed within a Depends() or
         Security() wrapper.
 
-        Example: def path_op_func(user: Auth0User = Security(auth.get_user)).
+        Example: def path_op_func(user: AuthUser = Security(auth.get_user)).
 
         if auto_error = return 403 until solving.
         see: https://github.com/tiangolo/fastapi/pull/2120
@@ -191,14 +189,14 @@ class Auth0:
                 return None
 
         token = creds.credentials
-        payload: Dict = {}
+        payload: dict = {}
         try:
             unverified_header = jwt.get_unverified_header(token)
 
             if "kid" not in unverified_header:
                 msg = "Malformed token header"
                 if self.auto_error:
-                    raise Auth0UnauthenticatedException(detail=msg)
+                    raise AuthUnauthenticatedException(detail=msg)
                 else:  # pragma: no cover
                     logger.warning(msg)
                     return None
@@ -233,7 +231,7 @@ class Auth0:
             else:  # pragma: no cover
                 msg = "Invalid kid header (wrong tenant or rotated public key)"
                 if self.auto_error:
-                    raise Auth0UnauthenticatedException(detail=msg)
+                    raise AuthUnauthenticatedException(detail=msg)
                 else:
                     logger.warning(msg)
                     return None
@@ -241,7 +239,7 @@ class Auth0:
         except ImmatureSignatureError:  # pragma: no cover
             msg = "Immature token"
             if self.auto_error:
-                raise Auth0UnauthenticatedException(detail=msg)
+                raise AuthUnauthenticatedException(detail=msg)
             else:
                 logger.warning(msg)
                 return None
@@ -249,7 +247,7 @@ class Auth0:
         except ExpiredSignatureError:  # pragma: no cover
             msg = "Expired token"
             if self.auto_error:
-                raise Auth0UnauthenticatedException(detail=msg)
+                raise AuthUnauthenticatedException(detail=msg)
             else:
                 logger.warning(msg)
                 return None
@@ -257,7 +255,7 @@ class Auth0:
         except InvalidSignatureError:  # pragma: no cover
             msg = "Invalid token signature"
             if self.auto_error:
-                raise Auth0UnauthenticatedException(detail=msg)
+                raise AuthUnauthenticatedException(detail=msg)
             else:
                 logger.warning(msg)
                 return None
@@ -265,7 +263,7 @@ class Auth0:
         except (InvalidAudienceError, InvalidIssuerError):  # pragma: no cover
             msg = "Invalid token claims (wrong issuer or audience)"
             if self.auto_error:
-                raise Auth0UnauthenticatedException(detail=msg)
+                raise AuthUnauthenticatedException(detail=msg)
             else:
                 logger.warning(msg)
                 return None
@@ -273,12 +271,12 @@ class Auth0:
         except InvalidTokenError:
             msg = "Malformed token"
             if self.auto_error:
-                raise Auth0UnauthenticatedException(detail=msg)
+                raise AuthUnauthenticatedException(detail=msg)
             else:  # pragma: no cover
                 logger.warning(msg)
                 return None
 
-        except Auth0UnauthenticatedException:
+        except AuthUnauthenticatedException:
             raise
 
         except Exception as e:  # pragma: no cover
@@ -286,7 +284,7 @@ class Auth0:
             # (maybe the token is specially crafted to bug our code)
             logger.error(f'Handled exception decoding token: "{e}"', exc_info=True)
             if self.auto_error:
-                raise Auth0UnauthenticatedException(detail="Error decoding token")
+                raise AuthUnauthenticatedException(detail="Error decoding token")
             else:
                 return None
 
@@ -298,7 +296,7 @@ class Auth0:
 
                 for scope in security_scopes.scopes:
                     if scope not in token_scopes:
-                        raise Auth0UnauthorizedException(
+                        raise AuthUnauthorizedException(
                             detail=f'Missing "{scope}" scope',
                             headers={
                                 "WWW-Authenticate": f'Bearer scope="{security_scopes.scope_str}"'  # noqa: E501
@@ -307,7 +305,7 @@ class Auth0:
             else:  # pragma: no cover
                 # This is an unlikely case but handle it just to be safe
                 # (perhaps auth0 will change the scope format)
-                raise Auth0UnauthorizedException(
+                raise AuthUnauthorizedException(
                     detail='Token "scope" field must be a string'
                 )
 
@@ -315,15 +313,15 @@ class Auth0:
             user = self.auth0_user_model(**payload)
 
             if self.email_auto_error and not user.email:  # pragma: no cover
-                raise Auth0UnauthorizedException(
+                raise AuthUnauthorizedException(
                     detail='Missing email claim (check auth0 rule "Add email to access token")'  # noqa: E501
                 )
 
             return user
 
         except ValidationError as e:  # pragma: no cover
-            logger.error(f'Handled exception parsing Auth0User: "{e}"', exc_info=True)
+            logger.error(f'Handled exception parsing AuthUser: "{e}"', exc_info=True)
             if self.auto_error:
-                raise Auth0UnauthorizedException(detail="Error parsing Auth0User")
+                raise AuthUnauthorizedException(detail="Error parsing AuthUser")
             else:
                 return None

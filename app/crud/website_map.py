@@ -1,9 +1,8 @@
-from typing import List, Type
 from uuid import UUID
 
 from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
 
-from app.core import logger
+from app.api.exceptions.exceptions import XmlInvalid
 from app.core.utilities import (
     check_is_xml_valid_sitemap,
     fetch_url_page_text,
@@ -19,7 +18,7 @@ class WebsiteMapRepository(
     BaseRepository[WebsiteMapCreate, WebsiteMapRead, WebsiteMapUpdate, WebsiteMap]
 ):
     @property
-    def _table(self) -> Type[WebsiteMap]:  # type: ignore
+    def _table(self) -> WebsiteMap:
         return WebsiteMap
 
     def query_list(
@@ -27,11 +26,8 @@ class WebsiteMapRepository(
         user_id: UUID | None = None,
         website_id: UUID | None = None,
     ) -> Select:
-        # create statement joins
         stmt: Select = sql_select(self._table)
-        # create conditions
-        conditions: List[BinaryExpression[bool]] = []
-        # append conditions
+        conditions: list[BinaryExpression[bool]] = []
         if user_id:
             stmt = (
                 stmt.join(Website, self._table.website_id == Website.id)
@@ -44,7 +40,6 @@ class WebsiteMapRepository(
         if website_id:
             stmt = stmt.join(Website, self._table.website_id == Website.id)
             conditions.append(self._table.website_id.like(website_id))
-        # apply conditions
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
         return stmt
@@ -54,17 +49,12 @@ class WebsiteMapRepository(
         url: str,
     ) -> bool:
         is_valid: bool = False
-        try:
-            # check if the URL is valid
-            status_code: int = fetch_url_status_code(url)
-            if status_code != 200:
-                return is_valid
-            page_text: str = fetch_url_page_text(url)
-            page_xml = parse_sitemap_xml(page_text)
-            is_valid = check_is_xml_valid_sitemap(page_xml)
-            if not is_valid:  # pragma: no cover
-                raise Exception("Invalid Sitemap XML")
-        except Exception as e:  # pragma: no cover
-            logger.info("Error Fetching Sitemap Url: %s" % e)
-        finally:
+        status_code: int = fetch_url_status_code(url)
+        if status_code != 200:
             return is_valid
+        page_text: str = fetch_url_page_text(url)
+        page_xml = parse_sitemap_xml(page_text)
+        is_valid = check_is_xml_valid_sitemap(page_xml)
+        if not is_valid:  # TODO: test this
+            raise XmlInvalid()
+        return is_valid

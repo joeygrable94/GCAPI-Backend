@@ -1,10 +1,10 @@
-from anyio import run
 from sqlalchemy_data_model_visualizer import (
     add_web_font_and_interactivity,
     generate_data_model_diagram,
 )
 from typer import Typer
 
+from app.cli.coro import cli_coro
 from app.core.config import settings
 from app.core.logger import logger
 from app.db.commands import build_database, check_db_connected, create_init_data
@@ -13,27 +13,30 @@ app = Typer()
 
 
 @app.command()
-def check_db_connection() -> None:
+@cli_coro()
+async def check_db_connection() -> None:
     try:
-        run(check_db_connected)
+        await check_db_connected()
     except Exception as e:
         logger.warning(f"Error checking DB connection: {e}")
 
 
 @app.command()
-def create_db() -> None:
+@cli_coro()
+async def create_db() -> None:
     try:
         logger.info("Create Database")
-        run(build_database)
+        await build_database()
     except Exception as e:
         logger.warning(f"Error building database: {e}")
 
 
 @app.command()
-def add_initial_data() -> None:
+@cli_coro()
+async def add_initial_data() -> None:
     try:
         logger.info("Load Initial Data")
-        count = run(create_init_data)
+        count = await create_init_data()
         logger.info(f"Data Inserted C[{count}]")
     except Exception as e:
         logger.warning(f"Error adding initial DB data: {e}")
@@ -49,10 +52,8 @@ def generate_schema_graph() -> None:
         all_models = [getattr(models, m) for m in models.__all__]
         output_file_name = f"./docs/{app_name}_schema_graph"
         output_file_interactive = f"./docs/{output_file_name}_interactive.svg"
-        generate_data_model_diagram(all_models, output_file_name)  # type: ignore
-        add_web_font_and_interactivity(  # type: ignore
-            output_file_name, output_file_interactive
-        )
+        generate_data_model_diagram(all_models, output_file_name)
+        add_web_font_and_interactivity(output_file_name, output_file_interactive)
     except Exception as e:
         logger.warning(f"Error creating schema graph: {e}")
 

@@ -1,7 +1,7 @@
 import logging
-from typing import Any  # pragma: no cover
+from typing import Any
 
-from sqlalchemy import text  # pragma: no cover
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
@@ -9,16 +9,19 @@ from app.core.config import settings
 from app.core.logger import logger
 from app.core.security.permissions import AclPrivilege
 from app.crud import (
+    ClientPlatformRepository,
     ClientRepository,
-    DataBucketRepository,
+    PlatformRepository,
     UserClientRepository,
     UserRepository,
 )
 from app.db.base import Base
-from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
+from app.db.constants import DB_STR_USER_PICTURE_DEFAULT, MASTER_PLATFORM_INDEX
 from app.db.session import async_session, engine
-from app.models import Client, DataBucket, User, UserClient
-from app.schemas import ClientCreate, DataBucketCreate, UserClientCreate, UserCreate
+from app.models import Client, User, UserClient
+from app.models.platform import Platform
+from app.schemas import ClientCreate, ClientPlatformCreate, UserClientCreate, UserCreate
+from app.schemas.platform import PlatformCreate
 
 max_tries = 60 * 5  # 5 minutes
 wait_seconds = 3
@@ -27,22 +30,17 @@ wait_seconds = 3
 @retry(
     stop=stop_after_attempt(max_tries),
     wait=wait_fixed(wait_seconds),
-    before=before_log(logger, logging.INFO),  # type: ignore
-    after=after_log(logger, logging.WARN),  # type: ignore
+    before=before_log(logger, logging.INFO),
+    after=after_log(logger, logging.WARN),
 )
 async def check_db_connected() -> None:  # pragma: no cover
     try:
-        dburl: str = str(settings.db.uri_async)
         logger.info("ATTEMPTING TO CONNECT TO DATABASE...")
-        logger.info(settings.db.uri)
-        logger.info(settings.db.uri_async)
         stmt: Any = text("select 1")
-        if not dburl.__contains__("sqlite"):
-            with engine.connect() as connection:
-                logger.info("database connection", connection)
-                result: Any = connection.execute(stmt)
-                if result is not None:
-                    logger.info("+ ASYCN F(X) --> MYSQL CONNECTED!")
+        with engine.connect() as connection:
+            result: Any = connection.execute(stmt)
+            if result is not None:
+                logger.info("+ ASYCN F(X) --> MYSQL CONNECTED!")
         logger.info("Database is ready for connections. (^_^)")
     except Exception as e:
         logger.info("+ ASYNC F(X) --> There was a problem connecting to DB...")
@@ -51,14 +49,11 @@ async def check_db_connected() -> None:  # pragma: no cover
 
 async def check_db_disconnected() -> None:  # pragma: no cover
     try:
-        dburl: str = str(settings.db.uri_async)
         stmt: Any = text("select 1")
-        if not dburl.__contains__("sqlite"):
-            with engine.connect() as connection:
-                result: Any = connection.execute(stmt)
-                if result is not None:
-                    logger.info("+ ASYCN F(X) --> Disconnecting MYSQL...")
-            logger.info("+ ASYNC F(X) --> MYSQL DISCONNECTED!")
+        with engine.connect() as connection:
+            result: Any = connection.execute(stmt)
+            if result is not None:
+                logger.info("+ ASYCN F(X) --> Disconnecting MYSQL...")
         logger.info("+ ASYNC F(X) --> Database Disconnected. (-_-) Zzz")
     except Exception as e:
         logger.info("+ ASYNC F(X) --> Failed to Disconnect Database! (@_@)")
@@ -67,9 +62,6 @@ async def check_db_disconnected() -> None:  # pragma: no cover
 
 async def create_db_tables() -> None:  # pragma: no cover
     logger.info("Creating Database Tables")
-    # create the tables
-    # async with async_engine.begin() as conn:
-    #     await conn.run_sync(Base.metadata.create_all, checkfirst=True)
     with engine.begin() as conn:
         Base.metadata.create_all(conn, checkfirst=True)
     logger.info("Database Tables Created")
@@ -77,8 +69,6 @@ async def create_db_tables() -> None:  # pragma: no cover
 
 async def drop_db_tables() -> None:  # pragma: no cover
     logger.info("Dropping Database Tables")
-    # async with async_engine.begin() as conn:
-    #     await conn.run_sync(Base.metadata.drop_all, checkfirst=True)
     with engine.begin() as conn:
         Base.metadata.drop_all(conn, checkfirst=True)
     logger.info("Database Tables Dropped")
@@ -96,15 +86,18 @@ async def create_init_data() -> int:  # pragma: no cover
     user_unverified: User | None
     c1: Client | None
     c2: Client | None
-    db_c1: DataBucket | None
-    db_c2: DataBucket | None
     c1_admin1: UserClient | None
     c1_manager1: UserClient | None
     c1_employee1: UserClient | None
+    p_ga4: Platform | None
+    p_gads: Platform | None
+    p_spsp: Platform | None
+    p_bdx: Platform | None
     user_repo: UserRepository
-    data_repo: DataBucketRepository
     client_repo: ClientRepository
     user_client_repo: UserClientRepository
+    platform_repo: PlatformRepository
+    client_platform_repo: ClientPlatformRepository
 
     # first admin
     async with async_session() as session:
@@ -273,32 +266,6 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    # first clients data bucket
-    async with async_session() as session:
-        data_repo = DataBucketRepository(session)
-        db_c1 = await data_repo.read_by("bucket_prefix", f"client/{c1.slug}")
-        if not db_c1:
-            db_c1 = await data_repo.create(
-                DataBucketCreate(
-                    bucket_name=settings.cloud.aws_s3_default_bucket,
-                    bucket_prefix=f"client/{c1.slug}",
-                    description="Get Community Inc. Data Bucket",
-                    client_id=c1.id,
-                )
-            )
-            i_count += 1
-        db_c2 = await data_repo.read_by("bucket_prefix", f"client/{c2.slug}")
-        if not db_c2:
-            db_c2 = await data_repo.create(
-                DataBucketCreate(
-                    bucket_name=settings.cloud.aws_s3_default_bucket,
-                    bucket_prefix=f"client/{c2.slug}",
-                    description="The Grable's Test Data Bucket",
-                    client_id=c2.id,
-                )
-            )
-            i_count += 1
-
     # assign users to client1: admin1
     async with async_session() as session:
         user_client_repo = UserClientRepository(session)
@@ -350,6 +317,60 @@ async def create_init_data() -> int:  # pragma: no cover
                 UserClientCreate(user_id=manager1.id, client_id=c2.id)
             )
             i_count += 1
+
+    for slug, title in MASTER_PLATFORM_INDEX.items():
+        async with async_session() as session:
+            platform_repo = PlatformRepository(session)
+            p1 = await platform_repo.exists_by_fields({"slug": slug, "title": title})
+            if not p1:
+                p1 = await platform_repo.create(PlatformCreate(slug=slug, title=title))
+                i_count += 1
+
+    # assign platforms to clients
+    async with async_session() as session:
+        platform_repo = PlatformRepository(session)
+        p_ga4 = await platform_repo.read_by(field_name="slug", field_value="ga4")
+        assert p_ga4
+        p_gads = await platform_repo.read_by(field_name="slug", field_value="gads")
+        assert p_gads
+        p_spsp = await platform_repo.read_by(field_name="slug", field_value="spsp")
+        assert p_spsp
+        p_bdx = await platform_repo.read_by(field_name="slug", field_value="bdx")
+        assert p_bdx
+        client_platform_repo = ClientPlatformRepository(session)
+        c1_p_ga4 = await client_platform_repo.exists_by_fields(
+            {"client_id": c1.id, "platform_id": p_ga4.id}
+        )
+        if not c1_p_ga4:
+            await client_platform_repo.create(
+                ClientPlatformCreate(client_id=c1.id, platform_id=p_ga4.id)
+            )
+            i_count += 1
+        c1_p_gads = await client_platform_repo.exists_by_fields(
+            {"client_id": c1.id, "platform_id": p_gads.id}
+        )
+        if not c1_p_gads:
+            await client_platform_repo.create(
+                ClientPlatformCreate(client_id=c1.id, platform_id=p_gads.id)
+            )
+            i_count += 1
+        c1_p_spsp = await client_platform_repo.exists_by_fields(
+            {"client_id": c1.id, "platform_id": p_spsp.id}
+        )
+        if not c1_p_spsp:
+            await client_platform_repo.create(
+                ClientPlatformCreate(client_id=c1.id, platform_id=p_spsp.id)
+            )
+            i_count += 1
+        c2_p_ga4 = await client_platform_repo.exists_by_fields(
+            {"client_id": c2.id, "platform_id": p_ga4.id}
+        )
+        if not c2_p_ga4:
+            await client_platform_repo.create(
+                ClientPlatformCreate(client_id=c2.id, platform_id=p_ga4.id)
+            )
+            i_count += 1
+
     return i_count
 
 

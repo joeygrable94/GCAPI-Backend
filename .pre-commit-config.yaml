@@ -7,14 +7,14 @@ repos:
     hooks:
       - id: format-code
         name: format-code
-        entry: ./scripts/format.sh
+        entry: ./scripts/ruff-check.sh
         language: script
         pass_filenames: false
   - repo: local
     hooks:
       - id: lint-code
         name: lint-code
-        entry: ./scripts/lint.sh
+        entry: ./scripts/ruff-fix.sh
         language: script
         pass_filenames: false
 #   - repo: local

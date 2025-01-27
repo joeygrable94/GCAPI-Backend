@@ -1,10 +1,9 @@
-from typing import TYPE_CHECKING, Any, List, Tuple
+from typing import TYPE_CHECKING
 
 from pydantic import UUID4
-from sqlalchemy import Float, ForeignKey, Integer, String
+from sqlalchemy import JSON, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import Timestamp  # type: ignore
-from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils import JSONType, Timestamp, UUIDType
 
 from app.core.security.permissions import (
     AccessCreate,
@@ -17,7 +16,7 @@ from app.core.security.permissions import (
     AclPrivilege,
     RoleUser,
 )
-from app.core.utilities import get_uuid  # type: ignore
+from app.core.utilities import get_uuid
 from app.db.base_class import Base
 from app.db.constants import DB_STR_16BIT_MAXLEN_STORED
 
@@ -28,56 +27,23 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class WebsitePageSpeedInsights(Base, Timestamp):
     __tablename__: str = "website_pagespeedinsights"
-    __table_args__: Any = {"mysql_engine": "InnoDB"}
-    __mapper_args__: Any = {"always_refresh": True}
+    __table_args__: dict = {"mysql_engine": "InnoDB"}
+    __mapper_args__: dict = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         index=True,
         primary_key=True,
         unique=True,
         nullable=False,
-        default=get_uuid(),
+        default=get_uuid,
     )
     strategy: Mapped[str] = mapped_column(
         String(DB_STR_16BIT_MAXLEN_STORED), nullable=False, default="mobile"
     )
-    ps_weight: Mapped[int] = mapped_column(Integer, nullable=False, default=100)
-    ps_grade: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
-    ps_value: Mapped[str] = mapped_column(
-        String(DB_STR_16BIT_MAXLEN_STORED), nullable=False, default="0%"
-    )
-    ps_unit: Mapped[str] = mapped_column(
-        String(DB_STR_16BIT_MAXLEN_STORED), nullable=False, default="percent"
-    )
-    fcp_weight: Mapped[int] = mapped_column(Integer, nullable=False, default=10)
-    fcp_grade: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
-    fcp_value: Mapped[str] = mapped_column(Float, nullable=False, default=0.0)
-    fcp_unit: Mapped[str] = mapped_column(
-        String(DB_STR_16BIT_MAXLEN_STORED), nullable=False, default="miliseconds"
-    )
-    lcp_weight: Mapped[int] = mapped_column(Integer, nullable=False, default=25)
-    lcp_grade: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
-    lcp_value: Mapped[str] = mapped_column(Float, nullable=False, default=0.0)
-    lcp_unit: Mapped[str] = mapped_column(
-        String(DB_STR_16BIT_MAXLEN_STORED), nullable=False, default="miliseconds"
-    )
-    cls_weight: Mapped[int] = mapped_column(Integer, nullable=False, default=15)
-    cls_grade: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
-    cls_value: Mapped[str] = mapped_column(Float, nullable=False, default=0.0)
-    cls_unit: Mapped[str] = mapped_column(
-        String(DB_STR_16BIT_MAXLEN_STORED), nullable=False, default="unitless"
-    )
-    si_weight: Mapped[int] = mapped_column(Integer, nullable=False, default=10)
-    si_grade: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
-    si_value: Mapped[str] = mapped_column(Float, nullable=False, default=0.0)
-    si_unit: Mapped[str] = mapped_column(
-        String(DB_STR_16BIT_MAXLEN_STORED), nullable=False, default="miliiseconds"
-    )
-    tbt_weight: Mapped[int] = mapped_column(Integer, nullable=False, default=30)
-    tbt_grade: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
-    tbt_value: Mapped[str] = mapped_column(Float, nullable=False, default=0.0)
-    tbt_unit: Mapped[str] = mapped_column(
-        String(DB_STR_16BIT_MAXLEN_STORED), nullable=False, default="miliseconds"
+    score_grade: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    grade_data: Mapped[JSON] = mapped_column(
+        JSONType(),
+        nullable=False,
     )
 
     # relationships
@@ -97,7 +63,7 @@ class WebsitePageSpeedInsights(Base, Timestamp):
     # ACL
     def __acl__(
         self,
-    ) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
+    ) -> list[tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
         return [
             # list
             (AclAction.allow, RoleUser, AccessList),

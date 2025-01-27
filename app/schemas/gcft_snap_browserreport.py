@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import UUID4, field_validator
 
@@ -19,17 +18,17 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 # schemas
 class GcftSnapBrowserreportBase(BaseSchema):
     session_id: UUID4
-    browser: Optional[str] = None
-    browser_version: Optional[str] = None
-    platform: Optional[str] = None
-    platform_version: Optional[str] = None
-    desktop: Optional[bool] = None
-    tablet: Optional[bool] = None
-    mobile: Optional[bool] = None
-    city: Optional[str] = None
-    country: Optional[str] = None
-    state: Optional[str] = None
-    language: Optional[str] = None
+    browser: str | None = None
+    browser_version: str | None = None
+    platform: str | None = None
+    platform_version: str | None = None
+    desktop: bool | None = None
+    tablet: bool | None = None
+    mobile: bool | None = None
+    city: str | None = None
+    country: str | None = None
+    state: str | None = None
+    language: str | None = None
     visit_date: datetime
     gcft_id: UUID4
     snap_id: UUID4

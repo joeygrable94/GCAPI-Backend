@@ -1,17 +1,18 @@
-from typing import Sequence, Type
+from collections.abc import Sequence
 from uuid import UUID
 
-from sqlalchemy import Result, Select, select as sql_select
+from sqlalchemy import Result, Select
+from sqlalchemy import select as sql_select
 
 from app.core.utilities import paginate
 from app.crud.base import BaseRepository
-from app.models import ClientWebsite, User, UserClient
+from app.models import ClientPlatform, ClientWebsite, User, UserClient
 from app.schemas import UserCreate, UserRead, UserUpdate, UserUpdatePrivileges
 
 
 class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
     @property
-    def _table(self) -> Type[User]:  # type: ignore
+    def _table(self) -> User:
         return User
 
     async def get_list(
@@ -22,7 +23,7 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
         skip, limit = paginate(page)
         query: Select = sql_select(self._table).offset(skip).limit(limit)
         result: Result = await self._db.execute(query)
-        data: Sequence[User] = result.scalars().all()  # pragma: no cover
+        data: Sequence[User] = result.scalars().all()
         data_list = list(data)
         return data_list
 
@@ -31,6 +32,7 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
         current_user_id: UUID,
         user_id: UUID | None = None,
         client_id: UUID | None = None,
+        platform_id: UUID | None = None,
         website_id: UUID | None = None,
     ) -> int:
         """
@@ -78,6 +80,22 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
                 .where(UserClient.client_id.in_(current_user_clients))
             )
         # 3
+        if platform_id:
+            # get all clients of the platform_id
+            platform_clients = sql_select(ClientPlatform.client_id).where(
+                ClientPlatform.platform_id == platform_id
+            )
+            # get all clients of the current user
+            current_user_clients = sql_select(UserClient.client_id).where(
+                UserClient.user_id == current_user_id
+            )
+            # find the intersection
+            stmt = (
+                stmt.join(UserClient, User.id == UserClient.user_id)
+                .where(UserClient.client_id.in_(platform_clients))
+                .where(UserClient.client_id.in_(current_user_clients))
+            )
+        # 4
         if website_id:
             # get all clients of the website_id
             website_clients = sql_select(ClientWebsite.client_id).where(

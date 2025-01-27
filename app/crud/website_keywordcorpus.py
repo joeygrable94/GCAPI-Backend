@@ -1,7 +1,7 @@
-from typing import List, Type
 from uuid import UUID
 
-from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
+from sqlalchemy import BinaryExpression, Select, and_
+from sqlalchemy import select as sql_select
 
 from app.crud.base import BaseRepository
 from app.models import (
@@ -29,7 +29,7 @@ class WebsiteKeywordCorpusRepository(
     ]
 ):
     @property
-    def _table(self) -> Type[WebsiteKeywordCorpus]:  # type: ignore
+    def _table(self) -> WebsiteKeywordCorpus:
         return WebsiteKeywordCorpus
 
     def query_list(
@@ -38,11 +38,8 @@ class WebsiteKeywordCorpusRepository(
         website_id: UUID | None = None,
         page_id: UUID | None = None,
     ) -> Select:
-        # create statement joins
         stmt: Select = sql_select(self._table)
-        # create conditions
-        conditions: List[BinaryExpression[bool]] = []
-        # append conditions
+        conditions: list[BinaryExpression[bool]] = []
         if user_id:
             stmt = (
                 stmt.join(Website, self._table.website_id == Website.id)
@@ -58,7 +55,6 @@ class WebsiteKeywordCorpusRepository(
         if page_id:
             stmt = stmt.join(WebsitePage, self._table.page_id == WebsitePage.id)
             conditions.append(self._table.page_id.like(page_id))
-        # apply conditions
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
         return stmt

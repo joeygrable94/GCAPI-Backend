@@ -1,7 +1,7 @@
-from typing import List, Type
 from uuid import UUID
 
-from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
+from sqlalchemy import BinaryExpression, Select, and_
+from sqlalchemy import select as sql_select
 
 from app.crud.base import BaseRepository
 from app.models import Client, TrackingLink, User, UserClient
@@ -14,7 +14,7 @@ class TrackingLinkRepository(
     ]
 ):
     @property
-    def _table(self) -> Type[TrackingLink]:  # type: ignore
+    def _table(self) -> TrackingLink:
         return TrackingLink
 
     def query_list(
@@ -32,41 +32,37 @@ class TrackingLinkRepository(
         utm_term: str | None = None,
         is_active: bool | None = None,
     ) -> Select:
-        # create statement joins
         stmt: Select = sql_select(self._table)
-        # create conditions
-        conditions: List[BinaryExpression[bool]] = []
-        # append conditions
+        conditions: list[BinaryExpression[bool]] = []
         if user_id:
             stmt = (
-                stmt.join(Client, self._table.client_id == Client.id)
+                stmt.join(Client, TrackingLink.client_id == Client.id)
                 .join(UserClient, Client.id == UserClient.client_id)
                 .join(User, UserClient.user_id == User.id)
             )
             conditions.append(User.id.like(user_id))
         if client_id:
-            conditions.append(self._table.client_id.like(client_id))
+            conditions.append(TrackingLink.client_id.like(client_id))
         if scheme:
-            conditions.append(self._table.scheme.like(scheme))
+            conditions.append(TrackingLink.scheme.like(scheme))
         if domain:
-            conditions.append(self._table.domain.like(domain))
+            conditions.append(TrackingLink.domain.like(domain))
         if destination:
-            conditions.append(self._table.destination.like(destination))
+            conditions.append(TrackingLink.destination.like(destination))
         if url_path:
-            conditions.append(self._table.url_path.like(url_path))
+            conditions.append(TrackingLink.url_path.like(url_path))
         if utm_campaign:
-            conditions.append(self._table.utm_campaign.like(utm_campaign))
+            conditions.append(TrackingLink.utm_campaign.like(utm_campaign))
         if utm_medium:
-            conditions.append(self._table.utm_medium.like(utm_medium))
+            conditions.append(TrackingLink.utm_medium.like(utm_medium))
         if utm_source:
-            conditions.append(self._table.utm_source.like(utm_source))
+            conditions.append(TrackingLink.utm_source.like(utm_source))
         if utm_content:
-            conditions.append(self._table.utm_content.like(utm_content))
+            conditions.append(TrackingLink.utm_content.like(utm_content))
         if utm_term:
-            conditions.append(self._table.utm_term.like(utm_term))
+            conditions.append(TrackingLink.utm_term.like(utm_term))
         if is_active is not None:
-            conditions.append(self._table.is_active.is_(is_active))
-        # apply conditions
+            conditions.append(TrackingLink.is_active.is_(is_active))
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
         return stmt

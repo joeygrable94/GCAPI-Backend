@@ -7,10 +7,9 @@ python cli.py db check-db-connection
 echo "Running Backend DB Migrations..."
 alembic upgrade head
 
-sleep 3
-
 # Create initial data in DB
-python cli.py db add-initial-data
+# python cli.py db add-initial-data
 
 # start the server
-python start.py
+fastapi run app/main.py --port 8888
+# python start.py

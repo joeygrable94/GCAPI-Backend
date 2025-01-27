@@ -16,11 +16,10 @@ class AuthPermissionException(Exception):
 
 
 def configure_permissions_exceptions(app: FastAPI) -> None:
-
     @app.exception_handler(AuthPermissionException)
     async def permissions_exception_handler(
         request: Request, exc: AuthPermissionException
-    ) -> Response:  # noqa: E501
+    ) -> Response:
         request_headers = {}
         if exc.headers:
             request_headers.update(exc.headers)

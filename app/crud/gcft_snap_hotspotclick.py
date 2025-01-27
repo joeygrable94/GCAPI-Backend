@@ -1,5 +1,3 @@
-from typing import Type
-
 from app.crud.base import BaseRepository
 from app.models import GcftSnapHotspotclick
 from app.schemas import (
@@ -18,5 +16,5 @@ class GcftSnapHotspotclickRepository(
     ]
 ):
     @property
-    def _table(self) -> Type[GcftSnapHotspotclick]:  # type: ignore
+    def _table(self) -> GcftSnapHotspotclick:
         return GcftSnapHotspotclick

@@ -1,8 +1,9 @@
 import os
 import sys
 import threading
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 from boto3 import Session, client
 from botocore.exceptions import ClientError

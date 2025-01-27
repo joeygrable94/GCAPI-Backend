@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import UUID4
 
 from app.schemas.base import BaseSchema, BaseSchemaRead
@@ -16,8 +14,8 @@ class UserIpaddressCreate(UserIpaddressBase):
 
 
 class UserIpaddressUpdate(BaseSchema):
-    user_id: Optional[UUID4] = None
-    ipaddress_id: Optional[UUID4] = None
+    user_id: UUID4 | None = None
+    ipaddress_id: UUID4 | None = None
 
 
 class UserIpaddressRead(UserIpaddressBase, BaseSchemaRead):

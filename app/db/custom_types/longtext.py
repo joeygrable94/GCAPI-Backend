@@ -1,7 +1,8 @@
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
-from sqlalchemy import Text, types
-from sqlalchemy.dialects.mysql import LONGTEXT
+from sqlalchemy import LargeBinary, types
+from sqlalchemy.dialects import mysql
 from sqlalchemy.engine.interfaces import Dialect
 
 from app.db.constants import DB_STR_LONGTEXT_MAXLEN_STORED
@@ -13,11 +14,13 @@ class LongText(types.UserDefinedType):
     def __init__(self, length: int = DB_STR_LONGTEXT_MAXLEN_STORED):
         self.length = length
 
-    def get_col_spec(self, **kw: Any) -> str:
-        return "BLOB(%d)" % self.length
+    def get_col_spec(self, **kw: dict) -> str:
+        return "LONGBLOB"
 
-    def bind_processor(self, dialect: Dialect) -> Optional[Callable[[Any], Any]]:
-        def process(value: Any) -> Any:
+    def bind_processor(
+        self, dialect: Dialect
+    ) -> Callable[[str], str] | None:  # pragma: no cover
+        def process(value: str) -> str:
             return value
 
         return process
@@ -26,13 +29,15 @@ class LongText(types.UserDefinedType):
         self, dialect: Dialect
     ) -> types.TypeEngine[str]:  # pragma: no cover
         if dialect.name == "mysql":
-            return dialect.type_descriptor(LONGTEXT())
+            return dialect.type_descriptor(mysql.LONGBLOB())
         else:
-            return dialect.type_descriptor(Text(length=DB_STR_LONGTEXT_MAXLEN_STORED))
+            return dialect.type_descriptor(
+                LargeBinary(length=DB_STR_LONGTEXT_MAXLEN_STORED)
+            )
 
     def result_processor(
         self, dialect: Dialect, coltype: object
-    ) -> Optional[Callable[[Any], Any]]:
+    ) -> Callable[[Any], Any] | None:  # pragma: no cover
         def process(value: Any) -> Any:
             return value
 

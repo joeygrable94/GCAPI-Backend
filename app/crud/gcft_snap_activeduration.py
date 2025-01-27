@@ -1,5 +1,3 @@
-from typing import Type
-
 from app.crud.base import BaseRepository
 from app.models import GcftSnapActiveduration
 from app.schemas import (
@@ -18,5 +16,5 @@ class GcftSnapActivedurationRepository(
     ]
 ):
     @property
-    def _table(self) -> Type[GcftSnapActiveduration]:  # type: ignore
+    def _table(self) -> GcftSnapActiveduration:
         return GcftSnapActiveduration

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import UUID4, field_validator
 
 from app.db.validators import validate_address_optional, validate_address_required
@@ -22,9 +20,9 @@ class GeocoordCreate(GeocoordBase):
 
 
 class GeocoordUpdate(BaseSchema):
-    address: Optional[str] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    address: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
 
     _validate_address = field_validator("address", mode="before")(
         validate_address_optional

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import UUID4, field_validator
 
@@ -23,16 +22,16 @@ from app.schemas.base import BaseSchema, BaseSchemaRead
 class GcftSnapHotspotclickBase(BaseSchema):
     session_id: UUID4
     reporting_id: str
-    hotspot_type_name: Optional[str] = None
-    hotspot_content: Optional[str] = None
-    hotspot_icon_name: Optional[str] = None
-    hotspot_name: Optional[str] = None
-    hotspot_user_icon_name: Optional[str] = None
-    linked_snap_name: Optional[str] = None
-    snap_file_name: Optional[str] = None
-    icon_color: Optional[str] = None
-    bg_color: Optional[str] = None
-    text_color: Optional[str] = None
+    hotspot_type_name: str | None = None
+    hotspot_content: str | None = None
+    hotspot_icon_name: str | None = None
+    hotspot_name: str | None = None
+    hotspot_user_icon_name: str | None = None
+    linked_snap_name: str | None = None
+    snap_file_name: str | None = None
+    icon_color: str | None = None
+    bg_color: str | None = None
+    text_color: str | None = None
     hotspot_update_date: datetime
     click_date: datetime
     gcft_id: UUID4

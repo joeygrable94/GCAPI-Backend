@@ -5,10 +5,10 @@ import os
 import sys
 from logging.config import fileConfig
 
-from alembic import context
 from dotenv import load_dotenv
-from pydantic_core import Url
 from sqlalchemy import URL, engine_from_config, pool
+
+from alembic import context
 
 load_dotenv()
 
@@ -40,9 +40,11 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+
 # database uri
 def get_url() -> str | URL:
     return settings.db.uri
+
 
 def get_async_url() -> str | URL:
     return settings.db.uri_async
@@ -81,7 +83,9 @@ def run_migrations_online():
     assert configuration
     configuration["sqlalchemy.url"] = str(url)
     connectable = engine_from_config(
-        configuration, prefix="sqlalchemy.", poolclass=pool.NullPool,
+        configuration,
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:

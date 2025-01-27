@@ -1,12 +1,10 @@
-from typing import List
-
 from .auth import (
     Auth0,
     Auth0HTTPBearer,
-    Auth0UnauthenticatedException,
-    Auth0UnauthorizedException,
-    Auth0User,
-    HTTPAuth0Error,
+    AuthUnauthenticatedException,
+    AuthUnauthorizedException,
+    AuthUser,
+    HTTPAuthError,
     JwksDict,
     JwksKeyDict,
     OAuth2ImplicitBearer,
@@ -32,16 +30,20 @@ from .permissions import (
 )
 from .schemas import CsrfToken, EncryptedMessage, PlainMessage, RateLimitedToken
 
-__all__: List[str] = [
-    "EncryptionError",
-    "DecryptionError",
-    "auth",
+__all__: list[str] = [
     "Auth0",
     "Auth0HTTPBearer",
-    "Auth0UnauthenticatedException",
-    "Auth0UnauthorizedException",
-    "Auth0User",
+    "AuthUnauthenticatedException",
+    "AuthUnauthorizedException",
+    "AuthUser",
     "configure_authorization_exceptions",
+    "HTTPAuthError",
+    "JwksDict",
+    "JwksKeyDict",
+    "OAuth2ImplicitBearer",
+    "auth",
+    "EncryptionError",
+    "DecryptionError",
     "configure_csrf_exceptions",
     "configure_encryption_exceptions",
     "CipherError",
@@ -52,10 +54,6 @@ __all__: List[str] = [
     "EncryptedMessage",
     "PlainMessage",
     "RateLimitedToken",
-    "HTTPAuth0Error",
-    "JwksDict",
-    "JwksKeyDict",
-    "OAuth2ImplicitBearer",
     "load_api_keys",
     "SecureMessage",
     "SignatureVerificationError",
@@ -64,4 +62,8 @@ __all__: List[str] = [
     "configure_permissions",
     "has_permission",
     "list_permissions",
+    "AuthUser",
+    "AuthUnauthenticatedException",
+    "AuthUnauthorizedException",
+    "configure_authorization_exceptions",
 ]

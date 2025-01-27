@@ -1,8 +1,8 @@
 import time
-from typing import Any, List
+from typing import Any
 
 from fastapi import FastAPI, Request
-from fastapi_profiler import PyInstrumentProfilerMiddleware  # type: ignore
+from fastapi_profiler import PyInstrumentProfilerMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -40,7 +40,9 @@ def configure_middleware(app: FastAPI) -> None:
         )
 
     @app.middleware("http")
-    async def add_process_time_header(request: Request, call_next: Any) -> Any:
+    async def add_process_time_header(
+        request: Request, call_next: Any
+    ) -> Any:  # pragma: no cover
         """Adds a header to each response with the time it took to process."""
         start_time: Any = time.perf_counter()
         response_result: Any = await call_next(request)
@@ -58,6 +60,6 @@ def configure_middleware(app: FastAPI) -> None:
     #     return response_result
 
 
-__all__: List[str] = [
+__all__: list[str] = [
     "configure_middleware",
 ]

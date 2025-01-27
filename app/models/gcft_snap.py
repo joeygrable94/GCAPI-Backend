@@ -1,17 +1,15 @@
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING
 
 from pydantic import UUID4
 from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import Timestamp  # type: ignore
-from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils import Timestamp, UUIDType
 
-from app.core.utilities import get_uuid  # type: ignore
+from app.core.utilities import get_uuid
 from app.db.base_class import Base
 from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_INPUT
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .file_asset import FileAsset  # noqa: F401
     from .gcft import Gcft  # noqa: F401
     from .gcft_snap_activeduration import GcftSnapActiveduration  # noqa: F401
     from .gcft_snap_browserreport import GcftSnapBrowserreport  # noqa: F401
@@ -23,15 +21,15 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class GcftSnap(Base, Timestamp):
     __tablename__: str = "gcft_snap"
-    __table_args__: Any = {"mysql_engine": "InnoDB"}
-    __mapper_args__: Any = {"always_refresh": True}
+    __table_args__: dict = {"mysql_engine": "InnoDB"}
+    __mapper_args__: dict = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         index=True,
         unique=True,
         primary_key=True,
         nullable=False,
-        default=get_uuid(),
+        default=get_uuid,
     )
     snap_name: Mapped[str] = mapped_column(
         String(length=DB_STR_TINYTEXT_MAXLEN_INPUT),
@@ -51,12 +49,6 @@ class GcftSnap(Base, Timestamp):
     )
 
     # relationships
-    file_asset_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("file_asset.id"), nullable=True, default=None
-    )
-    file_asset: Mapped[Optional["FileAsset"]] = relationship(
-        "FileAsset", back_populates="gcft_snap"
-    )
     geocoord_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("geocoord.id"), nullable=False
     )
@@ -65,26 +57,24 @@ class GcftSnap(Base, Timestamp):
         UUIDType(binary=False), ForeignKey("gcft.id"), nullable=False
     )
     gcflytour: Mapped["Gcft"] = relationship("Gcft", back_populates="gcft_snaps")
-    snap_views: Mapped[List["GcftSnapView"]] = relationship(
+    snap_views: Mapped[list["GcftSnapView"]] = relationship(
         "GcftSnapView", back_populates="gcft_snap"
     )
-    active_durations: Mapped[List["GcftSnapActiveduration"]] = relationship(
+    active_durations: Mapped[list["GcftSnapActiveduration"]] = relationship(
         "GcftSnapActiveduration", back_populates="gcft_snap"
     )
-    hotspot_clicks: Mapped[List["GcftSnapHotspotclick"]] = relationship(
+    hotspot_clicks: Mapped[list["GcftSnapHotspotclick"]] = relationship(
         "GcftSnapHotspotclick", back_populates="gcft_snap"
     )
-    traffic_sources: Mapped[List["GcftSnapTrafficsource"]] = relationship(
+    traffic_sources: Mapped[list["GcftSnapTrafficsource"]] = relationship(
         "GcftSnapTrafficsource", back_populates="gcft_snap"
     )
-    browser_reports: Mapped[List["GcftSnapBrowserreport"]] = relationship(
+    browser_reports: Mapped[list["GcftSnapBrowserreport"]] = relationship(
         "GcftSnapBrowserreport", back_populates="gcft_snap"
     )
 
     # represenation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = (
-            f"GcftSnap({self.snap_name}[{self.snap_slug}], \
+        repr_str: str = f"GcftSnap({self.snap_name}[{self.snap_slug}], \
             Tour[{self.gcft_id}], Coords[{self.geocoord_id}])"
-        )
         return repr_str

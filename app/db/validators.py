@@ -1,9 +1,9 @@
 import json
-from typing import Any, List, Union
+from typing import Any, Union
 
 from app.core.config import settings
 from app.core.security.permissions import AclPrivilege, Scope
-from app.core.utilities import domain_name_regex, email_regex
+from app.core.utilities import domain_name_regex, email_regex, utm_parameter_value_regex
 from app.db.constants import (
     DB_INT_ALTITUDE_MAX,
     DB_INT_INTEGER_MAXLEN_STORED,
@@ -11,12 +11,8 @@ from app.db.constants import (
     DB_STR_32BIT_MAXLEN_INPUT,
     DB_STR_64BIT_MAXLEN_INPUT,
     DB_STR_BLOB_MAXLEN_INPUT,
-    DB_STR_BLOB_MAXLEN_STORED,
-    DB_STR_BUCKET_NAME_MAXLEN_INPUT,
-    DB_STR_BUCKET_NAME_MINLEN_INPUT,
     DB_STR_BUCKET_OBJECT_NAME_MAXLEN_INPUT,
     DB_STR_BUCKET_OBJECT_NAME_MINLEN_INPUT,
-    DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT,
     DB_STR_DESC_MAXLEN_INPUT,
     DB_STR_LONGTEXT_MAXLEN_STORED,
     DB_STR_SHORTTEXT_MAXLEN_INPUT,
@@ -95,9 +91,28 @@ def optional_string_name_min_max_len(
     return v
 
 
+def optional_string_utm_param(
+    v: str | None,
+    name: str = "utm_campaign",
+    min_len: int = 0,
+    max_len: int = DB_STR_TINYTEXT_MAXLEN_INPUT,
+) -> str | None:
+    if v is None:
+        return v
+    if len(v) < min_len:
+        raise ValueError(f"{name} is required")
+    if len(v) > max_len:
+        raise ValueError(f"{name} must be {max_len} characters or less")
+    if not utm_parameter_value_regex.search(v):
+        raise ValueError(
+            "invalid utm paramter value provided, only characters allowed: a-z, A-Z, 0-9, -, _"  # noqa: E501
+        )
+    return v
+
+
 def valid_json_str(
     v: str,
-    name: str = "style_guide",
+    name: str = "json_blob",
 ) -> str:
     try:
         json.loads(v)
@@ -165,7 +180,7 @@ def optional_string_domain(
 
 
 def required_string_in_list(
-    v: str, name: str = "device", choices: List[str] = []
+    v: str, name: str = "device", choices: list[str] = []
 ) -> str:
     if v is None or len(v) <= 0:
         raise ValueError(f"{name} is required")
@@ -176,7 +191,7 @@ def required_string_in_list(
 
 
 def optional_string_in_list(
-    v: str | None, name: str = "device", choices: List[str] = []
+    v: str | None, name: str = "device", choices: list[str] = []
 ) -> str | None:
     if v is not None and len(v) <= 0:
         raise ValueError(f"{name} is required")
@@ -227,6 +242,15 @@ def validate_slug_required(cls: Any, value: str) -> str:
     )
 
 
+def validate_slug_optional(cls: Any, value: str | None) -> str | None:
+    return optional_string_name_min_max_len(
+        v=value,
+        name="slug",
+        min_len=3,
+        max_len=DB_STR_64BIT_MAXLEN_INPUT,
+    )
+
+
 def validate_title_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
@@ -253,13 +277,24 @@ def validate_description_optional(cls: Any, value: str | None) -> str | None:
     )
 
 
-def validate_style_guide_optional(cls: Any, value: str | None) -> str | None:
+def validate_styleguide_optional(cls: Any, value: str | None) -> str | None:
     if value is not None:
         value = valid_json_str(v=value, name="style_guide")
     return optional_string_name_min_max_len(
         v=value,
         name="style_guide",
-        max_len=DB_STR_BLOB_MAXLEN_STORED,
+        max_len=DB_STR_BLOB_MAXLEN_INPUT,
+    )
+
+
+def validate_grade_data_required(cls: Any, value: str) -> str:
+    if value is not None:
+        value = valid_json_str(v=value, name="grade_data")
+    return require_string_name_min_max_len(
+        v=value,
+        name="grade_data",
+        min_len=2,
+        max_len=DB_STR_BLOB_MAXLEN_INPUT,
     )
 
 
@@ -371,7 +406,7 @@ def validate_url_path_required(cls: Any, value: str) -> str:
 def validate_url_path_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
-        name="url",
+        name="url_path",
         min_len=1,
         max_len=DB_STR_URLPATH_MAXLEN_INPUT,
     )
@@ -380,7 +415,7 @@ def validate_url_path_optional(cls: Any, value: str | None) -> str | None:
 def validate_url_hash_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
-        name="url",
+        name="url_hash",
         min_len=1,
         max_len=DB_STR_64BIT_MAXLEN_INPUT,
     )
@@ -389,7 +424,7 @@ def validate_url_hash_required(cls: Any, value: str) -> str:
 def validate_url_hash_optional(cls: Any, value: str | None) -> str | None:
     return optional_string_name_min_max_len(
         v=value,
-        name="url",
+        name="url_hash",
         min_len=1,
         max_len=DB_STR_64BIT_MAXLEN_INPUT,
     )
@@ -411,65 +446,12 @@ def validate_strategy_required(cls: Any, value: str) -> str:
     )
 
 
-def validate_ps_value_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value,
-        name="ps_value",
-        max_len=4,
-    )
-
-
-def validate_ps_value_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
-        v=value,
-        name="ps_value",
-        min_len=1,
-        max_len=4,
-    )
-
-
-def validate_ps_unit_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value, name="ps_unit", max_len=DB_STR_16BIT_MAXLEN_INPUT
-    )
-
-
-def validate_fcp_unit_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value, name="fcp_unit", max_len=DB_STR_16BIT_MAXLEN_INPUT
-    )
-
-
-def validate_lcp_unit_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value, name="lcp_unit", max_len=DB_STR_16BIT_MAXLEN_INPUT
-    )
-
-
-def validate_cls_unit_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value, name="cls_unit", max_len=DB_STR_16BIT_MAXLEN_INPUT
-    )
-
-
-def validate_si_unit_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value, name="si_unit", max_len=DB_STR_16BIT_MAXLEN_INPUT
-    )
-
-
-def validate_tbt_unit_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value, name="tbt_unit", max_len=DB_STR_16BIT_MAXLEN_INPUT
-    )
-
-
 def validate_scopes_required(
-    cls: Any, value: Union[List[str], List[AclPrivilege]]
-) -> List[AclPrivilege]:
+    cls: Any, value: Union[list[str], list[AclPrivilege]]
+) -> list[AclPrivilege]:
     if value is None or len(value) <= 0:
         raise ValueError("scopes is required")
-    scopes: List[AclPrivilege] = []
+    scopes: list[AclPrivilege] = []
     for scope in value:
         if isinstance(scope, str):
             tmp = Scope(scope)
@@ -480,10 +462,10 @@ def validate_scopes_required(
 
 
 def validate_scopes_optional(
-    cls: Any, value: Union[List[str], List[AclPrivilege]] | None
-) -> List[AclPrivilege] | None:
+    cls: Any, value: Union[list[str], list[AclPrivilege]] | None
+) -> list[AclPrivilege] | None:
     if value is not None:
-        scopes: List[AclPrivilege] = []
+        scopes: list[AclPrivilege] = []
         for scope in value:
             if isinstance(scope, str):
                 tmp = Scope(scope)
@@ -605,7 +587,7 @@ def validate_xml_file_key_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
         name="xml_file_key",
-        min_len=0,
+        min_len=3,
         max_len=DB_STR_32BIT_MAXLEN_INPUT,
     )
 
@@ -625,42 +607,6 @@ def validate_serverhost_optional(cls: Any, value: str | None) -> str | None:
         name="serverhost",
         min_len=3,
         max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
-    )
-
-
-def validate_bucket_prefix_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value,
-        name="bucket_prefix",
-        min_len=1,
-        max_len=DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT,
-    )
-
-
-def validate_bucket_prefix_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
-        v=value,
-        name="bucket_prefix",
-        min_len=1,
-        max_len=DB_STR_BUCKET_OBJECT_PREFIX_MAXLEN_INPUT,
-    )
-
-
-def validate_bucket_name_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value,
-        name="bucket_name",
-        min_len=DB_STR_BUCKET_NAME_MINLEN_INPUT,
-        max_len=DB_STR_BUCKET_NAME_MAXLEN_INPUT,
-    )
-
-
-def validate_bucket_name_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
-        v=value,
-        name="bucket_name",
-        min_len=DB_STR_BUCKET_NAME_MINLEN_INPUT,
-        max_len=DB_STR_BUCKET_NAME_MAXLEN_INPUT,
     )
 
 
@@ -960,7 +906,7 @@ def validate_referrer_required(cls: Any, value: str) -> str:
 
 
 def validate_utm_campaign_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
+    return optional_string_utm_param(
         v=value,
         name="utm_campaign",
         min_len=0,
@@ -969,7 +915,7 @@ def validate_utm_campaign_optional(cls: Any, value: str | None) -> str | None:
 
 
 def validate_utm_content_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
+    return optional_string_utm_param(
         v=value,
         name="utm_content",
         min_len=0,
@@ -978,7 +924,7 @@ def validate_utm_content_optional(cls: Any, value: str | None) -> str | None:
 
 
 def validate_utm_medium_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
+    return optional_string_utm_param(
         v=value,
         name="utm_medium",
         min_len=0,
@@ -987,7 +933,7 @@ def validate_utm_medium_optional(cls: Any, value: str | None) -> str | None:
 
 
 def validate_utm_source_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
+    return optional_string_utm_param(
         v=value,
         name="utm_source",
         min_len=0,
@@ -996,7 +942,7 @@ def validate_utm_source_optional(cls: Any, value: str | None) -> str | None:
 
 
 def validate_utm_term_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
+    return optional_string_utm_param(
         v=value,
         name="utm_term",
         min_len=0,
@@ -1173,78 +1119,6 @@ def validate_active_seconds_required(cls: Any, value: int) -> int:
     )
 
 
-def validate_project_name_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value,
-        name="project_name",
-        min_len=0,
-        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
-    )
-
-
-def validate_project_name_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
-        v=value,
-        name="project_name",
-        min_len=0,
-        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
-    )
-
-
-def validate_project_id_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value,
-        name="project_id",
-        min_len=0,
-        max_len=DB_STR_64BIT_MAXLEN_INPUT,
-    )
-
-
-def validate_project_number_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value,
-        name="project_number",
-        min_len=0,
-        max_len=DB_STR_64BIT_MAXLEN_INPUT,
-    )
-
-
-def validate_service_account_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value,
-        name="service_account",
-        min_len=5,
-        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
-    )
-
-
-def validate_project_id_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
-        v=value,
-        name="project_id",
-        min_len=0,
-        max_len=DB_STR_64BIT_MAXLEN_INPUT,
-    )
-
-
-def validate_project_number_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
-        v=value,
-        name="project_number",
-        min_len=0,
-        max_len=DB_STR_64BIT_MAXLEN_INPUT,
-    )
-
-
-def validate_service_account_optional(cls: Any, value: str | None) -> str | None:
-    return optional_string_name_min_max_len(
-        v=value,
-        name="service_account",
-        min_len=5,
-        max_len=DB_STR_TINYTEXT_MAXLEN_INPUT,
-    )
-
-
 def validate_measurement_id_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,
@@ -1327,22 +1201,4 @@ def validate_impressions_optional(cls: Any, value: int | None) -> int | None:
         min_len=0,
         max_len=DB_INT_INTEGER_MAXLEN_STORED,
         can_be_zero=True,
-    )
-
-
-def validate_tracking_id_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value,
-        name="tracking_id",
-        min_len=0,
-        max_len=DB_STR_16BIT_MAXLEN_INPUT,
-    )
-
-
-def validate_view_id_required(cls: Any, value: str) -> str:
-    return require_string_name_min_max_len(
-        v=value,
-        name="view_id",
-        min_len=0,
-        max_len=DB_STR_16BIT_MAXLEN_INPUT,
     )

@@ -1,27 +1,24 @@
 import json
-from typing import Dict, List
+from typing import List
 
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.utils.utils import random_lower_string
 
 from app.crud import (
+    ClientPlatformRepository,
     ClientRepository,
     ClientWebsiteRepository,
-    DataBucketRepository,
     UserClientRepository,
 )
-from app.models import Client, ClientWebsite, DataBucket, User, UserClient, Website
+from app.models import Client, ClientPlatform, ClientWebsite, UserClient
 from app.schemas import (
     ClientCreate,
+    ClientPlatformCreate,
     ClientRead,
     ClientWebsiteCreate,
-    DataBucketCreate,
-    DataBucketRead,
     UserClientCreate,
-    UserRead,
-    WebsiteRead,
 )
+from tests.utils.utils import random_lower_string
 
 
 async def create_random_client(
@@ -40,52 +37,48 @@ async def create_random_client(
 
 
 async def assign_user_to_client(
-    db_session: AsyncSession, user: User | UserRead, client: Client | ClientRead
+    db_session: AsyncSession, user_id: UUID4, client_id: UUID4
 ) -> UserClient:
     repo: UserClientRepository = UserClientRepository(session=db_session)
     user_client: UserClient = await repo.create(
-        schema=UserClientCreate(user_id=user.id, client_id=client.id)
+        schema=UserClientCreate(user_id=user_id, client_id=client_id)
     )
     return user_client
 
 
+async def assign_platform_to_client(
+    db_session: AsyncSession,
+    platform_id: UUID4,
+    client_id: UUID4,
+) -> ClientPlatform:
+    repo: ClientPlatformRepository = ClientPlatformRepository(session=db_session)
+    client_platform: ClientPlatform = await repo.create(
+        schema=ClientPlatformCreate(client_id=client_id, platform_id=platform_id)
+    )
+    return client_platform
+
+
 async def assign_website_to_client(
     db_session: AsyncSession,
-    website: Website | WebsiteRead,
-    client: Client | ClientRead,
+    website_id: UUID4,
+    client_id: UUID4,
 ) -> ClientWebsite:
     repo: ClientWebsiteRepository = ClientWebsiteRepository(session=db_session)
     client_website: ClientWebsite = await repo.create(
-        schema=ClientWebsiteCreate(website_id=website.id, client_id=client.id)
+        schema=ClientWebsiteCreate(website_id=website_id, client_id=client_id)
     )
     return client_website
 
 
-async def create_random_data_bucket(
-    db_session: AsyncSession,
-    client_id: UUID4,
-) -> DataBucketRead:
-    repo: DataBucketRepository = DataBucketRepository(session=db_session)
-    data_bucket: DataBucket = await repo.create(
-        schema=DataBucketCreate(
-            bucket_name=random_lower_string(),
-            bucket_prefix=random_lower_string(),
-            description=random_lower_string(),
-            client_id=client_id,
-        )
-    )
-    return DataBucketRead.model_validate(data_bucket)
-
-
 def create_random_client_style_guide(
-    colors: List[Dict[str, str]] = [
+    colors: List[dict[str, str]] = [
         {
             "label": "Test Color",
             "className": "bg-red-8000",
             "textClass": "text-white",
         }
     ],
-    fonts: List[Dict[str, str]] = [
+    fonts: List[dict[str, str]] = [
         {
             "type": "primary",
             "label": "Noto Sans",

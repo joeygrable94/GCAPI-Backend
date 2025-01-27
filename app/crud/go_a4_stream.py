@@ -1,7 +1,7 @@
-from typing import List, Type
 from uuid import UUID
 
-from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
+from sqlalchemy import BinaryExpression, Select, and_
+from sqlalchemy import select as sql_select
 
 from app.crud.base import BaseRepository
 from app.models import (
@@ -29,7 +29,7 @@ class GoAnalytics4StreamRepository(
     ]
 ):
     @property
-    def _table(self) -> Type[GoAnalytics4Stream]:  # type: ignore
+    def _table(self) -> GoAnalytics4Stream:
         return GoAnalytics4Stream
 
     def query_list(
@@ -38,11 +38,8 @@ class GoAnalytics4StreamRepository(
         website_id: UUID | None = None,
         ga4_id: UUID | None = None,
     ) -> Select:
-        # create statement joins
         stmt: Select = sql_select(self._table)
-        # create conditions
-        conditions: List[BinaryExpression[bool]] = []
-        # append conditions
+        conditions: list[BinaryExpression[bool]] = []
         if user_id:
             stmt = (
                 stmt.join(Website, GoAnalytics4Stream.website_id == Website.id)
@@ -53,7 +50,6 @@ class GoAnalytics4StreamRepository(
             )
             conditions.append(User.id.like(user_id))
         if website_id:
-            # stmt = stmt.join(Website, GoAnalytics4Stream.website_id == Website.id)
             conditions.append(GoAnalytics4Stream.website_id.like(website_id))
         if ga4_id:
             stmt = stmt.join(
@@ -61,7 +57,6 @@ class GoAnalytics4StreamRepository(
                 GoAnalytics4Stream.ga4_id == GoAnalytics4Property.id,
             )
             conditions.append(GoAnalytics4Stream.ga4_id.like(ga4_id))
-        # apply conditions
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
         return stmt

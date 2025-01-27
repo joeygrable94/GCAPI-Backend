@@ -1,7 +1,6 @@
 import base64
 import json
 from os import environ
-from typing import Dict
 
 import requests
 
@@ -22,12 +21,12 @@ def get_auth0_access_token_value(
         "audience": audience,
         "scope": scopes,
     }
-    clid: str | None = environ.get("AUTH0_SPA_CLIENT_ID", None)
-    clsh: str | None = environ.get("AUTH0_SPA_CLIENT_SECRET", None)
+    clid: str | None = environ.get("AUTH_SPA_CLIENT_ID", None)
+    clsh: str | None = environ.get("AUTH_SPA_CLIENT_SECRET", None)
     if clid is None:
-        raise ValueError("AUTH0_SPA_CLIENT_ID is not set")
+        raise ValueError("AUTH_SPA_CLIENT_ID is not set")
     if clsh is None:
-        raise ValueError("AUTH0_SPA_CLIENT_SECRET is not set")
+        raise ValueError("AUTH_SPA_CLIENT_SECRET is not set")
     headers = {"content-type": "application/json"}
     response = requests.post(url, json=data, headers=headers, auth=(clid, clsh))
     data = response.json()
@@ -38,7 +37,7 @@ def get_auth0_access_token_value(
 def get_auth0_access_token(
     email: str,
     password: str,
-) -> Dict[str, str]:
+) -> dict[str, str]:
     access_token = get_auth0_access_token_value(email=email, password=password)
     return {"Authorization": f"Bearer {access_token}"}
 

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import UUID4
 
 from app.schemas.base import BaseSchema, BaseSchemaRead
@@ -16,8 +14,8 @@ class ClientWebsiteCreate(ClientWebsiteBase):
 
 
 class ClientWebsiteUpdate(BaseSchema):
-    client_id: Optional[UUID4] = None
-    website_id: Optional[UUID4] = None
+    client_id: UUID4 | None = None
+    website_id: UUID4 | None = None
 
 
 class ClientWebsiteRead(ClientWebsiteBase, BaseSchemaRead):

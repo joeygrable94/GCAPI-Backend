@@ -1,5 +1,3 @@
-from typing import List
-
 from .cipher_secure import SecureMessage
 from .exceptions import (
     CipherError,
@@ -10,7 +8,7 @@ from .exceptions import (
 )
 from .keys import load_api_keys
 
-__all__: List[str] = [
+__all__: list[str] = [
     "CipherError",
     "DecryptionError",
     "EncryptionError",

@@ -1,5 +1,5 @@
 from os import environ
-from typing import Any, List, Union
+from typing import Any, Union
 
 from dotenv import load_dotenv
 from pydantic import ValidationInfo, field_validator
@@ -11,10 +11,10 @@ load_dotenv()
 
 
 class EmailSettings(BaseSettings):
-    allowed_providers: str | List[str] = environ.get(
+    allowed_providers: str | list[str] = environ.get(
         "EMAIL_ALLOWED_PROVIDERS", "getcommunity.com"
     )
-    allowed_from_emails: str | List[str] = environ.get(
+    allowed_from_emails: str | list[str] = environ.get(
         "EMAIL_ALLOWED_FROM_EMAILS", "admin@getcommunity.com"
     )
     enabled: bool = bool(environ.get("EMAIL_ENABLED", False))
@@ -38,8 +38,8 @@ class EmailSettings(BaseSettings):
     # pydantic field validators
     @field_validator("allowed_providers", mode="before")
     def assemble_allowed_providers(
-        cls: Any, v: Union[str, List[str]], info: ValidationInfo
-    ) -> List[str]:  # pragma: no cover
+        cls: Any, v: Union[str, list[str]], info: ValidationInfo
+    ) -> list[str]:  # pragma: no cover
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, list):
@@ -48,8 +48,8 @@ class EmailSettings(BaseSettings):
 
     @field_validator("allowed_from_emails", mode="before")
     def assemble_allowed_from_emails(
-        cls: Any, v: Union[str, List[str]], info: ValidationInfo
-    ) -> List[str]:  # pragma: no cover
+        cls: Any, v: Union[str, list[str]], info: ValidationInfo
+    ) -> list[str]:  # pragma: no cover
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, list):

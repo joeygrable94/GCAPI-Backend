@@ -11,13 +11,8 @@ from app.api.deps import (
     get_permission_controller,
     get_website_map_or_404,
 )
-from app.api.exceptions import (
-    WebsiteMapAlreadyExists,
-    WebsiteMapUrlXmlInvalid,
-    WebsiteNotExists,
-)
+from app.api.exceptions import EntityAlreadyExists, EntityNotFound, XmlInvalid
 from app.core.pagination import PageParams, Paginated
-from app.core.security import auth
 from app.core.security.permissions import (
     AccessDelete,
     AccessRead,
@@ -44,7 +39,6 @@ router: APIRouter = APIRouter()
     name="website_sitemaps:list",
     dependencies=[
         Depends(CommonWebsiteMapQueryParams),
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
@@ -81,15 +75,15 @@ async def sitemap_list(
             user_id=permissions.current_user.id,
             website_id=query.website_id,
         )
-    response_out: Paginated[WebsiteMapRead] = (
-        await permissions.get_paginated_resource_response(
-            table_name=WebsiteMap.__tablename__,
-            stmt=select_stmt,
-            page_params=PageParams(page=query.page, size=query.size),
-            responses={
-                RoleUser: WebsiteMapRead,
-            },
-        )
+    response_out: Paginated[
+        WebsiteMapRead
+    ] = await permissions.get_paginated_resource_response(
+        table_name=WebsiteMap.__tablename__,
+        stmt=select_stmt,
+        page_params=PageParams(page=query.page, size=query.size),
+        responses={
+            RoleUser: WebsiteMapRead,
+        },
     )
     return response_out
 
@@ -98,7 +92,6 @@ async def sitemap_list(
     "/",
     name="website_sitemaps:create",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
@@ -123,7 +116,6 @@ async def sitemap_create(
     `WebsiteMapRead` : the newly created website map
 
     """
-    # verify current user has permission to take this action
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=sitemap_in.website_id,
@@ -132,12 +124,20 @@ async def sitemap_create(
     website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
     a_website: Website | None = await website_repo.read(sitemap_in.website_id)
     if a_website is None:
-        raise WebsiteNotExists()
+        raise EntityNotFound(
+            entity_info="Website id = {}".format(sitemap_in.website_id)
+        )
     # check website map url is a valid XML document
+    fetch_website_map_url: str = "{}/{}".format(
+        a_website.get_link(),
+        sitemap_in.url.lstrip("/"),
+    )
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=permissions.db)
-    sitemap_url_valid: bool = sitemap_repo.is_sitemap_url_xml_valid(sitemap_in.url)
+    sitemap_url_valid: bool = sitemap_repo.is_sitemap_url_xml_valid(
+        fetch_website_map_url
+    )
     if not sitemap_url_valid:
-        raise WebsiteMapUrlXmlInvalid()
+        raise XmlInvalid()
     # check website map url is unique to website_id
     a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_fields(
         {
@@ -146,10 +146,12 @@ async def sitemap_create(
         }
     )
     if a_sitemap is not None:
-        raise WebsiteMapAlreadyExists()
+        raise EntityAlreadyExists(
+            entity_info="WebsiteMap url = {}".format(sitemap_in.url)
+        )
     # create website map
     sitemap: WebsiteMap = await sitemap_repo.create(sitemap_in)
-    # return role based response
+
     response_out: WebsiteMapRead = permissions.get_resource_response(
         resource=sitemap,
         responses={
@@ -163,7 +165,6 @@ async def sitemap_create(
     "/{sitemap_id}",
     name="website_sitemaps:read",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_map_or_404),
         Depends(get_current_user),
@@ -189,12 +190,12 @@ async def sitemap_read(
     `WebsiteMapRead` : the website map
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=sitemap.website_id,
     )
-    # return role based response
+
     response_out: WebsiteMapRead = permissions.get_resource_response(
         resource=sitemap,
         responses={
@@ -208,7 +209,6 @@ async def sitemap_read(
     "/{sitemap_id}",
     name="website_sitemaps:update",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_map_or_404),
         Depends(get_current_user),
@@ -235,16 +235,41 @@ async def sitemap_update(
     `WebsiteMapRead` : the updated website map
 
     """
-    # verify current user has permission to take this action
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=sitemap.website_id,
     )
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=permissions.db)
+    if sitemap_in.url is not None:
+        website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
+        a_website: Website | None = await website_repo.read(sitemap.website_id)
+        if a_website is None:
+            raise EntityNotFound(
+                entity_info="Website id = {}".format(sitemap_in.website_id)
+            )
+        fetch_website_map_url: str = "{}/{}".format(
+            a_website.get_link(),
+            sitemap_in.url.lstrip("/"),
+        )
+        sitemap_url_valid: bool = sitemap_repo.is_sitemap_url_xml_valid(
+            fetch_website_map_url
+        )
+        if not sitemap_url_valid:
+            raise XmlInvalid()
+        # website assigned sitemap URL must be unique
+        a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_fields(
+            {
+                "url": sitemap_in.url,
+                "website_id": sitemap.website_id,
+            }
+        )
+        if a_sitemap is not None:
+            raise EntityAlreadyExists(
+                entity_info="WebsiteMap url = {}".format(sitemap_in.url)
+            )
     updated_sitemap: WebsiteMap | None = await sitemap_repo.update(
         entry=sitemap, schema=sitemap_in
     )
-    # return role based response
     response_out: WebsiteMapRead = permissions.get_resource_response(
         resource=updated_sitemap if updated_sitemap else sitemap,
         responses={
@@ -258,7 +283,6 @@ async def sitemap_update(
     "/{sitemap_id}",
     name="website_sitemaps:delete",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_map_or_404),
         Depends(get_current_user),
@@ -284,7 +308,7 @@ async def sitemap_delete(
     `None`
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=sitemap.website_id,
@@ -298,7 +322,6 @@ async def sitemap_delete(
     "/{sitemap_id}/process-pages",
     name="website_sitemaps:process_sitemap_pages",
     dependencies=[
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_website_map_or_404),
         Depends(get_current_user),
@@ -325,16 +348,24 @@ async def sitemap_process_sitemap_pages(
     `WebsiteMapProcessing` : the task_id of the worker task
 
     """
-    # verify current user has permission to take this action
+
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=sitemap.website_id,
     )
+    website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
+    a_website: Website | None = await website_repo.read(sitemap.website_id)
+    if a_website is None:
+        raise EntityNotFound(entity_info="Website id = {}".format(sitemap.website_id))
+    fetch_website_map_url: str = "{}/{}".format(
+        a_website.get_link(),
+        sitemap.url.lstrip("/"),
+    )
     # check website map url is a valid XML document
     sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(session=permissions.db)
-    sitemap_url_valid: bool = sitemap_repo.is_sitemap_url_xml_valid(sitemap.url)
+    sitemap_url_valid = sitemap_repo.is_sitemap_url_xml_valid(fetch_website_map_url)
     if not sitemap_url_valid:
-        raise WebsiteMapUrlXmlInvalid()
+        raise XmlInvalid()
     # Send the task to the broker.
     bg_tasks.add_task(
         bg_task_website_sitemap_process_xml,

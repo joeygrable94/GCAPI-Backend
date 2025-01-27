@@ -1,4 +1,4 @@
-import ipinfo  # type: ignore
+import ipinfo
 
 from app.core.config import settings
 

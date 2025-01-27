@@ -19,6 +19,7 @@ domain_name_regex: Pattern = compile(
 domain_in_url_regex: Pattern = compile(
     r"^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)"
 )
+utm_parameter_value_regex: Pattern = compile(r"^[a-zA-Z0-9\-\_]+$")
 
 # https://pydantic-docs.helpmanual.io/usage/types/#custom-data-types
 # first str before ':' should only be in a-z, 0-9, -, _

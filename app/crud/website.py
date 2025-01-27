@@ -1,8 +1,8 @@
 import socket
-from typing import List, Optional, Type
 from uuid import UUID
 
-from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
+from sqlalchemy import BinaryExpression, Select, and_
+from sqlalchemy import select as sql_select
 
 from app.core.logger import logger
 from app.crud.base import BaseRepository
@@ -14,7 +14,7 @@ class WebsiteRepository(
     BaseRepository[WebsiteCreate, WebsiteRead, WebsiteUpdate, Website]
 ):
     @property
-    def _table(self) -> Type[Website]:  # type: ignore
+    def _table(self) -> Website:
         return Website
 
     def query_list(
@@ -22,11 +22,8 @@ class WebsiteRepository(
         user_id: UUID | None = None,
         client_id: UUID | None = None,
     ) -> Select:
-        # create statement joins
         stmt: Select = sql_select(self._table)
-        # create conditions
-        conditions: List[BinaryExpression[bool]] = []
-        # append conditions
+        conditions: list[BinaryExpression[bool]] = []
         if user_id:
             stmt = (
                 stmt.join(ClientWebsite, self._table.id == ClientWebsite.website_id)
@@ -40,25 +37,24 @@ class WebsiteRepository(
                 ClientWebsite, self._table.id == ClientWebsite.website_id
             ).join(Client, ClientWebsite.client_id == Client.id)
             conditions.append(Client.id.like(client_id))
-        # apply conditions
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
         return stmt
 
     async def validate(
         self,
-        domain: Optional[str],
+        domain: str | None,
     ) -> bool:
         try:
             if not domain:
-                raise Exception("Domain name is required to validate")
+                raise Exception()
             addr = socket.gethostbyname(domain)
             logger.info(
                 f"Validated website domain {domain} at IP address {addr}"
             )  # pragma: no cover
             return True
-        except Exception as e:
+        except Exception:
             logger.info(
-                f"Error validating the domain name: {domain}", e
+                f"Error validating the domain name: {domain}"
             )  # pragma: no cover
             return False

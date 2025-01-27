@@ -1,4 +1,4 @@
-from typing import Dict, Generic, List, Type, TypeVar
+from typing import Generic, TypeVar
 
 from fastapi import Depends, status
 from pydantic import UUID4, BaseModel
@@ -29,8 +29,8 @@ from .get_db import AsyncDatabaseSession
 
 def get_current_user_privileges(
     user: User = Depends(get_current_user),
-) -> List[AclPrivilege]:
-    principals: List[AclPrivilege]
+) -> list[AclPrivilege]:
+    principals: list[AclPrivilege]
     principals = [Everyone, Authenticated]
     principals.extend(user.privileges())
     return list(set(principals))
@@ -46,7 +46,7 @@ B = TypeVar("B", bound=Base)
 class PermissionController(Generic[T]):
     db: AsyncDatabaseSession
     current_user: CurrentUser
-    privileges: List[AclPrivilege]
+    privileges: list[AclPrivilege]
     user_repo: UserRepository
     client_repo: ClientRepository
     user_client_repo: UserClientRepository
@@ -55,7 +55,7 @@ class PermissionController(Generic[T]):
         self,
         db: AsyncDatabaseSession,
         user: CurrentUser,
-        privileges: List[AclPrivilege],
+        privileges: list[AclPrivilege],
     ):
         self.db = db
         self.current_user = user
@@ -66,9 +66,10 @@ class PermissionController(Generic[T]):
 
     async def verify_user_can_access(
         self,
-        privileges: List[AclPrivilege] = [],
+        privileges: list[AclPrivilege] = [],
         user_id: UUID4 | None = None,
         client_id: UUID4 | None = None,
+        platform_id: UUID4 | None = None,
         website_id: UUID4 | None = None,
     ) -> bool:
         # admins can access all resources
@@ -86,6 +87,7 @@ class PermissionController(Generic[T]):
             current_user_id=self.current_user.id,
             user_id=user_id,
             client_id=client_id,
+            platform_id=platform_id,
             website_id=website_id,
         )
         if users_access:
@@ -97,7 +99,7 @@ class PermissionController(Generic[T]):
         )
 
     def verify_input_schema_by_role(
-        self, input_object: T, schema_privileges: Dict[AclPrivilege, Type[T]]
+        self, input_object: T, schema_privileges: dict[AclPrivilege, Generic[T]]
     ) -> None:
         input_dict = input_object.model_dump(exclude_unset=True, exclude_none=True)
         for privilege, schema in schema_privileges.items():
@@ -111,13 +113,13 @@ class PermissionController(Generic[T]):
 
     def get_resource_response(
         self,
-        resource: B,  # type: ignore
-        responses: Dict[AclPrivilege, Type[T]],
+        resource: B,
+        responses: dict[AclPrivilege, Generic[T]],
     ) -> T:
         for privilege, response_schema in responses.items():
             if privilege in self.privileges:
                 return response_schema.model_validate(resource)
-        raise AuthPermissionException(  # pragma: no cover
+        raise AuthPermissionException(  # pragma: no cover - safety net
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             message=ErrorCode.INSUFFICIENT_PERMISSIONS_RESPONSE,
         )
@@ -127,7 +129,7 @@ class PermissionController(Generic[T]):
         table_name: str,
         stmt: Select,
         page_params: PageParams,
-        responses: Dict[AclPrivilege, Type[T]],
+        responses: dict[AclPrivilege, Generic[T]],
     ) -> Paginated[T]:
         for privilege, response_schema in responses.items():
             if privilege in self.privileges:
@@ -211,6 +213,6 @@ class PermissionController(Generic[T]):
 def get_permission_controller(
     db: AsyncDatabaseSession,
     user: CurrentUser,
-    privileges: List[AclPrivilege] = Depends(get_current_user_privileges),
+    privileges: list[AclPrivilege] = Depends(get_current_user_privileges),
 ) -> PermissionController:  # pragma: no cover
     return PermissionController(db, user, privileges)

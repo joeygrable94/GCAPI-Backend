@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Depends
 
@@ -10,7 +10,6 @@ from app.api.deps import (
     get_current_user,
     get_permission_controller,
 )
-from app.core.security import auth
 
 router: APIRouter = APIRouter()
 
@@ -20,17 +19,16 @@ router: APIRouter = APIRouter()
     name="public:status",
     dependencies=[
         Depends(PublicQueryParams),
-        Depends(auth.implicit_scheme),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
     ],
-    response_model=Dict[str, Any],
+    response_model=dict[str, Any],
 )
 async def status(
     query: GetPublicQueryParams,
     permissions: PermissionController = Depends(get_permission_controller),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Retrieve the status of the API.
 
     Permissions:
@@ -39,7 +37,7 @@ async def status(
 
     Returns:
     --------
-    `Dict[str, Any]` : a dictionary containing the status of the API
+    `dict[str, Any]` : a dictionary containing the status of the API
 
     """
     return {"status": "ok"}

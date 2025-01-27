@@ -1,11 +1,10 @@
-from typing import TYPE_CHECKING, Any, Tuple
+from typing import TYPE_CHECKING
 
 from pydantic import UUID4
 from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import Timestamp  # type: ignore
-from sqlalchemy_utils import UUIDType
-from sqlalchemy_utils.types.encrypted.encrypted_type import (  # type: ignore  # noqa: E501
+from sqlalchemy_utils import Timestamp, UUIDType
+from sqlalchemy_utils.types.encrypted.encrypted_type import (
     AesEngine,
     StringEncryptedType,
 )
@@ -27,8 +26,7 @@ from app.core.security.permissions import (
     RoleManager,
     RoleUser,
 )
-from app.core.utilities import get_random_username  # type: ignore
-from app.core.utilities import get_uuid
+from app.core.utilities import get_random_username, get_uuid
 from app.db.base_class import Base
 from app.db.constants import (
     DB_STR_32BIT_MAXLEN_STORED,
@@ -41,22 +39,20 @@ from app.db.custom_types import Scopes
 
 if TYPE_CHECKING:  # pragma: no cover
     from .client import Client  # noqa: F401
-    from .file_asset import FileAsset  # noqa: F401
     from .ipaddress import Ipaddress  # noqa: F401
-    from .note import Note  # noqa: F401
 
 
 class User(Base, Timestamp):
     __tablename__: str = "user"
-    __table_args__: Any = {"mysql_engine": "InnoDB"}
-    __mapper_args__: Any = {"always_refresh": True}
+    __table_args__: dict = {"mysql_engine": "InnoDB"}
+    __mapper_args__: dict = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         index=True,
         primary_key=True,
         unique=True,
         nullable=False,
-        default=get_uuid(),
+        default=get_uuid,
     )
     auth_id: Mapped[str] = mapped_column(
         StringEncryptedType(
@@ -128,13 +124,8 @@ class User(Base, Timestamp):
     clients: Mapped[list["Client"]] = relationship(
         "Client", secondary="user_client", back_populates="users"
     )
-    notes: Mapped[list["Note"]] = relationship("Note", back_populates="user")
     ipaddresses: Mapped[list["Ipaddress"]] = relationship(
         "Ipaddress", secondary="user_ipaddress", back_populates="users"
-    )
-    file_assets: Mapped[list["FileAsset"]] = relationship(
-        "FileAsset",
-        back_populates="user",
     )
 
     # properties as methods
@@ -151,7 +142,7 @@ class User(Base, Timestamp):
     # ACL
     def __acl__(
         self,
-    ) -> list[Tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
+    ) -> list[tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
         return [
             # list
             (AclAction.allow, RoleAdmin, AccessList),

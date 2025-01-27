@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "prod" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "prod" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -18,12 +18,13 @@ jobs:
       fail-fast: true
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.11"]
+        python-version: ["3.12"]
     env:
       API_MODE: "test"
       ENVIRONMENT: "pytest"
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      # core
       API_ALLOWED_CORS: ${{ secrets.API_ALLOWED_CORS }}
       API_RSA_PRIVATE_KEY: ${{ secrets.API_RSA_PRIVATE_KEY }}
       API_RSA_PUBLIC_KEY: ${{ secrets.API_RSA_PUBLIC_KEY }}
@@ -31,41 +32,41 @@ jobs:
       API_CSRF_KEY: ${{ secrets.API_CSRF_KEY }}
       API_ENCRYPTION_KEY: ${{ secrets.API_ENCRYPTION_KEY }}
       API_ENCRYPTION_SALT: ${{ secrets.API_ENCRYPTION_SALT }}
+      # limits
       API_QUERY_LIMIT_OFFSET_DEFAULT: ${{ secrets.API_QUERY_LIMIT_OFFSET_DEFAULT }}
       API_QUERY_LIMIT_ROWS_DEFAULT: ${{ secrets.API_QUERY_LIMIT_ROWS_DEFAULT }}
       API_QUERY_LIMIT_ROWS_MAX: ${{ secrets.API_QUERY_LIMIT_ROWS_MAX }}
-      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
-      AUTH0_API_AUDIENCE: ${{ secrets.AUTH0_API_AUDIENCE }}
-      AUTH0_SPA_CLIENT_ID: ${{ secrets.AUTH0_SPA_CLIENT_ID }}
-      AUTH0_SPA_CLIENT_SECRET: ${{ secrets.AUTH0_SPA_CLIENT_SECRET }}
-      AUTH0_M2M_CLIENT_ID: ${{ secrets.AUTH0_M2M_CLIENT_ID }}
-      AUTH0_M2M_CLIENT_SECRET: ${{ secrets.AUTH0_M2M_CLIENT_SECRET }}
-      AUTH0_FIRST_ADMIN_AUTH_ID: ${{ secrets.AUTH0_FIRST_ADMIN_AUTH_ID }}
-      AUTH0_FIRST_ADMIN: ${{ secrets.AUTH0_FIRST_ADMIN }}
-      AUTH0_FIRST_ADMIN_PASSWORD: ${{ secrets.AUTH0_FIRST_ADMIN_PASSWORD }}
-      AUTH0_FIRST_ADMIN_PICTURE: ${{ secrets.AUTH0_FIRST_ADMIN_PICTURE }}
-      AUTH0_FIRST_MANAGER_AUTH_ID: ${{ secrets.AUTH0_FIRST_MANAGER_AUTH_ID }}
-      AUTH0_FIRST_MANAGER: ${{ secrets.AUTH0_FIRST_MANAGER }}
-      AUTH0_FIRST_MANAGER_PASSWORD: ${{ secrets.AUTH0_FIRST_MANAGER_PASSWORD }}
-      AUTH0_FIRST_MANAGER_PICTURE: ${{ secrets.AUTH0_FIRST_MANAGER_PICTURE }}
-      AUTH0_FIRST_EMPLOYEE_AUTH_ID: ${{ secrets.AUTH0_FIRST_EMPLOYEE_AUTH_ID }}
-      AUTH0_FIRST_EMPLOYEE: ${{ secrets.AUTH0_FIRST_EMPLOYEE }}
-      AUTH0_FIRST_EMPLOYEE_PASSWORD: ${{ secrets.AUTH0_FIRST_EMPLOYEE_PASSWORD }}
-      AUTH0_FIRST_EMPLOYEE_PICTURE: ${{ secrets.AUTH0_FIRST_EMPLOYEE_PICTURE }}
-      AUTH0_FIRST_CLIENT_A_AUTH_ID: ${{ secrets.AUTH0_FIRST_CLIENT_A_AUTH_ID }}
-      AUTH0_FIRST_CLIENT_A: ${{ secrets.AUTH0_FIRST_CLIENT_A }}
-      AUTH0_FIRST_CLIENT_A_PASSWORD: ${{ secrets.AUTH0_FIRST_CLIENT_A_PASSWORD }}
-      AUTH0_FIRST_CLIENT_A_PICTURE: ${{ secrets.AUTH0_FIRST_CLIENT_A_PICTURE }}
-      AUTH0_FIRST_CLIENT_B_AUTH_ID: ${{ secrets.AUTH0_FIRST_CLIENT_B_AUTH_ID }}
-      AUTH0_FIRST_CLIENT_B: ${{ secrets.AUTH0_FIRST_CLIENT_B }}
-      AUTH0_FIRST_CLIENT_B_PASSWORD: ${{ secrets.AUTH0_FIRST_CLIENT_B_PASSWORD }}
-      AUTH0_FIRST_CLIENT_B_PICTURE: ${{ secrets.AUTH0_FIRST_CLIENT_B_PICTURE }}
-      AUTH0_FIRST_USER_VERIFIED_AUTH_ID: ${{ secrets.AUTH0_FIRST_USER_VERIFIED_AUTH_ID }}
-      AUTH0_FIRST_USER_VERIFIED: ${{ secrets.AUTH0_FIRST_USER_VERIFIED }}
-      AUTH0_FIRST_USER_VERIFIED_PASSWORD: ${{ secrets.AUTH0_FIRST_USER_VERIFIED_PASSWORD }}
-      AUTH0_FIRST_USER_UNVERIFIED_AUTH_ID: ${{ secrets.AUTH0_FIRST_USER_UNVERIFIED_AUTH_ID }}
-      AUTH0_FIRST_USER_UNVERIFIED: ${{ secrets.AUTH0_FIRST_USER_UNVERIFIED }}
-      AUTH0_FIRST_USER_UNVERIFIED_PASSWORD: ${{ secrets.AUTH0_FIRST_USER_UNVERIFIED_PASSWORD }}
+      # auth
+      AUTH_RULE_NAMESPACE: ${{ secrets.AUTH_RULE_NAMESPACE }}
+      AUTH_DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+      AUTH_API_AUDIENCE: ${{ secrets.AUTH_API_AUDIENCE }}
+      AUTH_SPA_CLIENT_ID: ${{ secrets.AUTH_SPA_CLIENT_ID }}
+      AUTH_SPA_CLIENT_SECRET: ${{ secrets.AUTH_SPA_CLIENT_SECRET }}
+      AUTH_M2M_CLIENT_ID: ${{ secrets.AUTH_M2M_CLIENT_ID }}
+      AUTH_M2M_CLIENT_SECRET: ${{ secrets.AUTH_M2M_CLIENT_SECRET }}
+      # users
+      AUTH_FIRST_ADMIN_AUTH_ID: ${{ secrets.AUTH_FIRST_ADMIN_AUTH_ID }}
+      AUTH_FIRST_ADMIN: ${{ secrets.AUTH_FIRST_ADMIN }}
+      AUTH_FIRST_ADMIN_PASSWORD: ${{ secrets.AUTH_FIRST_ADMIN_PASSWORD }}
+      AUTH_FIRST_MANAGER_AUTH_ID: ${{ secrets.AUTH_FIRST_MANAGER_AUTH_ID }}
+      AUTH_FIRST_MANAGER: ${{ secrets.AUTH_FIRST_MANAGER }}
+      AUTH_FIRST_MANAGER_PASSWORD: ${{ secrets.AUTH_FIRST_MANAGER_PASSWORD }}
+      AUTH_FIRST_EMPLOYEE_AUTH_ID: ${{ secrets.AUTH_FIRST_EMPLOYEE_AUTH_ID }}
+      AUTH_FIRST_EMPLOYEE: ${{ secrets.AUTH_FIRST_EMPLOYEE }}
+      AUTH_FIRST_EMPLOYEE_PASSWORD: ${{ secrets.AUTH_FIRST_EMPLOYEE_PASSWORD }}
+      AUTH_FIRST_CLIENT_A_AUTH_ID: ${{ secrets.AUTH_FIRST_CLIENT_A_AUTH_ID }}
+      AUTH_FIRST_CLIENT_A: ${{ secrets.AUTH_FIRST_CLIENT_A }}
+      AUTH_FIRST_CLIENT_A_PASSWORD: ${{ secrets.AUTH_FIRST_CLIENT_A_PASSWORD }}
+      AUTH_FIRST_CLIENT_B_AUTH_ID: ${{ secrets.AUTH_FIRST_CLIENT_B_AUTH_ID }}
+      AUTH_FIRST_CLIENT_B: ${{ secrets.AUTH_FIRST_CLIENT_B }}
+      AUTH_FIRST_CLIENT_B_PASSWORD: ${{ secrets.AUTH_FIRST_CLIENT_B_PASSWORD }}
+      AUTH_FIRST_USER_VERIFIED_AUTH_ID: ${{ secrets.AUTH_FIRST_USER_VERIFIED_AUTH_ID }}
+      AUTH_FIRST_USER_VERIFIED: ${{ secrets.AUTH_FIRST_USER_VERIFIED }}
+      AUTH_FIRST_USER_VERIFIED_PASSWORD: ${{ secrets.AUTH_FIRST_USER_VERIFIED_PASSWORD }}
+      AUTH_FIRST_USER_UNVERIFIED_AUTH_ID: ${{ secrets.AUTH_FIRST_USER_UNVERIFIED_AUTH_ID }}
+      AUTH_FIRST_USER_UNVERIFIED: ${{ secrets.AUTH_FIRST_USER_UNVERIFIED }}
+      AUTH_FIRST_USER_UNVERIFIED_PASSWORD: ${{ secrets.AUTH_FIRST_USER_UNVERIFIED_PASSWORD }}
+      # email
       EMAIL_ENABLED: ${{ secrets.EMAIL_ENABLED }}
       EMAIL_FROM_EMAIL: ${{ secrets.EMAIL_FROM_EMAIL }}
       EMAIL_FROM_NAME: ${{ secrets.EMAIL_FROM_NAME }}
@@ -73,13 +74,13 @@ jobs:
       EMAIL_ALLOWED_PROVIDERS: ${{ secrets.EMAIL_ALLOWED_PROVIDERS }}
       EMAIL_ALLOWED_FROM_EMAILS: ${{ secrets.EMAIL_ALLOWED_FROM_EMAILS }}
       EMAIL_TEST_USER: ${{ secrets.EMAIL_TEST_USER }}
+      # cloudkeys
       CLOUDKEY_IPINFO: ${{ secrets.CLOUDKEY_IPINFO }}
       CLOUDKEY_GOOGLE_API: ${{ secrets.CLOUDKEY_GOOGLE_API }}
       CLOUDKEY_AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
       CLOUDKEY_AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}
       CLOUDKEY_AWS_DEFAULT_REGION: ${{ secrets.CLOUDKEY_AWS_DEFAULT_REGION }}
       CLOUDKEY_AWS_S3_DEFAULT_BUCKET: ${{ secrets.CLOUDKEY_AWS_S3_DEFAULT_BUCKET }}
-      AWS_GITHUB_OIDC_ROLE_ARN: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDKEY_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDKEY_AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.CLOUDKEY_AWS_S3_DEFAULT_BUCKET }}
@@ -101,9 +102,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip \
-          && python -m pip install poetry \
-          && poetry config virtualenvs.create false \
-          && poetry install --no-root
+          && python -m pip install -r requirements.txt
       - name: Run Python Tests
         run: |
           bash ./scripts/test-cov.sh

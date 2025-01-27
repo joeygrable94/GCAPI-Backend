@@ -1,7 +1,7 @@
-from typing import List, Type
 from uuid import UUID
 
-from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
+from sqlalchemy import BinaryExpression, Select, and_
+from sqlalchemy import select as sql_select
 
 from app.crud.base import BaseRepository
 from app.models import (
@@ -29,7 +29,7 @@ class WebsitePageSpeedInsightsRepository(
     ]
 ):
     @property
-    def _table(self) -> Type[WebsitePageSpeedInsights]:  # type: ignore
+    def _table(self) -> WebsitePageSpeedInsights:
         return WebsitePageSpeedInsights
 
     def query_list(
@@ -37,13 +37,10 @@ class WebsitePageSpeedInsightsRepository(
         user_id: UUID | None = None,
         website_id: UUID | None = None,
         page_id: UUID | None = None,
-        devices: List[str] | None = None,
+        devices: list[str] | None = None,
     ) -> Select:
-        # create statement joins
         stmt: Select = sql_select(self._table)
-        # create conditions
-        conditions: List[BinaryExpression[bool]] = []
-        # append conditions
+        conditions: list[BinaryExpression[bool]] = []
         if user_id:
             stmt = (
                 stmt.join(Website, self._table.website_id == Website.id)
@@ -61,7 +58,6 @@ class WebsitePageSpeedInsightsRepository(
             conditions.append(self._table.page_id.like(page_id))
         if devices:
             conditions.append(self._table.strategy.in_(iter(devices)))
-        # apply conditions
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
         return stmt

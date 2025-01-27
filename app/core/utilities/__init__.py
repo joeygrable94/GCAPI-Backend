@@ -1,5 +1,3 @@
-from typing import List
-
 from .dates_and_time import get_date, get_datetime_from_int, get_int_from_datetime
 from .paginate import paginate
 from .regex import (
@@ -8,6 +6,7 @@ from .regex import (
     email_regex,
     pw_req_regex,
     scope_regex,
+    utm_parameter_value_regex,
 )
 from .uuids import get_random_username, get_uuid, get_uuid_str, parse_id
 from .websites import (
@@ -23,7 +22,7 @@ from .websites import (
     process_sitemap_website_page,
 )
 
-__all__: List[str] = [
+__all__: list[str] = [
     "get_date",
     "get_datetime_from_int",
     "get_int_from_datetime",
@@ -31,6 +30,7 @@ __all__: List[str] = [
     "paginate",
     "domain_in_url_regex",
     "domain_name_regex",
+    "utm_parameter_value_regex",
     "email_regex",
     "pw_req_regex",
     "scope_regex",

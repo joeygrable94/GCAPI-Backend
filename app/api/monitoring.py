@@ -17,5 +17,5 @@ def configure_monitoring() -> Client | None:
             # of sampled transactions.
             # We recommend adjusting this value in production.
             profiles_sample_rate=1.0,
-        )  # type: ignore
+        )
     return sentry_client

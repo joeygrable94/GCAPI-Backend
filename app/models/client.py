@@ -1,16 +1,10 @@
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple
+from typing import TYPE_CHECKING
 
 from pydantic import UUID4
-from sqlalchemy import JSON, Boolean, String
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import Timestamp  # type: ignore
-from sqlalchemy_utils import JSONType, UUIDType
-from sqlalchemy_utils.types.encrypted.encrypted_type import (  # type: ignore  # noqa: E501
-    AesEngine,
-    StringEncryptedType,
-)
+from sqlalchemy_utils import Timestamp, UUIDType
 
-from app.core.config import settings
 from app.core.security.permissions import (
     AccessCreate,
     AccessDelete,
@@ -30,24 +24,21 @@ from app.core.security.permissions import (
     RoleEmployee,
     RoleManager,
 )
-from app.core.utilities import get_uuid  # type: ignore
+from app.core.utilities import get_uuid
 from app.db.base_class import Base
 from app.db.constants import (
     DB_STR_64BIT_MAXLEN_INPUT,
-    DB_STR_DESC_MAXLEN_STORED,
+    DB_STR_DESC_MAXLEN_INPUT,
     DB_STR_TINYTEXT_MAXLEN_INPUT,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .bdx_feed import BdxFeed  # noqa: F401
-    from .client_report import ClientReport  # noqa: F401
-    from .data_bucket import DataBucket  # noqa: F401
-    from .file_asset import FileAsset  # noqa: F401
+    from .client_styleguide import ClientStyleguide  # noqa: F401
     from .gcft import Gcft  # noqa: F401
     from .go_a4 import GoAnalytics4Property  # noqa: F401
-    from .go_cloud import GoCloudProperty  # noqa: F401
+    from .go_ads import GoAdsProperty  # noqa: F401
     from .go_sc import GoSearchConsoleProperty  # noqa: F401
-    from .sharpspring import Sharpspring  # noqa: F401
+    from .platform import Platform  # noqa: F401
     from .tracking_link import TrackingLink  # noqa: F401
     from .user import User  # noqa: F401
     from .website import Website  # noqa: F401
@@ -55,15 +46,15 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class Client(Base, Timestamp):
     __tablename__: str = "client"
-    __table_args__: Any = {"mysql_engine": "InnoDB"}
-    __mapper_args__: Any = {"always_refresh": True}
+    __table_args__: dict = {"mysql_engine": "InnoDB"}
+    __mapper_args__: dict = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         index=True,
         unique=True,
         primary_key=True,
         nullable=False,
-        default=get_uuid(),
+        default=get_uuid,
     )
     slug: Mapped[str] = mapped_column(
         String(length=DB_STR_64BIT_MAXLEN_INPUT),
@@ -78,19 +69,7 @@ class Client(Base, Timestamp):
         nullable=False,
     )
     description: Mapped[str] = mapped_column(
-        StringEncryptedType(
-            String,
-            settings.api.encryption_key,
-            AesEngine,
-            "pkcs5",
-            length=DB_STR_DESC_MAXLEN_STORED,
-        ),
-        nullable=True,
-    )
-    style_guide: Mapped[Optional[JSON]] = mapped_column(
-        JSONType(),
-        nullable=True,
-        default=None,
+        String(length=DB_STR_DESC_MAXLEN_INPUT), nullable=True
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean(),
@@ -99,48 +78,38 @@ class Client(Base, Timestamp):
     )
 
     # relationships
-    users: Mapped[List["User"]] = relationship(
+    users: Mapped[list["User"]] = relationship(
         "User", secondary="user_client", back_populates="clients"
     )
-    data_bucket: Mapped["DataBucket"] = relationship(
-        "DataBucket", back_populates="client", lazy="joined"
+    styleguides: Mapped[list["ClientStyleguide"]] = relationship(
+        "ClientStyleguide", back_populates="client", cascade="all, delete-orphan"
     )
-    file_assets: Mapped[List["FileAsset"]] = relationship(
-        "FileAsset",
-        back_populates="client",
-    )
-    websites: Mapped[List["Website"]] = relationship(
+    websites: Mapped[list["Website"]] = relationship(
         secondary="client_website", back_populates="clients", cascade="all, delete"
     )
-    client_reports: Mapped[List["ClientReport"]] = relationship(
-        "ClientReport", back_populates="client"
-    )
-    tracking_links: Mapped[List["TrackingLink"]] = relationship(
+    tracking_links: Mapped[list["TrackingLink"]] = relationship(
         "TrackingLink", back_populates="client"
     )
-    gcloud_accounts: Mapped[List["GoCloudProperty"]] = relationship(
-        "GoCloudProperty", back_populates="client", cascade="all, delete-orphan"
+    platforms: Mapped[list["Platform"]] = relationship(
+        "Platform", secondary="client_platform", back_populates="clients"
     )
-    gsc_accounts: Mapped[List["GoSearchConsoleProperty"]] = relationship(
-        "GoSearchConsoleProperty", back_populates="client", cascade="all, delete-orphan"
-    )
-    ga4_accounts: Mapped[List["GoAnalytics4Property"]] = relationship(
+    ga4_properties: Mapped[list["GoAnalytics4Property"]] = relationship(
         "GoAnalytics4Property", back_populates="client", cascade="all, delete-orphan"
     )
-    sharpspring_accounts: Mapped[List["Sharpspring"]] = relationship(
-        "Sharpspring", back_populates="client", cascade="all, delete-orphan"
+    gads_accounts: Mapped[list["GoAdsProperty"]] = relationship(
+        "GoAdsProperty", back_populates="client", cascade="all, delete-orphan"
     )
-    bdx_feeds: Mapped[List["BdxFeed"]] = relationship(
-        "BdxFeed", back_populates="client", cascade="all, delete-orphan"
+    gsc_properties: Mapped[list["GoSearchConsoleProperty"]] = relationship(
+        "GoSearchConsoleProperty", back_populates="client", cascade="all, delete-orphan"
     )
-    gcflytours: Mapped[List["Gcft"]] = relationship(
+    gcflytours: Mapped[list["Gcft"]] = relationship(
         "Gcft", back_populates="client", cascade="all, delete-orphan"
     )
 
     # ACL
     def __acl__(
         self,
-    ) -> List[Tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
+    ) -> list[tuple[AclAction, AclPrivilege, AclPermission]]:  # pragma: no cover
         return [
             # list
             (AclAction.allow, RoleAdmin, AccessList),

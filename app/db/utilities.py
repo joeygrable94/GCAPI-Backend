@@ -1,7 +1,6 @@
 import hashlib
 from urllib.parse import parse_qs, urlparse
 
-from app.api.exceptions import TrackingLinkUtmParamsInvalid
 from app.core import logger
 from app.schemas import TrackingLinkBaseParams
 
@@ -33,6 +32,6 @@ def parse_url_utm_params(url: str) -> TrackingLinkBaseParams:
             utm_params["utm_term"] = parsed_params["utm_term"][0]
         link_utm_params = TrackingLinkBaseParams(**utm_params)
         return link_utm_params
-    except Exception as error:  # TODO: write test to capture invalid utm parameters
-        logger.warning(f"Invalid UTM parameters in URL: {url}", error)
-        raise TrackingLinkUtmParamsInvalid()
+    except Exception:
+        logger.warning(f"Invalid UTM parameters in URL: {url}")
+        raise Exception(message="Invalid UTM parameters in URL")

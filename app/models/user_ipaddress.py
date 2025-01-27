@@ -3,10 +3,9 @@ from typing import TYPE_CHECKING
 from pydantic import UUID4
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy_utils import Timestamp  # type: ignore
-from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils import Timestamp, UUIDType
 
-from app.core.utilities import get_uuid  # type: ignore
+from app.core.utilities import get_uuid
 from app.db.base_class import Base
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -21,7 +20,7 @@ class UserIpaddress(Base, Timestamp):
         index=True,
         unique=True,
         nullable=False,
-        default=get_uuid(),
+        default=get_uuid,
     )
     user_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
