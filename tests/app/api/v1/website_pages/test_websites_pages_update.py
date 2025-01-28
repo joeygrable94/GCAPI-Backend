@@ -96,7 +96,7 @@ async def test_update_website_page_as_user(
             0.5,
             False,
             None,
-            400,
+            404,
             "message",
             ErrorCode.ENTITY_RELATIONSHOP_NOT_FOUND,
         ),

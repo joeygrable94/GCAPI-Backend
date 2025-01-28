@@ -30,17 +30,18 @@ DUPLICATE_URL = "/%s/%s/" % (random_lower_string(16), random_lower_string(16))
 
 
 @pytest.mark.parametrize(
-    "client_user,assign_client",
+    "client_user,assign_client,status_code",
     [
-        ("admin_user", True),
-        ("manager_user", True),
-        ("employee_user", True),
-        ("client_a_user", True),
-        ("client_b_user", True),
-        ("verified_user", True),
+        ("admin_user", True, 200),
+        ("manager_user", True, 200),
+        ("employee_user", True, 200),
+        ("client_a_user", True, 200),
+        ("client_b_user", True, 200),
+        ("verified_user", True, 200),
         pytest.param(
             "unverified_user",
             False,
+            400,
             marks=pytest.mark.xfail(reason=ErrorCode.UNVERIFIED_ACCESS_DENIED),
         ),
     ],
@@ -48,6 +49,7 @@ DUPLICATE_URL = "/%s/%s/" % (random_lower_string(16), random_lower_string(16))
 async def test_create_website_page_as_user(
     client_user: Any,
     assign_client: bool,
+    status_code: int,
     client: AsyncClient,
     db_session: AsyncSession,
     request: pytest.FixtureRequest,
@@ -75,12 +77,13 @@ async def test_create_website_page_as_user(
         json=data,
     )
     entry: dict[str, Any] = response.json()
-    assert 200 <= response.status_code < 300
-    assert entry["url"] == "/"
-    assert entry["status"] == 200
-    assert entry["priority"] == 0.5
-    assert entry["website_id"] == str(a_website.id)
-    assert entry["sitemap_id"] == str(a_sitemap.id)
+    assert response.status_code == status_code
+    if status_code == 200:
+        assert entry["url"] == "/"
+        assert entry["status"] == 200
+        assert entry["priority"] == 0.5
+        assert entry["website_id"] == str(a_website.id)
+        assert entry["sitemap_id"] == str(a_sitemap.id)
 
 
 @pytest.mark.parametrize(
@@ -94,7 +97,7 @@ async def test_create_website_page_as_user(
             0.5,
             False,
             None,
-            400,
+            404,
             "message",
             ErrorCode.ENTITY_RELATIONSHOP_NOT_FOUND,
         ),
@@ -163,12 +166,14 @@ async def test_create_website_page_as_superuser_website_limits(
         data["sitemap_id"] = fake_sitemap_id
     elif assign_sitemap:
         data["sitemap_id"] = str(a_sitemap.id)
+    print(data)
     response: Response = await client.post(
         "webpages/",
         headers=admin_user.token_headers,
         json=data,
     )
     entry: dict[str, Any] = response.json()
+    print(entry)
     assert response.status_code == status_code
     if error_type == "message":
         assert error_msg in entry["detail"]

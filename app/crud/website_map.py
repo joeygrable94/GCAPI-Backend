@@ -1,6 +1,7 @@
 from uuid import UUID
 
-from sqlalchemy import BinaryExpression, Select, and_, select as sql_select
+from sqlalchemy import BinaryExpression, Select, and_
+from sqlalchemy import select as sql_select
 
 from app.api.exceptions.exceptions import XmlInvalid
 from app.core.utilities import (
