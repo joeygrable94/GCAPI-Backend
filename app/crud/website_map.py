@@ -49,13 +49,14 @@ class WebsiteMapRepository(
         self,
         url: str,
     ) -> bool:
-        is_valid: bool = False
-        status_code: int = fetch_url_status_code(url)
-        if status_code != 200:
+        try:
+            is_valid: bool = False
+            status_code: int = fetch_url_status_code(url)
+            if status_code != 200:
+                return is_valid
+            page_text: str = fetch_url_page_text(url)
+            page_xml = parse_sitemap_xml(page_text)
+            is_valid = check_is_xml_valid_sitemap(page_xml)
             return is_valid
-        page_text: str = fetch_url_page_text(url)
-        page_xml = parse_sitemap_xml(page_text)
-        is_valid = check_is_xml_valid_sitemap(page_xml)
-        if not is_valid:  # TODO: test this
+        except Exception:
             raise XmlInvalid()
-        return is_valid
