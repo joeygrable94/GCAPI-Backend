@@ -152,3 +152,22 @@ async def test_create_website_as_superuser_website_limits(
         assert error_msg in entry["detail"]
     if error_type == "detail":
         assert error_msg in entry["detail"][0]["msg"]
+
+
+async def test_create_website_as_superuser_website_domain_invalid(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_user: ClientAuthorizedUser,
+) -> None:
+    domain: str = random_domain(16, "com")
+    is_secure: bool = random_boolean()
+    data: dict[str, Any] = {"domain": domain, "is_secure": is_secure}
+    response: Response
+    response = await client.post(
+        "websites/",
+        headers=admin_user.token_headers,
+        json=data,
+    )
+    assert response.status_code == 422
+    entry: dict[str, Any] = response.json()
+    assert entry["detail"] == ErrorCode.DOMAIN_INVALID

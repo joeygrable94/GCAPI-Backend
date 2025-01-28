@@ -10,10 +10,8 @@ from .exceptions import (
     DomainInvalid,
     EntityAlreadyExists,
     EntityNotFound,
-    EntityQueryParamsInvalid,
     EntityRelationshipNotFound,
     InvalidID,
-    MetricTypeInvalid,
     UserAlreadyExists,
     UserNotFound,
     XmlInvalid,
@@ -132,19 +130,6 @@ def configure_exceptions(app: FastAPI) -> None:
             ),
         )
 
-    @app.exception_handler(MetricTypeInvalid)
-    async def metric_type_invalid_exception_handler(
-        request: Request, exc: MetricTypeInvalid
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(  # pragma: no cover
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
     @app.exception_handler(XmlInvalid)
     async def xml_invalid_exception_handler(
         request: Request, exc: XmlInvalid
@@ -197,19 +182,6 @@ def configure_exceptions(app: FastAPI) -> None:
             ),
         )
 
-    @app.exception_handler(EntityQueryParamsInvalid)
-    async def entity_query_params_invalid_exception_handler(
-        request: Request, exc: EntityQueryParamsInvalid
-    ) -> Response:  # noqa: E501
-        return await http_exception_handler(  # pragma: no cover
-            request,
-            HTTPException(
-                exc.status_code,
-                detail=exc.message,
-                headers={**get_global_headers()},
-            ),
-        )
-
     @app.exception_handler(EntityRelationshipNotFound)
     async def entity_relationship_not_found_exception_handler(
         request: Request, exc: EntityRelationshipNotFound
@@ -239,8 +211,6 @@ __all__: list[str] = [
     "EntityAlreadyExists",
     "EntityNotFound",
     "EntityRelationshipNotFound",
-    "EntityQueryParamsInvalid",
     "DomainInvalid",
-    "MetricTypeInvalid",
     "XmlInvalid",
 ]

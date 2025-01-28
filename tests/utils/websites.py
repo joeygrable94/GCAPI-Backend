@@ -17,12 +17,15 @@ from tests.utils.utils import random_boolean, random_domain
 
 async def create_random_website(
     db_session: AsyncSession,
+    domain: str | None = None,
     is_secure: bool = random_boolean(),
     return_db_obj: bool = False,
 ) -> WebsiteRead | Website:
     repo: WebsiteRepository = WebsiteRepository(session=db_session)
+    if domain is None:
+        domain = random_domain()
     website: Website = await repo.create(
-        schema=WebsiteCreate(domain=random_domain(), is_secure=is_secure)
+        schema=WebsiteCreate(domain=domain, is_secure=is_secure)
     )
     return WebsiteRead.model_validate(website) if not return_db_obj else website
 

@@ -245,7 +245,7 @@ async def sitemap_update(
         a_website: Website | None = await website_repo.read(sitemap.website_id)
         if a_website is None:
             raise EntityNotFound(
-                entity_info="Website id = {}".format(sitemap_in.website_id)
+                entity_info="Website id = {}".format(sitemap.website_id)
             )
         fetch_website_map_url: str = "{}/{}".format(
             a_website.get_link(),

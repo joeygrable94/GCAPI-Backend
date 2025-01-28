@@ -6,6 +6,7 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.exceptions.errors import ErrorCode
+from app.core.utilities.uuids import get_uuid_str
 from app.db.constants import DB_STR_URLPATH_MAXLEN_INPUT
 from app.models.website import Website
 from app.schemas import WebsiteMapRead
@@ -27,25 +28,28 @@ DUPLICATE_SITEMAP_URL = "sitemap-{}.xml".format(random_lower_string())
 
 
 @pytest.mark.parametrize(
-    "client_user,assign_client",
+    "client_user,assign_client,status_code",
     [
-        ("admin_user", False),
-        ("manager_user", False),
-        ("employee_user", True),
-        ("client_a_user", True),
+        ("admin_user", False, 200),
+        ("manager_user", False, 200),
+        ("employee_user", True, 200),
+        ("client_a_user", True, 200),
         pytest.param(
             "employee_user",
             False,
+            405,
             marks=pytest.mark.xfail(reason=ErrorCode.INSUFFICIENT_PERMISSIONS_ACTION),
         ),
         pytest.param(
             "client_a_user",
             False,
+            405,
             marks=pytest.mark.xfail(reason=ErrorCode.INSUFFICIENT_PERMISSIONS_ACTION),
         ),
         pytest.param(
             "unverified_user",
             False,
+            403,
             marks=pytest.mark.xfail(reason=ErrorCode.UNVERIFIED_ACCESS_DENIED),
         ),
     ],
@@ -53,6 +57,7 @@ DUPLICATE_SITEMAP_URL = "sitemap-{}.xml".format(random_lower_string())
 async def test_update_website_sitemap_as_user(
     client_user: Any,
     assign_client: bool,
+    status_code: int,
     client: AsyncClient,
     db_session: AsyncSession,
     request: pytest.FixtureRequest,
@@ -78,11 +83,12 @@ async def test_update_website_sitemap_as_user(
             headers=current_user.token_headers,
             json=data,
         )
-        assert 200 <= response.status_code < 300
-        entry: dict[str, Any] = response.json()
-        assert entry["id"] == str(a_sitemap.id)
-        assert entry["url"] == new_url
-        assert entry["website_id"] == str(a_sitemap.website_id)
+        assert response.status_code == status_code
+        if status_code == 200:
+            entry: dict[str, Any] = response.json()
+            assert entry["id"] == str(a_sitemap.id)
+            assert entry["url"] == new_url
+            assert entry["website_id"] == str(a_sitemap.website_id)
 
 
 @pytest.mark.parametrize(
@@ -117,7 +123,7 @@ async def test_update_website_sitemap_as_user(
         ),
     ],
 )
-async def test_create_website_sitemap_as_superuser_sitemap_limits(
+async def test_update_website_sitemap_as_superuser_sitemap_limits(
     url_path: str | None,
     status_code: int,
     error_type: str,
@@ -150,3 +156,47 @@ async def test_create_website_sitemap_as_superuser_sitemap_limits(
             assert error_msg in entry["detail"]
         if error_type == "detail":
             assert error_msg in entry["detail"][0]["msg"]
+
+
+async def test_update_website_sitemap_as_superuser_url_xml_invalid(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_user: ClientAuthorizedUser,
+) -> None:
+    a_website = await create_random_website(db_session, domain="getcommunity.com")
+    a_sitemap = await create_random_website_map(db_session, website_id=a_website.id)
+    data = {
+        "url": "sitemap-invalid.xml",
+        "website_id": str(a_website.id),
+    }
+    response: Response = await client.patch(
+        f"sitemaps/{a_sitemap.id}",
+        headers=admin_user.token_headers,
+        json=data,
+    )
+    entry: dict[str, Any] = response.json()
+    assert response.status_code == 422
+    assert entry["detail"] == ErrorCode.XML_INVALID
+
+
+async def test_update_website_sitemap_as_superuser_url_invalid_website_id(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_user: ClientAuthorizedUser,
+) -> None:
+    bad_website_id = get_uuid_str()
+    a_sitemap = await create_random_website_map(
+        db_session, website_id=bad_website_id, url_path="sitemap.xml"
+    )
+    data = {
+        "url": "sitemap_index.xml",
+        "is_active": not a_sitemap.is_active,
+    }
+    response: Response = await client.patch(
+        f"sitemaps/{a_sitemap.id}",
+        headers=admin_user.token_headers,
+        json=data,
+    )
+    entry: dict[str, Any] = response.json()
+    assert response.status_code == 404
+    assert ErrorCode.ENTITY_NOT_FOUND in entry["detail"]

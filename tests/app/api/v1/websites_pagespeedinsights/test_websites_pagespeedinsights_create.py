@@ -147,3 +147,28 @@ async def test_create_website_pagespeedinsights_as_superuser_query_website_page_
     data: dict[str, Any] = response.json()
     assert response.status_code == 404
     assert ErrorCode.ENTITY_NOT_FOUND in data["detail"]
+
+
+async def test_create_website_pagespeedinsights_as_superuser_query_website_page_relationship_not_found(  # noqa: E501
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_user: ClientAuthorizedUser,
+) -> None:
+    domain: str = "giftgurugal.com"
+    is_secure: bool = random_boolean()
+    a_website = await create_random_website(db_session, domain, is_secure)
+    await create_random_website_page(db_session, website_id=a_website.id)
+    b_page = await create_random_website_page(db_session, path="/")
+    d_strategy: str = "mobile"
+    psi_base: WebsitePageSpeedInsightsBase = generate_psi_base(
+        device_strategy=d_strategy
+    )
+    response: Response = await client.post(
+        "psi/",
+        params={"website_id": str(a_website.id), "page_id": str(b_page.id)},
+        headers=admin_user.token_headers,
+        json=psi_base.model_dump(),
+    )
+    data: dict[str, Any] = response.json()
+    assert response.status_code == 404
+    assert ErrorCode.ENTITY_RELATIONSHOP_NOT_FOUND in data["detail"]

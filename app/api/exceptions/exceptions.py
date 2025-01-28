@@ -15,17 +15,6 @@ class InvalidID(ApiException):
         super().__init__(status.HTTP_422_UNPROCESSABLE_ENTITY, message)
 
 
-class MetricTypeInvalid(ApiException):
-    def __init__(
-        self,
-        message: str = ErrorCode.METRIC_TYPE_INVALID,
-        metric_info: str = "MetricType",
-    ):
-        super().__init__(
-            status.HTTP_422_UNPROCESSABLE_ENTITY, message + f": {metric_info}"
-        )
-
-
 class DomainInvalid(ApiException):
     def __init__(self, message: str = ErrorCode.DOMAIN_INVALID):
         super().__init__(status.HTTP_422_UNPROCESSABLE_ENTITY, message)
@@ -84,13 +73,4 @@ class EntityRelationshipNotFound(ApiException):
         message: str = ErrorCode.ENTITY_RELATIONSHOP_NOT_FOUND,
         entity_info: str = "DataModel",
     ):
-        super().__init__(status.HTTP_400_BAD_REQUEST, message + f": {entity_info}")
-
-
-class EntityQueryParamsInvalid(ApiException):
-    def __init__(
-        self,
-        message: str = ErrorCode.ENTITY_QUERY_PARAMS_INVALID,
-        entity_info: str = "DataModel",
-    ):
-        super().__init__(status.HTTP_400_BAD_REQUEST, message + f": {entity_info}")
+        super().__init__(status.HTTP_404_NOT_FOUND, message + f": {entity_info}")

@@ -294,10 +294,9 @@ async def website_page_update(
         query_sitemap = {
             "id": website_page_in.sitemap_id,
         }
-        if website_page_in.website_id is not None:
-            query_sitemap["website_id"] = website_page_in.website_id
-        else:
-            query_sitemap["website_id"] = website_page.website_id
+        query_sitemap["website_id"] = (
+            website_page_in.website_id or website_page.website_id
+        )
         sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(
             session=permissions.db
         )

@@ -5,11 +5,13 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.exceptions.errors import ErrorCode
+from app.core.utilities.uuids import get_uuid_str
 from app.models import User
 from tests.constants.schema import ClientAuthorizedUser
 from tests.utils.clients import assign_user_to_client, create_random_client
 from tests.utils.tracking_link import create_random_tracking_link
 from tests.utils.users import get_user_by_email
+from tests.utils.utils import random_lower_string
 
 pytestmark = pytest.mark.asyncio
 
@@ -120,3 +122,28 @@ async def test_update_tracking_link_as_superuser_already_exists(
     data = response.json()
     assert response.status_code == 400
     assert ErrorCode.ENTITY_EXISTS in data["detail"]
+
+
+async def test_update_tracking_link_as_superuser_client_not_found(
+    admin_user: ClientAuthorizedUser,
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    client_a = await create_random_client(db_session)
+    client_b = get_uuid_str()
+    a_link = await create_random_tracking_link(db_session, client_a.id)
+    await create_random_tracking_link(db_session, client_a.id)
+    link_url = "/" + random_lower_string(16)
+    data_in = {
+        "url": link_url,
+        "is_active": True,
+        "client_id": client_b,
+    }
+    response: Response = await client.patch(
+        f"utmlinks/{a_link.id}",
+        headers=admin_user.token_headers,
+        json=data_in,
+    )
+    data = response.json()
+    assert response.status_code == 404
+    assert ErrorCode.CLIENT_NOT_FOUND == data["detail"]

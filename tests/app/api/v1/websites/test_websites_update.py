@@ -113,7 +113,7 @@ async def test_update_website_as_user(
         ),
     ],
 )
-async def test_create_website_as_superuser_website_limits(
+async def test_update_website_as_superuser_website_limits(
     domain: str | None,
     status_code: int,
     error_type: str,
@@ -146,3 +146,25 @@ async def test_create_website_as_superuser_website_limits(
         assert error_msg in entry["detail"]
     if error_type == "detail":
         assert error_msg in entry["detail"][0]["msg"]
+
+
+async def test_update_website_as_superuser_website_domain_invalid(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_user: ClientAuthorizedUser,
+) -> None:
+    a_website = await create_random_website(db_session)
+    domain: str = random_domain(16, "com")
+    update_dict: dict[str, Any] = {
+        "domain": domain,
+        "is_secure": not a_website.is_secure,
+    }
+    response: Response
+    response: Response = await client.patch(
+        f"websites/{a_website.id}",
+        headers=admin_user.token_headers,
+        json=update_dict,
+    )
+    entry: dict[str, Any] = response.json()
+    assert response.status_code == 422
+    assert entry["detail"] == ErrorCode.DOMAIN_INVALID

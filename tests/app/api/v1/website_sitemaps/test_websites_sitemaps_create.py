@@ -136,61 +136,23 @@ async def test_create_website_sitemap_as_superuser_url_too_long(
     )
 
 
-# async def test_create_website_sitemap_as_superuser_xml_url_status_code_error(
-#     client: AsyncClient,
-#     db_session: AsyncSession,
-#     admin_user: ClientAuthorizedUser,
-# ) -> None:
-#     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
-#     sitemap_url = "sitemap-{}.xml".format(random_lower_string())
-#     data = {
-#         "url": sitemap_url,
-#         "website_id": str(sitemap.website_id),
-#     }
-#     with unittest.mock.patch(
-#         "app.crud.website_map.WebsiteMapRepository.is_sitemap_url_xml_valid"
-#     ) as mock_valid_sitemap_xml:
-#         mock_valid_sitemap_xml.return_value = True
-#         # mock fetch_url_status_code
-#         with unittest.mock.patch(
-#             "app.core.utilities.websites.fetch_url_status_code"
-#         ) as mock_fetch_url_status_code:
-#             mock_fetch_url_status_code.return_value = 404
-#             response: Response = await client.post(
-#                 "sitemaps/",
-#                 headers=admin_user.token_headers,
-#                 json=data,
-#             )
-#             entry: dict[str, Any] = response.json()
-#             assert response.status_code == 400
-#             assert entry["detail"] == ErrorCode.XML_INVALID
-
-
-# async def test_create_website_sitemap_as_superuser_url_xml_invalid(
-#     client: AsyncClient,
-#     db_session: AsyncSession,
-#     admin_user: ClientAuthorizedUser,
-# ) -> None:
-#     sitemap: WebsiteMapRead = await create_random_website_map(db_session)
-#     data = {
-#         "url": "sitemap-invalid.xml",
-#         "website_id": str(sitemap.website_id),
-#     }
-#     # mock check_is_xml_valid_sitemap
-#     with unittest.mock.patch(
-#         "app.crud.website_map.WebsiteMapRepository.is_sitemap_url_xml_valid"
-#     ) as mock_valid_sitemap_xml:
-#         mock_valid_sitemap_xml.return_value = True
-#         with unittest.mock.patch(
-#             "app.core.utilities.websites.check_is_xml_valid_sitemap"
-#         ) as mock_check_is_xml_valid_sitemap:
-#             mock_check_is_xml_valid_sitemap.return_value = False
-#             response: Response = await client.post(
-#                 "sitemaps/",
-#                 headers=admin_user.token_headers,
-#                 json=data,
-#             )
-#             entry: dict[str, Any] = response.json()
-#             print(entry)
-#             assert response.status_code == 400
-#             assert entry["detail"] == ErrorCode.XML_INVALID
+async def test_create_website_sitemap_as_superuser_url_xml_invalid(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_user: ClientAuthorizedUser,
+) -> None:
+    a_website = await create_random_website(
+        db_session, domain="getcommunity.com", return_db_obj=True
+    )
+    data = {
+        "url": "sitemap-invalid.xml",
+        "website_id": str(a_website.id),
+    }
+    response: Response = await client.post(
+        "sitemaps/",
+        headers=admin_user.token_headers,
+        json=data,
+    )
+    entry: dict[str, Any] = response.json()
+    assert response.status_code == 422
+    assert entry["detail"] == ErrorCode.XML_INVALID

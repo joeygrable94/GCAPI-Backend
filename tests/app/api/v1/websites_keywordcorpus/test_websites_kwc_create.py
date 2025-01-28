@@ -10,7 +10,7 @@ from app.core.utilities import get_uuid
 from app.models import Website
 from app.schemas import WebsitePageRead, WebsiteRead
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.utils import random_lower_string
+from tests.utils.utils import random_boolean, random_lower_string
 from tests.utils.website_pages import create_random_website_page
 from tests.utils.websites import create_random_website
 
@@ -93,3 +93,28 @@ async def test_website_page_kwc_create_website_page_not_exists(
     data: dict[str, Any] = response.json()
     assert response.status_code == 404
     assert ErrorCode.ENTITY_NOT_FOUND in data["detail"]
+
+
+async def test_website_page_kwc_create_website_page_relationship_not_found(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    admin_user: ClientAuthorizedUser,
+) -> None:
+    is_secure: bool = random_boolean()
+    a_website = await create_random_website(db_session, is_secure=is_secure)
+    await create_random_website_page(db_session, website_id=a_website.id)
+    b_page = await create_random_website_page(db_session, path="/")
+    data_in: dict[str, Any] = {
+        "corpus": random_lower_string(5000),
+        "rawtext": random_lower_string(10000),
+        "website_id": str(a_website.id),
+        "page_id": str(b_page.id),
+    }
+    response: Response = await client.post(
+        "kwc/",
+        headers=admin_user.token_headers,
+        json=data_in,
+    )
+    data: dict[str, Any] = response.json()
+    assert response.status_code == 404
+    assert ErrorCode.ENTITY_RELATIONSHOP_NOT_FOUND in data["detail"]
