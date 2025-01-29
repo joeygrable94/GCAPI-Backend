@@ -9,7 +9,6 @@ from app.core.security.permissions import (
     AccessCreate,
     AccessCreateRelated,
     AccessDelete,
-    AccessDeleteRelated,
     AccessList,
     AccessListRelated,
     AccessListSelf,
@@ -99,8 +98,6 @@ class GoAdsProperty(Base, Timestamp):
             # delete
             (AclAction.allow, RoleAdmin, AccessDelete),
             (AclAction.allow, RoleManager, AccessDelete),
-            (AclAction.allow, RoleEmployee, AccessDeleteRelated),
-            (AclAction.allow, RoleClient, AccessDeleteRelated),
         ]
 
     # representation

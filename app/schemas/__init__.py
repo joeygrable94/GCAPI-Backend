@@ -104,6 +104,11 @@ from .website_go_a4 import (
     WebsiteGoAnalytics4PropertyRead,
     WebsiteGoAnalytics4PropertyUpdate,
 )
+from .website_go_ads import (
+    WebsiteGoAdsPropertyCreate,
+    WebsiteGoAdsPropertyRead,
+    WebsiteGoAdsPropertyUpdate,
+)
 from .website_keywordcorpus import (
     WebsiteKeywordCorpusCreate,
     WebsiteKeywordCorpusRead,
@@ -245,6 +250,9 @@ __all__: list[str] = [
     "WebsiteGoAnalytics4PropertyCreate",
     "WebsiteGoAnalytics4PropertyUpdate",
     "WebsiteGoAnalytics4PropertyRead",
+    "WebsiteGoAdsPropertyCreate",
+    "WebsiteGoAdsPropertyUpdate",
+    "WebsiteGoAdsPropertyRead",
     "WebsitePageSpeedInsightsBase",
     "WebsitePageSpeedInsightsCreate",
     "WebsitePageSpeedInsightsProcessing",

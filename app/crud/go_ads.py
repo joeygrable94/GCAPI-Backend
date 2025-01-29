@@ -5,6 +5,7 @@ from sqlalchemy import select as sql_select
 
 from app.crud.base import BaseRepository
 from app.models import Client, GoAdsProperty, User, UserClient
+from app.models.website_go_ads import WebsiteGoAdsProperty
 from app.schemas import GoAdsPropertyCreate, GoAdsPropertyRead, GoAdsPropertyUpdate
 
 
@@ -39,7 +40,11 @@ class GoAdsPropertyRepository(
             stmt = stmt.join(Client, GoAdsProperty.client_id == Client.id)
             conditions.append(Client.id.like(client_id))
         if website_id:
-            conditions.append(GoAdsProperty.website_id.like(website_id))
+            stmt = stmt.join(
+                WebsiteGoAdsProperty, GoAdsProperty.id == WebsiteGoAdsProperty.go_ads_id
+            )
+            conditions.append(WebsiteGoAdsProperty.website_id.like(website_id))
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
+        print(stmt)
         return stmt

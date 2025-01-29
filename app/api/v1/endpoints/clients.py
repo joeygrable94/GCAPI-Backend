@@ -93,7 +93,6 @@ async def clients_list(
     `Paginated[ClientRead]` : a paginated list of clients, optionally filtered
 
     """
-    # formulate the select statement based on the current user's role
     select_stmt: Select
     if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
         select_stmt = permissions.client_repo.query_list(user_id=query.user_id)
@@ -101,7 +100,6 @@ async def clients_list(
         select_stmt = permissions.client_repo.query_list(
             user_id=permissions.current_user.id
         )
-
     response_out: Paginated[
         ClientRead
     ] = await permissions.get_paginated_resource_response(

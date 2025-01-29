@@ -1,9 +1,8 @@
 from enum import Enum
 
 
-# schemas
-class GooglePlatformType(Enum):
-    ga4 = "analytics"
-    ga4_stream = "analytics_stream"
-    gsc = "search_console"
-    gads = "ads"
+class GooglePlatformType(str, Enum):
+    ga4 = "ga4"
+    ga4_stream = "ga4_stream"
+    gsc = "gsc"
+    gads = "gads"

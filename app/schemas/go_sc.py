@@ -18,7 +18,7 @@ class GoSearchConsolePropertyCreate(GoSearchConsolePropertyBase):
     pass
 
 
-class RequestGoSearchConsolePropertyCreate(GoSearchConsolePropertyBase):
+class RequestGoSearchConsolePropertyCreate(BaseSchema):
     title: str
     client_id: UUID4
     website_id: UUID4

@@ -48,10 +48,10 @@ class GoSearchConsolePropertyRepository(
                 .join(User, UserClient.user_id == User.id)
             )
             conditions.append(User.id.like(user_id))
-        if client_id:
+        if client_id:  # TODO: test list gsc by client_id
             stmt = stmt.join(Client, GoSearchConsoleProperty.client_id == Client.id)
             conditions.append(Client.id.like(client_id))
-        if website_id:
+        if website_id:  # TODO: test list gsc by website_id
             stmt.join(Website, GoSearchConsoleProperty.website_id == Website.id)
             conditions.append(GoSearchConsoleProperty.website_id.like(website_id))
         if len(conditions) > 0:

@@ -9,9 +9,9 @@ from app.api.deps.get_query import (
     CommonClientPlatformQueryParams,
     CommonClientTrackingLinkQueryParams,
     CommonClientWebsiteQueryParams,
+    CommonGoPropertyQueryParams,
     CommonUserClientQueryParams,
     CommonUserQueryParams,
-    CommonWebsiteGa4QueryParams,
     CommonWebsiteKeywordCorpusQueryParams,
     CommonWebsiteMapQueryParams,
     CommonWebsitePageQueryParams,
@@ -436,7 +436,7 @@ def test_common_website_keyword_corpus_query_params() -> None:
 def test_common_ga4_query_params() -> None:
     uuid_1 = get_uuid_str()
     uuid_2 = get_uuid_str()
-    query_params = CommonWebsiteGa4QueryParams(
+    query_params = CommonGoPropertyQueryParams(
         page=2,
         size=5,
         website_id=uuid_1,
@@ -447,13 +447,13 @@ def test_common_ga4_query_params() -> None:
     assert query_params.website_id == uuid.UUID(uuid_1)
     assert query_params.ga4_id == uuid.UUID(uuid_2)
 
-    query_params = CommonWebsiteGa4QueryParams()
+    query_params = CommonGoPropertyQueryParams()
     assert query_params.page == 1
     assert query_params.size == settings.api.query_limit_rows_default
     assert query_params.website_id is None
     assert query_params.ga4_id is None
 
-    query_params = CommonWebsiteGa4QueryParams(
+    query_params = CommonGoPropertyQueryParams(
         page=None, size=None, website_id=None, ga4_id=None
     )
     assert query_params.page == 1

@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exception_handlers import http_exception_handler
+from pydantic_core import ValidationError
 
 from .errors import ErrorCode, ErrorCodeReasonModel, ErrorModel
 from .exceptions import (
@@ -35,6 +36,20 @@ def configure_exceptions(app: FastAPI) -> None:
             HTTPException(
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
                 "Internal server error",
+                headers={**get_global_headers()},
+            ),
+        )
+
+    @app.exception_handler(ValidationError)
+    async def pydantic_model_validation_exception_handler(
+        request: Request, exc: ValidationError
+    ) -> Response:  # noqa: E501
+        message = ErrorCode.INPUT_SCHEMA_INVALID
+        return await http_exception_handler(  # pragma: no cover
+            request,
+            HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=message,
                 headers={**get_global_headers()},
             ),
         )

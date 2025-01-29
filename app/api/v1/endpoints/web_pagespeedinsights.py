@@ -170,9 +170,6 @@ async def website_page_speed_insights_create(
             "website_id": query.website_id,
         }
     )
-
-    print("CHECK IF PAGE RELATIONSHIP EXISTS")
-
     if a_web_page is None:
         raise EntityRelationshipNotFound(
             entity_info="WebsitePage id = {}, website_id = {}".format(

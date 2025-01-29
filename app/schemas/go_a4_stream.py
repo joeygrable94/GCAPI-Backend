@@ -30,7 +30,7 @@ class GoAnalytics4StreamCreate(GoAnalytics4StreamBase):
     pass
 
 
-class RequestGoAnalytics4StreamCreate(GoAnalytics4StreamBase):
+class RequestGoAnalytics4StreamCreate(BaseSchema):
     title: str
     stream_id: str
     measurement_id: str

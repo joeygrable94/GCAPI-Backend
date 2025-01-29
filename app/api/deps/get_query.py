@@ -413,8 +413,12 @@ GetWebsiteKeywordCorpusQueryParams = Annotated[
 ]
 
 
-class CommonWebsiteGa4QueryParams(
-    PageParamsFromQuery, WebsiteIdQueryParams, Ga4QueryParams
+class CommonGoPropertyQueryParams(
+    PageParamsFromQuery,
+    UserIdQueryParams,
+    ClientIdQueryParams,
+    WebsiteIdQueryParams,
+    Ga4QueryParams,
 ):
     def __init__(
         self,
@@ -426,15 +430,19 @@ class CommonWebsiteGa4QueryParams(
                 le=settings.api.query_limit_rows_max,
             ),
         ] = settings.api.query_limit_rows_default,
+        user_id: Annotated[str | None, Query()] = None,
+        client_id: Annotated[str | None, Query()] = None,
         website_id: Annotated[str | None, Query()] = None,
         ga4_id: Annotated[str | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
+        UserIdQueryParams.__init__(self, user_id)
+        ClientIdQueryParams.__init__(self, client_id)
         WebsiteIdQueryParams.__init__(self, website_id)
         Ga4QueryParams.__init__(self, ga4_id)
 
 
-GetWebsiteGa4QueryParams = Annotated[CommonWebsiteGa4QueryParams, Depends()]
+GetGoPropertyQueryParams = Annotated[CommonGoPropertyQueryParams, Depends()]
 
 
 class CommonClientTrackingLinkQueryParams(

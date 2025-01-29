@@ -61,7 +61,7 @@ router_v1.include_router(
 # Google Properties routes
 router_v1.include_router(
     go_property.router,
-    prefix="/go/property",
+    prefix="/go",
     tags=["Google Properties"],
 )
 

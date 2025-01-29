@@ -25,7 +25,7 @@ class GoAdsPropertyCreate(GoAdsPropertyBase):
     pass
 
 
-class RequestGoAdsPropertyCreate(GoAdsPropertyBase):
+class RequestGoAdsPropertyCreate(BaseSchema):
     title: str
     measurement_id: str
     client_id: UUID4

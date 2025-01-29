@@ -166,14 +166,12 @@ async def test_create_website_page_as_superuser_website_limits(
         data["sitemap_id"] = fake_sitemap_id
     elif assign_sitemap:
         data["sitemap_id"] = str(a_sitemap.id)
-    print(data)
     response: Response = await client.post(
         "webpages/",
         headers=admin_user.token_headers,
         json=data,
     )
     entry: dict[str, Any] = response.json()
-    print(entry)
     assert response.status_code == status_code
     if error_type == "message":
         assert error_msg in entry["detail"]

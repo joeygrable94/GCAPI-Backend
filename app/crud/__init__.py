@@ -22,6 +22,7 @@ from .user_client import UserClientRepository
 from .user_ipaddress import UserIpaddressRepository
 from .website import WebsiteRepository
 from .website_go_a4 import WebsiteGoAnalytics4PropertyRepository
+from .website_go_ads import WebsiteGoAdsPropertyRepository
 from .website_keywordcorpus import WebsiteKeywordCorpusRepository
 from .website_map import WebsiteMapRepository
 from .website_page import WebsitePageRepository
@@ -56,4 +57,5 @@ __all__: list[str] = [
     "WebsitePageRepository",
     "WebsitePageSpeedInsightsRepository",
     "WebsiteGoAnalytics4PropertyRepository",
+    "WebsiteGoAdsPropertyRepository",
 ]

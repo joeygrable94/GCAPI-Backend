@@ -9,7 +9,6 @@ from app.core.security.permissions import (
     AccessCreate,
     AccessCreateRelated,
     AccessDelete,
-    AccessDeleteRelated,
     AccessList,
     AccessListRelated,
     AccessListSelf,
@@ -103,11 +102,9 @@ class GoAnalytics4Property(Base, Timestamp):
             # delete
             (AclAction.allow, RoleAdmin, AccessDelete),
             (AclAction.allow, RoleManager, AccessDelete),
-            (AclAction.allow, RoleEmployee, AccessDeleteRelated),
-            (AclAction.allow, RoleClient, AccessDeleteRelated),
         ]
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoAnalytics4Property(MeasurementID[{self.measurement_id}] for Client[{self.client_id}])"  # noqa: F841, E501
+        repr_str: str = f"GoAnalytics4Property(PropertyId[{self.property_id}] for Client[{self.client_id}])"  # noqa: F841, E501
         return repr_str

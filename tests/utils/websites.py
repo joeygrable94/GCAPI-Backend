@@ -1,17 +1,20 @@
 from typing import Any
 
+from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud import WebsiteGoAnalytics4PropertyRepository, WebsiteRepository
-from app.models import GoAnalytics4Property, Website, WebsiteGoAnalytics4Property
+from app.crud.website_go_ads import WebsiteGoAdsPropertyRepository
+from app.models import Website, WebsiteGoAnalytics4Property
+from app.models.website_go_ads import WebsiteGoAdsProperty
 from app.schemas import (
-    GoAnalytics4PropertyRead,
     SitemapPageChangeFrequency,
     WebsiteCreate,
     WebsiteGoAnalytics4PropertyCreate,
     WebsiteMapPage,
     WebsiteRead,
 )
+from app.schemas.website_go_ads import WebsiteGoAdsPropertyCreate
 from tests.utils.utils import random_boolean, random_domain
 
 
@@ -47,13 +50,25 @@ def build_sitemap_page_meta(
 
 async def assign_ga4_to_website(
     db_session: AsyncSession,
-    go_a4: GoAnalytics4Property | GoAnalytics4PropertyRead,
-    website: Website | WebsiteRead,
+    go_a4_id: UUID4,
+    website_id: UUID4,
 ) -> WebsiteGoAnalytics4Property:
     repo = WebsiteGoAnalytics4PropertyRepository(session=db_session)
     website_go_a4: WebsiteGoAnalytics4Property = await repo.create(
         schema=WebsiteGoAnalytics4PropertyCreate(
-            website_id=website.id, go_a4_id=go_a4.id
+            website_id=website_id, go_a4_id=go_a4_id
         )
+    )
+    return website_go_a4
+
+
+async def assign_gads_to_website(
+    db_session: AsyncSession,
+    go_ads_id: UUID4,
+    website_id: UUID4,
+) -> WebsiteGoAdsProperty:
+    repo = WebsiteGoAdsPropertyRepository(session=db_session)
+    website_go_a4: WebsiteGoAdsProperty = await repo.create(
+        schema=WebsiteGoAdsPropertyCreate(website_id=website_id, go_ads_id=go_ads_id)
     )
     return website_go_a4

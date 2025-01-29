@@ -25,7 +25,7 @@ class GoAnalytics4PropertyCreate(GoAnalytics4PropertyBase):
     pass
 
 
-class RequestGoAnalytics4PropertyCreate(GoAnalytics4PropertyBase):
+class RequestGoAnalytics4PropertyCreate(BaseSchema):
     title: str
     property_id: str
     client_id: UUID4
