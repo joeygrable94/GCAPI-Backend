@@ -3,7 +3,6 @@
 [![CodeQL](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/codeql.yml) [![GitHub CI](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml/badge.svg)](https://github.com/joeygrable94/GCAPI-Backend/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/joeygrable94/GCAPI-Backend/branch/main/graph/badge.svg?token=8FCB50574D)](https://codecov.io/gh/joeygrable94/GCAPI-Backend)
 
 - [GCAPI Backend](#gcapi-backend)
-  - [Pytest](#pytest)
   - [Getting Started](#getting-started)
   - [Application Structure](#application-structure)
   - [Security Resources](#security-resources)
@@ -15,7 +14,7 @@
     - [Commands](#commands)
   - [SQLAlchemy ORM](#sqlalchemy-orm)
     - [Pagination](#pagination)
-  - [PyTest](#pytest-1)
+  - [PyTest](#pytest)
     - [PyTest Commands](#pytest-commands)
     - [PyTest Resources](#pytest-resources)
   - [External Resources](#external-resources)
@@ -23,36 +22,19 @@
 
 ---
 
-## Pytest
-
-```bash
-crud
-
-core/pagination/core
-core/security/auth/exceptions
-core/security/csrf/core
-core/security/csrf/csrf_config
-core/security/csrf/exceptions
-core/security/permissions/exceptions
-
-api/deps
-api/exceptions
-api/v1/endpoints
-```
-
 ## Getting Started
 
-First check to ensure Python 3.11 is installed and is the current version in use.
+First check to ensure Python 3.12 is installed and is the current version in use.
 
 ```bash
 python3 --version
-> python3.11
+> python3.12
 ```
 
 Create a virtual environment, activate it, then install the backend python pip `requirements.dev.txt` file.
 
 ```bash
-python3.11 -m venv venv
+python3.12 -m venv venv
 source venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install poetry
@@ -67,39 +49,7 @@ source venv/bin/deactivate
 
 ## Application Structure
 
-```bash
-main.py                 # Main entry point for the application
-worker.py               # Taskiq worker entry point
-tasks/                  # Taskiq task definitions
-cli/                    # Command line interface
-    db.py                   # Manages database operations
-    secure.py               # Manages secure cipher operations
-core/                   # Core application code shared
-    config/                 # Configuration settings
-    logger/                 # Logger configuration
-    pagination/             # Pagination settings
-    security/               # Security protocols and utilities
-        auth/                   # Authentication protocols (Auth0)
-        csrf/                   # Cross Site Request Forgery protection
-        encryption/             # Encryption protocols (RSA, AES)
-        permissions/            # Permissions protocols
-        schemas.py              # Security models
-    utilities/              # Core service layer utilities
-    templates.py            # Jinja2 templates
-db/                     # Database operations layer
-crud/                   # CRUD Layer for data models
-models/                 # Database models
-schemas/                # Pydantic models for data validation
-api/                    # API Layer
-    v1/endpoints/           # Version controlled endpoints
-    deps/                   # Dependencies injected into endpoints
-    exceptions/             # Error and exception handling
-    middleware/             # API Middleware
-    openapi.py              # OpenAPI schema
-    utilities.py            # API layer utilities
-public/static/          # Public static assets: images, styles, scripts
-templates/email/        # Jinja2 email templates
-```
+- [fastapi-best-practices](https://github.com/zhanymkanov/fastapi-best-practices?tab=readme-ov-file#project-structure)
 
 ---
 

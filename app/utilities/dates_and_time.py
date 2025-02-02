@@ -1,4 +1,5 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 
 def get_date() -> datetime:
@@ -36,3 +37,17 @@ def get_datetime_from_int(value: int) -> datetime:
         datetime: object
     """
     return datetime.fromtimestamp(value)
+
+
+def get_datetime_gmt_str_from_datetime(dt: datetime) -> str:
+    """converts a datetime object to a string
+
+    Args:
+        dt (datetime): object
+
+    Returns:
+        str: datetime string
+    """
+    if not dt.tzinfo:
+        dt = dt.replace(tzinfo=ZoneInfo("UTC"))
+    return dt.strftime("%Y-%m-%dT%H:%M:%S%z")

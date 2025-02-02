@@ -9,6 +9,7 @@ from app.entities.api.exceptions import InvalidID
 from app.utilities import (
     get_date,
     get_datetime_from_int,
+    get_datetime_gmt_str_from_datetime,
     get_int_from_datetime,
     get_uuid,
     get_uuid_str,
@@ -31,6 +32,19 @@ def test_get_datetime_from_int() -> None:
     past_date_num: int = 1662439917
     get_date: Any = get_datetime_from_int(past_date_num)
     assert type(get_date) is datetime
+
+
+def test_get_datetime_gmt_str_from_datetime() -> None:
+    now: datetime = datetime.now()
+    now_str: Any = get_datetime_gmt_str_from_datetime(now)
+    assert isinstance(now_str, str)
+
+
+def test_get_datetime_gmt_str_from_datetime_no_timezone() -> None:
+    now: datetime = datetime.now()
+    now = now.replace(tzinfo=None)
+    now_str: Any = get_datetime_gmt_str_from_datetime(now)
+    assert isinstance(now_str, str)
 
 
 def test_get_uuid_str() -> None:
