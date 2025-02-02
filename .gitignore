@@ -10,6 +10,7 @@ venv
 .env.*
 .credentials
 .idea
+exp.py
 
 # database
 *.db
