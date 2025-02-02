@@ -3,14 +3,14 @@ import json
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import WebsitePageSpeedInsightsRepository
-from app.models import Website, WebsitePageSpeedInsights
-from app.schemas import (
-    WebsitePageRead,
+from app.entities.website_pagespeedinsight.crud import (
+    WebsitePageSpeedInsightsRepository,
+)
+from app.entities.website_pagespeedinsight.model import WebsitePageSpeedInsights
+from app.entities.website_pagespeedinsight.schemas import (
     WebsitePageSpeedInsightsBase,
     WebsitePageSpeedInsightsCreate,
     WebsitePageSpeedInsightsRead,
-    WebsiteRead,
 )
 from tests.utils.website_pages import create_random_website_page
 from tests.utils.websites import create_random_website
@@ -72,10 +72,10 @@ async def create_random_website_page_speed_insights(
     repo: WebsitePageSpeedInsightsRepository
     repo = WebsitePageSpeedInsightsRepository(db_session)
     if website_id is None:
-        website: Website | WebsiteRead = await create_random_website(db_session)
+        website = await create_random_website(db_session)
         website_id = website.id
     if page_id is None:
-        website_page: WebsitePageRead = await create_random_website_page(db_session)
+        website_page = await create_random_website_page(db_session)
         page_id = website_page.id
     psi_base: WebsitePageSpeedInsightsBase = generate_psi_base(
         device_strategy=device_strategy

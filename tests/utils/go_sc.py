@@ -1,10 +1,13 @@
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import GoSearchConsolePropertyRepository
 from app.db.constants import DB_STR_64BIT_MAXLEN_INPUT
-from app.models import GoSearchConsoleProperty
-from app.schemas import GoSearchConsolePropertyCreate, GoSearchConsolePropertyRead
+from app.entities.go_gsc.crud import GoSearchConsolePropertyRepository
+from app.entities.go_gsc.model import GoSearchConsoleProperty
+from app.entities.go_gsc.schemas import (
+    GoSearchConsolePropertyCreate,
+    GoSearchConsolePropertyRead,
+)
 from tests.utils.utils import random_lower_string
 
 

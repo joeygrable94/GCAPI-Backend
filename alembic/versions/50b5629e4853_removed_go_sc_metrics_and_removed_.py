@@ -9,7 +9,7 @@ Create Date: 2025-01-26 08:26:32.772150
 import sqlalchemy as sa
 
 from alembic import op
-from app.db.custom_types.longtext import LongText
+from app.db.custom_types import LongText
 
 # revision identifiers, used by Alembic.
 revision = "50b5629e4853"

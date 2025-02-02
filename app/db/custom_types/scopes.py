@@ -3,8 +3,8 @@ from typing import Any
 from sqlalchemy.engine.interfaces import Dialect
 from sqlalchemy_utils import ScalarListType
 
-from app.core.utilities import scope_regex
 from app.db.constants import DB_STR_BLOB_MAXLEN_INPUT
+from app.utilities import scope_regex
 
 
 class Scopes(ScalarListType):

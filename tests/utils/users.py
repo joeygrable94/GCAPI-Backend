@@ -1,11 +1,11 @@
 from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security.permissions import AclPrivilege, RoleUser
-from app.crud import UserRepository
 from app.db.constants import DB_STR_USER_PICTURE_DEFAULT
-from app.models import User
-from app.schemas import UserCreate
+from app.entities.user.crud import UserRepository
+from app.entities.user.model import User
+from app.entities.user.schemas import UserCreate
+from app.services.permission import AclPrivilege, RoleUser
 from tests.utils.utils import random_email, random_lower_string
 
 

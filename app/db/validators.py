@@ -1,9 +1,7 @@
 import json
 from typing import Any, Union
 
-from app.core.config import settings
-from app.core.security.permissions import AclPrivilege, Scope
-from app.core.utilities import domain_name_regex, email_regex, utm_parameter_value_regex
+from app.config import settings
 from app.db.constants import (
     DB_INT_ALTITUDE_MAX,
     DB_INT_INTEGER_MAXLEN_STORED,
@@ -19,6 +17,8 @@ from app.db.constants import (
     DB_STR_TINYTEXT_MAXLEN_INPUT,
     DB_STR_URLPATH_MAXLEN_INPUT,
 )
+from app.services.permission import AclPrivilege, Scope
+from app.utilities import domain_name_regex, email_regex, utm_parameter_value_regex
 
 # validation utilities
 
@@ -105,7 +105,7 @@ def optional_string_utm_param(
         raise ValueError(f"{name} must be {max_len} characters or less")
     if not utm_parameter_value_regex.search(v):
         raise ValueError(
-            "invalid utm paramter value provided, only characters allowed: a-z, A-Z, 0-9, -, _"  # noqa: E501
+            "invalid utm paramter value provided, only characters allowed: a-z, A-Z, 0-9, -, _"
         )
     return v
 
@@ -135,7 +135,7 @@ def require_string_domain(
         raise ValueError(f"{name} must be {max_len} characters or less")
     if not domain_name_regex.search(v):
         raise ValueError(
-            "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
+            "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"
         )
     return v
 
@@ -154,7 +154,7 @@ def require_string_email(
         raise ValueError(f"{name} must be {max_len} characters or less")
     if not email_regex.search(v):
         raise ValueError(
-            "invalid email provided, please make sure your email fits the following format: example@emaildomain.com"  # noqa: E501
+            "invalid email provided, please make sure your email fits the following format: example@emaildomain.com"
         )
     return v
 
@@ -174,7 +174,7 @@ def optional_string_domain(
         raise ValueError(f"{name} must be {max_len} characters or less")
     if v is not None and not domain_name_regex.search(v):
         raise ValueError(
-            "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"  # noqa: E501
+            "invalid domain provided, top-level domain names and subdomains only accepted (example.com, sub.example.com)"
         )
     return v
 

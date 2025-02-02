@@ -1,9 +1,10 @@
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import WebsitePageRepository
-from app.models import Website, WebsitePage
-from app.schemas import WebsiteMapRead, WebsitePageCreate, WebsitePageRead, WebsiteRead
+from app.entities.website_page.crud import WebsitePageRepository
+from app.entities.website_page.model import WebsitePage
+from app.entities.website_page.schemas import WebsitePageCreate, WebsitePageRead
+from app.entities.website_sitemap.schemas import WebsiteMapRead
 from tests.utils.utils import random_lower_string
 from tests.utils.website_maps import create_random_website_map
 from tests.utils.websites import create_random_website
@@ -18,7 +19,7 @@ async def create_random_website_page(
     repo: WebsitePageRepository = WebsitePageRepository(session=db_session)
     page_path = "/%s/" % random_lower_string() if path is None else path
     if website_id is None:
-        website: Website | WebsiteRead = await create_random_website(db_session)
+        website = await create_random_website(db_session)
         website_id = website.id
     if sitemap_id is None:
         website_map: WebsiteMapRead = await create_random_website_map(

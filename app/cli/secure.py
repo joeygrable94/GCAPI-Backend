@@ -4,7 +4,7 @@ import os
 from typer import Typer
 
 from app.core.logger import logger
-from app.core.security.encryption.keys import load_api_keys
+from app.services.encryption import load_api_keys
 
 app = Typer()
 

@@ -1,12 +1,16 @@
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import GoAnalytics4PropertyRepository, GoAnalytics4StreamRepository
 from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT
-from app.models import GoAnalytics4Property, GoAnalytics4Stream
-from app.schemas import (
+from app.entities.go_ga4.crud import GoAnalytics4PropertyRepository
+from app.entities.go_ga4.model import GoAnalytics4Property
+from app.entities.go_ga4.schemas import (
     GoAnalytics4PropertyCreate,
     GoAnalytics4PropertyRead,
+)
+from app.entities.go_ga4_stream.crud import GoAnalytics4StreamRepository
+from app.entities.go_ga4_stream.model import GoAnalytics4Stream
+from app.entities.go_ga4_stream.schemas import (
     GoAnalytics4StreamCreate,
     GoAnalytics4StreamRead,
 )

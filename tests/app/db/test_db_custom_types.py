@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy.dialects import mysql
 
 from app.db.constants import DB_STR_BLOB_MAXLEN_STORED
-from app.db.custom_types import Scopes
+from app.db.custom_types.scopes import Scopes
 
 
 def test_process_bind_param_valid_scopes() -> None:

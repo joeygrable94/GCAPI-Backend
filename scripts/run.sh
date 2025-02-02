@@ -5,7 +5,7 @@ python cli.py db check-db-connection
 
 # Upgrade DB
 echo "Running Backend DB Migrations..."
-alembic upgrade head
+python -m alembic upgrade head
 
 # Create initial data in DB
 # python cli.py db add-initial-data

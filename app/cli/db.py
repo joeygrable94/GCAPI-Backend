@@ -5,7 +5,7 @@ from sqlalchemy_data_model_visualizer import (
 from typer import Typer
 
 from app.cli.coro import cli_coro
-from app.core.config import settings
+from app.config import settings
 from app.core.logger import logger
 from app.db.commands import build_database, check_db_connected, create_init_data
 

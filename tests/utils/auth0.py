@@ -4,16 +4,16 @@ from os import environ
 
 import requests
 
-from app.core.config import settings
+from app.services.auth0.settings import auth_settings
 
 
 def get_auth0_access_token_value(
     email: str,
     password: str,
-    audience: str = settings.auth.audience,
+    audience: str = auth_settings.audience,
     scopes: str = "openid profile email",
 ) -> str:
-    url = f"https://{settings.auth.domain}/oauth/token"
+    url = f"https://{auth_settings.domain}/oauth/token"
     data = {
         "grant_type": "password",
         "username": email,

@@ -6,25 +6,18 @@ from sentry_sdk import Client
 
 from app.api.exceptions import configure_exceptions
 from app.api.middleware import configure_middleware
-from app.api.monitoring import configure_monitoring
-from app.core.config import settings
-from app.core.security import (
-    CsrfProtect,
-    CsrfSettings,
-    configure_authorization_exceptions,
-    configure_csrf_exceptions,
-    configure_encryption_exceptions,
-    configure_permissions_exceptions,
-)
+from app.config import settings
 from app.core.templates import static_files
 from app.db.commands import check_db_connected, check_db_disconnected
+from app.services.csrf import CsrfProtect, CsrfSettings
+from app.services.sentry import configure_sentry_monitoring
+from app.utilities.route_map import make_routes_map
 
-sentry_client: Client | None = configure_monitoring()
+sentry_client: Client | None = configure_sentry_monitoring()
 
 
 @asynccontextmanager
 async def application_lifespan(app: FastAPI) -> AsyncGenerator:  # pragma: no cover
-    # startup
     await check_db_connected()
 
     @CsrfProtect.load_config
@@ -32,22 +25,14 @@ async def application_lifespan(app: FastAPI) -> AsyncGenerator:  # pragma: no co
         return CsrfSettings()
 
     yield
-
-    # shutdown
     await check_db_disconnected()
 
 
 def configure_routers(app: FastAPI) -> None:
-    from app.api.v1 import router_v1
+    from app.api.endpoints_v1 import router_v1
 
     app.include_router(router_v1, prefix=settings.api.prefix)
-
-    # endpoints = []
-    # for route in app.routes:
-    #     if isinstance(route, APIRoute):
-    #         endpoints.append(route.path)
-    # with open("docs/endpoints.txt", "w") as f:
-    #     f.write("\n".join(endpoints))
+    make_routes_map(app)
 
 
 def configure_static(app: FastAPI) -> None:
@@ -67,10 +52,6 @@ def create_app() -> FastAPI:
     )
     configure_middleware(app)
     configure_exceptions(app)
-    configure_permissions_exceptions(app)
-    configure_authorization_exceptions(app)
-    configure_csrf_exceptions(app)
-    configure_encryption_exceptions(app)
     configure_static(app)
     configure_routers(app)
     return app

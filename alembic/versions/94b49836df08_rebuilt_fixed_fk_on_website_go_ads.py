@@ -11,7 +11,7 @@ from sqlalchemy.dialects import mysql
 from sqlalchemy_utils.types.uuid import UUIDType
 
 from alembic import op
-from app.db.custom_types.longtext import LongText
+from app.db.custom_types import LongText
 
 # revision identifiers, used by Alembic.
 revision = "94b49836df08"

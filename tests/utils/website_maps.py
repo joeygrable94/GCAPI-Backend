@@ -3,9 +3,13 @@ from typing import Any, Iterator
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import WebsiteMapRepository
-from app.models import Website, WebsiteMap
-from app.schemas import WebsiteMapCreate, WebsiteMapPage, WebsiteMapRead, WebsiteRead
+from app.entities.website_sitemap.crud import WebsiteMapRepository
+from app.entities.website_sitemap.model import WebsiteMap
+from app.entities.website_sitemap.schemas import (
+    WebsiteMapCreate,
+    WebsiteMapPage,
+    WebsiteMapRead,
+)
 from tests.utils.websites import create_random_website
 
 
@@ -34,7 +38,7 @@ async def create_random_website_map(
 ) -> WebsiteMapRead:
     repo: WebsiteMapRepository = WebsiteMapRepository(session=db_session)
     if website_id is None:
-        website: Website | WebsiteRead = await create_random_website(db_session)
+        website = await create_random_website(db_session)
         website_id = website.id
     website_map: WebsiteMap = await repo.create(
         schema=WebsiteMapCreate(url=url_path, website_id=website_id)

@@ -1,9 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import PlatformRepository
-from app.models import Platform
-from app.schemas import PlatformRead
-from app.schemas.platform import PlatformCreate
+from app.entities.platform.crud import PlatformRepository
+from app.entities.platform.model import Platform
+from app.entities.platform.schemas import PlatformCreate, PlatformRead
 from tests.utils.utils import random_lower_string
 
 

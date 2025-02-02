@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import SingletonThreadPool
 
-from app.core.config import ApiModes, settings
+from app.config import ApiModes, settings
 from app.core.logger import logger
 
 # Session

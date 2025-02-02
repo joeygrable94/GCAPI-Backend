@@ -1,10 +1,10 @@
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import GoAdsPropertyRepository
 from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT
-from app.models import GoAdsProperty
-from app.schemas import GoAdsPropertyCreate, GoAdsPropertyRead
+from app.entities.go_gads.crud import GoAdsPropertyRepository
+from app.entities.go_gads.model import GoAdsProperty
+from app.entities.go_gads.schemas import GoAdsPropertyCreate, GoAdsPropertyRead
 from tests.utils.utils import random_lower_string
 
 

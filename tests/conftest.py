@@ -10,11 +10,12 @@ from httpx import ASGITransport, AsyncClient
 from lxml import etree
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
+from app.config import settings
 from app.db.base import Base
 from app.db.commands import create_init_data
 from app.db.session import async_engine, async_session
 from app.main import create_app
+from app.services.auth0.settings import auth_settings
 from tests.constants.schema import ClientAuthorizedUser
 from tests.utils.auth0 import get_auth0_access_token
 
@@ -72,9 +73,9 @@ async def client(app: FastAPI) -> AsyncGenerator:
 def admin_user() -> ClientAuthorizedUser:
     return ClientAuthorizedUser(
         token_headers=get_auth0_access_token(
-            settings.auth.first_admin, settings.auth.first_admin_password
+            auth_settings.first_admin, auth_settings.first_admin_password
         ),
-        email=settings.auth.first_admin,
+        email=auth_settings.first_admin,
     )
 
 
@@ -82,9 +83,9 @@ def admin_user() -> ClientAuthorizedUser:
 def manager_user() -> ClientAuthorizedUser:
     return ClientAuthorizedUser(
         token_headers=get_auth0_access_token(
-            settings.auth.first_manager, settings.auth.first_manager_password
+            auth_settings.first_manager, auth_settings.first_manager_password
         ),
-        email=settings.auth.first_manager,
+        email=auth_settings.first_manager,
     )
 
 
@@ -92,9 +93,9 @@ def manager_user() -> ClientAuthorizedUser:
 def employee_user() -> ClientAuthorizedUser:
     return ClientAuthorizedUser(
         token_headers=get_auth0_access_token(
-            settings.auth.first_employee, settings.auth.first_employee_password
+            auth_settings.first_employee, auth_settings.first_employee_password
         ),
-        email=settings.auth.first_employee,
+        email=auth_settings.first_employee,
     )
 
 
@@ -102,9 +103,9 @@ def employee_user() -> ClientAuthorizedUser:
 def client_a_user() -> ClientAuthorizedUser:
     return ClientAuthorizedUser(
         token_headers=get_auth0_access_token(
-            settings.auth.first_client_a, settings.auth.first_client_a_password
+            auth_settings.first_client_a, auth_settings.first_client_a_password
         ),
-        email=settings.auth.first_client_a,
+        email=auth_settings.first_client_a,
     )
 
 
@@ -112,9 +113,9 @@ def client_a_user() -> ClientAuthorizedUser:
 def client_b_user() -> ClientAuthorizedUser:
     return ClientAuthorizedUser(
         token_headers=get_auth0_access_token(
-            settings.auth.first_client_b, settings.auth.first_client_b_password
+            auth_settings.first_client_b, auth_settings.first_client_b_password
         ),
-        email=settings.auth.first_client_b,
+        email=auth_settings.first_client_b,
     )
 
 
@@ -122,10 +123,10 @@ def client_b_user() -> ClientAuthorizedUser:
 def verified_user() -> ClientAuthorizedUser:
     return ClientAuthorizedUser(
         token_headers=get_auth0_access_token(
-            settings.auth.first_user_verified,
-            settings.auth.first_user_verified_password,
+            auth_settings.first_user_verified,
+            auth_settings.first_user_verified_password,
         ),
-        email=settings.auth.first_user_verified,
+        email=auth_settings.first_user_verified,
     )
 
 
@@ -133,10 +134,10 @@ def verified_user() -> ClientAuthorizedUser:
 def unverified_user() -> ClientAuthorizedUser:
     return ClientAuthorizedUser(
         token_headers=get_auth0_access_token(
-            settings.auth.first_user_unverified,
-            settings.auth.first_user_unverified_password,
+            auth_settings.first_user_unverified,
+            auth_settings.first_user_unverified_password,
         ),
-        email=settings.auth.first_user_unverified,
+        email=auth_settings.first_user_unverified,
     )
 
 

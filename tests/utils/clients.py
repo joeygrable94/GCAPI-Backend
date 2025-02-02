@@ -1,23 +1,21 @@
 import json
 from typing import List
 
+from httpx import Client
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import (
-    ClientPlatformRepository,
-    ClientRepository,
-    ClientWebsiteRepository,
-    UserClientRepository,
-)
-from app.models import Client, ClientPlatform, ClientWebsite, UserClient
-from app.schemas import (
-    ClientCreate,
-    ClientPlatformCreate,
-    ClientRead,
-    ClientWebsiteCreate,
-    UserClientCreate,
-)
+from app.entities.client.crud import ClientRepository
+from app.entities.client.schemas import ClientCreate, ClientRead
+from app.entities.client_platform.crud import ClientPlatformRepository
+from app.entities.client_platform.model import ClientPlatform
+from app.entities.client_platform.schemas import ClientPlatformCreate
+from app.entities.client_website.crud import ClientWebsiteRepository
+from app.entities.client_website.model import ClientWebsite
+from app.entities.client_website.schemas import ClientWebsiteCreate
+from app.entities.user_client.crud import UserClientRepository
+from app.entities.user_client.model import UserClient
+from app.entities.user_client.schemas import UserClientCreate
 from tests.utils.utils import random_lower_string
 
 
@@ -83,8 +81,8 @@ def create_random_client_style_guide(
             "type": "primary",
             "label": "Noto Sans",
             "className": "font-gc-primary",
-            "src": "https://getcommunityinc.com/mycommunityapps/fonts/NotoSans/noto-sans.css",  # noqa: E501
-            "srcvar": "https://getcommunityinc.com/mycommunityapps/fonts/NotoSans/noto-sans-variable.css",  # noqa: E501
+            "src": "https://getcommunityinc.com/mycommunityapps/fonts/NotoSans/noto-sans.css",
+            "srcvar": "https://getcommunityinc.com/mycommunityapps/fonts/NotoSans/noto-sans-variable.css",
         }
     ],
     voice_tone: List[str] = ["test tone"],

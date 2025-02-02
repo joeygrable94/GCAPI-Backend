@@ -3,18 +3,19 @@ from typing import Any
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import WebsiteGoAnalytics4PropertyRepository, WebsiteRepository
-from app.crud.website_go_ads import WebsiteGoAdsPropertyRepository
-from app.models import Website, WebsiteGoAnalytics4Property
-from app.models.website_go_ads import WebsiteGoAdsProperty
-from app.schemas import (
+from app.entities.website.crud import WebsiteRepository
+from app.entities.website.model import Website
+from app.entities.website.schemas import WebsiteCreate, WebsiteRead
+from app.entities.website_go_ga4.crud import WebsiteGoAnalytics4PropertyRepository
+from app.entities.website_go_ga4.model import WebsiteGoAnalytics4Property
+from app.entities.website_go_ga4.schemas import WebsiteGoAnalytics4PropertyCreate
+from app.entities.website_go_gads.crud import WebsiteGoAdsPropertyRepository
+from app.entities.website_go_gads.model import WebsiteGoAdsProperty
+from app.entities.website_go_gads.schemas import WebsiteGoAdsPropertyCreate
+from app.entities.website_sitemap.schemas import (
     SitemapPageChangeFrequency,
-    WebsiteCreate,
-    WebsiteGoAnalytics4PropertyCreate,
     WebsiteMapPage,
-    WebsiteRead,
 )
-from app.schemas.website_go_ads import WebsiteGoAdsPropertyCreate
 from tests.utils.utils import random_boolean, random_domain
 
 
@@ -27,7 +28,7 @@ async def create_random_website(
     repo: WebsiteRepository = WebsiteRepository(session=db_session)
     if domain is None:
         domain = random_domain()
-    website: Website = await repo.create(
+    website = await repo.create(
         schema=WebsiteCreate(domain=domain, is_secure=is_secure)
     )
     return WebsiteRead.model_validate(website) if not return_db_obj else website

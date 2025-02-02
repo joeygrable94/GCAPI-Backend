@@ -1,9 +1,12 @@
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import WebsiteKeywordCorpusRepository
-from app.models import WebsiteKeywordCorpus
-from app.schemas import WebsiteKeywordCorpusCreate, WebsiteKeywordCorpusRead
+from app.entities.website_keywordcorpus.crud import WebsiteKeywordCorpusRepository
+from app.entities.website_keywordcorpus.model import WebsiteKeywordCorpus
+from app.entities.website_keywordcorpus.schemas import (
+    WebsiteKeywordCorpusCreate,
+    WebsiteKeywordCorpusRead,
+)
 from tests.utils.utils import random_lower_string
 from tests.utils.website_pages import create_random_website_page
 from tests.utils.websites import create_random_website
@@ -20,9 +23,7 @@ async def create_random_website_keywordcorpus(
     if page_id is None:
         page = await create_random_website_page(db_session, website_id=website_id)
         page_id = page.id
-    repo: WebsiteKeywordCorpusRepository = WebsiteKeywordCorpusRepository(
-        session=db_session
-    )
+    repo = WebsiteKeywordCorpusRepository(session=db_session)
     website_kwc: WebsiteKeywordCorpus = await repo.create(
         schema=WebsiteKeywordCorpusCreate(
             corpus=random_lower_string(5000),

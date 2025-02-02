@@ -1,10 +1,10 @@
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import TrackingLinkRepository
-from app.db.utilities import hash_url
-from app.models import TrackingLink
-from app.schemas import TrackingLinkCreate, TrackingLinkRead
+from app.entities.tracking_link.crud import TrackingLinkRepository
+from app.entities.tracking_link.model import TrackingLink
+from app.entities.tracking_link.schemas import TrackingLinkCreate, TrackingLinkRead
+from app.entities.tracking_link.utilities import hash_url
 from tests.utils.utils import random_domain, random_lower_string
 
 
