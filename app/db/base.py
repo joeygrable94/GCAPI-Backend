@@ -27,7 +27,6 @@ from app.entities.website_go_gads.model import WebsiteGoAdsProperty
 from app.entities.website_keywordcorpus.model import WebsiteKeywordCorpus
 from app.entities.website_page.model import WebsitePage
 from app.entities.website_pagespeedinsight.model import WebsitePageSpeedInsights
-from app.entities.website_sitemap.model import WebsiteMap
 
 __all__: list[str] = [
     "Base",
@@ -55,7 +54,6 @@ __all__: list[str] = [
     "UserIpaddress",
     "Website",
     "WebsiteKeywordCorpus",
-    "WebsiteMap",
     "WebsitePage",
     "WebsitePageSpeedInsights",
     "WebsiteGoAnalytics4Property",

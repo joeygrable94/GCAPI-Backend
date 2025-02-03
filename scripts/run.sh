@@ -8,7 +8,7 @@ echo "Running Backend DB Migrations..."
 python -m alembic upgrade head
 
 # Create initial data in DB
-# python cli.py db add-initial-data
+python cli.py db add-initial-data
 
 # start the server
 fastapi run app/main.py --port 8888

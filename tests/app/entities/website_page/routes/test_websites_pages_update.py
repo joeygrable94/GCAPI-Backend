@@ -8,7 +8,6 @@ from app.db.constants import DB_STR_URLPATH_MAXLEN_INPUT
 from app.entities.api.constants import (
     ERROR_MESSAGE_ENTITY_EXISTS,
     ERROR_MESSAGE_ENTITY_NOT_FOUND,
-    ERROR_MESSAGE_ENTITY_RELATIONSHOP_NOT_FOUND,
 )
 from app.entities.auth.constants import ERROR_MESSAGE_UNVERIFIED_ACCESS_DENIED
 from app.services.permission.constants import (
@@ -23,7 +22,6 @@ from tests.utils.clients import (
 )
 from tests.utils.users import get_user_by_email
 from tests.utils.utils import random_lower_string
-from tests.utils.website_maps import create_random_website_map
 from tests.utils.website_pages import create_random_website_page
 from tests.utils.websites import create_random_website
 
@@ -98,25 +96,13 @@ async def test_update_website_page_as_user(
 
 # ...xxx...F
 @pytest.mark.parametrize(
-    "url,status,priority,fake_website,assign_sitemap,status_code,error_type,error_msg",
+    "url,status,priority,fake_website,status_code,error_type,error_msg",
     [
-        ("/" + random_lower_string(), 200, 0.5, False, False, 200, None, None),
-        ("/" + random_lower_string(), 200, 0.5, False, True, 200, None, None),
-        (
-            "/" + random_lower_string(),
-            200,
-            0.5,
-            False,
-            None,
-            404,
-            "message",
-            ERROR_MESSAGE_ENTITY_RELATIONSHOP_NOT_FOUND,
-        ),
+        ("/" + random_lower_string(), 200, 0.5, False, 200, None, None),
         (
             DUPLICATE_URL,
             200,
             0.5,
-            False,
             False,
             400,
             "message",
@@ -127,7 +113,6 @@ async def test_update_website_page_as_user(
             200,
             0.5,
             False,
-            True,
             422,
             "detail",
             "Value error, url must be 1 characters or more",
@@ -137,7 +122,6 @@ async def test_update_website_page_as_user(
             200,
             0.5,
             False,
-            True,
             422,
             "detail",
             f"Value error, url must be {DB_STR_URLPATH_MAXLEN_INPUT} characters or less",
@@ -146,7 +130,6 @@ async def test_update_website_page_as_user(
             "/" + random_lower_string(),
             200,
             0.5,
-            True,
             True,
             404,
             "message",
@@ -159,7 +142,6 @@ async def test_update_website_page_as_superuser_limits(
     status: int,
     priority: float,
     fake_website: bool,
-    assign_sitemap: bool | None,
     status_code: int,
     error_type: str | None,
     error_msg: str | None,
@@ -168,9 +150,8 @@ async def test_update_website_page_as_superuser_limits(
     admin_user: ClientAuthorizedUser,
 ) -> None:
     a_website = await create_random_website(db_session)
-    a_sitemap = await create_random_website_map(db_session, a_website.id)
     a_webpage = await create_random_website_page(
-        db_session, a_website.id, a_sitemap.id, path=DUPLICATE_URL
+        db_session, a_website.id, path=DUPLICATE_URL
     )
     data = {
         "url": url,
@@ -181,11 +162,6 @@ async def test_update_website_page_as_superuser_limits(
         data["website_id"] = get_uuid_str()
     else:
         data["website_id"] = str(a_website.id)
-    if assign_sitemap is None:
-        fake_sitemap_id = get_uuid_str()
-        data["sitemap_id"] = fake_sitemap_id
-    elif assign_sitemap:
-        data["sitemap_id"] = str(a_sitemap.id)
     response: Response = await client.patch(
         f"webpages/{a_webpage.id}",
         headers=admin_user.token_headers,

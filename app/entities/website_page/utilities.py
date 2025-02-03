@@ -1,23 +1,29 @@
+import requests
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import logger
 from app.db.session import get_db_session
 from app.entities.website_page.crud import WebsitePageRepository
 from app.entities.website_page.model import WebsitePage
-from app.entities.website_page.schemas import WebsitePageCreate, WebsitePageUpdate
-from app.entities.website_sitemap.schemas import WebsiteMapPage
-from app.entities.website_sitemap.utilities import fetch_url_status_code
+from app.entities.website_page.schemas import (
+    WebsitePageCreate,
+    WebsitePageUpdate,
+    WebsiteSitemapPage,
+)
 from app.utilities import parse_id
+
+
+def fetch_url_status_code(url: str) -> int:
+    resp = requests.head(url)
+    return resp.status_code
 
 
 async def create_or_update_website_page(
     website_id: str,
-    sitemap_id: str,
-    page: WebsiteMapPage,
+    page: WebsiteSitemapPage,
 ) -> None:
     try:
         website_uuid = parse_id(website_id)
-        sitemap_uuid = parse_id(sitemap_id)
         status_code: int = fetch_url_status_code(page.url)
         session: AsyncSession
         website_page: WebsitePage | None
@@ -50,7 +56,6 @@ async def create_or_update_website_page(
                         last_modified=page.last_modified,
                         change_frequency=page.change_frequency,
                         website_id=website_uuid,
-                        sitemap_id=sitemap_uuid,
                     )
                 )
     except Exception as e:  # pragma: no cover

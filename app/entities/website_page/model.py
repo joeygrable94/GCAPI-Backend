@@ -25,7 +25,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from app.entities.website.model import Website
     from app.entities.website_keywordcorpus.model import WebsiteKeywordCorpus
     from app.entities.website_pagespeedinsight.model import WebsitePageSpeedInsights
-    from app.entities.website_sitemap.model import WebsiteMap
 
 
 class WebsitePage(Base, Timestamp):
@@ -60,10 +59,6 @@ class WebsitePage(Base, Timestamp):
         UUIDType(binary=False), ForeignKey("website.id"), index=True, nullable=False
     )
     website: Mapped["Website"] = relationship("Website", back_populates="pages")
-    sitemap_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("website_map.id"), index=True, nullable=True
-    )
-    sitemap: Mapped["WebsiteMap"] = relationship("WebsiteMap", back_populates="pages")
     keywordcorpus: Mapped[list["WebsiteKeywordCorpus"]] = relationship(
         "WebsiteKeywordCorpus", back_populates="page", cascade="all, delete-orphan"
     )

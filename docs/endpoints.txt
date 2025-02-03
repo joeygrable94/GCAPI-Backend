@@ -49,12 +49,6 @@
 /api/v1/webpages/{page_id}
 /api/v1/webpages/{page_id}
 /api/v1/webpages/{page_id}/process-psi
-/api/v1/sitemaps/
-/api/v1/sitemaps/
-/api/v1/sitemaps/{sitemap_id}
-/api/v1/sitemaps/{sitemap_id}
-/api/v1/sitemaps/{sitemap_id}
-/api/v1/sitemaps/{sitemap_id}/process-pages
 /api/v1/psi/
 /api/v1/psi/
 /api/v1/psi/{psi_id}

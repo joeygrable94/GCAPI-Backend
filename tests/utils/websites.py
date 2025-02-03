@@ -12,9 +12,9 @@ from app.entities.website_go_ga4.schemas import WebsiteGoAnalytics4PropertyCreat
 from app.entities.website_go_gads.crud import WebsiteGoAdsPropertyRepository
 from app.entities.website_go_gads.model import WebsiteGoAdsProperty
 from app.entities.website_go_gads.schemas import WebsiteGoAdsPropertyCreate
-from app.entities.website_sitemap.schemas import (
+from app.entities.website_page.schemas import (
     SitemapPageChangeFrequency,
-    WebsiteMapPage,
+    WebsiteSitemapPage,
 )
 from tests.utils.utils import random_boolean, random_domain
 
@@ -36,10 +36,10 @@ async def create_random_website(
 
 def build_sitemap_page_meta(
     mock_fetch_sitemap_page_urlset: list[dict[str, Any]],
-) -> list[WebsiteMapPage]:
+) -> list[WebsiteSitemapPage]:
     sitemap_pages = []
     for page in mock_fetch_sitemap_page_urlset:
-        page_meta = WebsiteMapPage(
+        page_meta = WebsiteSitemapPage(
             url=page["url"],
             last_modified=page["lastmod"],
             change_frequency=SitemapPageChangeFrequency(page["changefreq"]),

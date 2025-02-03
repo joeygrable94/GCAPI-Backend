@@ -13,7 +13,6 @@ from app.entities.website_page.router import router as web_pages_router
 from app.entities.website_pagespeedinsight.router import (
     router as web_pagespeedinsights_router,
 )
-from app.entities.website_sitemap.router import router as web_sitemaps_router
 from app.services.auth0 import auth_controller
 
 router_v1 = APIRouter(
@@ -79,13 +78,6 @@ router_v1.include_router(
     web_pages_router,
     prefix="/webpages",
     tags=["Website Pages"],
-)
-
-# website sitemap routes
-router_v1.include_router(
-    web_sitemaps_router,
-    prefix="/sitemaps",
-    tags=["Website Sitemaps"],
 )
 
 # website page speed insights routes

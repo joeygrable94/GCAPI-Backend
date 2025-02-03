@@ -5,7 +5,6 @@ from app.api.get_query import (
     ClientIdQueryParams,
     DeviceStrategyQueryParams,
     WebsiteIdQueryParams,
-    WebsiteMapIdQueryParams,
     WebsitePageIdQueryParams,
 )
 from app.config import settings
@@ -66,13 +65,6 @@ def test_query_website_id_param_validation() -> None:
         WebsiteIdQueryParams(website_id="invalid_id")
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "Invalid website ID"
-
-
-def test_query_sitemap_id_param_validation() -> None:
-    with pytest.raises(HTTPException) as exc_info:
-        WebsiteMapIdQueryParams(sitemap_id="invalid_id")
-    assert exc_info.value.status_code == 422
-    assert exc_info.value.detail == "Invalid sitemap ID"
 
 
 def test_query_page_id_param_validation() -> None:

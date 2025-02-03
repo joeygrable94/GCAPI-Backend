@@ -5,10 +5,9 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.entities.website_page.schemas import WebsiteSitemapPage
 from app.entities.website_page.utilities import create_or_update_website_page
-from app.entities.website_sitemap.schemas import WebsiteMapPage
 from tests.utils.utils import random_domain
-from tests.utils.website_maps import create_random_website_map
 from tests.utils.websites import create_random_website
 
 pytestmark = pytest.mark.asyncio
@@ -27,13 +26,12 @@ async def test_create_or_update_website_page_create(
 ) -> None:
     page_url = "https://%s/" % random_domain()
     website = await create_random_website(db_session)
-    sitemap = await create_random_website_map(db_session)
-    page = WebsiteMapPage(url=page_url, priority=Decimal(0.5))
+    page = WebsiteSitemapPage(url=page_url, priority=Decimal(0.5))
     with patch(
         "app.entities.website_page.utilities.fetch_url_status_code"
     ) as mock_fetch_url_status_code:
         mock_fetch_url_status_code.return_value = 200
-        output = await create_or_update_website_page(website.id, sitemap.id, page)
+        output = await create_or_update_website_page(website.id, page)
         assert output is None
 
 
@@ -42,22 +40,21 @@ async def test_create_or_update_website_page_create_then_update(
 ) -> None:
     page_url = "https://%s/" % random_domain()
     website = await create_random_website(db_session)
-    sitemap = await create_random_website_map(db_session)
-    page = WebsiteMapPage(url=page_url, priority=Decimal(0.5))
-    page_b = WebsiteMapPage(url=page_url, priority=Decimal(0.25))
+    page = WebsiteSitemapPage(url=page_url, priority=Decimal(0.5))
+    page_b = WebsiteSitemapPage(url=page_url, priority=Decimal(0.25))
     with patch(
         "app.entities.website_page.utilities.fetch_url_status_code"
     ) as mock_fetch_url_status_code:
         mock_fetch_url_status_code.return_value = 200
-        output_a = await create_or_update_website_page(website.id, sitemap.id, page)
+        output_a = await create_or_update_website_page(website.id, page)
         assert output_a is None
     with patch(
         "app.entities.website_page.utilities.fetch_url_status_code"
     ) as mock_fetch_url_status_code:
         mock_fetch_url_status_code.return_value = 200
-        output_b = await create_or_update_website_page(website.id, sitemap.id, page_b)
+        output_b = await create_or_update_website_page(website.id, page_b)
         assert output_b is None
-        output_c = await create_or_update_website_page(website.id, sitemap.id, page_b)
+        output_c = await create_or_update_website_page(website.id, page_b)
         assert output_c is None
 
 
@@ -66,13 +63,8 @@ async def test_create_or_update_website_page_create_and_update(
 ) -> None:
     page_url = "https://getcommunity.com/"
     website = await create_random_website(db_session)
-    sitemap = await create_random_website_map(db_session)
-    map_page = WebsiteMapPage(url=page_url, priority=Decimal(0.5))
-    output_a = await create_or_update_website_page(
-        str(website.id), str(sitemap.id), map_page
-    )
+    map_page = WebsiteSitemapPage(url=page_url, priority=Decimal(0.5))
+    output_a = await create_or_update_website_page(str(website.id), map_page)
     assert output_a is None
-    output_b = await create_or_update_website_page(
-        str(website.id), str(sitemap.id), map_page
-    )
+    output_b = await create_or_update_website_page(str(website.id), map_page)
     assert output_b is None

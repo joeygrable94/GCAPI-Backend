@@ -89,19 +89,6 @@ class WebsiteIdQueryParams:
         self.website_id: UUID4 | None = q_website_id
 
 
-class WebsiteMapIdQueryParams:
-    def __init__(self, sitemap_id: str | None = None):
-        q_sitemap_id: UUID4 | None
-        try:
-            q_sitemap_id = None if not sitemap_id else parse_id(sitemap_id)
-        except InvalidID:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Invalid sitemap ID",
-            )
-        self.sitemap_id: UUID4 | None = q_sitemap_id
-
-
 class WebsitePageIdQueryParams:
     def __init__(self, page_id: str | None = None):
         q_page_id: UUID4 | None
@@ -269,7 +256,9 @@ class CommonUserClientQueryParams(
 GetUserClientQueryParams = Annotated[CommonUserClientQueryParams, Depends()]
 
 
-class CommonWebsiteQueryParams(PageParamsFromQuery, WebsiteIdQueryParams):
+class CommonWebsiteQueryParams(
+    PageParamsFromQuery, WebsiteIdQueryParams, IsActiveQueryParams
+):
     def __init__(
         self,
         page: Annotated[int | None, Query(ge=1)] = 1,
@@ -281,9 +270,11 @@ class CommonWebsiteQueryParams(PageParamsFromQuery, WebsiteIdQueryParams):
             ),
         ] = settings.api.query_limit_rows_default,
         website_id: Annotated[str | None, Query()] = None,
+        is_active: Annotated[bool | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         WebsiteIdQueryParams.__init__(self, website_id)
+        IsActiveQueryParams.__init__(self, is_active)
 
 
 GetWebsiteQueryParams = Annotated[CommonClientPlatformQueryParams, Depends()]
@@ -314,7 +305,7 @@ GetClientWebsiteQueryParams = Annotated[CommonClientWebsiteQueryParams, Depends(
 
 
 class CommonWebsitePageQueryParams(
-    PageParamsFromQuery, WebsiteIdQueryParams, WebsiteMapIdQueryParams
+    PageParamsFromQuery, WebsiteIdQueryParams, IsActiveQueryParams
 ):
     def __init__(
         self,
@@ -327,34 +318,14 @@ class CommonWebsitePageQueryParams(
             ),
         ] = settings.api.query_limit_rows_default,
         website_id: Annotated[str | None, Query()] = None,
-        sitemap_id: Annotated[str | None, Query()] = None,
+        is_active: Annotated[bool | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         WebsiteIdQueryParams.__init__(self, website_id)
-        WebsiteMapIdQueryParams.__init__(self, sitemap_id)
+        IsActiveQueryParams.__init__(self, is_active)
 
 
 GetWebsitePageQueryParams = Annotated[CommonWebsitePageQueryParams, Depends()]
-
-
-class CommonWebsiteMapQueryParams(PageParamsFromQuery, WebsiteIdQueryParams):
-    def __init__(
-        self,
-        page: Annotated[int | None, Query(ge=1)] = 1,
-        size: Annotated[
-            int | None,
-            Query(
-                ge=1,
-                le=settings.api.query_limit_rows_max,
-            ),
-        ] = settings.api.query_limit_rows_default,
-        website_id: Annotated[str | None, Query()] = None,
-    ):
-        PageParamsFromQuery.__init__(self, page, size)
-        WebsiteIdQueryParams.__init__(self, website_id)
-
-
-GetWebsiteMapQueryParams = Annotated[CommonWebsitePageQueryParams, Depends()]
 
 
 class CommonWebsitePageSpeedInsightsQueryParams(

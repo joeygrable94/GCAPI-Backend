@@ -15,7 +15,6 @@ from app.entities.website_page.schemas import (
     WebsitePageRead,
     WebsitePageUpdate,
 )
-from app.entities.website_sitemap.model import WebsiteMap
 
 
 class WebsitePageRepository(
@@ -29,7 +28,7 @@ class WebsitePageRepository(
         self,
         user_id: UUID | None = None,
         website_id: UUID | None = None,
-        sitemap_id: UUID | None = None,
+        is_active: bool | None = None,
     ) -> Select:
         stmt: Select = sql_select(self._table)
         conditions: list[BinaryExpression[bool]] = []
@@ -45,9 +44,8 @@ class WebsitePageRepository(
         if website_id:
             stmt = stmt.join(Website, self._table.website_id == Website.id)
             conditions.append(self._table.website_id.like(website_id))
-        if sitemap_id:
-            stmt = stmt.join(WebsiteMap, self._table.sitemap_id == WebsiteMap.id)
-            conditions.append(self._table.sitemap_id.like(sitemap_id))
+        if is_active is not None:
+            conditions.append(self._table.is_active == is_active)
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
         return stmt

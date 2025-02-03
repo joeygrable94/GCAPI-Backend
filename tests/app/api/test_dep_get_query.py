@@ -13,7 +13,6 @@ from app.api.get_query import (
     CommonUserClientQueryParams,
     CommonUserQueryParams,
     CommonWebsiteKeywordCorpusQueryParams,
-    CommonWebsiteMapQueryParams,
     CommonWebsitePageQueryParams,
     CommonWebsitePageSpeedInsightsQueryParams,
     CommonWebsiteQueryParams,
@@ -24,7 +23,6 @@ from app.api.get_query import (
     PublicQueryParams,
     UserIdQueryParams,
     WebsiteIdQueryParams,
-    WebsiteMapIdQueryParams,
     WebsitePageIdQueryParams,
 )
 from app.config import settings
@@ -85,26 +83,6 @@ def test_website_id_query_params_invalid_id() -> None:
 def test_website_id_query_params_none() -> None:
     query_params = WebsiteIdQueryParams()
     assert query_params.website_id is None
-
-
-def test_website_map_id_query_params_valid_id() -> None:
-    sitemap_id = get_uuid_str()
-    query_params = WebsiteMapIdQueryParams(sitemap_id=sitemap_id)
-    assert query_params.sitemap_id == uuid.UUID(sitemap_id)
-
-
-def test_website_map_id_query_params_invalid_id() -> None:
-    sitemap_id = "invalid-id"
-    try:
-        WebsiteMapIdQueryParams(sitemap_id=sitemap_id)
-    except HTTPException as e:
-        assert e.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert e.detail == "Invalid sitemap ID"
-
-
-def test_website_map_id_query_params_none() -> None:
-    query_params = WebsiteMapIdQueryParams()
-    assert query_params.sitemap_id is None
 
 
 def test_website_page_id_query_params_valid_id() -> None:
@@ -322,50 +300,21 @@ def test_common_client_website_query_params() -> None:
 
 def test_common_website_page_query_params() -> None:
     uuid_1 = get_uuid_str()
-    uuid_2 = get_uuid_str()
     query_params = CommonWebsitePageQueryParams(
         page=2,
         size=10,
         website_id=uuid_1,
-        sitemap_id=uuid_2,
     )
     assert query_params.page == 2
     assert query_params.size == 10
     assert query_params.website_id == uuid.UUID(uuid_1)
-    assert query_params.sitemap_id == uuid.UUID(uuid_2)
 
     query_params = CommonWebsitePageQueryParams()
     assert query_params.page == 1
     assert query_params.size == settings.api.query_limit_rows_default
     assert query_params.website_id is None
-    assert query_params.sitemap_id is None
 
-    query_params = CommonWebsitePageQueryParams(
-        page=None, size=None, website_id=None, sitemap_id=None
-    )
-    assert query_params.page == 1
-    assert query_params.size == settings.api.query_limit_rows_default
-    assert query_params.website_id is None
-    assert query_params.sitemap_id is None
-
-
-def test_common_website_map_query_params() -> None:
-    uuid_1 = get_uuid_str()
-    query_params = CommonWebsiteMapQueryParams(
-        page=2,
-        size=10,
-        website_id=uuid_1,
-    )
-    assert query_params.page == 2
-    assert query_params.size == 10
-    assert query_params.website_id == uuid.UUID(uuid_1)
-
-    query_params = CommonWebsiteMapQueryParams()
-    assert query_params.page == 1
-    assert query_params.size == settings.api.query_limit_rows_default
-    assert query_params.website_id is None
-
-    query_params = CommonWebsiteMapQueryParams(page=None, size=None, website_id=None)
+    query_params = CommonWebsitePageQueryParams(page=None, size=None, website_id=None)
     assert query_params.page == 1
     assert query_params.size == settings.api.query_limit_rows_default
     assert query_params.website_id is None

@@ -13,7 +13,6 @@ from app.entities.website_pagespeedinsight.schemas import WebsitePageSpeedInsigh
 from app.utilities import get_uuid_str
 from tests.constants.schema import ClientAuthorizedUser
 from tests.utils.utils import random_boolean
-from tests.utils.website_maps import create_random_website_map
 from tests.utils.website_pages import create_random_website_page
 from tests.utils.website_pagespeedinsights import generate_psi_base
 from tests.utils.websites import create_random_website
@@ -27,10 +26,7 @@ async def test_create_website_pagespeedinsights_as_superuser(
     admin_user: ClientAuthorizedUser,
 ) -> None:
     a_website = await create_random_website(db_session)
-    a_sitemap = await create_random_website_map(db_session, a_website.id)
-    a_webpage = await create_random_website_page(
-        db_session, a_website.id, a_sitemap.id, "/"
-    )
+    a_webpage = await create_random_website_page(db_session, a_website.id, "/")
     d_strategy: str = "mobile"
     psi_base: WebsitePageSpeedInsightsBase = generate_psi_base(
         device_strategy=d_strategy

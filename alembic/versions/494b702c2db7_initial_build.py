@@ -1,21 +1,22 @@
-"""initial database
+"""initial build
 
-Revision ID: 1e4c0ac33646
+Revision ID: 494b702c2db7
 Revises:
-Create Date: 2024-08-07 22:20:34.416234
+Create Date: 2025-02-02 17:50:14.957838
 
 """
 
 import sqlalchemy as sa
 from sqlalchemy_utils.types.encrypted.encrypted_type import StringEncryptedType
 from sqlalchemy_utils.types.ip_address import IPAddressType
+from sqlalchemy_utils.types.json import JSONType
 from sqlalchemy_utils.types.uuid import UUIDType
 
 from alembic import op
 from app.db.custom_types import LongText, Scopes
 
 # revision identifiers, used by Alembic.
-revision = "1e4c0ac33646"
+revision = "494b702c2db7"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,7 +29,7 @@ def upgrade() -> None:
         sa.Column("id", UUIDType(binary=False), nullable=False),
         sa.Column("slug", sa.String(length=64), nullable=False),
         sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("description", StringEncryptedType(length=7040), nullable=True),
+        sa.Column("description", sa.String(length=5000), nullable=True),
         sa.Column("is_active", sa.Boolean(), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("updated", sa.DateTime(), nullable=False),
@@ -52,23 +53,20 @@ def upgrade() -> None:
         mysql_engine="InnoDB",
     )
     op.create_table(
-        "tracking_link",
+        "platform",
         sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("url_hash", sa.String(length=64), nullable=False),
-        sa.Column("url", sa.String(length=3116), nullable=False),
-        sa.Column("utm_campaign", sa.String(length=704), nullable=True),
-        sa.Column("utm_content", sa.String(length=704), nullable=True),
-        sa.Column("utm_medium", sa.String(length=704), nullable=True),
-        sa.Column("utm_source", sa.String(length=704), nullable=True),
-        sa.Column("utm_term", sa.String(length=704), nullable=True),
+        sa.Column("slug", sa.String(length=64), nullable=False),
+        sa.Column("title", sa.String(length=255), nullable=False),
+        sa.Column("description", sa.String(length=5000), nullable=True),
         sa.Column("is_active", sa.Boolean(), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("updated", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("url_hash"),
         mysql_engine="InnoDB",
     )
-    op.create_index(op.f("ix_tracking_link_id"), "tracking_link", ["id"], unique=True)
+    op.create_index(op.f("ix_platform_id"), "platform", ["id"], unique=True)
+    op.create_index(op.f("ix_platform_slug"), "platform", ["slug"], unique=True)
+    op.create_index(op.f("ix_platform_title"), "platform", ["title"], unique=True)
     op.create_table(
         "user",
         sa.Column("id", UUIDType(binary=False), nullable=False),
@@ -102,33 +100,33 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_website_id"), "website", ["id"], unique=True)
     op.create_table(
-        "bdx_feed",
+        "client_platform",
         sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("username", StringEncryptedType(length=704), nullable=False),
-        sa.Column("password", StringEncryptedType(length=704), nullable=False),
-        sa.Column("serverhost", StringEncryptedType(length=704), nullable=False),
-        sa.Column("xml_file_key", sa.String(length=32), nullable=False),
         sa.Column("client_id", UUIDType(binary=False), nullable=False),
+        sa.Column("platform_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("updated", sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(
             ["client_id"],
             ["client.id"],
         ),
-        sa.PrimaryKeyConstraint("id"),
-        mysql_engine="InnoDB",
+        sa.ForeignKeyConstraint(
+            ["platform_id"],
+            ["platform.id"],
+        ),
+        sa.PrimaryKeyConstraint("client_id", "platform_id"),
     )
-    op.create_index(op.f("ix_bdx_feed_id"), "bdx_feed", ["id"], unique=True)
     op.create_index(
-        op.f("ix_bdx_feed_xml_file_key"), "bdx_feed", ["xml_file_key"], unique=True
+        op.f("ix_client_platform_id"), "client_platform", ["id"], unique=True
     )
     op.create_table(
-        "client_report",
+        "client_styleguide",
         sa.Column("id", UUIDType(binary=False), nullable=False),
         sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("url", sa.String(length=2048), nullable=False),
-        sa.Column("description", StringEncryptedType(length=7040), nullable=True),
-        sa.Column("keys", LongText(), nullable=True),
+        sa.Column("description", sa.String(length=5000), nullable=True),
+        sa.Column("styleguide", JSONType(), nullable=True),
+        sa.Column("url", sa.String(length=2048), nullable=True),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
         sa.Column("client_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("updated", sa.DateTime(), nullable=False),
@@ -139,29 +137,11 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
         mysql_engine="InnoDB",
     )
-    op.create_index(op.f("ix_client_report_id"), "client_report", ["id"], unique=True)
     op.create_index(
-        op.f("ix_client_report_title"), "client_report", ["title"], unique=True
-    )
-    op.create_table(
-        "client_tracking_link",
-        sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("client_id", UUIDType(binary=False), nullable=False),
-        sa.Column("tracking_link_id", UUIDType(binary=False), nullable=False),
-        sa.Column("created", sa.DateTime(), nullable=False),
-        sa.Column("updated", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["client_id"],
-            ["client.id"],
-        ),
-        sa.ForeignKeyConstraint(
-            ["tracking_link_id"],
-            ["tracking_link.id"],
-        ),
-        sa.PrimaryKeyConstraint("client_id", "tracking_link_id"),
+        op.f("ix_client_styleguide_id"), "client_styleguide", ["id"], unique=True
     )
     op.create_index(
-        op.f("ix_client_tracking_link_id"), "client_tracking_link", ["id"], unique=True
+        op.f("ix_client_styleguide_title"), "client_styleguide", ["title"], unique=True
     )
     op.create_table(
         "client_website",
@@ -203,31 +183,31 @@ def upgrade() -> None:
         "go_a4",
         sa.Column("id", UUIDType(binary=False), nullable=False),
         sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("measurement_id", sa.String(length=16), nullable=False),
         sa.Column("property_id", sa.String(length=16), nullable=False),
+        sa.Column("platform_id", UUIDType(binary=False), nullable=False),
         sa.Column("client_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("updated", sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(
             ["client_id"],
             ["client.id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["platform_id"],
+            ["platform.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         mysql_engine="InnoDB",
     )
     op.create_index(op.f("ix_go_a4_id"), "go_a4", ["id"], unique=True)
-    op.create_index(
-        op.f("ix_go_a4_measurement_id"), "go_a4", ["measurement_id"], unique=True
-    )
     op.create_index(op.f("ix_go_a4_property_id"), "go_a4", ["property_id"], unique=True)
     op.create_index(op.f("ix_go_a4_title"), "go_a4", ["title"], unique=True)
     op.create_table(
-        "go_cloud",
+        "go_ads",
         sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("project_name", sa.String(length=255), nullable=False),
-        sa.Column("project_id", StringEncryptedType(length=472), nullable=False),
-        sa.Column("project_number", StringEncryptedType(length=472), nullable=False),
-        sa.Column("service_account", StringEncryptedType(length=704), nullable=True),
+        sa.Column("title", sa.String(length=255), nullable=False),
+        sa.Column("measurement_id", sa.String(length=16), nullable=False),
+        sa.Column("platform_id", UUIDType(binary=False), nullable=False),
         sa.Column("client_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("updated", sa.DateTime(), nullable=False),
@@ -235,20 +215,23 @@ def upgrade() -> None:
             ["client_id"],
             ["client.id"],
         ),
+        sa.ForeignKeyConstraint(
+            ["platform_id"],
+            ["platform.id"],
+        ),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("project_id"),
-        sa.UniqueConstraint("project_number"),
-        sa.UniqueConstraint("service_account"),
         mysql_engine="InnoDB",
     )
-    op.create_index(op.f("ix_go_cloud_id"), "go_cloud", ["id"], unique=True)
+    op.create_index(op.f("ix_go_ads_id"), "go_ads", ["id"], unique=True)
     op.create_index(
-        op.f("ix_go_cloud_project_name"), "go_cloud", ["project_name"], unique=True
+        op.f("ix_go_ads_measurement_id"), "go_ads", ["measurement_id"], unique=True
     )
+    op.create_index(op.f("ix_go_ads_title"), "go_ads", ["title"], unique=True)
     op.create_table(
         "go_sc",
         sa.Column("id", UUIDType(binary=False), nullable=False),
         sa.Column("title", sa.String(length=255), nullable=False),
+        sa.Column("platform_id", UUIDType(binary=False), nullable=False),
         sa.Column("client_id", UUIDType(binary=False), nullable=False),
         sa.Column("website_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
@@ -256,6 +239,10 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(
             ["client_id"],
             ["client.id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["platform_id"],
+            ["platform.id"],
         ),
         sa.ForeignKeyConstraint(
             ["website_id"],
@@ -301,29 +288,21 @@ def upgrade() -> None:
     op.create_index(op.f("ix_ipaddress_address"), "ipaddress", ["address"], unique=True)
     op.create_index(op.f("ix_ipaddress_id"), "ipaddress", ["id"], unique=True)
     op.create_table(
-        "note",
+        "tracking_link",
         sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("description", StringEncryptedType(length=7040), nullable=False),
-        sa.Column("is_active", StringEncryptedType(length=428), nullable=False),
-        sa.Column("user_id", UUIDType(binary=False), nullable=False),
-        sa.Column("created", sa.DateTime(), nullable=False),
-        sa.Column("updated", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["user_id"],
-            ["user.id"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        mysql_engine="InnoDB",
-    )
-    op.create_index(op.f("ix_note_id"), "note", ["id"], unique=True)
-    op.create_index(op.f("ix_note_title"), "note", ["title"], unique=True)
-    op.create_table(
-        "sharpspring",
-        sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("api_key", StringEncryptedType(length=704), nullable=False),
-        sa.Column("secret_key", StringEncryptedType(length=704), nullable=False),
-        sa.Column("client_id", UUIDType(binary=False), nullable=False),
+        sa.Column("url_hash", sa.String(length=64), nullable=False),
+        sa.Column("url", sa.String(length=2048), nullable=False),
+        sa.Column("scheme", sa.String(length=16), nullable=False),
+        sa.Column("domain", sa.String(length=255), nullable=False),
+        sa.Column("destination", sa.String(length=2048), nullable=False),
+        sa.Column("url_path", sa.String(length=2048), nullable=False),
+        sa.Column("utm_campaign", sa.String(length=255), nullable=True),
+        sa.Column("utm_medium", sa.String(length=255), nullable=True),
+        sa.Column("utm_source", sa.String(length=255), nullable=True),
+        sa.Column("utm_content", sa.String(length=255), nullable=True),
+        sa.Column("utm_term", sa.String(length=255), nullable=True),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("client_id", UUIDType(binary=False), nullable=True),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("updated", sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(
@@ -331,9 +310,10 @@ def upgrade() -> None:
             ["client.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("url_hash"),
         mysql_engine="InnoDB",
     )
-    op.create_index(op.f("ix_sharpspring_id"), "sharpspring", ["id"], unique=True)
+    op.create_index(op.f("ix_tracking_link_id"), "tracking_link", ["id"], unique=True)
     op.create_table(
         "user_client",
         sa.Column("id", UUIDType(binary=False), nullable=False),
@@ -353,9 +333,13 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_user_client_id"), "user_client", ["id"], unique=True)
     op.create_table(
-        "website_map",
+        "website_page",
         sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("url", sa.String(length=3116), nullable=False),
+        sa.Column("url", sa.String(length=2048), nullable=False),
+        sa.Column("status", sa.Integer(), nullable=False),
+        sa.Column("priority", sa.Float(), nullable=False),
+        sa.Column("last_modified", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("change_frequency", sa.String(length=704), nullable=True),
         sa.Column("is_active", sa.Boolean(), nullable=False),
         sa.Column("website_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
@@ -367,102 +351,44 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
         mysql_engine="InnoDB",
     )
-    op.create_index(op.f("ix_website_map_id"), "website_map", ["id"], unique=True)
-    op.create_table(
-        "client_report_note",
-        sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("client_report_id", UUIDType(binary=False), nullable=False),
-        sa.Column("note_id", UUIDType(binary=False), nullable=False),
-        sa.Column("created", sa.DateTime(), nullable=False),
-        sa.Column("updated", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["client_report_id"],
-            ["client_report.id"],
-        ),
-        sa.ForeignKeyConstraint(
-            ["note_id"],
-            ["note.id"],
-        ),
-        sa.PrimaryKeyConstraint("client_report_id", "note_id"),
-    )
+    op.create_index(op.f("ix_website_page_id"), "website_page", ["id"], unique=True)
     op.create_index(
-        op.f("ix_client_report_note_id"), "client_report_note", ["id"], unique=True
+        op.f("ix_website_page_website_id"), "website_page", ["website_id"], unique=False
     )
     op.create_table(
-        "data_bucket",
+        "gcft_snap",
         sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("bucket_name", sa.String(length=63), nullable=False),
-        sa.Column("bucket_prefix", sa.String(length=769), nullable=False),
-        sa.Column("description", StringEncryptedType(length=7040), nullable=True),
-        sa.Column("client_id", UUIDType(binary=False), nullable=False),
-        sa.Column("bdx_feed_id", UUIDType(binary=False), nullable=True),
-        sa.Column("gcft_id", UUIDType(binary=False), nullable=True),
+        sa.Column("snap_name", sa.String(length=255), nullable=False),
+        sa.Column("snap_slug", sa.String(length=16), nullable=False),
+        sa.Column("altitude", sa.Integer(), nullable=False),
+        sa.Column("geocoord_id", UUIDType(binary=False), nullable=False),
+        sa.Column("gcft_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("updated", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["bdx_feed_id"],
-            ["bdx_feed.id"],
-        ),
-        sa.ForeignKeyConstraint(
-            ["client_id"],
-            ["client.id"],
-        ),
         sa.ForeignKeyConstraint(
             ["gcft_id"],
             ["gcft.id"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("id"),
-    )
-    op.create_index(
-        op.f("ix_data_bucket_bucket_name"), "data_bucket", ["bucket_name"], unique=False
-    )
-    op.create_table(
-        "file_asset",
-        sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("file_name", sa.String(length=255), nullable=False),
-        sa.Column("mime_type", sa.String(length=1024), nullable=False),
-        sa.Column("size_kb", sa.Integer(), nullable=True),
-        sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("caption", sa.String(length=255), nullable=True),
-        sa.Column("user_id", UUIDType(binary=False), nullable=False),
-        sa.Column("client_id", UUIDType(binary=False), nullable=False),
-        sa.Column("geocoord_id", UUIDType(binary=False), nullable=True),
-        sa.Column("bdx_feed_id", UUIDType(binary=False), nullable=True),
-        sa.Column("created", sa.DateTime(), nullable=False),
-        sa.Column("updated", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["bdx_feed_id"],
-            ["bdx_feed.id"],
-        ),
-        sa.ForeignKeyConstraint(
-            ["client_id"],
-            ["client.id"],
         ),
         sa.ForeignKeyConstraint(
             ["geocoord_id"],
             ["geocoord.id"],
         ),
-        sa.ForeignKeyConstraint(
-            ["user_id"],
-            ["user.id"],
-        ),
         sa.PrimaryKeyConstraint("id"),
         mysql_engine="InnoDB",
     )
+    op.create_index(op.f("ix_gcft_snap_id"), "gcft_snap", ["id"], unique=True)
     op.create_index(
-        op.f("ix_file_asset_caption"), "file_asset", ["caption"], unique=False
+        op.f("ix_gcft_snap_snap_name"), "gcft_snap", ["snap_name"], unique=False
     )
     op.create_index(
-        op.f("ix_file_asset_file_name"), "file_asset", ["file_name"], unique=True
+        op.f("ix_gcft_snap_snap_slug"), "gcft_snap", ["snap_slug"], unique=True
     )
-    op.create_index(op.f("ix_file_asset_id"), "file_asset", ["id"], unique=True)
-    op.create_index(op.f("ix_file_asset_title"), "file_asset", ["title"], unique=False)
     op.create_table(
         "go_a4_stream",
         sa.Column("id", UUIDType(binary=False), nullable=False),
         sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("stream_id", sa.String(length=408), nullable=False),
+        sa.Column("stream_id", sa.String(length=16), nullable=False),
+        sa.Column("measurement_id", sa.String(length=16), nullable=False),
         sa.Column("ga4_id", UUIDType(binary=False), nullable=False),
         sa.Column("website_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
@@ -480,141 +406,16 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_go_a4_stream_id"), "go_a4_stream", ["id"], unique=True)
     op.create_index(
+        op.f("ix_go_a4_stream_measurement_id"),
+        "go_a4_stream",
+        ["measurement_id"],
+        unique=True,
+    )
+    op.create_index(
         op.f("ix_go_a4_stream_stream_id"), "go_a4_stream", ["stream_id"], unique=True
     )
     op.create_index(
         op.f("ix_go_a4_stream_title"), "go_a4_stream", ["title"], unique=True
-    )
-    op.create_table(
-        "go_sc_country",
-        sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("keys", LongText(), nullable=False),
-        sa.Column("clicks", sa.Integer(), nullable=False),
-        sa.Column("impressions", sa.Integer(), nullable=False),
-        sa.Column("ctr", sa.Float(precision=20), nullable=False),
-        sa.Column("position", sa.Float(precision=20), nullable=False),
-        sa.Column("date_start", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("date_end", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("gsc_id", UUIDType(binary=False), nullable=False),
-        sa.Column("created", sa.DateTime(), nullable=False),
-        sa.Column("updated", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["gsc_id"],
-            ["go_sc.id"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        mysql_engine="InnoDB",
-    )
-    op.create_index(op.f("ix_go_sc_country_id"), "go_sc_country", ["id"], unique=True)
-    op.create_index(
-        op.f("ix_go_sc_country_title"), "go_sc_country", ["title"], unique=False
-    )
-    op.create_table(
-        "go_sc_device",
-        sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("keys", LongText(), nullable=False),
-        sa.Column("clicks", sa.Integer(), nullable=False),
-        sa.Column("impressions", sa.Integer(), nullable=False),
-        sa.Column("ctr", sa.Float(precision=20), nullable=False),
-        sa.Column("position", sa.Float(precision=20), nullable=False),
-        sa.Column("date_start", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("date_end", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("gsc_id", UUIDType(binary=False), nullable=False),
-        sa.Column("created", sa.DateTime(), nullable=False),
-        sa.Column("updated", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["gsc_id"],
-            ["go_sc.id"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        mysql_engine="InnoDB",
-    )
-    op.create_index(op.f("ix_go_sc_device_id"), "go_sc_device", ["id"], unique=True)
-    op.create_index(
-        op.f("ix_go_sc_device_title"), "go_sc_device", ["title"], unique=False
-    )
-    op.create_table(
-        "go_sc_page",
-        sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("keys", LongText(), nullable=False),
-        sa.Column("clicks", sa.Integer(), nullable=False),
-        sa.Column("impressions", sa.Integer(), nullable=False),
-        sa.Column("ctr", sa.Float(precision=20), nullable=False),
-        sa.Column("position", sa.Float(precision=20), nullable=False),
-        sa.Column("date_start", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("date_end", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("gsc_id", UUIDType(binary=False), nullable=False),
-        sa.Column("created", sa.DateTime(), nullable=False),
-        sa.Column("updated", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["gsc_id"],
-            ["go_sc.id"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        mysql_engine="InnoDB",
-    )
-    op.create_index(op.f("ix_go_sc_page_id"), "go_sc_page", ["id"], unique=True)
-    op.create_index(op.f("ix_go_sc_page_title"), "go_sc_page", ["title"], unique=False)
-    op.create_table(
-        "go_sc_query",
-        sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("keys", LongText(), nullable=False),
-        sa.Column("clicks", sa.Integer(), nullable=False),
-        sa.Column("impressions", sa.Integer(), nullable=False),
-        sa.Column("ctr", sa.Float(precision=20), nullable=False),
-        sa.Column("position", sa.Float(precision=20), nullable=False),
-        sa.Column("date_start", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("date_end", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("gsc_id", UUIDType(binary=False), nullable=False),
-        sa.Column("created", sa.DateTime(), nullable=False),
-        sa.Column("updated", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["gsc_id"],
-            ["go_sc.id"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        mysql_engine="InnoDB",
-    )
-    op.create_index(op.f("ix_go_sc_query_id"), "go_sc_query", ["id"], unique=True)
-    op.create_index(
-        op.f("ix_go_sc_query_title"), "go_sc_query", ["title"], unique=False
-    )
-    op.create_table(
-        "go_sc_searchappearance",
-        sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("keys", LongText(), nullable=False),
-        sa.Column("clicks", sa.Integer(), nullable=False),
-        sa.Column("impressions", sa.Integer(), nullable=False),
-        sa.Column("ctr", sa.Float(precision=20), nullable=False),
-        sa.Column("position", sa.Float(precision=20), nullable=False),
-        sa.Column("date_start", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("date_end", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("gsc_id", UUIDType(binary=False), nullable=False),
-        sa.Column("created", sa.DateTime(), nullable=False),
-        sa.Column("updated", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["gsc_id"],
-            ["go_sc.id"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        mysql_engine="InnoDB",
-    )
-    op.create_index(
-        op.f("ix_go_sc_searchappearance_id"),
-        "go_sc_searchappearance",
-        ["id"],
-        unique=True,
-    )
-    op.create_index(
-        op.f("ix_go_sc_searchappearance_title"),
-        "go_sc_searchappearance",
-        ["title"],
-        unique=False,
     )
     op.create_table(
         "user_ipaddress",
@@ -635,69 +436,41 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_user_ipaddress_id"), "user_ipaddress", ["id"], unique=True)
     op.create_table(
-        "website_page",
+        "website_go_a4",
         sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("url", sa.String(length=3116), nullable=False),
-        sa.Column("status", sa.Integer(), nullable=False),
-        sa.Column("priority", sa.Float(), nullable=False),
-        sa.Column("last_modified", sa.DateTime(), nullable=True),
-        sa.Column("change_frequency", sa.String(length=704), nullable=True),
-        sa.Column("is_active", sa.Boolean(), nullable=False),
         sa.Column("website_id", UUIDType(binary=False), nullable=False),
-        sa.Column("sitemap_id", UUIDType(binary=False), nullable=True),
+        sa.Column("go_a4_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("updated", sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["sitemap_id"],
-            ["website_map.id"],
+            ["go_a4_id"],
+            ["go_a4.id"],
         ),
         sa.ForeignKeyConstraint(
             ["website_id"],
             ["website.id"],
         ),
-        sa.PrimaryKeyConstraint("id"),
-        mysql_engine="InnoDB",
+        sa.PrimaryKeyConstraint("website_id", "go_a4_id"),
     )
-    op.create_index(op.f("ix_website_page_id"), "website_page", ["id"], unique=True)
-    op.create_index(
-        op.f("ix_website_page_sitemap_id"), "website_page", ["sitemap_id"], unique=False
-    )
-    op.create_index(
-        op.f("ix_website_page_website_id"), "website_page", ["website_id"], unique=False
-    )
+    op.create_index(op.f("ix_website_go_a4_id"), "website_go_a4", ["id"], unique=True)
     op.create_table(
-        "gcft_snap",
+        "website_go_ads",
         sa.Column("id", UUIDType(binary=False), nullable=False),
-        sa.Column("snap_name", sa.String(length=255), nullable=False),
-        sa.Column("snap_slug", sa.String(length=16), nullable=False),
-        sa.Column("altitude", sa.Integer(), nullable=False),
-        sa.Column("file_asset_id", UUIDType(binary=False), nullable=True),
-        sa.Column("geocoord_id", UUIDType(binary=False), nullable=False),
-        sa.Column("gcft_id", UUIDType(binary=False), nullable=False),
+        sa.Column("website_id", UUIDType(binary=False), nullable=False),
+        sa.Column("go_ads_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
         sa.Column("updated", sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["file_asset_id"],
-            ["file_asset.id"],
+            ["go_ads_id"],
+            ["go_ads.id"],
         ),
         sa.ForeignKeyConstraint(
-            ["gcft_id"],
-            ["gcft.id"],
+            ["website_id"],
+            ["website.id"],
         ),
-        sa.ForeignKeyConstraint(
-            ["geocoord_id"],
-            ["geocoord.id"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        mysql_engine="InnoDB",
+        sa.PrimaryKeyConstraint("website_id", "go_ads_id"),
     )
-    op.create_index(op.f("ix_gcft_snap_id"), "gcft_snap", ["id"], unique=True)
-    op.create_index(
-        op.f("ix_gcft_snap_snap_name"), "gcft_snap", ["snap_name"], unique=False
-    )
-    op.create_index(
-        op.f("ix_gcft_snap_snap_slug"), "gcft_snap", ["snap_slug"], unique=True
-    )
+    op.create_index(op.f("ix_website_go_ads_id"), "website_go_ads", ["id"], unique=True)
     op.create_table(
         "website_keywordcorpus",
         sa.Column("id", UUIDType(binary=False), nullable=False),
@@ -728,30 +501,8 @@ def upgrade() -> None:
         "website_pagespeedinsights",
         sa.Column("id", UUIDType(binary=False), nullable=False),
         sa.Column("strategy", sa.String(length=408), nullable=False),
-        sa.Column("ps_weight", sa.Integer(), nullable=False),
-        sa.Column("ps_grade", sa.Float(), nullable=False),
-        sa.Column("ps_value", sa.String(length=408), nullable=False),
-        sa.Column("ps_unit", sa.String(length=408), nullable=False),
-        sa.Column("fcp_weight", sa.Integer(), nullable=False),
-        sa.Column("fcp_grade", sa.Float(), nullable=False),
-        sa.Column("fcp_value", sa.Float(), nullable=False),
-        sa.Column("fcp_unit", sa.String(length=408), nullable=False),
-        sa.Column("lcp_weight", sa.Integer(), nullable=False),
-        sa.Column("lcp_grade", sa.Float(), nullable=False),
-        sa.Column("lcp_value", sa.Float(), nullable=False),
-        sa.Column("lcp_unit", sa.String(length=408), nullable=False),
-        sa.Column("cls_weight", sa.Integer(), nullable=False),
-        sa.Column("cls_grade", sa.Float(), nullable=False),
-        sa.Column("cls_value", sa.Float(), nullable=False),
-        sa.Column("cls_unit", sa.String(length=408), nullable=False),
-        sa.Column("si_weight", sa.Integer(), nullable=False),
-        sa.Column("si_grade", sa.Float(), nullable=False),
-        sa.Column("si_value", sa.Float(), nullable=False),
-        sa.Column("si_unit", sa.String(length=408), nullable=False),
-        sa.Column("tbt_weight", sa.Integer(), nullable=False),
-        sa.Column("tbt_grade", sa.Float(), nullable=False),
-        sa.Column("tbt_value", sa.Float(), nullable=False),
-        sa.Column("tbt_unit", sa.String(length=408), nullable=False),
+        sa.Column("score_grade", sa.Float(), nullable=False),
+        sa.Column("grade_data", JSONType(), nullable=False),
         sa.Column("website_id", UUIDType(binary=False), nullable=False),
         sa.Column("page_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
@@ -778,7 +529,7 @@ def upgrade() -> None:
         sa.Column("id", UUIDType(binary=False), nullable=False),
         sa.Column("session_id", UUIDType(binary=False), nullable=False),
         sa.Column("active_seconds", sa.INTEGER(), nullable=False),
-        sa.Column("visit_date", sa.DateTime(), nullable=False),
+        sa.Column("visit_date", sa.DateTime(timezone=True), nullable=False),
         sa.Column("gcft_id", UUIDType(binary=False), nullable=False),
         sa.Column("snap_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
@@ -815,7 +566,7 @@ def upgrade() -> None:
         sa.Column("country", sa.String(length=704), nullable=True),
         sa.Column("state", sa.String(length=704), nullable=True),
         sa.Column("language", sa.String(length=704), nullable=True),
-        sa.Column("visit_date", sa.DateTime(), nullable=False),
+        sa.Column("visit_date", sa.DateTime(timezone=True), nullable=False),
         sa.Column("gcft_id", UUIDType(binary=False), nullable=False),
         sa.Column("snap_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
@@ -843,7 +594,7 @@ def upgrade() -> None:
         sa.Column("session_id", UUIDType(binary=False), nullable=False),
         sa.Column("reporting_id", sa.String(length=428), nullable=True),
         sa.Column("hotspot_type_name", sa.String(length=428), nullable=True),
-        sa.Column("hotspot_content", sa.BLOB(), nullable=True),
+        sa.Column("hotspot_content", LongText(), nullable=True),
         sa.Column("hotspot_icon_name", sa.String(length=704), nullable=True),
         sa.Column("hotspot_name", sa.String(length=704), nullable=True),
         sa.Column("hotspot_user_icon_name", sa.String(length=704), nullable=True),
@@ -852,8 +603,8 @@ def upgrade() -> None:
         sa.Column("icon_color", sa.String(length=428), nullable=True),
         sa.Column("bg_color", sa.String(length=428), nullable=True),
         sa.Column("text_color", sa.String(length=428), nullable=True),
-        sa.Column("hotspot_update_date", sa.DateTime(), nullable=False),
-        sa.Column("click_date", sa.DateTime(), nullable=False),
+        sa.Column("hotspot_update_date", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("click_date", sa.DateTime(timezone=True), nullable=False),
         sa.Column("gcft_id", UUIDType(binary=False), nullable=False),
         sa.Column("snap_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
@@ -885,7 +636,7 @@ def upgrade() -> None:
         sa.Column("utm_medium", sa.String(length=704), nullable=True),
         sa.Column("utm_source", sa.String(length=704), nullable=True),
         sa.Column("utm_term", sa.String(length=704), nullable=True),
-        sa.Column("visit_date", sa.DateTime(), nullable=False),
+        sa.Column("visit_date", sa.DateTime(timezone=True), nullable=False),
         sa.Column("gcft_id", UUIDType(binary=False), nullable=False),
         sa.Column("snap_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
@@ -911,7 +662,7 @@ def upgrade() -> None:
         "gcft_snap_view",
         sa.Column("id", UUIDType(binary=False), nullable=False),
         sa.Column("session_id", UUIDType(binary=False), nullable=False),
-        sa.Column("view_date", sa.DateTime(), nullable=False),
+        sa.Column("view_date", sa.DateTime(timezone=True), nullable=False),
         sa.Column("gcft_id", UUIDType(binary=False), nullable=False),
         sa.Column("snap_id", UUIDType(binary=False), nullable=False),
         sa.Column("created", sa.DateTime(), nullable=False),
@@ -959,69 +710,40 @@ def downgrade() -> None:
         op.f("ix_website_keywordcorpus_id"), table_name="website_keywordcorpus"
     )
     op.drop_table("website_keywordcorpus")
+    op.drop_index(op.f("ix_website_go_ads_id"), table_name="website_go_ads")
+    op.drop_table("website_go_ads")
+    op.drop_index(op.f("ix_website_go_a4_id"), table_name="website_go_a4")
+    op.drop_table("website_go_a4")
+    op.drop_index(op.f("ix_user_ipaddress_id"), table_name="user_ipaddress")
+    op.drop_table("user_ipaddress")
+    op.drop_index(op.f("ix_go_a4_stream_title"), table_name="go_a4_stream")
+    op.drop_index(op.f("ix_go_a4_stream_stream_id"), table_name="go_a4_stream")
+    op.drop_index(op.f("ix_go_a4_stream_measurement_id"), table_name="go_a4_stream")
+    op.drop_index(op.f("ix_go_a4_stream_id"), table_name="go_a4_stream")
+    op.drop_table("go_a4_stream")
     op.drop_index(op.f("ix_gcft_snap_snap_slug"), table_name="gcft_snap")
     op.drop_index(op.f("ix_gcft_snap_snap_name"), table_name="gcft_snap")
     op.drop_index(op.f("ix_gcft_snap_id"), table_name="gcft_snap")
     op.drop_table("gcft_snap")
     op.drop_index(op.f("ix_website_page_website_id"), table_name="website_page")
-    op.drop_index(op.f("ix_website_page_sitemap_id"), table_name="website_page")
     op.drop_index(op.f("ix_website_page_id"), table_name="website_page")
     op.drop_table("website_page")
-    op.drop_index(op.f("ix_user_ipaddress_id"), table_name="user_ipaddress")
-    op.drop_table("user_ipaddress")
-    op.drop_index(
-        op.f("ix_go_sc_searchappearance_title"), table_name="go_sc_searchappearance"
-    )
-    op.drop_index(
-        op.f("ix_go_sc_searchappearance_id"), table_name="go_sc_searchappearance"
-    )
-    op.drop_table("go_sc_searchappearance")
-    op.drop_index(op.f("ix_go_sc_query_title"), table_name="go_sc_query")
-    op.drop_index(op.f("ix_go_sc_query_id"), table_name="go_sc_query")
-    op.drop_table("go_sc_query")
-    op.drop_index(op.f("ix_go_sc_page_title"), table_name="go_sc_page")
-    op.drop_index(op.f("ix_go_sc_page_id"), table_name="go_sc_page")
-    op.drop_table("go_sc_page")
-    op.drop_index(op.f("ix_go_sc_device_title"), table_name="go_sc_device")
-    op.drop_index(op.f("ix_go_sc_device_id"), table_name="go_sc_device")
-    op.drop_table("go_sc_device")
-    op.drop_index(op.f("ix_go_sc_country_title"), table_name="go_sc_country")
-    op.drop_index(op.f("ix_go_sc_country_id"), table_name="go_sc_country")
-    op.drop_table("go_sc_country")
-    op.drop_index(op.f("ix_go_a4_stream_title"), table_name="go_a4_stream")
-    op.drop_index(op.f("ix_go_a4_stream_stream_id"), table_name="go_a4_stream")
-    op.drop_index(op.f("ix_go_a4_stream_id"), table_name="go_a4_stream")
-    op.drop_table("go_a4_stream")
-    op.drop_index(op.f("ix_file_asset_title"), table_name="file_asset")
-    op.drop_index(op.f("ix_file_asset_id"), table_name="file_asset")
-    op.drop_index(op.f("ix_file_asset_file_name"), table_name="file_asset")
-    op.drop_index(op.f("ix_file_asset_caption"), table_name="file_asset")
-    op.drop_table("file_asset")
-    op.drop_index(op.f("ix_data_bucket_bucket_name"), table_name="data_bucket")
-    op.drop_table("data_bucket")
-    op.drop_index(op.f("ix_client_report_note_id"), table_name="client_report_note")
-    op.drop_table("client_report_note")
-    op.drop_index(op.f("ix_website_map_id"), table_name="website_map")
-    op.drop_table("website_map")
     op.drop_index(op.f("ix_user_client_id"), table_name="user_client")
     op.drop_table("user_client")
-    op.drop_index(op.f("ix_sharpspring_id"), table_name="sharpspring")
-    op.drop_table("sharpspring")
-    op.drop_index(op.f("ix_note_title"), table_name="note")
-    op.drop_index(op.f("ix_note_id"), table_name="note")
-    op.drop_table("note")
+    op.drop_index(op.f("ix_tracking_link_id"), table_name="tracking_link")
+    op.drop_table("tracking_link")
     op.drop_index(op.f("ix_ipaddress_id"), table_name="ipaddress")
     op.drop_index(op.f("ix_ipaddress_address"), table_name="ipaddress")
     op.drop_table("ipaddress")
     op.drop_index(op.f("ix_go_sc_title"), table_name="go_sc")
     op.drop_index(op.f("ix_go_sc_id"), table_name="go_sc")
     op.drop_table("go_sc")
-    op.drop_index(op.f("ix_go_cloud_project_name"), table_name="go_cloud")
-    op.drop_index(op.f("ix_go_cloud_id"), table_name="go_cloud")
-    op.drop_table("go_cloud")
+    op.drop_index(op.f("ix_go_ads_title"), table_name="go_ads")
+    op.drop_index(op.f("ix_go_ads_measurement_id"), table_name="go_ads")
+    op.drop_index(op.f("ix_go_ads_id"), table_name="go_ads")
+    op.drop_table("go_ads")
     op.drop_index(op.f("ix_go_a4_title"), table_name="go_a4")
     op.drop_index(op.f("ix_go_a4_property_id"), table_name="go_a4")
-    op.drop_index(op.f("ix_go_a4_measurement_id"), table_name="go_a4")
     op.drop_index(op.f("ix_go_a4_id"), table_name="go_a4")
     op.drop_table("go_a4")
     op.drop_index(op.f("ix_gcft_id"), table_name="gcft")
@@ -1030,21 +752,20 @@ def downgrade() -> None:
     op.drop_table("gcft")
     op.drop_index(op.f("ix_client_website_id"), table_name="client_website")
     op.drop_table("client_website")
-    op.drop_index(op.f("ix_client_tracking_link_id"), table_name="client_tracking_link")
-    op.drop_table("client_tracking_link")
-    op.drop_index(op.f("ix_client_report_title"), table_name="client_report")
-    op.drop_index(op.f("ix_client_report_id"), table_name="client_report")
-    op.drop_table("client_report")
-    op.drop_index(op.f("ix_bdx_feed_xml_file_key"), table_name="bdx_feed")
-    op.drop_index(op.f("ix_bdx_feed_id"), table_name="bdx_feed")
-    op.drop_table("bdx_feed")
+    op.drop_index(op.f("ix_client_styleguide_title"), table_name="client_styleguide")
+    op.drop_index(op.f("ix_client_styleguide_id"), table_name="client_styleguide")
+    op.drop_table("client_styleguide")
+    op.drop_index(op.f("ix_client_platform_id"), table_name="client_platform")
+    op.drop_table("client_platform")
     op.drop_index(op.f("ix_website_id"), table_name="website")
     op.drop_table("website")
     op.drop_index(op.f("ix_user_username"), table_name="user")
     op.drop_index(op.f("ix_user_id"), table_name="user")
     op.drop_table("user")
-    op.drop_index(op.f("ix_tracking_link_id"), table_name="tracking_link")
-    op.drop_table("tracking_link")
+    op.drop_index(op.f("ix_platform_title"), table_name="platform")
+    op.drop_index(op.f("ix_platform_slug"), table_name="platform")
+    op.drop_index(op.f("ix_platform_id"), table_name="platform")
+    op.drop_table("platform")
     op.drop_table("geocoord")
     op.drop_index(op.f("ix_client_title"), table_name="client")
     op.drop_index(op.f("ix_client_slug"), table_name="client")

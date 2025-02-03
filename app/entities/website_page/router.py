@@ -4,11 +4,7 @@ from sqlalchemy import Select
 from app.api.get_query import CommonWebsitePageQueryParams, GetWebsitePageQueryParams
 from app.core.pagination import PageParams, Paginated
 from app.entities.api.dependencies import get_async_db
-from app.entities.api.errors import (
-    EntityAlreadyExists,
-    EntityNotFound,
-    EntityRelationshipNotFound,
-)
+from app.entities.api.errors import EntityAlreadyExists, EntityNotFound
 from app.entities.auth.dependencies import (
     Permission,
     PermissionController,
@@ -26,8 +22,6 @@ from app.entities.website_page.schemas import (
     WebsitePageUpdate,
 )
 from app.entities.website_pagespeedinsight.schemas import PSIDevice
-from app.entities.website_sitemap.crud import WebsiteMapRepository
-from app.entities.website_sitemap.model import WebsiteMap
 from app.services.permission import (
     AccessDelete,
     AccessRead,
@@ -81,13 +75,13 @@ async def website_page_list(
     if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
         select_stmt = web_pages_repo.query_list(
             website_id=query.website_id,
-            sitemap_id=query.sitemap_id,
+            is_active=query.is_active,
         )
     else:
         select_stmt = web_pages_repo.query_list(
             user_id=permissions.current_user.id,
             website_id=query.website_id,
-            sitemap_id=query.sitemap_id,
+            is_active=query.is_active,
         )
     response_out: Paginated[
         WebsitePageRead
@@ -157,23 +151,6 @@ async def website_page_create(
         raise EntityNotFound(
             entity_info="Website id = {}".format(website_page_in.website_id),
         )
-    # if sitemap id provided, only create page if the sitemap is assigned to the website
-    if website_page_in.sitemap_id is not None:
-        sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(
-            session=permissions.db
-        )
-        a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_fields(
-            {
-                "id": website_page_in.sitemap_id,
-                "website_id": website_page_in.website_id,
-            }
-        )
-        if a_sitemap is None:
-            raise EntityRelationshipNotFound(
-                entity_info="Website id = {}, WebsiteMap id = {}".format(
-                    website_page_in.website_id, website_page_in.sitemap_id
-                ),
-            )
     # create the website page
     website_page: WebsitePage = await web_pages_repo.create(website_page_in)
     response_out: WebsitePageRead = permissions.get_resource_response(
@@ -276,8 +253,14 @@ async def website_page_update(
             "website_id": website_page.website_id,
         }
 
-    # if website id provided, only update page if the website page exists
+    # if website id provided
     if website_page_in.website_id is not None:
+        # only update page if the user has access to the website
+        await permissions.verify_user_can_access(
+            privileges=[RoleAdmin, RoleManager],
+            website_id=website_page_in.website_id,
+        )
+        # only update page if the website page exists
         website_repo = WebsiteRepository(session=permissions.db)
         a_website: Website | None = await website_repo.read(website_page_in.website_id)
         if a_website is None:
@@ -294,28 +277,6 @@ async def website_page_update(
                 entity_info="WebsitePage url = {}, website_id = {}".format(
                     query_page["url"], query_page["website_id"]
                 )
-            )
-
-    # if sitemap id provided, only update page if the sitemap is
-    # assigned to the existing or the updated website id
-    if website_page_in.sitemap_id is not None:
-        query_sitemap = {
-            "id": website_page_in.sitemap_id,
-        }
-        query_sitemap["website_id"] = (
-            website_page_in.website_id or website_page.website_id
-        )
-        sitemap_repo: WebsiteMapRepository = WebsiteMapRepository(
-            session=permissions.db
-        )
-        a_sitemap: WebsiteMap | None = await sitemap_repo.exists_by_fields(
-            query_sitemap
-        )
-        if a_sitemap is None:
-            raise EntityRelationshipNotFound(
-                entity_info="Website id = {}, WebsiteMap id = {}".format(
-                    query_sitemap["website_id"], query_sitemap["id"]
-                ),
             )
 
     web_pages_repo = WebsitePageRepository(session=permissions.db)

@@ -31,7 +31,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from app.entities.website_keywordcorpus.model import WebsiteKeywordCorpus
     from app.entities.website_page.model import WebsitePage
     from app.entities.website_pagespeedinsight.model import WebsitePageSpeedInsights
-    from app.entities.website_sitemap.model import WebsiteMap
 
 
 class Website(Base, Timestamp):
@@ -57,9 +56,6 @@ class Website(Base, Timestamp):
     # relationships
     clients: Mapped[list["Client"]] = relationship(
         "Client", secondary="client_website", back_populates="websites"
-    )
-    sitemaps: Mapped[list["WebsiteMap"]] = relationship(
-        "WebsiteMap", back_populates="website", cascade="all, delete-orphan"
     )
     pages: Mapped[list["WebsitePage"]] = relationship(
         "WebsitePage", back_populates="website", cascade="all, delete-orphan"
