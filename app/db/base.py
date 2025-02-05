@@ -1,8 +1,4 @@
 from app.db.base_class import Base
-from app.entities.client.model import Client
-from app.entities.client_platform.model import ClientPlatform
-from app.entities.client_styleguide.model import ClientStyleguide
-from app.entities.client_website.model import ClientWebsite
 from app.entities.gcft.model import Gcft
 from app.entities.gcft_snap.model import GcftSnap
 from app.entities.gcft_snap_active_duration.model import GcftSnapActiveduration
@@ -16,11 +12,15 @@ from app.entities.go_ga4_stream.model import GoAnalytics4Stream
 from app.entities.go_gads.model import GoAdsProperty
 from app.entities.go_gsc.model import GoSearchConsoleProperty
 from app.entities.ipaddress.model import Ipaddress
+from app.entities.organization.model import Organization
+from app.entities.organization_platform.model import OrganizationPlatform
+from app.entities.organization_styleguide.model import OrganizationStyleguide
+from app.entities.organization_website.model import OrganizationWebsite
 from app.entities.platform.model import Platform
 from app.entities.tracking_link.model import TrackingLink
 from app.entities.user.model import User
-from app.entities.user_client.model import UserClient
 from app.entities.user_ipaddress.model import UserIpaddress
+from app.entities.user_organization.model import UserOrganization
 from app.entities.website.model import Website
 from app.entities.website_go_ga4.model import WebsiteGoAnalytics4Property
 from app.entities.website_go_gads.model import WebsiteGoAdsProperty
@@ -30,10 +30,10 @@ from app.entities.website_pagespeedinsight.model import WebsitePageSpeedInsights
 
 __all__: list[str] = [
     "Base",
-    "Client",
-    "ClientWebsite",
-    "ClientPlatform",
-    "ClientStyleguide",
+    "Organization",
+    "OrganizationWebsite",
+    "OrganizationPlatform",
+    "OrganizationStyleguide",
     "Gcft",
     "GcftSnap",
     "GcftSnapActiveduration",
@@ -50,7 +50,7 @@ __all__: list[str] = [
     "TrackingLink",
     "Platform",
     "User",
-    "UserClient",
+    "UserOrganization",
     "UserIpaddress",
     "Website",
     "WebsiteKeywordCorpus",

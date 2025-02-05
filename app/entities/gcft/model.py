@@ -10,13 +10,13 @@ from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_I
 from app.utilities import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
-    from app.entities.client.model import Client
     from app.entities.gcft_snap.model import GcftSnap
     from app.entities.gcft_snap_active_duration.model import GcftSnapActiveduration
     from app.entities.gcft_snap_browser_report.model import GcftSnapBrowserreport
     from app.entities.gcft_snap_hotspot_click.model import GcftSnapHotspotclick
     from app.entities.gcft_snap_traffic_source.model import GcftSnapTrafficsource
     from app.entities.gcft_snap_view.model import GcftSnapView
+    from app.entities.organization.model import Organization
 
 
 class Gcft(Base, Timestamp):
@@ -43,10 +43,12 @@ class Gcft(Base, Timestamp):
     )
 
     # relationships
-    client_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("client.id"), nullable=False
+    organization_id: Mapped[UUID4] = mapped_column(
+        UUIDType(binary=False), ForeignKey("organization.id"), nullable=False
     )
-    client: Mapped["Client"] = relationship("Client", back_populates="gcflytours")
+    organization: Mapped["Organization"] = relationship(
+        "Organization", back_populates="gcflytours"
+    )
     gcft_snaps: Mapped[list["GcftSnap"]] = relationship(
         "GcftSnap", back_populates="gcflytour"
     )
@@ -68,7 +70,5 @@ class Gcft(Base, Timestamp):
 
     # represenation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = (
-            f"Gcft({self.group_name}[{self.group_slug}], Client[{self.client_id}])"
-        )
+        repr_str: str = f"Gcft({self.group_name}[{self.group_slug}], Organization[{self.organization_id}])"
         return repr_str

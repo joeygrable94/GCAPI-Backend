@@ -11,7 +11,7 @@ from app.db.validators import (
 class GcftBase(BaseSchema):
     group_name: str
     group_slug: str
-    client_id: UUID4
+    organization_id: UUID4
 
     _validate_group_name = field_validator("group_name", mode="before")(
         validate_group_name_required
@@ -27,7 +27,7 @@ class GcftCreate(GcftBase):
 
 class GcftUpdate(BaseSchema):
     group_name: str | None = None
-    client_id: UUID4 | None = None
+    organization_id: UUID4 | None = None
 
     _validate_group_name = field_validator("group_name", mode="before")(
         validate_group_name_optional

@@ -7,11 +7,11 @@ from sqlalchemy import Select
 from app.core.pagination import PageParams, Paginated, paginated_query
 from app.db.base_class import Base
 from app.entities.api.dependencies import AsyncDatabaseSession
-from app.entities.client.crud import ClientRepository
+from app.entities.organization.crud import OrganizationRepository
 from app.entities.user.crud import UserRepository
 from app.entities.user.model import User
 from app.entities.user.schemas import UserUpdatePrivileges
-from app.entities.user_client.crud import UserClientRepository
+from app.entities.user_organization.crud import UserOrganizationRepository
 from app.services.permission import (
     ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_ACCESS,
     ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_ACTION,
@@ -37,8 +37,8 @@ class PermissionController(Generic[T]):
     current_user: User
     privileges: list[AclPrivilege]
     user_repo: UserRepository
-    client_repo: ClientRepository
-    user_client_repo: UserClientRepository
+    organization_repo: OrganizationRepository
+    user_organization_repo: UserOrganizationRepository
 
     def __init__(
         self,
@@ -50,14 +50,14 @@ class PermissionController(Generic[T]):
         self.current_user = user
         self.privileges = privileges
         self.user_repo = UserRepository(db)
-        self.client_repo = ClientRepository(db)
-        self.user_client_repo = UserClientRepository(db)
+        self.organization_repo = OrganizationRepository(db)
+        self.user_organization_repo = UserOrganizationRepository(db)
 
     async def verify_user_can_access(
         self,
         privileges: list[AclPrivilege] = [],
         user_id: UUID4 | None = None,
-        client_id: UUID4 | None = None,
+        organization_id: UUID4 | None = None,
         platform_id: UUID4 | None = None,
         website_id: UUID4 | None = None,
     ) -> bool:
@@ -75,7 +75,7 @@ class PermissionController(Generic[T]):
         users_access: int = await self.user_repo.verify_relationship(
             current_user_id=self.current_user.id,
             user_id=user_id,
-            client_id=client_id,
+            organization_id=organization_id,
             platform_id=platform_id,
             website_id=website_id,
         )

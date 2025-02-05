@@ -5,12 +5,11 @@ import pytest
 from fastapi import HTTPException, status
 
 from app.api.get_query import (
-    ClientIdQueryParams,
-    CommonClientPlatformQueryParams,
-    CommonClientTrackingLinkQueryParams,
-    CommonClientWebsiteQueryParams,
     CommonGoPropertyQueryParams,
-    CommonUserClientQueryParams,
+    CommonOrganizationPlatformQueryParams,
+    CommonOrganizationTrackingLinkQueryParams,
+    CommonOrganizationWebsiteQueryParams,
+    CommonUserOrganizationQueryParams,
     CommonUserQueryParams,
     CommonWebsiteKeywordCorpusQueryParams,
     CommonWebsitePageQueryParams,
@@ -20,6 +19,7 @@ from app.api.get_query import (
     DateStartQueryParams,
     DeviceStrategyQueryParams,
     Ga4QueryParams,
+    OrganizationIdQueryParams,
     PublicQueryParams,
     UserIdQueryParams,
     WebsiteIdQueryParams,
@@ -45,24 +45,24 @@ def test_user_id_query_params_invalid_id() -> None:
         assert e.detail == "Invalid user ID"
 
 
-def test_client_id_query_params_valid_id() -> None:
-    client_id = get_uuid_str()
-    query_params = ClientIdQueryParams(client_id=client_id)
-    assert query_params.client_id == uuid.UUID(client_id)
+def test_organization_id_query_params_valid_id() -> None:
+    organization_id = get_uuid_str()
+    query_params = OrganizationIdQueryParams(organization_id=organization_id)
+    assert query_params.organization_id == uuid.UUID(organization_id)
 
 
-def test_client_id_query_params_invalid_id() -> None:
-    client_id = "invalid-id"
+def test_organization_id_query_params_invalid_id() -> None:
+    organization_id = "invalid-id"
     try:
-        ClientIdQueryParams(client_id=client_id)
+        OrganizationIdQueryParams(organization_id=organization_id)
     except HTTPException as e:
         assert e.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert e.detail == "Invalid client ID"
+        assert e.detail == "Invalid organization ID"
 
 
-def test_client_id_query_params_none() -> None:
-    query_params = ClientIdQueryParams()
-    assert query_params.client_id is None
+def test_organization_id_query_params_none() -> None:
+    query_params = OrganizationIdQueryParams()
+    assert query_params.organization_id is None
 
 
 def test_website_id_query_params_valid_id() -> None:
@@ -164,35 +164,35 @@ def test_common_user_query_params() -> None:
     assert query_params.user_id == uuid.UUID(uuid_1)
 
 
-def test_common_client_query_params() -> None:
+def test_common_organization_query_params() -> None:
     uuid_1 = get_uuid_str()
-    query_params = CommonClientPlatformQueryParams(page=2, size=10, client_id=uuid_1)
+    query_params = CommonOrganizationPlatformQueryParams(page=2, size=10, organization_id=uuid_1)
     assert query_params.page == 2
     assert query_params.size == 10
-    assert query_params.client_id == uuid.UUID(uuid_1)
+    assert query_params.organization_id == uuid.UUID(uuid_1)
 
-    query_params = CommonClientPlatformQueryParams()
+    query_params = CommonOrganizationPlatformQueryParams()
     assert query_params.page == 1
     assert query_params.size == 1000
-    assert query_params.client_id is None
+    assert query_params.organization_id is None
 
-    query_params = CommonClientPlatformQueryParams(page=None, size=None, client_id=None)
+    query_params = CommonOrganizationPlatformQueryParams(page=None, size=None, organization_id=None)
     assert query_params.page == 1
     assert query_params.size == 1000
-    assert query_params.client_id is None
+    assert query_params.organization_id is None
 
 
-def test_common_client_tracking_link_query_params() -> None:
+def test_common_organization_tracking_link_query_params() -> None:
     uuid_1 = get_uuid_str()
     utm_cmpn = random_lower_string(16)
     utm_mdm = random_lower_string(16)
     utm_src = random_lower_string(16)
     utm_cnt = random_lower_string(16)
     utm_trm = random_lower_string(16)
-    query_params = CommonClientTrackingLinkQueryParams(
+    query_params = CommonOrganizationTrackingLinkQueryParams(
         page=2,
         size=10,
-        client_id=uuid_1,
+        organization_id=uuid_1,
         utm_campaign=utm_cmpn,
         utm_medium=utm_mdm,
         utm_source=utm_src,
@@ -202,7 +202,7 @@ def test_common_client_tracking_link_query_params() -> None:
     )
     assert query_params.page == 2
     assert query_params.size == 10
-    assert str(query_params.client_id) == uuid_1
+    assert str(query_params.organization_id) == uuid_1
     assert query_params.utm_campaign == utm_cmpn
     assert query_params.utm_medium == utm_mdm
     assert query_params.utm_source == utm_src
@@ -210,10 +210,10 @@ def test_common_client_tracking_link_query_params() -> None:
     assert query_params.utm_term == utm_trm
     assert query_params.is_active is True
 
-    query_params = CommonClientTrackingLinkQueryParams()
+    query_params = CommonOrganizationTrackingLinkQueryParams()
     assert query_params.page == 1
     assert query_params.size == 1000
-    assert query_params.client_id is None
+    assert query_params.organization_id is None
     assert query_params.utm_campaign is None
     assert query_params.utm_medium is None
     assert query_params.utm_source is None
@@ -222,33 +222,33 @@ def test_common_client_tracking_link_query_params() -> None:
     assert query_params.is_active is None
 
 
-def test_common_user_client_query_params() -> None:
+def test_common_user_organization_query_params() -> None:
     uuid_1 = get_uuid_str()
     uuid_2 = get_uuid_str()
-    query_params = CommonUserClientQueryParams(
+    query_params = CommonUserOrganizationQueryParams(
         page=2,
         size=10,
         user_id=uuid_1,
-        client_id=uuid_2,
+        organization_id=uuid_2,
     )
     assert query_params.page == 2
     assert query_params.size == 10
     assert query_params.user_id == uuid.UUID(uuid_1)
-    assert query_params.client_id == uuid.UUID(uuid_2)
+    assert query_params.organization_id == uuid.UUID(uuid_2)
 
-    query_params = CommonUserClientQueryParams()
+    query_params = CommonUserOrganizationQueryParams()
     assert query_params.page == 1
     assert query_params.size == 1000
     assert query_params.user_id is None
-    assert query_params.client_id is None
+    assert query_params.organization_id is None
 
-    query_params = CommonUserClientQueryParams(
-        page=None, size=None, user_id=None, client_id=None
+    query_params = CommonUserOrganizationQueryParams(
+        page=None, size=None, user_id=None, organization_id=None
     )
     assert query_params.page == 1
     assert query_params.size == 1000
     assert query_params.user_id is None
-    assert query_params.client_id is None
+    assert query_params.organization_id is None
 
 
 def test_common_website_query_params() -> None:
@@ -269,32 +269,32 @@ def test_common_website_query_params() -> None:
     assert query_params.website_id is None
 
 
-def test_common_client_website_query_params() -> None:
+def test_common_organization_website_query_params() -> None:
     uuid_1 = get_uuid_str()
     uuid_2 = get_uuid_str()
-    query_params = CommonClientWebsiteQueryParams(
+    query_params = CommonOrganizationWebsiteQueryParams(
         page=2,
         size=10,
-        client_id=uuid_1,
+        organization_id=uuid_1,
         website_id=uuid_2,
     )
     assert query_params.page == 2
     assert query_params.size == 10
-    assert query_params.client_id == uuid.UUID(uuid_1)
+    assert query_params.organization_id == uuid.UUID(uuid_1)
     assert query_params.website_id == uuid.UUID(uuid_2)
 
-    query_params = CommonClientWebsiteQueryParams()
+    query_params = CommonOrganizationWebsiteQueryParams()
     assert query_params.page == 1
     assert query_params.size == settings.api.query_limit_rows_default
-    assert query_params.client_id is None
+    assert query_params.organization_id is None
     assert query_params.website_id is None
 
-    query_params = CommonClientWebsiteQueryParams(
-        page=None, size=None, client_id=None, website_id=None
+    query_params = CommonOrganizationWebsiteQueryParams(
+        page=None, size=None, organization_id=None, website_id=None
     )
     assert query_params.page == 1
     assert query_params.size == settings.api.query_limit_rows_default
-    assert query_params.client_id is None
+    assert query_params.organization_id is None
     assert query_params.website_id is None
 
 

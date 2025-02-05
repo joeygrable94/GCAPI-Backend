@@ -15,10 +15,10 @@ from app.services.permission.constants import (
 )
 from app.utilities.uuids import get_uuid_str
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.clients import (
-    assign_user_to_client,
-    assign_website_to_client,
-    create_random_client,
+from tests.utils.organizations import (
+    assign_user_to_organization,
+    assign_website_to_organization,
+    create_random_organization,
 )
 from tests.utils.users import get_user_by_email
 from tests.utils.utils import random_lower_string
@@ -32,7 +32,7 @@ DUPLICATE_URL = "/%s/%s/" % (random_lower_string(16), random_lower_string(16))
 
 
 @pytest.mark.parametrize(
-    "client_user,assign_client",
+    "client_user,assign_organization",
     [
         ("admin_user", False),
         ("manager_user", False),
@@ -68,19 +68,19 @@ DUPLICATE_URL = "/%s/%s/" % (random_lower_string(16), random_lower_string(16))
 )
 async def test_update_website_page_as_user(
     client_user: Any,
-    assign_client: bool,
+    assign_organization: bool,
     client: AsyncClient,
     db_session: AsyncSession,
     request: pytest.FixtureRequest,
 ) -> None:
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
-    a_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
     a_website = await create_random_website(db_session)
     a_webpage = await create_random_website_page(db_session, a_website.id)
-    if assign_client:
+    if assign_organization:
         this_user = await get_user_by_email(db_session, current_user.email)
-        await assign_user_to_client(db_session, this_user.id, a_client.id)
-        await assign_website_to_client(db_session, a_website.id, a_client.id)
+        await assign_user_to_organization(db_session, this_user.id, a_organization.id)
+        await assign_website_to_organization(db_session, a_website.id, a_organization.id)
     update_dict = {"is_active": not a_webpage.is_active}
     response: Response = await client.patch(
         f"webpages/{a_webpage.id}",

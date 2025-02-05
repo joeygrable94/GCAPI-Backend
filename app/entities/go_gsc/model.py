@@ -29,7 +29,7 @@ from app.services.permission import (
 from app.utilities import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
-    from app.entities.client.model import Client
+    from app.entities.organization.model import Organization
     from app.entities.website.model import Website
 
 
@@ -56,10 +56,10 @@ class GoSearchConsoleProperty(Base, Timestamp):
     platform_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("platform.id"), nullable=False
     )
-    client_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("client.id"), nullable=False
+    organization_id: Mapped[UUID4] = mapped_column(
+        UUIDType(binary=False), ForeignKey("organization.id"), nullable=False
     )
-    client: Mapped["Client"] = relationship("Client", back_populates="gsc_properties")
+    organization: Mapped["Organization"] = relationship("Organization", back_populates="gsc_properties")
     website_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("website.id"), nullable=False
     )
@@ -99,5 +99,5 @@ class GoSearchConsoleProperty(Base, Timestamp):
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoSearchConsoleProperty({self.title}, Client[{self.client_id}] Website[{self.website_id}])"
+        repr_str: str = f"GoSearchConsoleProperty({self.title}, Organization[{self.organization_id}] Website[{self.website_id}])"
         return repr_str

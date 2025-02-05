@@ -63,17 +63,19 @@ class UserIdQueryParams:
         self.user_id: UUID4 | None = q_user_id
 
 
-class ClientIdQueryParams:
-    def __init__(self, client_id: str | None = None):
-        q_client_id: UUID4 | None
+class OrganizationIdQueryParams:
+    def __init__(self, organization_id: str | None = None):
+        q_organization_id: UUID4 | None
         try:
-            q_client_id = None if not client_id else parse_id(client_id)
+            q_organization_id = (
+                None if not organization_id else parse_id(organization_id)
+            )
         except InvalidID:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Invalid client ID",
+                detail="Invalid organization ID",
             )
-        self.client_id: UUID4 | None = q_client_id
+        self.organization_id: UUID4 | None = q_organization_id
 
 
 class WebsiteIdQueryParams:
@@ -208,8 +210,8 @@ class CommonUserQueryParams(PageParamsFromQuery, UserIdQueryParams):
 GetUserQueryParams = Annotated[CommonUserQueryParams, Depends()]
 
 
-class CommonClientPlatformQueryParams(
-    PageParamsFromQuery, ClientIdQueryParams, IsActiveQueryParams
+class CommonOrganizationPlatformQueryParams(
+    PageParamsFromQuery, OrganizationIdQueryParams, IsActiveQueryParams
 ):
     def __init__(
         self,
@@ -221,19 +223,21 @@ class CommonClientPlatformQueryParams(
                 le=settings.api.query_limit_rows_max,
             ),
         ] = settings.api.query_limit_rows_default,
-        client_id: Annotated[str | None, Query()] = None,
+        organization_id: Annotated[str | None, Query()] = None,
         is_active: Annotated[bool | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
-        ClientIdQueryParams.__init__(self, client_id)
+        OrganizationIdQueryParams.__init__(self, organization_id)
         IsActiveQueryParams.__init__(self, is_active)
 
 
-GetClientPlatformQueryParams = Annotated[CommonClientPlatformQueryParams, Depends()]
+GetOrganizationPlatformQueryParams = Annotated[
+    CommonOrganizationPlatformQueryParams, Depends()
+]
 
 
-class CommonUserClientQueryParams(
-    PageParamsFromQuery, UserIdQueryParams, ClientIdQueryParams
+class CommonUserOrganizationQueryParams(
+    PageParamsFromQuery, UserIdQueryParams, OrganizationIdQueryParams
 ):
     def __init__(
         self,
@@ -246,14 +250,14 @@ class CommonUserClientQueryParams(
             ),
         ] = settings.api.query_limit_rows_default,
         user_id: Annotated[str | None, Query()] = None,
-        client_id: Annotated[str | None, Query()] = None,
+        organization_id: Annotated[str | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         UserIdQueryParams.__init__(self, user_id)
-        ClientIdQueryParams.__init__(self, client_id)
+        OrganizationIdQueryParams.__init__(self, organization_id)
 
 
-GetUserClientQueryParams = Annotated[CommonUserClientQueryParams, Depends()]
+GetUserOrganizationQueryParams = Annotated[CommonUserOrganizationQueryParams, Depends()]
 
 
 class CommonWebsiteQueryParams(
@@ -277,11 +281,11 @@ class CommonWebsiteQueryParams(
         IsActiveQueryParams.__init__(self, is_active)
 
 
-GetWebsiteQueryParams = Annotated[CommonClientPlatformQueryParams, Depends()]
+GetWebsiteQueryParams = Annotated[CommonOrganizationPlatformQueryParams, Depends()]
 
 
-class CommonClientWebsiteQueryParams(
-    PageParamsFromQuery, ClientIdQueryParams, WebsiteIdQueryParams
+class CommonOrganizationWebsiteQueryParams(
+    PageParamsFromQuery, OrganizationIdQueryParams, WebsiteIdQueryParams
 ):
     def __init__(
         self,
@@ -293,15 +297,17 @@ class CommonClientWebsiteQueryParams(
                 le=settings.api.query_limit_rows_max,
             ),
         ] = settings.api.query_limit_rows_default,
-        client_id: Annotated[str | None, Query()] = None,
+        organization_id: Annotated[str | None, Query()] = None,
         website_id: Annotated[str | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
-        ClientIdQueryParams.__init__(self, client_id)
+        OrganizationIdQueryParams.__init__(self, organization_id)
         WebsiteIdQueryParams.__init__(self, website_id)
 
 
-GetClientWebsiteQueryParams = Annotated[CommonClientWebsiteQueryParams, Depends()]
+GetOrganizationWebsiteQueryParams = Annotated[
+    CommonOrganizationWebsiteQueryParams, Depends()
+]
 
 
 class CommonWebsitePageQueryParams(
@@ -390,7 +396,7 @@ GetWebsiteKeywordCorpusQueryParams = Annotated[
 class CommonGoPropertyQueryParams(
     PageParamsFromQuery,
     UserIdQueryParams,
-    ClientIdQueryParams,
+    OrganizationIdQueryParams,
     WebsiteIdQueryParams,
     Ga4QueryParams,
 ):
@@ -405,13 +411,13 @@ class CommonGoPropertyQueryParams(
             ),
         ] = settings.api.query_limit_rows_default,
         user_id: Annotated[str | None, Query()] = None,
-        client_id: Annotated[str | None, Query()] = None,
+        organization_id: Annotated[str | None, Query()] = None,
         website_id: Annotated[str | None, Query()] = None,
         ga4_id: Annotated[str | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
         UserIdQueryParams.__init__(self, user_id)
-        ClientIdQueryParams.__init__(self, client_id)
+        OrganizationIdQueryParams.__init__(self, organization_id)
         WebsiteIdQueryParams.__init__(self, website_id)
         Ga4QueryParams.__init__(self, ga4_id)
 
@@ -419,9 +425,9 @@ class CommonGoPropertyQueryParams(
 GetGoPropertyQueryParams = Annotated[CommonGoPropertyQueryParams, Depends()]
 
 
-class CommonClientTrackingLinkQueryParams(
+class CommonOrganizationTrackingLinkQueryParams(
     PageParamsFromQuery,
-    ClientIdQueryParams,
+    OrganizationIdQueryParams,
     TrackingLinkSchemeQueryParams,
     TrackingLinkDomainQueryParams,
     TrackingLinkDestinationQueryParams,
@@ -443,7 +449,7 @@ class CommonClientTrackingLinkQueryParams(
                 le=settings.api.query_limit_rows_max,
             ),
         ] = settings.api.query_limit_rows_default,
-        client_id: Annotated[str | None, Query()] = None,
+        organization_id: Annotated[str | None, Query()] = None,
         scheme: Annotated[
             str | None, Query(max_length=DB_STR_16BIT_MAXLEN_INPUT)
         ] = None,
@@ -474,7 +480,7 @@ class CommonClientTrackingLinkQueryParams(
         is_active: Annotated[bool | None, Query()] = None,
     ):
         PageParamsFromQuery.__init__(self, page, size)
-        ClientIdQueryParams.__init__(self, client_id)
+        OrganizationIdQueryParams.__init__(self, organization_id)
         TrackingLinkSchemeQueryParams.__init__(self, scheme)
         TrackingLinkDomainQueryParams.__init__(self, domain)
         TrackingLinkDestinationQueryParams.__init__(self, destination)
@@ -487,6 +493,6 @@ class CommonClientTrackingLinkQueryParams(
         IsActiveQueryParams.__init__(self, is_active)
 
 
-GetClientTrackingLinkQueryParams = Annotated[
-    CommonClientTrackingLinkQueryParams, Depends()
+GetOrganizationTrackingLinkQueryParams = Annotated[
+    CommonOrganizationTrackingLinkQueryParams, Depends()
 ]

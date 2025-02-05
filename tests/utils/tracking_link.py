@@ -40,7 +40,7 @@ def build_utm_link(
 
 async def create_random_tracking_link(
     db_session: AsyncSession,
-    client_id: UUID4,
+    organization_id: UUID4,
     is_active: bool | None = None,
     scheme: str | None = None,
     domain: str | None = None,
@@ -80,7 +80,7 @@ async def create_random_tracking_link(
             utm_content=utm_cnt,
             utm_term=utm_trm,
             is_active=link_active,
-            client_id=client_id,
+            organization_id=organization_id,
         )
     )
     return TrackingLinkRead.model_validate(tracking_link)

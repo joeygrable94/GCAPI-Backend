@@ -65,9 +65,9 @@ async def test_read_user_as_employee(
 ) -> None:
     user_repo = UserRepository(db_session)
     user_employee = await user_repo.read_by("email", auth_settings.first_employee)
-    user_client_a = await user_repo.read_by("email", auth_settings.first_client_a)
+    user_organization_a = await user_repo.read_by("email", auth_settings.first_client_a)
     assert user_employee is not None
-    assert user_client_a is not None
+    assert user_organization_a is not None
     # can access self
     response: Response = await client.get(
         f"users/{user_employee.id}",
@@ -80,7 +80,7 @@ async def test_read_user_as_employee(
     assert data_a.get("is_superuser") is None
     # cannot access other users
     response_b: Response = await client.get(
-        f"users/{user_client_a.id}",
+        f"users/{user_organization_a.id}",
         headers=employee_user.token_headers,
     )
     data_b: dict[str, Any] = response_b.json()

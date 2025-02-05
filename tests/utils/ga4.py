@@ -18,7 +18,7 @@ from tests.utils.utils import random_lower_string
 
 
 async def create_random_ga4_property(
-    db_session: AsyncSession, client_id: UUID4, platform_id: UUID4
+    db_session: AsyncSession, organization_id: UUID4, platform_id: UUID4
 ) -> GoAnalytics4PropertyRead:
     repo: GoAnalytics4PropertyRepository = GoAnalytics4PropertyRepository(
         session=db_session
@@ -27,7 +27,7 @@ async def create_random_ga4_property(
         schema=GoAnalytics4PropertyCreate(
             title=random_lower_string(chars=DB_STR_16BIT_MAXLEN_INPUT),
             property_id=random_lower_string(chars=DB_STR_16BIT_MAXLEN_INPUT),
-            client_id=client_id,
+            organization_id=organization_id,
             platform_id=platform_id,
         )
     )

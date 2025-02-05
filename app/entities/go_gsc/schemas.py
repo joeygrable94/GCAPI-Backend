@@ -6,7 +6,7 @@ from app.db.validators import validate_title_optional, validate_title_required
 
 class GoSearchConsolePropertyBase(BaseSchema):
     title: str
-    client_id: UUID4
+    organization_id: UUID4
     website_id: UUID4
     platform_id: UUID4
 
@@ -19,7 +19,7 @@ class GoSearchConsolePropertyCreate(GoSearchConsolePropertyBase):
 
 class RequestGoSearchConsolePropertyCreate(BaseSchema):
     title: str
-    client_id: UUID4
+    organization_id: UUID4
     website_id: UUID4
 
     _validate_title = field_validator("title", mode="before")(validate_title_required)
@@ -27,7 +27,7 @@ class RequestGoSearchConsolePropertyCreate(BaseSchema):
 
 class GoSearchConsolePropertyUpdate(BaseSchema):
     title: str | None = None
-    client_id: UUID4 | None = None
+    organization_id: UUID4 | None = None
     website_id: UUID4 | None = None
 
     _validate_title = field_validator("title", mode="before")(validate_title_optional)

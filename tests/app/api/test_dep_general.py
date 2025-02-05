@@ -2,8 +2,8 @@ import pytest
 from fastapi.exceptions import HTTPException
 
 from app.api.get_query import (
-    ClientIdQueryParams,
     DeviceStrategyQueryParams,
+    OrganizationIdQueryParams,
     WebsiteIdQueryParams,
     WebsitePageIdQueryParams,
 )
@@ -53,11 +53,11 @@ async def test_get_async_db() -> None:
         assert session is not None
 
 
-def test_query_client_id_param_validation() -> None:
+def test_query_organization_id_param_validation() -> None:
     with pytest.raises(HTTPException) as exc_info:
-        ClientIdQueryParams(client_id="invalid_id")
+        OrganizationIdQueryParams(organization_id="invalid_id")
     assert exc_info.value.status_code == 422
-    assert exc_info.value.detail == "Invalid client ID"
+    assert exc_info.value.detail == "Invalid organization ID"
 
 
 def test_query_website_id_param_validation() -> None:

@@ -11,7 +11,7 @@ from app.db.validators import (
 class GoAnalytics4PropertyBase(BaseSchema):
     title: str
     property_id: str
-    client_id: UUID4
+    organization_id: UUID4
     platform_id: UUID4
 
     _validate_title = field_validator("title", mode="before")(validate_title_required)
@@ -27,7 +27,7 @@ class GoAnalytics4PropertyCreate(GoAnalytics4PropertyBase):
 class RequestGoAnalytics4PropertyCreate(BaseSchema):
     title: str
     property_id: str
-    client_id: UUID4
+    organization_id: UUID4
 
     _validate_title = field_validator("title", mode="before")(validate_title_required)
     _validate_property_id = field_validator("property_id", mode="before")(
@@ -37,7 +37,7 @@ class RequestGoAnalytics4PropertyCreate(BaseSchema):
 
 class GoAnalytics4PropertyUpdate(BaseSchema):
     title: str | None = None
-    client_id: UUID4 | None = None
+    organization_id: UUID4 | None = None
 
     _validate_title = field_validator("title", mode="before")(validate_title_optional)
 

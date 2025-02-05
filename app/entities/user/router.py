@@ -13,7 +13,7 @@ from app.entities.auth.dependencies import (
     get_current_user,
     get_permission_controller,
 )
-from app.entities.ipaddress.dependencies import RequestClientIp, get_request_ip
+from app.entities.ipaddress.dependencies import RequestOrganizationIp, get_request_ip
 from app.entities.user.dependencies import get_user_or_404
 from app.entities.user.errors import UserAlreadyExists
 from app.entities.user.model import User
@@ -60,7 +60,7 @@ router: APIRouter = APIRouter()
 async def users_current(
     bg_tasks: BackgroundTasks,
     request: Request,
-    request_ip: RequestClientIp,
+    request_ip: RequestOrganizationIp,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> UserReadAsAdmin | UserReadAsManager | UserRead:
     """Retrieve the profile information about the currently active, verified user.
@@ -171,11 +171,11 @@ async def users_read(
     ------------
     `role=admin|manager` : all users
 
-    `role=client` : all users associated with the client through the `user_client`
+    `role=organization` : all users associated with the organization through the `user_organization`
         table
 
-    `role=employee` : all users associated with any clients they are associated with
-        through the `user_client`
+    `role=employee` : all users associated with any organizations they are associated with
+        through the `user_organization`
 
     `role=user` : only their own user profile id
 

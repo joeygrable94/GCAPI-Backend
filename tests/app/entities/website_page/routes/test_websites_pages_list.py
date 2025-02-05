@@ -5,10 +5,10 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.clients import (
-    assign_user_to_client,
-    assign_website_to_client,
-    create_random_client,
+from tests.utils.organizations import (
+    assign_user_to_organization,
+    assign_website_to_organization,
+    create_random_organization,
 )
 from tests.utils.users import get_user_by_email
 from tests.utils.website_pages import create_random_website_page
@@ -48,19 +48,19 @@ async def test_list_all_websites_as_user(
 ) -> None:
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
     this_user = await get_user_by_email(db_session, current_user.email)
-    a_client = await create_random_client(db_session)
-    b_client = await create_random_client(db_session)
-    c_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
+    c_organization = await create_random_organization(db_session)
     a_website = await create_random_website(db_session, is_secure=True)
     b_website = await create_random_website(db_session, is_secure=False)
     c_website = await create_random_website(db_session, is_secure=True)
     d_website = await create_random_website(db_session, is_secure=True)
     if assign_user:
-        await assign_user_to_client(db_session, this_user.id, a_client.id)
-    await assign_website_to_client(db_session, a_website.id, b_client.id)
-    await assign_website_to_client(db_session, b_website.id, a_client.id)
-    await assign_website_to_client(db_session, b_website.id, b_client.id)
-    await assign_website_to_client(db_session, c_website.id, c_client.id)
+        await assign_user_to_organization(db_session, this_user.id, a_organization.id)
+    await assign_website_to_organization(db_session, a_website.id, b_organization.id)
+    await assign_website_to_organization(db_session, b_website.id, a_organization.id)
+    await assign_website_to_organization(db_session, b_website.id, b_organization.id)
+    await assign_website_to_organization(db_session, c_website.id, c_organization.id)
     await create_random_website_page(db_session, a_website.id)
     await create_random_website_page(db_session, a_website.id)
     await create_random_website_page(db_session, a_website.id)

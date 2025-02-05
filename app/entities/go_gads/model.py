@@ -29,7 +29,7 @@ from app.services.permission import (
 from app.utilities import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
-    from app.entities.client.model import Client
+    from app.entities.organization.model import Organization
     from app.entities.website.model import Website
 
 
@@ -62,10 +62,10 @@ class GoAdsProperty(Base, Timestamp):
     platform_id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False), ForeignKey("platform.id"), nullable=False
     )
-    client_id: Mapped[UUID4] = mapped_column(
-        UUIDType(binary=False), ForeignKey("client.id"), nullable=False
+    organization_id: Mapped[UUID4] = mapped_column(
+        UUIDType(binary=False), ForeignKey("organization.id"), nullable=False
     )
-    client: Mapped["Client"] = relationship(back_populates="gads_accounts")
+    organization: Mapped["Organization"] = relationship(back_populates="gads_accounts")
     websites: Mapped[list["Website"]] = relationship(
         "Website", secondary="website_go_ads", back_populates="gads_accounts"
     )
@@ -102,5 +102,5 @@ class GoAdsProperty(Base, Timestamp):
 
     # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"GoAdsProperty(MeasurementID[{self.measurement_id}] for Client[{self.client_id}])"
+        repr_str: str = f"GoAdsProperty(MeasurementID[{self.measurement_id}] for Organization[{self.organization_id}])"
         return repr_str

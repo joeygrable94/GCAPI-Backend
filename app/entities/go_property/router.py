@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from httpx import Client
 from pydantic import UUID4
 from pydantic_core import ValidationError
 from sqlalchemy import Select
@@ -14,8 +13,6 @@ from app.entities.auth.dependencies import (
     get_current_user,
     get_permission_controller,
 )
-from app.entities.client.crud import ClientRepository
-from app.entities.client.errors import ClientNotFound
 from app.entities.go_ga4.crud import GoAnalytics4PropertyRepository
 from app.entities.go_ga4.model import GoAnalytics4Property
 from app.entities.go_ga4.schemas import (
@@ -50,6 +47,9 @@ from app.entities.go_gsc.schemas import (
 )
 from app.entities.go_property.dependencies import get_go_property_or_404
 from app.entities.go_property.schemas import GooglePlatformType
+from app.entities.organization.crud import OrganizationRepository
+from app.entities.organization.errors import OrganizationNotFound
+from app.entities.organization.model import Organization
 from app.entities.platform.crud import PlatformRepository
 from app.entities.website.crud import WebsiteRepository
 from app.entities.website.model import Website
@@ -102,12 +102,12 @@ async def go_property_list(
     ------------
     `role=admin|manager` : list all google properties
 
-    `role=employee` : list only google properties that belong to any clients
+    `role=employee` : list only google properties that belong to any organizations
         associated with the current user
 
     Returns:
     --------
-    `Paginated[GoAnalytics4PropertyRead | GoAnalytics4StreamRead | GoSearchConsolePropertyRead | GoAdsPropertyRead]` : a paginated list of clients, optionally filtered
+    `Paginated[GoAnalytics4PropertyRead | GoAnalytics4StreamRead | GoSearchConsolePropertyRead | GoAdsPropertyRead]` : a paginated list of organizations, optionally filtered
 
     """
     select_stmt: Select
@@ -115,11 +115,11 @@ async def go_property_list(
         ga4_repo = GoAnalytics4PropertyRepository(session=permissions.db)
         if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
             select_stmt = ga4_repo.query_list(
-                user_id=query.user_id, client_id=query.client_id
+                user_id=query.user_id, organization_id=query.organization_id
             )
         else:
             select_stmt = ga4_repo.query_list(
-                user_id=permissions.current_user.id, client_id=query.client_id
+                user_id=permissions.current_user.id, organization_id=query.organization_id
             )
         response_out: Paginated[
             GoAnalytics4PropertyRead
@@ -168,13 +168,13 @@ async def go_property_list(
         if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
             select_stmt = gads_repo.query_list(
                 user_id=query.user_id,
-                client_id=query.client_id,
+                organization_id=query.organization_id,
                 website_id=query.website_id,
             )
         else:
             select_stmt = gads_repo.query_list(
                 user_id=permissions.current_user.id,
-                client_id=query.client_id,
+                organization_id=query.organization_id,
                 website_id=query.website_id,
             )
         response_out: Paginated[
@@ -196,13 +196,13 @@ async def go_property_list(
         if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
             select_stmt = gsc_repo.query_list(
                 user_id=query.user_id,
-                client_id=query.client_id,
+                organization_id=query.organization_id,
                 website_id=query.website_id,
             )
         else:
             select_stmt = gsc_repo.query_list(
                 user_id=permissions.current_user.id,
-                client_id=query.client_id,
+                organization_id=query.organization_id,
                 website_id=query.website_id,
             )
         response_out: Paginated[
@@ -254,9 +254,9 @@ async def go_property_create(
 
     Permissions:
     ------------
-    `role=admin|manager` : create new google properties for all clients
+    `role=admin|manager` : create new google properties for all organizations
 
-    `role=user` : create only google properties that belong to any clients
+    `role=user` : create only google properties that belong to any organizations
         associated with the current user
 
     Returns:
@@ -266,7 +266,7 @@ async def go_property_create(
     """
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
-        client_id=go_property_in.client_id,
+        organization_id=go_property_in.organization_id,
     )
     new_go_property: (
         GoAnalytics4PropertyRead
@@ -296,12 +296,12 @@ async def go_property_create(
             raise EntityAlreadyExists(
                 entity_info=f"GoAnalytics4Property {go_property_in.title}"
             )
-        client_repo: ClientRepository = ClientRepository(session=permissions.db)
-        a_client: Client | None = await client_repo.read(
-            entry_id=go_property_in.client_id
+        organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
+        a_organization: Organization | None = await organization_repo.read(
+            entry_id=go_property_in.organization_id
         )
-        if a_client is None:
-            raise ClientNotFound()
+        if a_organization is None:
+            raise OrganizationNotFound()
         new_ga4 = await ga4_repo.create(
             GoAnalytics4PropertyCreate(
                 **go_property_in.model_dump(), platform_id=a_platform.id
@@ -380,9 +380,9 @@ async def go_property_create(
         a_go_sc_title = await go_sc_repo.read_by(
             field_name="title", field_value=go_property_in.title
         )
-        a_go_sc_client_website = await go_sc_repo.exists_by_fields(
+        a_go_sc_organization_website = await go_sc_repo.exists_by_fields(
             {
-                "client_id": go_property_in.client_id,
+                "organization_id": go_property_in.organization_id,
                 "website_id": go_property_in.website_id,
             }
         )
@@ -392,18 +392,18 @@ async def go_property_create(
                     go_property_in.title,
                 )
             )
-        if a_go_sc_client_website is not None:
+        if a_go_sc_organization_website is not None:
             raise EntityAlreadyExists(
                 entity_info="GoSearchConsoleProperty id = {}".format(
-                    a_go_sc_client_website.id,
+                    a_go_sc_organization_website.id,
                 )
             )
-        client_repo: ClientRepository = ClientRepository(session=permissions.db)
-        a_client: Client | None = await client_repo.read(
-            entry_id=go_property_in.client_id
+        organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
+        a_organization: Organization | None = await organization_repo.read(
+            entry_id=go_property_in.organization_id
         )
-        if a_client is None:
-            raise ClientNotFound()
+        if a_organization is None:
+            raise OrganizationNotFound()
         website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
         a_website: Website | None = await website_repo.read(
             entry_id=go_property_in.website_id
@@ -438,12 +438,12 @@ async def go_property_create(
             raise EntityAlreadyExists(
                 entity_info=f"GoAdsProperty({go_property_in.title})"
             )
-        client_repo: ClientRepository = ClientRepository(session=permissions.db)
-        a_client: Client | None = await client_repo.read(
-            entry_id=go_property_in.client_id
+        organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
+        a_organization: Organization | None = await organization_repo.read(
+            entry_id=go_property_in.organization_id
         )
-        if a_client is None:
-            raise ClientNotFound()
+        if a_organization is None:
+            raise OrganizationNotFound()
         new_goads = await goads_repo.create(
             GoAdsPropertyCreate(
                 **go_property_in.model_dump(), platform_id=a_platform.id
@@ -490,18 +490,18 @@ async def go_property_read(
     ------------
     `role=admin|manager` : read all google properties
 
-    `role=user` : only google properties associated with clients they are associated with via
-        `user_client` table, and associated with the client via `client_platform` table
+    `role=user` : only google properties associated with organizations they are associated with via
+        `user_organization` table, and associated with the organization via `organization_platform` table
 
     Returns:
     --------
     `GoAnalytics4PropertyRead | GoAnalytics4StreamRead | GoSearchConsolePropertyRead | GoAdsPropertyRead` : the google property account matching the platform_type and property_id
 
     """
-    if hasattr(go_property, "client_id"):
+    if hasattr(go_property, "organization_id"):
         await permissions.verify_user_can_access(
             privileges=[RoleAdmin, RoleManager],
-            client_id=go_property.client_id,
+            organization_id=go_property.organization_id,
         )
     if hasattr(go_property, "website_id"):
         await permissions.verify_user_can_access(
@@ -562,9 +562,9 @@ async def go_property_update(
 
     Permissions:
     ------------
-    `role=admin|manager` : update new google properties for all clients
+    `role=admin|manager` : update new google properties for all organizations
 
-    `role=user` : update only google properties that belong to any clients
+    `role=user` : update only google properties that belong to any organizations
         associated with the current user
 
     Returns:
@@ -586,7 +586,7 @@ async def go_property_update(
         go_property_in = GoAnalytics4PropertyUpdate.model_validate(go_property_in)
         await permissions.verify_user_can_access(
             privileges=[RoleAdmin, RoleManager],
-            client_id=go_property.client_id,
+            organization_id=go_property.organization_id,
         )
         ga4_repo = GoAnalytics4PropertyRepository(session=permissions.db)
         data = go_property_in.model_dump()
@@ -596,16 +596,16 @@ async def go_property_update(
             raise EntityAlreadyExists(
                 entity_info=f"GoAnalytics4property title = {go_property_in.title})"
             )
-        if hasattr(go_property_in, "client_id"):
-            client_repo: ClientRepository = ClientRepository(session=permissions.db)
-            a_client: Client | None = await client_repo.read(
-                entry_id=go_property_in.client_id
+        if hasattr(go_property_in, "organization_id"):
+            organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
+            a_organization: Organization | None = await organization_repo.read(
+                entry_id=go_property_in.organization_id
             )
-            if a_client is None:
-                raise ClientNotFound()
+            if a_organization is None:
+                raise OrganizationNotFound()
             await permissions.verify_user_can_access(
                 privileges=[RoleAdmin, RoleManager],
-                client_id=go_property_in.client_id,
+                organization_id=go_property_in.organization_id,
             )
         update_ga4 = await ga4_repo.update(entry=go_property, schema=go_property_in)
         update_go_property = GoAnalytics4PropertyRead.model_validate(update_ga4)
@@ -658,26 +658,26 @@ async def go_property_update(
         )
         await permissions.verify_user_can_access(
             privileges=[RoleAdmin, RoleManager],
-            client_id=go_property.client_id,
+            organization_id=go_property.organization_id,
         )
         go_sc_repo = GoSearchConsolePropertyRepository(session=permissions.db)
         data = go_property_in.model_dump()
         check_title: str = data.get("title", "")
-        check_client_id: UUID4 | None = data.get("client_id", None)
+        check_organization_id: UUID4 | None = data.get("organization_id", None)
         check_website_id: UUID4 | None = data.get("website_id", None)
         a_title = await go_sc_repo.read_by(field_name="title", field_value=check_title)
         if a_title is not None:
             raise EntityAlreadyExists(
                 entity_info=f"GoSearchConsoleProperty title = {go_property_in.title})"
             )
-        if check_client_id is not None:
-            client_repo: ClientRepository = ClientRepository(session=permissions.db)
-            a_client: Client | None = await client_repo.read(entry_id=check_client_id)
-            if a_client is None:
-                raise ClientNotFound()
+        if check_organization_id is not None:
+            organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
+            a_organization: Organization | None = await organization_repo.read(entry_id=check_organization_id)
+            if a_organization is None:
+                raise OrganizationNotFound()
             await permissions.verify_user_can_access(
                 privileges=[RoleAdmin, RoleManager],
-                client_id=check_client_id,
+                organization_id=check_organization_id,
             )
         if check_website_id is not None:
             website_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
@@ -702,7 +702,7 @@ async def go_property_update(
         go_property_in = GoAdsPropertyUpdate.model_validate(go_property_in)
         await permissions.verify_user_can_access(
             privileges=[RoleAdmin, RoleManager],
-            client_id=go_property.client_id,
+            organization_id=go_property.organization_id,
         )
         gads_repo = GoAdsPropertyRepository(session=permissions.db)
         data = go_property_in.model_dump()
@@ -712,16 +712,16 @@ async def go_property_update(
             raise EntityAlreadyExists(
                 entity_info=f"GoAdsProperty title = {go_property_in.title})"
             )
-        if hasattr(go_property_in, "client_id"):
-            client_repo: ClientRepository = ClientRepository(session=permissions.db)
-            a_client: Client | None = await client_repo.read(
-                entry_id=go_property_in.client_id
+        if hasattr(go_property_in, "organization_id"):
+            organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
+            a_organization: Organization | None = await organization_repo.read(
+                entry_id=go_property_in.organization_id
             )
-            if a_client is None:
-                raise ClientNotFound()
+            if a_organization is None:
+                raise OrganizationNotFound()
             await permissions.verify_user_can_access(
                 privileges=[RoleAdmin, RoleManager],
-                client_id=go_property_in.client_id,
+                organization_id=go_property_in.organization_id,
             )
         update_gads = await gads_repo.update(entry=go_property, schema=go_property_in)
         update_go_property = GoAdsPropertyRead.model_validate(update_gads)

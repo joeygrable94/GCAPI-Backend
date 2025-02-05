@@ -9,20 +9,20 @@ from app.core.logger import logger
 from app.db.base import Base
 from app.db.constants import DB_STR_USER_PICTURE_DEFAULT, MASTER_PLATFORM_INDEX
 from app.db.session import async_session, engine
-from app.entities.client.crud import ClientRepository
-from app.entities.client.model import Client
-from app.entities.client.schemas import ClientCreate
-from app.entities.client_platform.crud import ClientPlatformRepository
-from app.entities.client_platform.schemas import ClientPlatformCreate
+from app.entities.organization.crud import OrganizationRepository
+from app.entities.organization.model import Organization
+from app.entities.organization.schemas import OrganizationCreate
+from app.entities.organization_platform.crud import OrganizationPlatformRepository
+from app.entities.organization_platform.schemas import OrganizationPlatformCreate
 from app.entities.platform.crud import PlatformRepository
 from app.entities.platform.model import Platform
 from app.entities.platform.schemas import PlatformCreate
 from app.entities.user.crud import UserRepository
 from app.entities.user.model import User
 from app.entities.user.schemas import UserCreate
-from app.entities.user_client.crud import UserClientRepository
-from app.entities.user_client.model import UserClient
-from app.entities.user_client.schemas import UserClientCreate
+from app.entities.user_organization.crud import UserOrganizationRepository
+from app.entities.user_organization.model import UserOrganization
+from app.entities.user_organization.schemas import UserOrganizationCreate
 from app.services.auth0 import auth_settings
 from app.services.permission import AclPrivilege
 
@@ -83,24 +83,24 @@ async def create_init_data() -> int:  # pragma: no cover
     admin1: User | None
     manager1: User | None
     employee1: User | None
-    client_a: User | None
-    client_b: User | None
+    organization_a: User | None
+    organization_b: User | None
     user_verified: User | None
     user_unverified: User | None
-    c1: Client | None
-    c2: Client | None
-    c1_admin1: UserClient | None
-    c1_manager1: UserClient | None
-    c1_employee1: UserClient | None
+    c1: Organization | None
+    c2: Organization | None
+    c1_admin1: UserOrganization | None
+    c1_manager1: UserOrganization | None
+    c1_employee1: UserOrganization | None
     p_ga4: Platform | None
     p_gads: Platform | None
     p_spsp: Platform | None
     p_bdx: Platform | None
     user_repo: UserRepository
-    client_repo: ClientRepository
-    user_client_repo: UserClientRepository
+    organization_repo: OrganizationRepository
+    user_organization_repo: UserOrganizationRepository
     platform_repo: PlatformRepository
-    client_platform_repo: ClientPlatformRepository
+    organization_platform_repo: OrganizationPlatformRepository
 
     # first admin
     async with async_session() as session:
@@ -171,14 +171,14 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    # first users that is a business client
+    # first users that is a business organization
     async with async_session() as session:
         user_repo = UserRepository(session)
-        client_a = await user_repo.read_by(
+        organization_a = await user_repo.read_by(
             "auth_id", auth_settings.first_client_a_auth_id
         )
-        if not client_a:
-            client_a = await user_repo.create(
+        if not organization_a:
+            organization_a = await user_repo.create(
                 UserCreate(
                     username=auth_settings.first_client_a,
                     email=auth_settings.first_client_a,
@@ -187,16 +187,19 @@ async def create_init_data() -> int:  # pragma: no cover
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
-                    scopes=[AclPrivilege("role:user"), AclPrivilege("role:client")],
+                    scopes=[
+                        AclPrivilege("role:user"),
+                        AclPrivilege("role:organization"),
+                    ],
                 )
             )
             i_count += 1
 
-        client_b = await user_repo.read_by(
+        organization_b = await user_repo.read_by(
             "auth_id", auth_settings.first_client_b_auth_id
         )
-        if not client_b:
-            client_b = await user_repo.create(
+        if not organization_b:
+            organization_b = await user_repo.create(
                 UserCreate(
                     username=auth_settings.first_client_b,
                     email=auth_settings.first_client_b,
@@ -205,7 +208,10 @@ async def create_init_data() -> int:  # pragma: no cover
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
-                    scopes=[AclPrivilege("role:user"), AclPrivilege("role:client")],
+                    scopes=[
+                        AclPrivilege("role:user"),
+                        AclPrivilege("role:organization"),
+                    ],
                 )
             )
             i_count += 1
@@ -252,72 +258,72 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    # first clients
+    # first organizations
     async with async_session() as session:
-        client_repo = ClientRepository(session)
-        c1 = await client_repo.read_by("title", "Get Community, Inc.")
+        organization_repo = OrganizationRepository(session)
+        c1 = await organization_repo.read_by("title", "Get Community, Inc.")
         if not c1:
-            c1 = await client_repo.create(
-                ClientCreate(slug="gcinc", title="Get Community, Inc.")
+            c1 = await organization_repo.create(
+                OrganizationCreate(slug="gcinc", title="Get Community, Inc.")
             )
             i_count += 1
 
-        c2 = await client_repo.read_by("title", "The Grables")
+        c2 = await organization_repo.read_by("title", "The Grables")
         if not c2:
-            c2 = await client_repo.create(
-                ClientCreate(slug="grable", title="The Grables")
+            c2 = await organization_repo.create(
+                OrganizationCreate(slug="grable", title="The Grables")
             )
             i_count += 1
 
-    # assign users to client1: admin1
+    # assign users to organization1: admin1
     async with async_session() as session:
-        user_client_repo = UserClientRepository(session)
-        c1_admin1 = await user_client_repo.exists_by_fields(
-            {"user_id": admin1.id, "client_id": c1.id}
+        user_organization_repo = UserOrganizationRepository(session)
+        c1_admin1 = await user_organization_repo.exists_by_fields(
+            {"user_id": admin1.id, "organization_id": c1.id}
         )
         if not c1_admin1:
-            await user_client_repo.create(
-                UserClientCreate(user_id=admin1.id, client_id=c1.id)
+            await user_organization_repo.create(
+                UserOrganizationCreate(user_id=admin1.id, organization_id=c1.id)
             )
             i_count += 1
 
-        # assign users to client1: manager1
-        c1_manager1 = await user_client_repo.exists_by_fields(
-            {"user_id": manager1.id, "client_id": c1.id}
+        # assign users to organization1: manager1
+        c1_manager1 = await user_organization_repo.exists_by_fields(
+            {"user_id": manager1.id, "organization_id": c1.id}
         )
         if not c1_manager1:
-            await user_client_repo.create(
-                UserClientCreate(user_id=manager1.id, client_id=c1.id)
+            await user_organization_repo.create(
+                UserOrganizationCreate(user_id=manager1.id, organization_id=c1.id)
             )
             i_count += 1
 
-        # assign users to client1: employee1
-        c1_employee1 = await user_client_repo.exists_by_fields(
-            {"user_id": employee1.id, "client_id": c1.id}
+        # assign users to organization1: employee1
+        c1_employee1 = await user_organization_repo.exists_by_fields(
+            {"user_id": employee1.id, "organization_id": c1.id}
         )
         if not c1_employee1:
-            await user_client_repo.create(
-                UserClientCreate(user_id=employee1.id, client_id=c1.id)
+            await user_organization_repo.create(
+                UserOrganizationCreate(user_id=employee1.id, organization_id=c1.id)
             )
             i_count += 1
 
-        # assign users to client2: admin1
-        c1_admin1 = await user_client_repo.exists_by_fields(
-            {"user_id": admin1.id, "client_id": c2.id}
+        # assign users to organization2: admin1
+        c1_admin1 = await user_organization_repo.exists_by_fields(
+            {"user_id": admin1.id, "organization_id": c2.id}
         )
         if not c1_admin1:
-            await user_client_repo.create(
-                UserClientCreate(user_id=admin1.id, client_id=c2.id)
+            await user_organization_repo.create(
+                UserOrganizationCreate(user_id=admin1.id, organization_id=c2.id)
             )
             i_count += 1
 
-        # assign users to client2: manager1
-        c1_manager1 = await user_client_repo.exists_by_fields(
-            {"user_id": manager1.id, "client_id": c2.id}
+        # assign users to organization2: manager1
+        c1_manager1 = await user_organization_repo.exists_by_fields(
+            {"user_id": manager1.id, "organization_id": c2.id}
         )
         if not c1_manager1:
-            await user_client_repo.create(
-                UserClientCreate(user_id=manager1.id, client_id=c2.id)
+            await user_organization_repo.create(
+                UserOrganizationCreate(user_id=manager1.id, organization_id=c2.id)
             )
             i_count += 1
 
@@ -329,7 +335,7 @@ async def create_init_data() -> int:  # pragma: no cover
                 p1 = await platform_repo.create(PlatformCreate(slug=slug, title=title))
                 i_count += 1
 
-    # assign platforms to clients
+    # assign platforms to organizations
     async with async_session() as session:
         platform_repo = PlatformRepository(session)
         p_ga4 = await platform_repo.read_by(field_name="slug", field_value="ga4")
@@ -340,37 +346,37 @@ async def create_init_data() -> int:  # pragma: no cover
         assert p_spsp
         p_bdx = await platform_repo.read_by(field_name="slug", field_value="bdx")
         assert p_bdx
-        client_platform_repo = ClientPlatformRepository(session)
-        c1_p_ga4 = await client_platform_repo.exists_by_fields(
-            {"client_id": c1.id, "platform_id": p_ga4.id}
+        organization_platform_repo = OrganizationPlatformRepository(session)
+        c1_p_ga4 = await organization_platform_repo.exists_by_fields(
+            {"organization_id": c1.id, "platform_id": p_ga4.id}
         )
         if not c1_p_ga4:
-            await client_platform_repo.create(
-                ClientPlatformCreate(client_id=c1.id, platform_id=p_ga4.id)
+            await organization_platform_repo.create(
+                OrganizationPlatformCreate(organization_id=c1.id, platform_id=p_ga4.id)
             )
             i_count += 1
-        c1_p_gads = await client_platform_repo.exists_by_fields(
-            {"client_id": c1.id, "platform_id": p_gads.id}
+        c1_p_gads = await organization_platform_repo.exists_by_fields(
+            {"organization_id": c1.id, "platform_id": p_gads.id}
         )
         if not c1_p_gads:
-            await client_platform_repo.create(
-                ClientPlatformCreate(client_id=c1.id, platform_id=p_gads.id)
+            await organization_platform_repo.create(
+                OrganizationPlatformCreate(organization_id=c1.id, platform_id=p_gads.id)
             )
             i_count += 1
-        c1_p_spsp = await client_platform_repo.exists_by_fields(
-            {"client_id": c1.id, "platform_id": p_spsp.id}
+        c1_p_spsp = await organization_platform_repo.exists_by_fields(
+            {"organization_id": c1.id, "platform_id": p_spsp.id}
         )
         if not c1_p_spsp:
-            await client_platform_repo.create(
-                ClientPlatformCreate(client_id=c1.id, platform_id=p_spsp.id)
+            await organization_platform_repo.create(
+                OrganizationPlatformCreate(organization_id=c1.id, platform_id=p_spsp.id)
             )
             i_count += 1
-        c2_p_ga4 = await client_platform_repo.exists_by_fields(
-            {"client_id": c2.id, "platform_id": p_ga4.id}
+        c2_p_ga4 = await organization_platform_repo.exists_by_fields(
+            {"organization_id": c2.id, "platform_id": p_ga4.id}
         )
         if not c2_p_ga4:
-            await client_platform_repo.create(
-                ClientPlatformCreate(client_id=c2.id, platform_id=p_ga4.id)
+            await organization_platform_repo.create(
+                OrganizationPlatformCreate(organization_id=c2.id, platform_id=p_ga4.id)
             )
             i_count += 1
 

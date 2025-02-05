@@ -35,7 +35,7 @@ class RequestGoAnalytics4StreamCreate(BaseSchema):
     measurement_id: str
     ga4_id: UUID4
     website_id: UUID4
-    client_id: UUID4
+    organization_id: UUID4
 
     _validate_title = field_validator("title", mode="before")(validate_title_required)
     _validate_stream_id = field_validator("stream_id", mode="before")(

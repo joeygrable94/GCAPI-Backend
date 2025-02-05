@@ -12,4 +12,4 @@ def get_request_ip(request: Request) -> str:
     return "127.0.0.1"  # pragma: no cover
 
 
-RequestClientIp = Annotated[str, Depends(get_request_ip)]
+RequestOrganizationIp = Annotated[str, Depends(get_request_ip)]

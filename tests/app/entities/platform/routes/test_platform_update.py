@@ -10,10 +10,10 @@ from app.services.permission.constants import (
     ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_ACTION,
 )
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.clients import (
-    assign_platform_to_client,
-    assign_user_to_client,
-    create_random_client,
+from tests.utils.organizations import (
+    assign_platform_to_organization,
+    assign_user_to_organization,
+    create_random_organization,
 )
 from tests.utils.platform import create_random_platform
 from tests.utils.users import get_user_by_email
@@ -27,7 +27,7 @@ DUPLICATE_PLATFORM_TITLE = random_lower_string()
 
 
 # @pytest.mark.parametrize(
-#     "client_user,assign_client",
+#     "client_user,assign_organization",
 #     [
 #         ("admin_user", False),
 #         ("manager_user", False),
@@ -55,20 +55,20 @@ DUPLICATE_PLATFORM_TITLE = random_lower_string()
 # )
 # async def test_update_platform_as_user(
 #     client_user: Any,
-#     assign_client: bool,
+#     assign_organization: bool,
 #     client: AsyncClient,
 #     db_session: AsyncSession,
 #     request: pytest.FixtureRequest,
 # ) -> None:
 #     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
-#     a_client = await create_random_client(db_session)
+#     a_organization = await create_random_organization(db_session)
 #     a_platform = await create_random_platform(
 #         db_session, DUPLICATE_PLATFORM_SLUG, DUPLICATE_PLATFORM_TITLE
 #     )
-#     await assign_platform_to_client(db_session, a_client.id, a_platform.id)
-#     if assign_client:
+#     await assign_platform_to_organization(db_session, a_organization.id, a_platform.id)
+#     if assign_organization:
 #         this_user = await get_user_by_email(db_session, current_user.email)
-#         await assign_user_to_client(db_session, this_user.id, a_client.id)
+#         await assign_user_to_organization(db_session, this_user.id, a_organization.id)
 #     data_in: dict[str, Any] = {
 #         "slug": random_lower_string(),
 #         "title": random_lower_string(),
@@ -169,11 +169,11 @@ DUPLICATE_PLATFORM_TITLE = random_lower_string()
 #     db_session: AsyncSession,
 #     admin_user: ClientAuthorizedUser,
 # ) -> None:
-#     a_client = await create_random_client(db_session)
+#     a_organization = await create_random_organization(db_session)
 #     a_platform = await create_random_platform(
 #         db_session, DUPLICATE_PLATFORM_SLUG, DUPLICATE_PLATFORM_TITLE
 #     )
-#     await assign_platform_to_client(db_session, a_client.id, a_platform.id)
+#     await assign_platform_to_organization(db_session, a_organization.id, a_platform.id)
 #     data_in: dict[str, Any] = {
 #         "slug": slug,
 #         "title": title,
@@ -196,7 +196,7 @@ DUPLICATE_PLATFORM_TITLE = random_lower_string()
 
 
 @pytest.mark.parametrize(
-    "client_user,assign_client,title,desc,status_code,error_type,error_msg",
+    "client_user,assign_organization,title,desc,status_code,error_type,error_msg",
     [
         (
             "admin_user",
@@ -254,17 +254,17 @@ DUPLICATE_PLATFORM_TITLE = random_lower_string()
         ),
     ],
     ids=[
-        "admin user assigned to client with platform update description",
-        "manager user assigned to client with platform update description",
-        "manager user assigned to client with platform update description and title",
-        "client_a user assigned to client with platform update title action not allowed",
-        "client_a user not assigned to client not allowed to access platform update",
-        "manager user assigned to client with platform update title already exists",
+        "admin user assigned to organization with platform update description",
+        "manager user assigned to organization with platform update description",
+        "manager user assigned to organization with platform update description and title",
+        "client_a user assigned to organization with platform update title action not allowed",
+        "client_a user not assigned to organization not allowed to access platform update",
+        "manager user assigned to organization with platform update title already exists",
     ],
 )
 async def test_update_platform_as_user_field_restrictions(
     client_user: Any,
-    assign_client: bool,
+    assign_organization: bool,
     title: str | None,
     desc: str | None,
     status_code: int,
@@ -275,14 +275,14 @@ async def test_update_platform_as_user_field_restrictions(
     request: pytest.FixtureRequest,
 ) -> None:
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
-    a_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
     a_platform = await create_random_platform(
         db_session, DUPLICATE_PLATFORM_SLUG, DUPLICATE_PLATFORM_TITLE
     )
-    await assign_platform_to_client(db_session, a_client.id, a_platform.id)
-    if assign_client:
+    await assign_platform_to_organization(db_session, a_organization.id, a_platform.id)
+    if assign_organization:
         this_user = await get_user_by_email(db_session, current_user.email)
-        await assign_user_to_client(db_session, this_user.id, a_client.id)
+        await assign_user_to_organization(db_session, this_user.id, a_organization.id)
     data_in: dict[str, Any] = {}
     if title is not None:
         data_in["title"] = title

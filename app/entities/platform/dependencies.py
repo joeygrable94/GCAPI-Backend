@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from app.entities.api.dependencies import AsyncDatabaseSession
 from app.entities.api.errors import EntityNotFound
-from app.entities.client.crud import Client
+from app.entities.organization.crud import Organization
 from app.entities.platform.crud import Platform, PlatformRepository
 from app.utilities import parse_id
 
@@ -23,4 +23,4 @@ async def get_platform_404(
     return platform
 
 
-FetchPlatformOr404 = Annotated[Client, Depends(get_platform_404)]
+FetchPlatformOr404 = Annotated[Organization, Depends(get_platform_404)]

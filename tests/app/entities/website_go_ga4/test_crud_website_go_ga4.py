@@ -7,7 +7,7 @@ from app.entities.website_go_ga4.model import WebsiteGoAnalytics4Property
 pytestmark = pytest.mark.asyncio
 
 
-async def test_clients_websites_repo_table(db_session: AsyncSession) -> None:
+async def test_organization_websites_repo_table(db_session: AsyncSession) -> None:
     repo: WebsiteGoAnalytics4PropertyRepository = WebsiteGoAnalytics4PropertyRepository(
         session=db_session
     )

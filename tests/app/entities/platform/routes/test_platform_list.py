@@ -5,10 +5,10 @@ from httpx import AsyncClient, QueryParams, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.clients import (
-    assign_platform_to_client,
-    assign_user_to_client,
-    create_random_client,
+from tests.utils.organizations import (
+    assign_platform_to_organization,
+    assign_user_to_organization,
+    create_random_organization,
 )
 from tests.utils.platform import create_random_platform, get_platform_by_slug
 from tests.utils.users import get_user_by_email
@@ -17,7 +17,7 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize(
-    "client_user,query_item,assign_client,item_count",
+    "client_user,query_item,assign_organization,item_count",
     [
         ("admin_user", False, False, 10),
         ("admin_user", True, False, 3),
@@ -31,7 +31,7 @@ pytestmark = pytest.mark.asyncio
     ],
     ids=[
         "admin user list all platforms",
-        "admin user list platforms by client_id",
+        "admin user list platforms by organization_id",
         "admin user list all inactive platforms",
         "manager list all platforms",
         "manager list all inactive platforms",
@@ -44,7 +44,7 @@ pytestmark = pytest.mark.asyncio
 async def test_list_all_platform_as_superuser(
     client_user: Any,
     query_item: bool | dict,
-    assign_client: bool,
+    assign_organization: bool,
     item_count: int,
     client: AsyncClient,
     db_session: AsyncSession,
@@ -56,23 +56,23 @@ async def test_list_all_platform_as_superuser(
     c_platform = await create_random_platform(db_session, is_active=False)
     d_platform = await get_platform_by_slug(db_session, "ga4")
     e_platform = await create_random_platform(db_session, is_active=False)
-    a_client = await create_random_client(db_session)
-    b_client = await create_random_client(db_session)
-    await assign_platform_to_client(db_session, a_platform.id, a_client.id)
-    await assign_platform_to_client(db_session, b_platform.id, a_client.id)
-    await assign_platform_to_client(db_session, c_platform.id, a_client.id)
-    await assign_platform_to_client(db_session, d_platform.id, b_client.id)
-    await assign_platform_to_client(db_session, e_platform.id, b_client.id)
-    if assign_client:
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
+    await assign_platform_to_organization(db_session, a_platform.id, a_organization.id)
+    await assign_platform_to_organization(db_session, b_platform.id, a_organization.id)
+    await assign_platform_to_organization(db_session, c_platform.id, a_organization.id)
+    await assign_platform_to_organization(db_session, d_platform.id, b_organization.id)
+    await assign_platform_to_organization(db_session, e_platform.id, b_organization.id)
+    if assign_organization:
         this_user = await get_user_by_email(db_session, current_user.email)
-        await assign_user_to_client(db_session, this_user.id, a_client.id)
+        await assign_user_to_organization(db_session, this_user.id, a_organization.id)
 
     response: Response
     query_params: QueryParams | None = None
     if isinstance(query_item, dict):
         query_params = QueryParams(**query_item)
     elif query_item:
-        query_params = QueryParams(client_id=a_client.id)
+        query_params = QueryParams(organization_id=a_organization.id)
     response = await client.get(
         "platforms/",
         headers=current_user.token_headers,

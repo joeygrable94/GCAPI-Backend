@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import Select
 
 from app.api.get_query import (
-    CommonClientPlatformQueryParams,
-    GetClientPlatformQueryParams,
+    CommonOrganizationPlatformQueryParams,
+    GetOrganizationPlatformQueryParams,
 )
 from app.core.pagination import PageParams, Paginated
 from app.entities.api.dependencies import get_async_db
@@ -48,7 +48,7 @@ router: APIRouter = APIRouter()
     "/",
     name="platform:list",
     dependencies=[
-        Depends(CommonClientPlatformQueryParams),
+        Depends(CommonOrganizationPlatformQueryParams),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
@@ -56,7 +56,7 @@ router: APIRouter = APIRouter()
     response_model=Paginated[PlatformRead],
 )
 async def platform_list(
-    query: GetClientPlatformQueryParams,
+    query: GetOrganizationPlatformQueryParams,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> Paginated[PlatformRead]:
     """Retrieve a paginated list of platforms.
@@ -65,8 +65,8 @@ async def platform_list(
     ------------
     `role=admin|manager` : all platforms
 
-    `role=user` : only platforms associated with the user via `user_client`
-        table and associated with the client via `client_platform` table
+    `role=user` : only platforms associated with the user via `user_organization`
+        table and associated with the organization via `organization_platform` table
 
     Returns:
     --------
@@ -78,12 +78,12 @@ async def platform_list(
     select_stmt: Select
     if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
         select_stmt = platform_repo.query_list(
-            client_id=query.client_id, is_active=query.is_active
+            organization_id=query.organization_id, is_active=query.is_active
         )
     else:
         select_stmt = platform_repo.query_list(
             user_id=permissions.current_user.id,
-            client_id=query.client_id,
+            organization_id=query.organization_id,
             is_active=query.is_active,
         )
     response_out: Paginated[
@@ -120,7 +120,7 @@ async def platform_create(
 
     Permissions:
     ------------
-    `role=admin|manager` : create new platforms for all clients
+    `role=admin|manager` : create new platforms for all organizations
 
     Returns:
     --------
@@ -178,8 +178,8 @@ async def platform_read(
     ------------
     `role=admin|manager` : read all platforms
 
-    `role=user` : only platforms associated with clients they are associated with via
-        `user_client` table, and associated with the client via `client_platform` table
+    `role=user` : only platforms associated with organizations they are associated with via
+        `user_organization` table, and associated with the organization via `organization_platform` table
 
     Returns:
     --------
@@ -225,8 +225,8 @@ async def platform_update(
 
     `role=manager` : all users, limited fields
 
-    `role=user` : limited fields, only platforms associated with clients they are associated with via
-        `user_client` table, and associated with the client via `client_platform` table
+    `role=user` : limited fields, only platforms associated with organizations they are associated with via
+        `user_organization` table, and associated with the organization via `organization_platform` table
 
     Returns:
     --------

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.entities.client.router import router as client_router
 from app.entities.go_property.router import router as go_property_router
+from app.entities.organization.router import router as organization_router
 from app.entities.platform.router import router as platform_router
 from app.entities.public.router import router as public_router
 from app.entities.security.router import router as security_router
@@ -38,11 +38,11 @@ router_v1.include_router(
     tags=["Users"],
 )
 
-# Client routes
+# Organization routes
 router_v1.include_router(
-    client_router,
-    prefix="/clients",
-    tags=["Clients"],
+    organization_router,
+    prefix="/organizations",
+    tags=["Organizations"],
 )
 
 # Platforms routes

@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import Select
 
 from app.api.get_query import (
-    CommonClientWebsiteQueryParams,
-    GetClientWebsiteQueryParams,
+    CommonOrganizationWebsiteQueryParams,
+    GetOrganizationWebsiteQueryParams,
 )
 from app.core.pagination import PageParams, Paginated
 from app.entities.api.dependencies import get_async_db
@@ -35,7 +35,7 @@ router: APIRouter = APIRouter()
     "/",
     name="websites:list",
     dependencies=[
-        Depends(CommonClientWebsiteQueryParams),
+        Depends(CommonOrganizationWebsiteQueryParams),
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
@@ -43,7 +43,7 @@ router: APIRouter = APIRouter()
     response_model=Paginated[WebsiteRead],
 )
 async def website_list(
-    query: GetClientWebsiteQueryParams,
+    query: GetOrganizationWebsiteQueryParams,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> Paginated[WebsiteRead]:
     """Retrieve a paginated list of websites.
@@ -52,8 +52,8 @@ async def website_list(
     ------------
     `role=admin|manager` : all websites
 
-    `role=user` : only websites associated with the clients via `client_website`
-        that belong to the user via `user_client` table
+    `role=user` : only websites associated with the organizations via `organization_website`
+        that belong to the user via `user_organization` table
 
     Returns:
     --------
@@ -63,10 +63,10 @@ async def website_list(
     websites_repo: WebsiteRepository = WebsiteRepository(session=permissions.db)
     select_stmt: Select
     if RoleAdmin in permissions.privileges or RoleManager in permissions.privileges:
-        select_stmt = websites_repo.query_list(client_id=query.client_id)
+        select_stmt = websites_repo.query_list(organization_id=query.organization_id)
     else:
         select_stmt = websites_repo.query_list(
-            client_id=query.client_id, user_id=permissions.current_user.id
+            organization_id=query.organization_id, user_id=permissions.current_user.id
         )
     response_out: Paginated[
         WebsiteRead
@@ -151,10 +151,10 @@ async def website_read(
     ------------
     `role=admin|manager` : all websites
 
-    `role=client` : only websites associated with the client via `client_website` table
+    `role=organization` : only websites associated with the organization via `organization_website` table
 
-    `role=user` : only websites associated with clients they are associated with via
-        `user_client` table, and associated with the client via `client_website` table
+    `role=user` : only websites associated with organizations they are associated with via
+        `user_organization` table, and associated with the organization via `organization_website` table
 
     Returns:
     --------
@@ -198,10 +198,10 @@ async def website_update(
     ------------
     `role=admin|manager` : all websites
 
-    `role=client` : only websites associated with the client via `client_website` table
+    `role=organization` : only websites associated with the organization via `organization_website` table
 
-    `role=user` : only websites associated with clients they are associated with via
-        `user_client` table, and associated with the client via `client_website` table
+    `role=user` : only websites associated with organizations they are associated with via
+        `user_organization` table, and associated with the organization via `organization_website` table
 
     Returns:
     --------
@@ -266,10 +266,10 @@ async def website_delete(
     ------------
     `role=admin|manager` : all websites
 
-    `role=client` : only websites associated with the client via `client_website` table
+    `role=organization` : only websites associated with the organization via `organization_website` table
 
-    `role=user` : only websites associated with clients they are associated with via
-        `user_client` table, and associated with the client via `client_website` table
+    `role=user` : only websites associated with organizations they are associated with via
+        `user_organization` table, and associated with the organization via `organization_website` table
 
     Returns:
     --------

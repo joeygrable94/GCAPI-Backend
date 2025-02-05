@@ -8,7 +8,10 @@ from app.services.permission.constants import (
     ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_ACCESS,
 )
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.clients import assign_user_to_client, create_random_client
+from tests.utils.organizations import (
+    assign_user_to_organization,
+    create_random_organization,
+)
 from tests.utils.tracking_link import create_random_tracking_link
 from tests.utils.users import get_user_by_email
 
@@ -16,7 +19,7 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize(
-    "client_user,assign_client,assign_wrong_client,status_code",
+    "client_user,assign_organization,assign_wrong_client,status_code",
     [
         ("admin_user", False, False, 200),
         pytest.param(
@@ -81,7 +84,7 @@ pytestmark = pytest.mark.asyncio
 )
 async def test_delete_tracking_link_as_user(
     client_user: Any,
-    assign_client: bool,
+    assign_organization: bool,
     assign_wrong_client: bool,
     status_code: int,
     client: AsyncClient,
@@ -89,15 +92,15 @@ async def test_delete_tracking_link_as_user(
     request: pytest.FixtureRequest,
 ) -> None:
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
-    client_a = await create_random_client(db_session)
-    client_b = await create_random_client(db_session)
-    await create_random_tracking_link(db_session, client_a.id)
-    a_link = await create_random_tracking_link(db_session, client_a.id)
-    b_link = await create_random_tracking_link(db_session, client_b.id)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
+    await create_random_tracking_link(db_session, a_organization.id)
+    a_link = await create_random_tracking_link(db_session, a_organization.id)
+    b_link = await create_random_tracking_link(db_session, b_organization.id)
     delete_link_id = a_link.id
-    if assign_client:
+    if assign_organization:
         this_user = await get_user_by_email(db_session, current_user.email)
-        await assign_user_to_client(db_session, this_user.id, client_a.id)
+        await assign_user_to_organization(db_session, this_user.id, a_organization.id)
         if assign_wrong_client:
             delete_link_id = b_link.id
     response: Response = await client.delete(

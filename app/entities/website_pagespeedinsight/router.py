@@ -64,12 +64,12 @@ async def website_page_speed_insights_list(
     ------------
     `role=admin|manager` : all website page speed insights
 
-    `role=client` : only website page speed insights with a website_id associated with
-        the client via `client_website` table
+    `role=organization` : only website page speed insights with a website_id associated with
+        the organization via `organization_website` table
 
     `role=employee` : only website page speed insights with a website_id associated
-        with a client's website via `client_website` table, associated with the user
-        via `user_client`
+        with a organization's website via `organization_website` table, associated with the user
+        via `user_organization`
 
     Returns:
     --------
@@ -129,12 +129,12 @@ async def website_page_speed_insights_create(
     ------------
     `role=admin|manager` : create a new website page speed insights
 
-    `role=client` : create a new website page speed insights that belongs to a website
-        associated with the client via `client_website` table
+    `role=organization` : create a new website page speed insights that belongs to a website
+        associated with the organization via `organization_website` table
 
     `role=employee` : create a new website page speed insights that belongs to a website
-        associated with a client via `client_website` table, associated with the user
-        via the `user_client` table
+        associated with a organization via `organization_website` table, associated with the user
+        via the `user_organization` table
 
     Returns:
     --------
@@ -216,12 +216,12 @@ async def website_page_speed_insights_read(
     ------------
     `role=admin|manager` : read any website page speed insight
 
-    `role=client` : read any website page speed insight that belongs to a website
-        associated with the client via `client_website` table
+    `role=organization` : read any website page speed insight that belongs to a website
+        associated with the organization via `organization_website` table
 
     `role=employee` : read any website page speed insight that belongs to a website
-        associated with a client via `client_website` table, associated with the user
-        via the `user_client` table
+        associated with a organization via `organization_website` table, associated with the user
+        via the `user_organization` table
 
     Returns:
     --------
@@ -266,12 +266,12 @@ async def website_page_speed_insights_delete(
     ------------
     `role=admin|manager` : delete any website page speed insight
 
-    `role=client` : delete any website page speed insight that belongs to a website
-        associated with the client via `client_website` table
+    `role=organization` : delete any website page speed insight that belongs to a website
+        associated with the organization via `organization_website` table
 
     `role=employee` : delete any website page speed insight that belongs to a website
-        associated with a client via `client_website` table, associated with the user
-        via the `user_client` table
+        associated with a organization via `organization_website` table, associated with the user
+        via the `user_organization` table
 
     Returns:
     --------

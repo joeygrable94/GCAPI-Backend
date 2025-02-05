@@ -9,12 +9,12 @@ from app.entities.go_property.schemas import GooglePlatformType
 from app.services.permission.constants import ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS
 from app.utilities import get_uuid_str
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.clients import (
-    assign_platform_to_client,
-    assign_user_to_client,
-    create_random_client,
-)
 from tests.utils.ga4 import create_random_ga4_property
+from tests.utils.organizations import (
+    assign_platform_to_organization,
+    assign_user_to_organization,
+    create_random_organization,
+)
 from tests.utils.platform import create_random_platform
 from tests.utils.users import get_user_by_email
 
@@ -46,13 +46,13 @@ async def test_delete_go_property_ga4_by_id_as_user(
     platform_type = GooglePlatformType.ga4.value
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
     a_platform = await create_random_platform(db_session)
-    a_client = await create_random_client(db_session)
-    await assign_platform_to_client(db_session, a_platform.id, a_client.id)
+    a_organization = await create_random_organization(db_session)
+    await assign_platform_to_organization(db_session, a_platform.id, a_organization.id)
     a_ga4_property = await create_random_ga4_property(
-        db_session, a_client.id, a_platform.id
+        db_session, a_organization.id, a_platform.id
     )
     this_user = await get_user_by_email(db_session, current_user.email)
-    await assign_user_to_client(db_session, this_user.id, a_client.id)
+    await assign_user_to_organization(db_session, this_user.id, a_organization.id)
     response: Response = await client.delete(
         f"go/{platform_type}/{a_ga4_property.id}",
         headers=current_user.token_headers,

@@ -9,16 +9,16 @@ from app.entities.api.constants import (
     ERROR_MESSAGE_ENTITY_EXISTS,
     ERROR_MESSAGE_ENTITY_NOT_FOUND,
 )
-from app.entities.client.constants import ERROR_MESSAGE_CLIENT_NOT_FOUND
 from app.entities.go_property.schemas import GooglePlatformType
+from app.entities.organization.constants import ERROR_MESSAGE_ORGANIZATION_NOT_FOUND
 from app.utilities.uuids import get_uuid_str
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.clients import (
-    assign_user_to_client,
-    assign_website_to_client,
-    create_random_client,
-)
 from tests.utils.go_sc import create_random_go_search_console_property
+from tests.utils.organizations import (
+    assign_user_to_organization,
+    assign_website_to_organization,
+    create_random_organization,
+)
 from tests.utils.platform import get_platform_by_slug
 from tests.utils.users import get_user_by_email
 from tests.utils.utils import random_lower_string
@@ -28,7 +28,7 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize(
-    "client_user,assign_client,status_code",
+    "client_user,assign_organization,status_code",
     [
         ("admin_user", False, 200),
         ("manager_user", False, 200),
@@ -39,7 +39,7 @@ pytestmark = pytest.mark.asyncio
 )
 async def test_update_go_property_gsc_as_user(
     client_user: Any,
-    assign_client: bool,
+    assign_organization: bool,
     status_code: int,
     client: AsyncClient,
     db_session: AsyncSession,
@@ -48,25 +48,25 @@ async def test_update_go_property_gsc_as_user(
     platform_type = GooglePlatformType.gsc.value
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
     a_platform = await get_platform_by_slug(db_session, GooglePlatformType.gsc.value)
-    a_client = await create_random_client(db_session)
-    b_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
     a_website = await create_random_website(db_session)
     b_website = await create_random_website(db_session)
     a_gsc = await create_random_go_search_console_property(
-        db_session, a_client.id, a_website.id, a_platform.id
+        db_session, a_organization.id, a_website.id, a_platform.id
     )
     await create_random_go_search_console_property(
-        db_session, b_client.id, b_website.id, a_platform.id
+        db_session, b_organization.id, b_website.id, a_platform.id
     )
-    if assign_client:
+    if assign_organization:
         this_user = await get_user_by_email(db_session, current_user.email)
-        await assign_user_to_client(db_session, this_user.id, a_client.id)
-        await assign_user_to_client(db_session, this_user.id, b_client.id)
-        await assign_website_to_client(db_session, a_website.id, a_client.id)
-        await assign_website_to_client(db_session, b_website.id, b_client.id)
+        await assign_user_to_organization(db_session, this_user.id, a_organization.id)
+        await assign_user_to_organization(db_session, this_user.id, b_organization.id)
+        await assign_website_to_organization(db_session, a_website.id, a_organization.id)
+        await assign_website_to_organization(db_session, b_website.id, b_organization.id)
     data_in: dict[str, Any] = {
         "title": random_lower_string(),
-        "client_id": str(b_client.id),
+        "organization_id": str(b_organization.id),
         "website_id": str(b_website.id),
     }
     response: Response = await client.patch(
@@ -115,24 +115,24 @@ async def test_update_go_property_gsc_as_superuser_limits(
 ) -> None:
     platform_type = GooglePlatformType.gsc.value
     a_platform = await get_platform_by_slug(db_session, GooglePlatformType.gsc.value)
-    a_client = await create_random_client(db_session)
-    b_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
     a_website = await create_random_website(db_session)
     b_website = await create_random_website(db_session)
     a_gsc = await create_random_go_search_console_property(
-        db_session, a_client.id, a_website.id, a_platform.id
+        db_session, a_organization.id, a_website.id, a_platform.id
     )
     await create_random_go_search_console_property(
-        db_session, b_client.id, b_website.id, a_platform.id
+        db_session, b_organization.id, b_website.id, a_platform.id
     )
     this_user = await get_user_by_email(db_session, admin_user.email)
-    await assign_user_to_client(db_session, this_user.id, a_client.id)
-    await assign_user_to_client(db_session, this_user.id, b_client.id)
-    await assign_website_to_client(db_session, a_website.id, a_client.id)
-    await assign_website_to_client(db_session, b_website.id, b_client.id)
+    await assign_user_to_organization(db_session, this_user.id, a_organization.id)
+    await assign_user_to_organization(db_session, this_user.id, b_organization.id)
+    await assign_website_to_organization(db_session, a_website.id, a_organization.id)
+    await assign_website_to_organization(db_session, b_website.id, b_organization.id)
     data_in: dict[str, Any] = {
         "title": title,
-        "client_id": str(b_client.id),
+        "organization_id": str(b_organization.id),
         "website_id": str(b_website.id),
     }
     response: Response = await client.patch(
@@ -158,24 +158,24 @@ async def test_update_go_property_gsc_as_superuser_title_exists(
 ) -> None:
     platform_type = GooglePlatformType.gsc.value
     a_platform = await get_platform_by_slug(db_session, GooglePlatformType.gsc.value)
-    a_client = await create_random_client(db_session)
-    b_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
     a_website = await create_random_website(db_session)
     b_website = await create_random_website(db_session)
     a_gsc = await create_random_go_search_console_property(
-        db_session, a_client.id, a_website.id, a_platform.id
+        db_session, a_organization.id, a_website.id, a_platform.id
     )
     b_gsc = await create_random_go_search_console_property(
-        db_session, b_client.id, b_website.id, a_platform.id
+        db_session, b_organization.id, b_website.id, a_platform.id
     )
     this_user = await get_user_by_email(db_session, admin_user.email)
-    await assign_user_to_client(db_session, this_user.id, a_client.id)
-    await assign_user_to_client(db_session, this_user.id, b_client.id)
-    await assign_website_to_client(db_session, a_website.id, a_client.id)
-    await assign_website_to_client(db_session, b_website.id, b_client.id)
+    await assign_user_to_organization(db_session, this_user.id, a_organization.id)
+    await assign_user_to_organization(db_session, this_user.id, b_organization.id)
+    await assign_website_to_organization(db_session, a_website.id, a_organization.id)
+    await assign_website_to_organization(db_session, b_website.id, b_organization.id)
     data_in: dict[str, Any] = {
         "title": b_gsc.title,
-        "client_id": str(b_client.id),
+        "organization_id": str(b_organization.id),
         "website_id": str(b_website.id),
     }
     response: Response = await client.patch(
@@ -188,33 +188,33 @@ async def test_update_go_property_gsc_as_superuser_title_exists(
     assert ERROR_MESSAGE_ENTITY_EXISTS in entry["detail"]
 
 
-async def test_update_go_property_gsc_as_superuser_client_not_found(
+async def test_update_go_property_gsc_as_superuser_organization_not_found(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_user: ClientAuthorizedUser,
 ) -> None:
     platform_type = GooglePlatformType.gsc.value
     a_platform = await get_platform_by_slug(db_session, GooglePlatformType.gsc.value)
-    a_client = await create_random_client(db_session)
-    b_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
     a_website = await create_random_website(db_session)
     b_website = await create_random_website(db_session)
     a_gsc = await create_random_go_search_console_property(
-        db_session, a_client.id, a_website.id, a_platform.id
+        db_session, a_organization.id, a_website.id, a_platform.id
     )
     await create_random_go_search_console_property(
-        db_session, b_client.id, b_website.id, a_platform.id
+        db_session, b_organization.id, b_website.id, a_platform.id
     )
     this_user = await get_user_by_email(db_session, admin_user.email)
-    await assign_user_to_client(db_session, this_user.id, a_client.id)
-    await assign_user_to_client(db_session, this_user.id, b_client.id)
-    await assign_website_to_client(db_session, a_website.id, a_client.id)
-    await assign_website_to_client(db_session, b_website.id, b_client.id)
+    await assign_user_to_organization(db_session, this_user.id, a_organization.id)
+    await assign_user_to_organization(db_session, this_user.id, b_organization.id)
+    await assign_website_to_organization(db_session, a_website.id, a_organization.id)
+    await assign_website_to_organization(db_session, b_website.id, b_organization.id)
     title = random_lower_string()
-    bad_client_id = get_uuid_str()
+    bad_organization_id = get_uuid_str()
     data_in: dict[str, Any] = {
         "title": title,
-        "client_id": bad_client_id,
+        "organization_id": bad_organization_id,
         "website_id": str(b_website.id),
     }
     response: Response = await client.patch(
@@ -224,7 +224,7 @@ async def test_update_go_property_gsc_as_superuser_client_not_found(
     )
     entry: dict[str, Any] = response.json()
     assert response.status_code == 404
-    assert ERROR_MESSAGE_CLIENT_NOT_FOUND in entry["detail"]
+    assert ERROR_MESSAGE_ORGANIZATION_NOT_FOUND in entry["detail"]
 
 
 async def test_update_go_property_gsc_as_superuser_website_not_found(
@@ -234,26 +234,26 @@ async def test_update_go_property_gsc_as_superuser_website_not_found(
 ) -> None:
     platform_type = GooglePlatformType.gsc.value
     a_platform = await get_platform_by_slug(db_session, GooglePlatformType.gsc.value)
-    a_client = await create_random_client(db_session)
-    b_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
     a_website = await create_random_website(db_session)
     b_website = await create_random_website(db_session)
     a_gsc = await create_random_go_search_console_property(
-        db_session, a_client.id, a_website.id, a_platform.id
+        db_session, a_organization.id, a_website.id, a_platform.id
     )
     await create_random_go_search_console_property(
-        db_session, b_client.id, b_website.id, a_platform.id
+        db_session, b_organization.id, b_website.id, a_platform.id
     )
     this_user = await get_user_by_email(db_session, admin_user.email)
-    await assign_user_to_client(db_session, this_user.id, a_client.id)
-    await assign_user_to_client(db_session, this_user.id, b_client.id)
-    await assign_website_to_client(db_session, a_website.id, a_client.id)
-    await assign_website_to_client(db_session, b_website.id, b_client.id)
+    await assign_user_to_organization(db_session, this_user.id, a_organization.id)
+    await assign_user_to_organization(db_session, this_user.id, b_organization.id)
+    await assign_website_to_organization(db_session, a_website.id, a_organization.id)
+    await assign_website_to_organization(db_session, b_website.id, b_organization.id)
     title = random_lower_string()
     bad_website_id = get_uuid_str()
     data_in: dict[str, Any] = {
         "title": title,
-        "client_id": str(b_client.id),
+        "organization_id": str(b_organization.id),
         "website_id": str(bad_website_id),
     }
     response: Response = await client.patch(

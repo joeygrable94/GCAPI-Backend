@@ -38,8 +38,8 @@ from app.services.permission import (
 from app.utilities import get_random_username, get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
-    from app.entities.client.model import Client
     from app.entities.ipaddress.model import Ipaddress
+    from app.entities.organization.model import Organization
 
 
 class User(Base, Timestamp):
@@ -121,8 +121,8 @@ class User(Base, Timestamp):
     )
 
     # relationships
-    clients: Mapped[list["Client"]] = relationship(
-        "Client", secondary="user_client", back_populates="users"
+    organizations: Mapped[list["Organization"]] = relationship(
+        "Organization", secondary="user_organization", back_populates="users"
     )
     ipaddresses: Mapped[list["Ipaddress"]] = relationship(
         "Ipaddress", secondary="user_ipaddress", back_populates="users"

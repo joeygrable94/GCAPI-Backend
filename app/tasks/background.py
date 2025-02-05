@@ -27,11 +27,11 @@ async def bg_task_request_to_delete_user(user_id: str) -> None:
     )  # pragma: no cover
 
 
-async def bg_task_request_to_delete_client(user_id: str, client_id: str) -> None:
-    # TODO: Send email to client admin emails to confirm deletion
-    # TODO: flag client as pending delete.
+async def bg_task_request_to_delete_organization(user_id: str, organization_id: str) -> None:
+    # TODO: Send email to organization admin emails to confirm deletion
+    # TODO: flag organization as pending delete.
     logger.info(
-        f"User({user_id}) requested to delete the Client({client_id})."
+        f"User({user_id}) requested to delete the Organization({organization_id})."
     )  # pragma: no cover
 
 

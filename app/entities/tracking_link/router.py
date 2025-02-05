@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import Select
 
 from app.api.get_query import (
-    CommonClientTrackingLinkQueryParams,
-    GetClientTrackingLinkQueryParams,
+    CommonOrganizationTrackingLinkQueryParams,
+    GetOrganizationTrackingLinkQueryParams,
 )
 from app.core.pagination import PageParams, Paginated
 from app.entities.api.dependencies import get_async_db
@@ -16,7 +16,7 @@ from app.entities.auth.dependencies import (
     get_current_user,
     get_permission_controller,
 )
-from app.entities.client.errors import ClientNotFound
+from app.entities.organization.errors import OrganizationNotFound
 from app.entities.tracking_link.crud import TrackingLinkRepository
 from app.entities.tracking_link.dependencies import get_tracking_link_or_404
 from app.entities.tracking_link.model import TrackingLink
@@ -51,33 +51,33 @@ router: APIRouter = APIRouter()
         Depends(get_async_db),
         Depends(get_current_user),
         Depends(get_permission_controller),
-        Depends(CommonClientTrackingLinkQueryParams),
+        Depends(CommonOrganizationTrackingLinkQueryParams),
     ],
     response_model=Paginated[TrackingLinkRead],
 )
 async def tracking_link_list(
-    query: GetClientTrackingLinkQueryParams,
+    query: GetOrganizationTrackingLinkQueryParams,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> Paginated[TrackingLinkRead]:
-    """Retrieve a paginated list of tracking links associated with the client.
+    """Retrieve a paginated list of tracking links associated with the organization.
 
     Permissions:
     ------------
     `role=admin|manager` : all tracking links
 
-    `role=user` : only tracking links associated with the user via `user_client`
+    `role=user` : only tracking links associated with the user via `user_organization`
         table
 
     Returns:
     --------
-    `Paginated[TrackingLinkRead]` : a paginated list of client tracking links,
+    `Paginated[TrackingLinkRead]` : a paginated list of organization tracking links,
         optionally filtered
 
     """
     links_repo = TrackingLinkRepository(permissions.db)
     query_params: dict[str, Any] = dict()
-    if query.client_id is not None:
-        query_params["client_id"] = query.client_id
+    if query.organization_id is not None:
+        query_params["organization_id"] = query.organization_id
     if query.scheme is not None:
         query_params["scheme"] = query.scheme
     if query.domain is not None:
@@ -135,28 +135,28 @@ async def tracking_link_create(
     tracking_link_in: TrackingLinkCreateRequest,
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> TrackingLinkRead:
-    """Create a new tracking link and assign it to the client.
+    """Create a new tracking link and assign it to the organization.
 
     Permissions:
     ------------
-    `role=admin|manager` : create tracking links for all clients
+    `role=admin|manager` : create tracking links for all organizations
 
-    `role=user` : only create tracking links for clients associated with the
-        user via `user_client` table
+    `role=user` : only create tracking links for organizations associated with the
+        user via `user_organization` table
 
     Returns:
     --------
-    `TrackingLinkRead` : the newly created client
+    `TrackingLinkRead` : the newly created organization
 
     """
 
     await permissions.verify_user_can_access(
-        privileges=[RoleAdmin, RoleManager], client_id=tracking_link_in.client_id
+        privileges=[RoleAdmin, RoleManager], organization_id=tracking_link_in.organization_id
     )
-    if tracking_link_in.client_id is not None:
-        client_exists = await permissions.client_repo.read(tracking_link_in.client_id)
-        if client_exists is None:
-            raise ClientNotFound()
+    if tracking_link_in.organization_id is not None:
+        organization_exists = await permissions.organization_repo.read(tracking_link_in.organization_id)
+        if organization_exists is None:
+            raise OrganizationNotFound()
     links_repo = TrackingLinkRepository(permissions.db)
     trk_url_hash = hash_url(tracking_link_in.url)
     tracking_link: TrackingLink | None = await links_repo.exists_by_fields(
@@ -172,7 +172,7 @@ async def tracking_link_create(
             url=tracking_link_in.url,
             url_hash=trk_url_hash,
             is_active=tracking_link_in.is_active or True,
-            client_id=tracking_link_in.client_id,
+            organization_id=tracking_link_in.organization_id,
             **url_params.model_dump(),
         )
     )
@@ -202,14 +202,14 @@ async def tracking_link_read(
         [AccessUpdate, AccessUpdateRelated], get_tracking_link_or_404
     ),
 ) -> TrackingLinkRead:
-    """Retrieve a client associated tracking link by id.
+    """Retrieve a organization associated tracking link by id.
 
     Permissions:
     ------------
     `role=admin|manager` : all tracking links
 
-    `role=user` : only tracking links for clients associated with the
-        user via `user_client` table
+    `role=user` : only tracking links for organizations associated with the
+        user via `user_organization` table
 
     Returns:
     --------
@@ -219,7 +219,7 @@ async def tracking_link_read(
 
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
-        client_id=tracked_link.client_id,
+        organization_id=tracked_link.organization_id,
     )
 
     response_out: TrackingLinkRead = permissions.get_resource_response(
@@ -249,14 +249,14 @@ async def tracking_link_update(
         [AccessUpdate, AccessUpdateRelated], get_tracking_link_or_404
     ),
 ) -> TrackingLinkRead:
-    """Update a tracking link by id, assign it to the client and user making the update.
+    """Update a tracking link by id, assign it to the organization and user making the update.
 
     Permissions:
     ------------
     `role=admin|manager` : update any tracking link
 
-    `role=user` : only update tracking links for clients associated with the
-        user via `user_client` table
+    `role=user` : only update tracking links for organizations associated with the
+        user via `user_organization` table
 
     Returns:
     --------
@@ -271,16 +271,16 @@ async def tracking_link_update(
     )
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
-        client_id=tracked_link.client_id,
+        organization_id=tracked_link.organization_id,
     )
-    if tracking_link_in.client_id is not None:
+    if tracking_link_in.organization_id is not None:
         await permissions.verify_user_can_access(
             privileges=[RoleAdmin, RoleManager],
-            client_id=tracking_link_in.client_id,
+            organization_id=tracking_link_in.organization_id,
         )
-        client_exists = await permissions.client_repo.read(tracking_link_in.client_id)
-        if client_exists is None:
-            raise ClientNotFound()
+        organization_exists = await permissions.organization_repo.read(tracking_link_in.organization_id)
+        if organization_exists is None:
+            raise OrganizationNotFound()
     links_repo = TrackingLinkRepository(permissions.db)
     url_params: TrackingLinkBaseParams | None
     trk_url_hash: None | str = None
@@ -299,14 +299,14 @@ async def tracking_link_update(
             url=tracking_link_in.url,
             url_hash=trk_url_hash,
             is_active=tracking_link_in.is_active,
-            client_id=tracking_link_in.client_id,
+            organization_id=tracking_link_in.organization_id,
         )
         if url_params is None
         else TrackingLinkUpdate(
             url=tracking_link_in.url,
             url_hash=trk_url_hash,
             is_active=tracking_link_in.is_active,
-            client_id=tracking_link_in.client_id,
+            organization_id=tracking_link_in.organization_id,
             **url_params.model_dump(),
         )
     )
@@ -340,23 +340,23 @@ async def tracking_link_delete(
         [AccessDelete, AccessDeleteRelated], get_tracking_link_or_404
     ),
 ) -> None:
-    """Delete a client's tracking link by id.
+    """Delete a organization's tracking link by id.
 
     Permissions:
     ------------
     `role=admin` : all tracking links
 
-    `role=user` : may delete tracking links associated with clients they are
-        associated with via the `user_client` table
+    `role=user` : may delete tracking links associated with organizations they are
+        associated with via the `user_organization` table
 
     Returns:
     --------
-    `None` : the client tracking link has been deleted
+    `None` : the organization tracking link has been deleted
 
     """
-    if tracked_link.client_id is not None:
+    if tracked_link.organization_id is not None:
         await permissions.verify_user_can_access(
-            privileges=[RoleAdmin], client_id=tracked_link.client_id
+            privileges=[RoleAdmin], organization_id=tracked_link.organization_id
         )
     links_repo = TrackingLinkRepository(permissions.db)
     await links_repo.delete(entry=tracked_link)

@@ -2,10 +2,10 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.entities.auth.dependencies import PermissionController
-from app.entities.client.crud import ClientRepository
+from app.entities.organization.crud import OrganizationRepository
 from app.entities.user.crud import UserRepository
 from app.entities.user.model import User
-from app.entities.user_client.crud import UserClientRepository
+from app.entities.user_organization.crud import UserOrganizationRepository
 from app.services.auth0.settings import auth_settings
 from tests.utils.users import get_user_by_email
 
@@ -19,5 +19,5 @@ async def test_init_permission_controller(db_session: AsyncSession) -> None:
     assert perms.current_user == user_a
     assert perms.privileges == []
     assert isinstance(perms.user_repo, UserRepository)
-    assert isinstance(perms.client_repo, ClientRepository)
-    assert isinstance(perms.user_client_repo, UserClientRepository)
+    assert isinstance(perms.organization_repo, OrganizationRepository)
+    assert isinstance(perms.user_organization_repo, UserOrganizationRepository)

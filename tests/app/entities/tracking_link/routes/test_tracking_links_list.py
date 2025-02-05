@@ -5,7 +5,10 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.clients import assign_user_to_client, create_random_client
+from tests.utils.organizations import (
+    assign_user_to_organization,
+    create_random_organization,
+)
 from tests.utils.tracking_link import create_random_tracking_link
 from tests.utils.users import get_user_by_email
 
@@ -34,17 +37,17 @@ async def test_list_all_tracking_link_as_user(
 ) -> None:
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
     this_user = await get_user_by_email(db_session, current_user.email)
-    client_a = await create_random_client(db_session)
-    client_b = await create_random_client(db_session)
-    await create_random_tracking_link(db_session, client_a.id)
-    await create_random_tracking_link(db_session, client_a.id)
-    await create_random_tracking_link(db_session, client_b.id)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
+    await create_random_tracking_link(db_session, a_organization.id)
+    await create_random_tracking_link(db_session, a_organization.id)
+    await create_random_tracking_link(db_session, b_organization.id)
     if not this_user.is_superuser and assign_user:
-        await assign_user_to_client(db_session, this_user.id, client_a.id)
+        await assign_user_to_organization(db_session, this_user.id, a_organization.id)
     if query_client:
         response: Response = await client.get(
             "utmlinks/",
-            params={"client_id": str(client_b.id)},
+            params={"organization_id": str(b_organization.id)},
             headers=current_user.token_headers,
         )
     else:
@@ -260,7 +263,7 @@ async def test_list_all_tracking_link_as_user(
     ],
     ids=[
         "admin user query all links",
-        "admin user query all links by client_id",
+        "admin user query all links by organization_id",
         "admin user query all links by scheme http",
         "admin user query all links by scheme https",
         "admin user query all links by domain",
@@ -304,53 +307,53 @@ async def test_list_all_tracking_link_as_superuser_query_utm_params(
     utm_term = term-name
     """
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
-    client_a = await create_random_client(db_session)
-    client_b = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
     await create_random_tracking_link(
         db_session,
-        client_b.id,
+        b_organization.id,
     )
     await create_random_tracking_link(
         db_session,
-        client_b.id,
+        b_organization.id,
     )
-    await create_random_tracking_link(db_session, client_a.id, scheme="http")
-    await create_random_tracking_link(db_session, client_a.id, scheme="https")
+    await create_random_tracking_link(db_session, a_organization.id, scheme="http")
+    await create_random_tracking_link(db_session, a_organization.id, scheme="https")
     await create_random_tracking_link(
-        db_session, client_a.id, scheme="https", domain="example.com"
+        db_session, a_organization.id, scheme="https", domain="example.com"
     )
     await create_random_tracking_link(
         db_session,
-        client_a.id,
+        a_organization.id,
         scheme="https",
         domain="another.com",
         path="/destination",
     )
     await create_random_tracking_link(
-        db_session, client_a.id, scheme="https", path="/example-path"
+        db_session, a_organization.id, scheme="https", path="/example-path"
     )
     await create_random_tracking_link(
-        db_session, client_a.id, scheme="https", utm_campaign="campaign-name"
+        db_session, a_organization.id, scheme="https", utm_campaign="campaign-name"
     )
     await create_random_tracking_link(
-        db_session, client_a.id, scheme="https", utm_medium="medium-name"
+        db_session, a_organization.id, scheme="https", utm_medium="medium-name"
     )
     await create_random_tracking_link(
-        db_session, client_a.id, scheme="https", utm_source="source-name"
+        db_session, a_organization.id, scheme="https", utm_source="source-name"
     )
     await create_random_tracking_link(
-        db_session, client_a.id, scheme="https", utm_content="content-name"
+        db_session, a_organization.id, scheme="https", utm_content="content-name"
     )
     await create_random_tracking_link(
-        db_session, client_a.id, scheme="https", utm_term="term-name"
+        db_session, a_organization.id, scheme="https", utm_term="term-name"
     )
     await create_random_tracking_link(
-        db_session, client_a.id, scheme="https", is_active=False
+        db_session, a_organization.id, scheme="https", is_active=False
     )
 
     query_params = {}
     if q_client:
-        query_params["client_id"] = str(client_b.id)
+        query_params["organization_id"] = str(b_organization.id)
     if q_scheme:
         query_params["scheme"] = q_scheme
     if q_domain:

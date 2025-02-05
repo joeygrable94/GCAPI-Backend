@@ -66,7 +66,7 @@ async def test_read_current_user_employee(
     assert existing_data.email == data.email
 
 
-async def test_read_current_user_client(
+async def test_read_current_user_organization(
     client: AsyncClient,
     db_session: AsyncSession,
     client_a_user: ClientAuthorizedUser,

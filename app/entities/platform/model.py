@@ -34,7 +34,7 @@ from app.services.permission import (
 from app.utilities import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
-    from app.entities.client.model import Client
+    from app.entities.organization.model import Organization
 
 
 class Platform(Base, Timestamp):
@@ -71,8 +71,8 @@ class Platform(Base, Timestamp):
     )
 
     # relationships
-    clients: Mapped[list["Client"]] = relationship(
-        "Client", secondary="client_platform", back_populates="platforms"
+    organizations: Mapped[list["Organization"]] = relationship(
+        "Organization", secondary="organization_platform", back_populates="platforms"
     )
 
     # ACL

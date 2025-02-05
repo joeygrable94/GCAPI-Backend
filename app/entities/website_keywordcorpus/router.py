@@ -59,12 +59,12 @@ async def website_page_keyword_corpus_list(
     ------------
     `role=admin|manager` : all website keyword corpus
 
-    `role=client` : only website keyword corpus with a website_id associated with
-        the client via `client_website` table
+    `role=organization` : only website keyword corpus with a website_id associated with
+        the organization via `organization_website` table
 
     `role=employee` : only website keyword corpus with a website_id associated
-        with a client's website via `client_website` table, associated with the user
-        via `user_client`
+        with a organization's website via `organization_website` table, associated with the user
+        via `user_organization`
 
     Returns:
     --------
@@ -122,12 +122,12 @@ async def website_page_keyword_corpus_create(
     ------------
     `role=admin|manager` : create a new website keyword corpus
 
-    `role=client` : create a new website keyword corpus that belongs to a website
-        associated with the client via `client_website` table
+    `role=organization` : create a new website keyword corpus that belongs to a website
+        associated with the organization via `organization_website` table
 
     `role=employee` : create a new website keyword corpus that belongs to a website
-        associated with a client via `client_website` table, associated with the user
-        via the `user_client` table
+        associated with a organization via `organization_website` table, associated with the user
+        via the `user_organization` table
 
     Returns:
     --------
@@ -191,12 +191,12 @@ async def website_page_keyword_corpus_read(
     ------------
     `role=admin|manager` : read any website keyword corpus
 
-    `role=client` : read any website keyword corpus that belongs to a website
-        associated with the client via `client_website` table
+    `role=organization` : read any website keyword corpus that belongs to a website
+        associated with the organization via `organization_website` table
 
     `role=employee` : read any website keyword corpus that belongs to a website
-        associated with a client via `client_website` table, associated with the user
-        via the `user_client` table
+        associated with a organization via `organization_website` table, associated with the user
+        via the `user_organization` table
 
     Returns:
     --------
@@ -241,12 +241,12 @@ async def website_page_keyword_corpus_delete(
     ------------
     `role=admin|manager` : delete any website keyword corpus
 
-    `role=client` : delete any website keyword corpus that belongs to a website
-        associated with the client via `client_website` table
+    `role=organization` : delete any website keyword corpus that belongs to a website
+        associated with the organization via `organization_website` table
 
     `role=employee` : delete any website keyword corpus that belongs to a website
-        associated with a client via `client_website` table, associated with the user
-        via the `user_client` table
+        associated with a organization via `organization_website` table, associated with the user
+        via the `user_organization` table
 
     Returns:
     --------

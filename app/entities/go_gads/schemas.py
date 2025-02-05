@@ -11,7 +11,7 @@ from app.db.validators import (
 class GoAdsPropertyBase(BaseSchema):
     title: str
     measurement_id: str
-    client_id: UUID4
+    organization_id: UUID4
     platform_id: UUID4
 
     _validate_title = field_validator("title", mode="before")(validate_title_required)
@@ -27,7 +27,7 @@ class GoAdsPropertyCreate(GoAdsPropertyBase):
 class RequestGoAdsPropertyCreate(BaseSchema):
     title: str
     measurement_id: str
-    client_id: UUID4
+    organization_id: UUID4
 
     _validate_title = field_validator("title", mode="before")(validate_title_required)
     _validate_measurement_id = field_validator("measurement_id", mode="before")(
@@ -37,7 +37,7 @@ class RequestGoAdsPropertyCreate(BaseSchema):
 
 class GoAdsPropertyUpdate(BaseSchema):
     title: str | None = None
-    client_id: UUID4 | None = None
+    organization_id: UUID4 | None = None
 
     _validate_title = field_validator("title", mode="before")(validate_title_optional)
 

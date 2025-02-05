@@ -9,12 +9,12 @@ from app.services.permission.constants import (
     ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_PAGINATION,
 )
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.clients import (
-    assign_platform_to_client,
-    assign_website_to_client,
-    create_random_client,
-)
 from tests.utils.ga4 import create_random_ga4_property, create_random_ga4_stream
+from tests.utils.organizations import (
+    assign_platform_to_organization,
+    assign_website_to_organization,
+    create_random_organization,
+)
 from tests.utils.platform import create_random_platform
 from tests.utils.websites import create_random_website
 
@@ -46,13 +46,13 @@ async def test_list_go_property_ga4_stream_by_id_as_user(
     platform_type = GooglePlatformType.ga4_stream.value
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
     a_platform = await create_random_platform(db_session)
-    a_client = await create_random_client(db_session)
-    b_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
     a_website = await create_random_website(db_session)
     b_website = await create_random_website(db_session)
-    await assign_platform_to_client(db_session, a_platform.id, a_client.id)
-    a_ga4 = await create_random_ga4_property(db_session, a_client.id, a_platform.id)
-    b_ga4 = await create_random_ga4_property(db_session, b_client.id, a_platform.id)
+    await assign_platform_to_organization(db_session, a_platform.id, a_organization.id)
+    a_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
+    b_ga4 = await create_random_ga4_property(db_session, b_organization.id, a_platform.id)
     await create_random_ga4_stream(db_session, a_ga4.id, a_website.id)
     await create_random_ga4_stream(db_session, b_ga4.id, b_website.id)
     response: Response = await client.get(
@@ -74,15 +74,15 @@ async def test_list_go_property_ga4_stream_as_superuser_by_website_id(
 ) -> None:
     platform_type = GooglePlatformType.ga4_stream.value
     a_platform = await create_random_platform(db_session)
-    a_client = await create_random_client(db_session)
-    b_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
     a_website = await create_random_website(db_session)
     b_website = await create_random_website(db_session)
-    a_ga4 = await create_random_ga4_property(db_session, a_client.id, a_platform.id)
-    b_ga4 = await create_random_ga4_property(db_session, b_client.id, a_platform.id)
-    await assign_platform_to_client(db_session, a_platform.id, a_client.id)
-    await assign_website_to_client(db_session, a_website.id, a_client.id)
-    await assign_website_to_client(db_session, b_website.id, b_client.id)
+    a_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
+    b_ga4 = await create_random_ga4_property(db_session, b_organization.id, a_platform.id)
+    await assign_platform_to_organization(db_session, a_platform.id, a_organization.id)
+    await assign_website_to_organization(db_session, a_website.id, a_organization.id)
+    await assign_website_to_organization(db_session, b_website.id, b_organization.id)
     await create_random_ga4_stream(db_session, a_ga4.id, a_website.id)
     await create_random_ga4_stream(db_session, b_ga4.id, b_website.id)
     query_params = QueryParams(website_id=a_website.id)
@@ -106,15 +106,15 @@ async def test_list_go_property_ga4_stream_as_superuser_by_ga4_id(
 ) -> None:
     platform_type = GooglePlatformType.ga4_stream.value
     a_platform = await create_random_platform(db_session)
-    a_client = await create_random_client(db_session)
-    b_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
+    b_organization = await create_random_organization(db_session)
     a_website = await create_random_website(db_session)
     b_website = await create_random_website(db_session)
-    a_ga4 = await create_random_ga4_property(db_session, a_client.id, a_platform.id)
-    b_ga4 = await create_random_ga4_property(db_session, b_client.id, a_platform.id)
-    await assign_platform_to_client(db_session, a_platform.id, a_client.id)
-    await assign_website_to_client(db_session, a_website.id, a_client.id)
-    await assign_website_to_client(db_session, b_website.id, b_client.id)
+    a_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
+    b_ga4 = await create_random_ga4_property(db_session, b_organization.id, a_platform.id)
+    await assign_platform_to_organization(db_session, a_platform.id, a_organization.id)
+    await assign_website_to_organization(db_session, a_website.id, a_organization.id)
+    await assign_website_to_organization(db_session, b_website.id, b_organization.id)
     await create_random_ga4_stream(db_session, a_ga4.id, a_website.id)
     await create_random_ga4_stream(db_session, b_ga4.id, b_website.id)
     query_params = QueryParams(ga4_id=b_ga4.id)

@@ -7,10 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.entities.api.constants import ERROR_MESSAGE_ENTITY_NOT_FOUND
 from app.utilities import get_uuid_str
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.clients import (
-    assign_user_to_client,
-    assign_website_to_client,
-    create_random_client,
+from tests.utils.organizations import (
+    assign_user_to_organization,
+    assign_website_to_organization,
+    create_random_organization,
 )
 from tests.utils.users import get_user_by_email
 from tests.utils.websites import create_random_website
@@ -40,9 +40,9 @@ async def test_read_website_by_id_as_user(
         a_website = await create_random_website(db_session)
     else:
         a_website = await create_random_website(db_session)
-        a_client = await create_random_client(db_session)
-        await assign_website_to_client(db_session, a_website.id, a_client.id)
-        await assign_user_to_client(db_session, this_user.id, a_client.id)
+        a_organization = await create_random_organization(db_session)
+        await assign_website_to_organization(db_session, a_website.id, a_organization.id)
+        await assign_user_to_organization(db_session, this_user.id, a_organization.id)
     response: Response = await client.get(
         f"websites/{a_website.id}",
         headers=current_user.token_headers,

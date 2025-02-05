@@ -4,7 +4,7 @@ from sqlalchemy import BinaryExpression, Select, and_
 from sqlalchemy import select as sql_select
 
 from app.core.crud import BaseRepository
-from app.entities.client.model import Client
+from app.entities.organization.model import Organization
 from app.entities.tracking_link.model import TrackingLink
 from app.entities.tracking_link.schemas import (
     TrackingLinkCreate,
@@ -12,7 +12,7 @@ from app.entities.tracking_link.schemas import (
     TrackingLinkUpdate,
 )
 from app.entities.user.model import User
-from app.entities.user_client.model import UserClient
+from app.entities.user_organization.model import UserOrganization
 
 
 class TrackingLinkRepository(
@@ -27,7 +27,7 @@ class TrackingLinkRepository(
     def query_list(
         self,
         user_id: UUID | None = None,
-        client_id: UUID | None = None,
+        organization_id: UUID | None = None,
         scheme: str | None = None,
         domain: str | None = None,
         destination: str | None = None,
@@ -43,13 +43,13 @@ class TrackingLinkRepository(
         conditions: list[BinaryExpression[bool]] = []
         if user_id:
             stmt = (
-                stmt.join(Client, TrackingLink.client_id == Client.id)
-                .join(UserClient, Client.id == UserClient.client_id)
-                .join(User, UserClient.user_id == User.id)
+                stmt.join(Organization, TrackingLink.organization_id == Organization.id)
+                .join(UserOrganization, Organization.id == UserOrganization.organization_id)
+                .join(User, UserOrganization.user_id == User.id)
             )
             conditions.append(User.id.like(user_id))
-        if client_id:
-            conditions.append(TrackingLink.client_id.like(client_id))
+        if organization_id:
+            conditions.append(TrackingLink.organization_id.like(organization_id))
         if scheme:
             conditions.append(TrackingLink.scheme.like(scheme))
         if domain:

@@ -56,11 +56,11 @@ async def website_page_list(
     ------------
     `role=admin|manager` : all website pages
 
-    `role=client` : only website pages with a website_id associated with the client
-        via `client_website` table
+    `role=organization` : only website pages with a website_id associated with the organization
+        via `organization_website` table
 
-    `role=employee` : only website pages with a website_id associated with a client's
-        website via `client_website` table, associated with the user via `user_client`
+    `role=employee` : only website pages with a website_id associated with a organization's
+        website via `organization_website` table, associated with the user via `user_organization`
 
     Returns:
     --------
@@ -117,8 +117,8 @@ async def website_page_create(
     `role=admin|manager` : create a new website page
 
     `role=user` : create a new website page that belongs to a website associated
-        with the client via `client_website` table, associated with the user via the
-        `user_client` table
+        with the organization via `organization_website` table, associated with the user via the
+        `user_organization` table
 
     Returns:
     --------
@@ -183,8 +183,8 @@ async def website_page_read(
     ------------
     `role=admin|manager` : all website pages
 
-    `role=user` : only website pages with a website_id associated with a client's
-        website via `client_website` table, associated with the user via `user_client`
+    `role=user` : only website pages with a website_id associated with a organization's
+        website via `organization_website` table, associated with the user via `user_organization`
 
     Returns:
     --------
@@ -228,8 +228,8 @@ async def website_page_update(
     ------------
     `role=admin|manager` : all website pages
 
-    `role=user` : only website pages with a website_id associated with a client's
-        website via `client_website` table, associated with the user via `user_client`
+    `role=user` : only website pages with a website_id associated with a organization's
+        website via `organization_website` table, associated with the user via `user_organization`
 
     Returns:
     --------
@@ -314,8 +314,8 @@ async def website_page_delete(
     ------------
     `role=admin|manager` : all website pages
 
-    `role=user` : only website pages with a website_id associated with a client's
-        website via `client_website` table, associated with the user via `user_client`
+    `role=user` : only website pages with a website_id associated with a organization's
+        website via `organization_website` table, associated with the user via `user_organization`
 
     Returns:
     --------
@@ -356,8 +356,8 @@ async def website_page_process_website_page_speed_insights(
     ------------
     `role=admin|manager` : all website pages
 
-    `role=user` : only website pages with a website_id associated with a client's
-        website via `client_website` table, associated with the user via `user_client`
+    `role=user` : only website pages with a website_id associated with a organization's
+        website via `organization_website` table, associated with the user via `user_organization`
 
     Returns:
     --------

@@ -6,12 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.constants import DB_STR_TINYTEXT_MAXLEN_INPUT
 from app.entities.api.constants import ERROR_MESSAGE_ENTITY_EXISTS
-from app.entities.client.constants import ERROR_MESSAGE_CLIENT_NOT_FOUND
 from app.entities.go_property.schemas import GooglePlatformType
+from app.entities.organization.constants import ERROR_MESSAGE_ORGANIZATION_NOT_FOUND
 from app.utilities.uuids import get_uuid_str
 from tests.constants.schema import ClientAuthorizedUser
-from tests.utils.clients import assign_user_to_client, create_random_client
 from tests.utils.ga4 import create_random_ga4_property
+from tests.utils.organizations import (
+    assign_user_to_organization,
+    create_random_organization,
+)
 from tests.utils.platform import get_platform_by_slug
 from tests.utils.users import get_user_by_email
 from tests.utils.utils import random_lower_string
@@ -20,7 +23,7 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize(
-    "client_user,assign_client,status_code",
+    "client_user,assign_organization,status_code",
     [
         ("admin_user", False, 200),
         ("manager_user", False, 200),
@@ -31,7 +34,7 @@ pytestmark = pytest.mark.asyncio
 )
 async def test_update_go_property_ga4_as_user(
     client_user: Any,
-    assign_client: bool | None,
+    assign_organization: bool | None,
     status_code: int,
     client: AsyncClient,
     db_session: AsyncSession,
@@ -40,14 +43,14 @@ async def test_update_go_property_ga4_as_user(
     platform_type = GooglePlatformType.ga4.value
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
     a_platform = await get_platform_by_slug(db_session, GooglePlatformType.ga4.value)
-    a_client = await create_random_client(db_session)
-    if assign_client:
+    a_organization = await create_random_organization(db_session)
+    if assign_organization:
         this_user = await get_user_by_email(db_session, current_user.email)
-        await assign_user_to_client(db_session, this_user.id, a_client.id)
-    a_ga4 = await create_random_ga4_property(db_session, a_client.id, a_platform.id)
+        await assign_user_to_organization(db_session, this_user.id, a_organization.id)
+    a_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
     data_in: dict[str, Any] = {
         "title": random_lower_string(),
-        "client_id": str(a_client.id),
+        "organization_id": str(a_organization.id),
     }
     response: Response = await client.patch(
         f"go/{platform_type}/{a_ga4.id}",
@@ -95,13 +98,13 @@ async def test_update_go_property_ga4_as_superuser_limits(
 ) -> None:
     a_platform = await get_platform_by_slug(db_session, GooglePlatformType.ga4.value)
     platform_type = GooglePlatformType.ga4.value
-    a_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
     this_user = await get_user_by_email(db_session, admin_user.email)
-    await assign_user_to_client(db_session, this_user.id, a_client.id)
-    a_ga4 = await create_random_ga4_property(db_session, a_client.id, a_platform.id)
+    await assign_user_to_organization(db_session, this_user.id, a_organization.id)
+    a_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
     data_in: dict[str, Any] = {
         "title": title,
-        "client_id": str(a_client.id),
+        "organization_id": str(a_organization.id),
     }
     response: Response = await client.patch(
         f"go/{platform_type}/{a_ga4.id}",
@@ -126,14 +129,14 @@ async def test_update_go_property_ga4_as_superuser_title_exists(
 ) -> None:
     platform_type = GooglePlatformType.ga4.value
     a_platform = await get_platform_by_slug(db_session, platform_type)
-    a_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
     this_user = await get_user_by_email(db_session, admin_user.email)
-    await assign_user_to_client(db_session, this_user.id, a_client.id)
-    a_ga4 = await create_random_ga4_property(db_session, a_client.id, a_platform.id)
-    b_ga4 = await create_random_ga4_property(db_session, a_client.id, a_platform.id)
+    await assign_user_to_organization(db_session, this_user.id, a_organization.id)
+    a_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
+    b_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
     data_in: dict[str, Any] = {
         "title": b_ga4.title,
-        "client_id": str(a_client.id),
+        "organization_id": str(a_organization.id),
     }
     response: Response = await client.patch(
         f"go/{platform_type}/{a_ga4.id}",
@@ -145,22 +148,22 @@ async def test_update_go_property_ga4_as_superuser_title_exists(
     assert ERROR_MESSAGE_ENTITY_EXISTS in entry["detail"]
 
 
-async def test_update_go_property_ga4_as_superuser_client_not_found(
+async def test_update_go_property_ga4_as_superuser_organization_not_found(
     client: AsyncClient,
     db_session: AsyncSession,
     admin_user: ClientAuthorizedUser,
 ) -> None:
     a_platform = await get_platform_by_slug(db_session, GooglePlatformType.ga4.value)
     platform_type = GooglePlatformType.ga4.value
-    a_client = await create_random_client(db_session)
+    a_organization = await create_random_organization(db_session)
     this_user = await get_user_by_email(db_session, admin_user.email)
-    await assign_user_to_client(db_session, this_user.id, a_client.id)
-    a_ga4 = await create_random_ga4_property(db_session, a_client.id, a_platform.id)
+    await assign_user_to_organization(db_session, this_user.id, a_organization.id)
+    a_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
     title = random_lower_string()
-    bad_client_id = get_uuid_str()
+    bad_organization_id = get_uuid_str()
     data_in: dict[str, Any] = {
         "title": title,
-        "client_id": bad_client_id,
+        "organization_id": bad_organization_id,
     }
     response: Response = await client.patch(
         f"go/{platform_type}/{a_ga4.id}",
@@ -169,4 +172,4 @@ async def test_update_go_property_ga4_as_superuser_client_not_found(
     )
     entry: dict[str, Any] = response.json()
     assert response.status_code == 404
-    assert ERROR_MESSAGE_CLIENT_NOT_FOUND in entry["detail"]
+    assert ERROR_MESSAGE_ORGANIZATION_NOT_FOUND in entry["detail"]

@@ -5,14 +5,14 @@ from app.entities.api.errors import EntityNotFound, InvalidID
 from app.entities.tracking_link.dependencies import get_tracking_link_or_404
 from app.entities.tracking_link.model import TrackingLink
 from app.utilities import get_uuid_str
-from tests.utils.clients import create_random_client
+from tests.utils.organizations import create_random_organization
 from tests.utils.tracking_link import create_random_tracking_link
 
 
 async def test_get_tracking_link_or_404(db_session: AsyncSession) -> None:
     # Test with valid tracking_link_id
-    a_client = await create_random_client(db_session)
-    test_link = await create_random_tracking_link(db_session, a_client.id)
+    a_organization = await create_random_organization(db_session)
+    test_link = await create_random_tracking_link(db_session, a_organization.id)
     result = await get_tracking_link_or_404(db_session, test_link.id)
     assert isinstance(result, TrackingLink)
     assert result.id == test_link.id

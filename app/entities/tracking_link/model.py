@@ -30,7 +30,7 @@ from app.services.permission import (
 from app.utilities import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
-    from app.entities.client.model import Client
+    from app.entities.organization.model import Organization
 
 
 class TrackingLink(Base, Timestamp):
@@ -93,10 +93,10 @@ class TrackingLink(Base, Timestamp):
     )
 
     # relationships
-    client_id: Mapped[UUID4 | None] = mapped_column(
-        UUIDType(binary=False), ForeignKey("client.id"), nullable=True
+    organization_id: Mapped[UUID4 | None] = mapped_column(
+        UUIDType(binary=False), ForeignKey("organization.id"), nullable=True
     )
-    client: Mapped["Client"] = relationship(back_populates="tracking_links")
+    organization: Mapped["Organization"] = relationship(back_populates="tracking_links")
 
     # ACL
     def __acl__(

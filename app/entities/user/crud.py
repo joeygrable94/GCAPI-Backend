@@ -6,8 +6,8 @@ from sqlalchemy import select as sql_select
 
 from app.config import settings
 from app.core.crud import BaseRepository
-from app.entities.client_platform.model import ClientPlatform
-from app.entities.client_website.model import ClientWebsite
+from app.entities.organization_platform.model import OrganizationPlatform
+from app.entities.organization_website.model import OrganizationWebsite
 from app.entities.user.model import User
 from app.entities.user.schemas import (
     UserCreate,
@@ -15,7 +15,7 @@ from app.entities.user.schemas import (
     UserUpdate,
     UserUpdatePrivileges,
 )
-from app.entities.user_client.model import UserClient
+from app.entities.user_organization.model import UserOrganization
 from app.utilities import paginate
 
 
@@ -44,7 +44,7 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
         self,
         current_user_id: UUID,
         user_id: UUID | None = None,
-        client_id: UUID | None = None,
+        organization_id: UUID | None = None,
         platform_id: UUID | None = None,
         website_id: UUID | None = None,
     ) -> int:
@@ -53,76 +53,76 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
 
         Dynamically build a select query based on the parameters passed in:
 
-        1. if a user_id is passed in get all the clients of that user, then get
-        all the clients of the current user and see if there is an intersection.
+        1. if a user_id is passed in get all the organizations of that user, then get
+        all the organizations of the current user and see if there is an intersection.
 
-        2. if a client_id is passed in get all the clients of the current user
-        and see if the client_id is in that list
+        2. if a organization_id is passed in get all the organizations of the current user
+        and see if the organization_id is in that list
 
-        3. if a website_id is passed in get all the clients of that website, then
-        get all the clients of the current user and see if there is an intersection
+        3. if a website_id is passed in get all the organizations of that website, then
+        get all the organizations of the current user and see if there is an intersection
 
         """
         stmt: Select = sql_select(self._table)
         # 1
         if user_id:
-            # get all the clients of the user_id
-            user_clients = sql_select(UserClient.client_id).where(
-                UserClient.user_id == user_id
+            # get all the organizations of the user_id
+            user_organizations = sql_select(UserOrganization.organization_id).where(
+                UserOrganization.user_id == user_id
             )
-            # get all clients of the current user
-            current_user_clients = sql_select(UserClient.client_id).where(
-                UserClient.user_id == current_user_id
+            # get all organizations of the current user
+            current_user_organizations = sql_select(UserOrganization.organization_id).where(
+                UserOrganization.user_id == current_user_id
             )
             # find the intersection
             stmt = (
-                stmt.join(UserClient, User.id == UserClient.user_id)
-                .where(UserClient.client_id.in_(user_clients))
-                .where(UserClient.client_id.in_(current_user_clients))
+                stmt.join(UserOrganization, User.id == UserOrganization.user_id)
+                .where(UserOrganization.organization_id.in_(user_organizations))
+                .where(UserOrganization.organization_id.in_(current_user_organizations))
             )
         # 2
-        if client_id:
-            # get all clients of the current user
-            current_user_clients = sql_select(UserClient.client_id).where(
-                UserClient.user_id == current_user_id
+        if organization_id:
+            # get all organizations of the current user
+            current_user_organizations = sql_select(UserOrganization.organization_id).where(
+                UserOrganization.user_id == current_user_id
             )
-            # check if the client_id is in the list
+            # check if the organization_id is in the list
             stmt = (
-                stmt.join(UserClient, User.id == UserClient.user_id)
-                .where(UserClient.client_id == client_id)
-                .where(UserClient.client_id.in_(current_user_clients))
+                stmt.join(UserOrganization, User.id == UserOrganization.user_id)
+                .where(UserOrganization.organization_id == organization_id)
+                .where(UserOrganization.organization_id.in_(current_user_organizations))
             )
         # 3
         if platform_id:
-            # get all clients of the platform_id
-            platform_clients = sql_select(ClientPlatform.client_id).where(
-                ClientPlatform.platform_id == platform_id
+            # get all organizations of the platform_id
+            platform_organizations = sql_select(OrganizationPlatform.organization_id).where(
+                OrganizationPlatform.platform_id == platform_id
             )
-            # get all clients of the current user
-            current_user_clients = sql_select(UserClient.client_id).where(
-                UserClient.user_id == current_user_id
+            # get all organizations of the current user
+            current_user_organizations = sql_select(UserOrganization.organization_id).where(
+                UserOrganization.user_id == current_user_id
             )
             # find the intersection
             stmt = (
-                stmt.join(UserClient, User.id == UserClient.user_id)
-                .where(UserClient.client_id.in_(platform_clients))
-                .where(UserClient.client_id.in_(current_user_clients))
+                stmt.join(UserOrganization, User.id == UserOrganization.user_id)
+                .where(UserOrganization.organization_id.in_(platform_organizations))
+                .where(UserOrganization.organization_id.in_(current_user_organizations))
             )
         # 4
         if website_id:
-            # get all clients of the website_id
-            website_clients = sql_select(ClientWebsite.client_id).where(
-                ClientWebsite.website_id == website_id
+            # get all organizations of the website_id
+            website_organizations = sql_select(OrganizationWebsite.organization_id).where(
+                OrganizationWebsite.website_id == website_id
             )
-            # get all clients of the current user
-            current_user_clients = sql_select(UserClient.client_id).where(
-                UserClient.user_id == current_user_id
+            # get all organizations of the current user
+            current_user_organizations = sql_select(UserOrganization.organization_id).where(
+                UserOrganization.user_id == current_user_id
             )
             # find the intersection
             stmt = (
-                stmt.join(UserClient, User.id == UserClient.user_id)
-                .where(UserClient.client_id.in_(website_clients))
-                .where(UserClient.client_id.in_(current_user_clients))
+                stmt.join(UserOrganization, User.id == UserOrganization.user_id)
+                .where(UserOrganization.organization_id.in_(website_organizations))
+                .where(UserOrganization.organization_id.in_(current_user_organizations))
             )
         result: Result = await self._db.execute(stmt)
         data: Sequence[User] = result.scalars().all()
