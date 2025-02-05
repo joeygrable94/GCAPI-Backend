@@ -13,7 +13,8 @@ from app.services.csrf import CsrfProtect, CsrfSettings
 from app.services.sentry import configure_sentry_monitoring
 from app.utilities.route_map import make_routes_map
 
-sentry_client: Client | None = configure_sentry_monitoring()
+if settings.api.mode == "production":  # pragma: no cover
+    sentry_client: Client | None = configure_sentry_monitoring() 
 
 
 @asynccontextmanager
