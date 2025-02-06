@@ -14,5 +14,5 @@ class BaseSchema(BaseModel):
 
 class BaseSchemaRead(BaseSchema):
     id: UUID4
-    created: datetime
-    updated: datetime
+    created_at: datetime
+    updated_at: datetime

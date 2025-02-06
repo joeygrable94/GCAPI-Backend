@@ -3,9 +3,9 @@ from sentry_sdk import Client, init
 from .settings import sentry_settings
 
 
-def configure_sentry_monitoring() -> Client | None:
+def configure_sentry_monitoring() -> Client | None:  # pragma: no cover
     sentry_client: Client | None = None
-    if sentry_settings.sentry_dsn:  # pragma: no cover
+    if sentry_settings.sentry_dsn:
         sentry_client = init(
             sentry_settings.sentry_dsn,
             # Set traces_sample_rate to 1.0 to capture 100%

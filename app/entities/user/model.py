@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from pydantic import UUID4
 from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import Timestamp, UUIDType
+from sqlalchemy_utils import UUIDType
 from sqlalchemy_utils.types.encrypted.encrypted_type import (
     AesEngine,
     StringEncryptedType,
@@ -35,22 +35,23 @@ from app.services.permission import (
     RoleManager,
     RoleUser,
 )
-from app.utilities import get_random_username, get_uuid
+from app.utilities import get_random_username
+from app.utilities.uuids import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
     from app.entities.ipaddress.model import Ipaddress
     from app.entities.organization.model import Organization
 
 
-class User(Base, Timestamp):
+class User(Base):
     __tablename__: str = "user"
     __table_args__: dict = {"mysql_engine": "InnoDB"}
     __mapper_args__: dict = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         index=True,
-        primary_key=True,
         unique=True,
+        primary_key=True,
         nullable=False,
         default=get_uuid,
     )
@@ -162,13 +163,11 @@ class User(Base, Timestamp):
             (AclAction.allow, RoleUser, AccessDeleteSelf),
         ]
 
-    # representation
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = "User(%s, Act[%s] Val[%s] Sup[%s] Sco[%d])" % (
+        repr_str: str = "User(%s, Active[%s] Real[%s] Super[%s])" % (
             self.username,
             self.is_active,
             self.is_verified,
             self.is_superuser,
-            len(self.scopes),
         )
         return repr_str

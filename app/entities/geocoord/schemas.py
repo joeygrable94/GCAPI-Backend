@@ -1,16 +1,16 @@
 from pydantic import UUID4, field_validator
 
 from app.core.schema import BaseSchema, BaseSchemaRead
-from app.db.validators import validate_address_optional, validate_address_required
+from app.db.validators import validate_address_optional
 
 
 class GeocoordBase(BaseSchema):
-    address: str
+    address: str | None
     latitude: float
     longitude: float
 
     _validate_address = field_validator("address", mode="before")(
-        validate_address_required
+        validate_address_optional
     )
 
 

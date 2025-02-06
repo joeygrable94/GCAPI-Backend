@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
 
@@ -8,7 +8,7 @@ def get_date() -> datetime:
     Returns:
         datetime: current timestamp
     """
-    return datetime.now()
+    return datetime.now(timezone.utc)
 
 
 def get_int_from_datetime(value: datetime) -> int:

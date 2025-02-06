@@ -4,25 +4,25 @@ from typing import TYPE_CHECKING
 from pydantic import UUID4
 from sqlalchemy import INT, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import Timestamp, UUIDType
+from sqlalchemy_utils import UUIDType
 
 from app.db.base_class import Base
-from app.utilities import get_uuid
+from app.utilities.uuids import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
     from app.entities.gcft.model import Gcft
     from app.entities.gcft_snap.model import GcftSnap
 
 
-class GcftSnapActiveduration(Base, Timestamp):
+class GcftSnapActiveduration(Base):
     __tablename__: str = "gcft_snap_activeduration"
     __table_args__: dict = {"mysql_engine": "InnoDB"}
     __mapper_args__: dict = {"always_refresh": True}
     id: Mapped[UUID4] = mapped_column(
         UUIDType(binary=False),
         index=True,
-        primary_key=True,
         unique=True,
+        primary_key=True,
         nullable=False,
         default=get_uuid,
     )
@@ -44,7 +44,6 @@ class GcftSnapActiveduration(Base, Timestamp):
         "GcftSnap", back_populates="active_durations"
     )
 
-    # represenation
     def __repr__(self) -> str:  # pragma: no cover
         repr_str: str = f"GcftSnapActiveduration({self.session_id} \
             on {self.visit_date}, seconds={self.active_seconds})"
