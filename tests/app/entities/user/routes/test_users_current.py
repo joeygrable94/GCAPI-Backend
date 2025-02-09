@@ -5,8 +5,8 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.entities.auth.constants import ERROR_MESSAGE_UNVERIFIED_ACCESS_DENIED
-from app.entities.user.crud import UserRepository
-from app.entities.user.schemas import UserRead, UserReadAsAdmin, UserReadAsManager
+from app.entities.core_user.crud import UserRepository
+from app.entities.core_user.schemas import UserRead, UserReadAsAdmin, UserReadAsManager
 from tests.constants.schema import ClientAuthorizedUser
 
 pytestmark = pytest.mark.asyncio

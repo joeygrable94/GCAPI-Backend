@@ -4,7 +4,7 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.user.schemas import (
+from app.entities.core_user.schemas import (
     UserReadAsAdmin,
     UserReadAsManager,
     UserUpdatePrivileges,

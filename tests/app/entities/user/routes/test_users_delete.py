@@ -4,9 +4,9 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.user.crud import UserRepository
-from app.entities.user.model import User
-from app.entities.user.schemas import UserDelete
+from app.entities.core_user.crud import UserRepository
+from app.entities.core_user.model import User
+from app.entities.core_user.schemas import UserDelete
 from app.services.auth0.settings import auth_settings
 from app.services.permission.constants import (
     ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_ACCESS,

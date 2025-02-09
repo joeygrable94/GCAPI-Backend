@@ -4,11 +4,11 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.organization.constants import (
+from app.entities.core_organization.constants import (
     ERROR_MESSAGE_ORGANIZATION_NOT_FOUND,
     ERROR_MESSAGE_ORGANIZATION_RELATIONSHOP_NOT_FOUND,
 )
-from app.entities.user.constants import ERROR_MESSAGE_USER_NOT_FOUND
+from app.entities.core_user.constants import ERROR_MESSAGE_USER_NOT_FOUND
 from app.services.permission.constants import (
     ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_ACTION,
 )
@@ -47,8 +47,13 @@ async def test_organization_remove_random_user_as_user(
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
     a_user = await create_random_user(db_session)
     a_organization = await create_random_organization(db_session)
-    user_organization_rel = await assign_user_to_organization(db_session, a_user.id, a_organization.id)
-    user_organization_in = {"user_id": str(a_user.id), "organization_id": str(a_organization.id)}
+    user_organization_rel = await assign_user_to_organization(
+        db_session, a_user.id, a_organization.id
+    )
+    user_organization_in = {
+        "user_id": str(a_user.id),
+        "organization_id": str(a_organization.id),
+    }
     response: Response = await client.post(
         f"organizations/{a_organization.id}/remove/user",
         headers=current_user.token_headers,
@@ -85,8 +90,13 @@ async def test_organization_remove_current_user_as_user(
     current_user: ClientAuthorizedUser = request.getfixturevalue(client_user)
     this_user = await get_user_by_email(db_session, current_user.email)
     a_organization = await create_random_organization(db_session)
-    user_organization_rel = await assign_user_to_organization(db_session, this_user.id, a_organization.id)
-    user_organization_in = {"user_id": str(this_user.id), "organization_id": str(a_organization.id)}
+    user_organization_rel = await assign_user_to_organization(
+        db_session, this_user.id, a_organization.id
+    )
+    user_organization_in = {
+        "user_id": str(this_user.id),
+        "organization_id": str(a_organization.id),
+    }
     response: Response = await client.post(
         f"organizations/{a_organization.id}/remove/user",
         headers=current_user.token_headers,
@@ -123,7 +133,10 @@ async def test_organization_remove_user_as_user_missmatching_organization_id(
     a_organization = await create_random_organization(db_session)
     await assign_user_to_organization(db_session, a_user.id, a_organization.id)
     a_organization_bad_id = get_uuid_str()
-    user_organization_in = {"user_id": str(a_user.id), "organization_id": a_organization_bad_id}
+    user_organization_in = {
+        "user_id": str(a_user.id),
+        "organization_id": a_organization_bad_id,
+    }
     response: Response = await client.post(
         f"organizations/{a_organization.id}/remove/user",
         headers=current_user.token_headers,
@@ -158,7 +171,10 @@ async def test_organization_remove_user_as_user_user_not_exists(
     a_organization = await create_random_organization(db_session)
     await assign_user_to_organization(db_session, a_user.id, a_organization.id)
     a_organization_bad_id = get_uuid_str()
-    user_organization_in = {"user_id": a_organization_bad_id, "organization_id": str(a_organization.id)}
+    user_organization_in = {
+        "user_id": a_organization_bad_id,
+        "organization_id": str(a_organization.id),
+    }
     response: Response = await client.post(
         f"organizations/{a_organization.id}/remove/user",
         headers=current_user.token_headers,
@@ -176,7 +192,10 @@ async def test_organization_remove_user_as_superuser_relation_not_found(
 ) -> None:
     a_user = await create_random_user(db_session)
     a_organization = await create_random_organization(db_session)
-    user_organization_in = {"user_id": str(a_user.id), "organization_id": str(a_organization.id)}
+    user_organization_in = {
+        "user_id": str(a_user.id),
+        "organization_id": str(a_organization.id),
+    }
     response: Response = await client.post(
         f"organizations/{a_organization.id}/remove/user",
         headers=admin_user.token_headers,

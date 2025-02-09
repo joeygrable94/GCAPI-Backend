@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.user.crud import UserRepository
-from app.entities.user.model import User
+from app.entities.core_user.crud import UserRepository
+from app.entities.core_user.model import User
 from app.services.auth0.settings import auth_settings
 
 pytestmark = pytest.mark.asyncio

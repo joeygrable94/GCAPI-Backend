@@ -1,7 +1,7 @@
 from typing import Any
 from unittest.mock import MagicMock
 
-from app.entities.ipaddress.dependencies import get_request_ip
+from app.entities.core_ipaddress.dependencies import get_request_ip
 
 
 class MockRequest:

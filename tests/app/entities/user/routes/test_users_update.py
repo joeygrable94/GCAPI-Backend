@@ -4,9 +4,9 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.user.constants import ERROR_MESSAGE_USERNAME_EXISTS
-from app.entities.user.crud import UserRepository
-from app.entities.user.schemas import (
+from app.entities.core_user.constants import ERROR_MESSAGE_USERNAME_EXISTS
+from app.entities.core_user.crud import UserRepository
+from app.entities.core_user.schemas import (
     UserRead,
     UserReadAsAdmin,
     UserReadAsManager,

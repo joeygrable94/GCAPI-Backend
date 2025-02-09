@@ -2,9 +2,9 @@ from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.ipaddress.crud import IpaddressRepository
-from app.entities.ipaddress.model import Ipaddress
-from app.entities.ipaddress.schemas import (
+from app.entities.core_ipaddress.crud import IpaddressRepository
+from app.entities.core_ipaddress.model import Ipaddress
+from app.entities.core_ipaddress.schemas import (
     IpaddressCreate,
     IpaddressRead,
     IpinfoResponse,

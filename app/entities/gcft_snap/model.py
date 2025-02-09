@@ -10,13 +10,13 @@ from app.db.constants import DB_STR_16BIT_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_I
 from app.utilities.uuids import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
+    from app.entities.core_geocoord.model import Geocoord
     from app.entities.gcft.model import Gcft
     from app.entities.gcft_snap_active_duration.model import GcftSnapActiveduration
     from app.entities.gcft_snap_browser_report.model import GcftSnapBrowserreport
     from app.entities.gcft_snap_hotspot_click.model import GcftSnapHotspotclick
     from app.entities.gcft_snap_traffic_source.model import GcftSnapTrafficsource
     from app.entities.gcft_snap_view.model import GcftSnapView
-    from app.entities.geocoord.model import Geocoord
 
 
 class GcftSnap(Base):

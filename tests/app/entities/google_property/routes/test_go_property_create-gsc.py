@@ -10,8 +10,10 @@ from app.entities.api.constants import (
     ERROR_MESSAGE_ENTITY_NOT_FOUND,
     ERROR_MESSAGE_INPUT_SCHEMA_INVALID,
 )
+from app.entities.core_organization.constants import (
+    ERROR_MESSAGE_ORGANIZATION_NOT_FOUND,
+)
 from app.entities.go_property.schemas import GooglePlatformType
-from app.entities.organization.constants import ERROR_MESSAGE_ORGANIZATION_NOT_FOUND
 from app.utilities.uuids import get_uuid_str
 from tests.constants.schema import ClientAuthorizedUser
 from tests.utils.go_sc import create_random_go_search_console_property
@@ -66,9 +68,15 @@ async def test_create_go_property_gsc_as_user(
         this_user = await get_user_by_email(db_session, current_user.email)
         await assign_user_to_organization(db_session, this_user.id, b_organization.id)
         await assign_website_to_organization(db_session, a_website.id, a_website.id)
-        await assign_website_to_organization(db_session, a_website.id, b_organization.id)
-        await assign_website_to_organization(db_session, b_website.id, b_organization.id)
-        await assign_website_to_organization(db_session, c_website.id, b_organization.id)
+        await assign_website_to_organization(
+            db_session, a_website.id, b_organization.id
+        )
+        await assign_website_to_organization(
+            db_session, b_website.id, b_organization.id
+        )
+        await assign_website_to_organization(
+            db_session, c_website.id, b_organization.id
+        )
     data_in: dict[str, Any] = {
         "title": random_lower_string(),
         "organization_id": str(b_organization.id),

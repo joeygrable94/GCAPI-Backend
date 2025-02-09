@@ -2,10 +2,10 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.entities.auth.dependencies import PermissionController
-from app.entities.organization.crud import OrganizationRepository
-from app.entities.user.crud import UserRepository
-from app.entities.user.model import User
-from app.entities.user_organization.crud import UserOrganizationRepository
+from app.entities.core_organization.crud import OrganizationRepository
+from app.entities.core_user.crud import UserRepository
+from app.entities.core_user.model import User
+from app.entities.core_user_organization.crud import UserOrganizationRepository
 from app.services.auth0.settings import auth_settings
 from tests.utils.users import get_user_by_email
 

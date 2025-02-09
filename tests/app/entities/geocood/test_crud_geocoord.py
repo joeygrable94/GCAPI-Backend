@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.geocoord.crud import GeocoordRepository
-from app.entities.geocoord.model import Geocoord
+from app.entities.core_geocoord.crud import GeocoordRepository
+from app.entities.core_geocoord.model import Geocoord
 
 pytestmark = pytest.mark.asyncio
 

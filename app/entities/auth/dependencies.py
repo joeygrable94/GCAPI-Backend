@@ -10,9 +10,9 @@ from app.entities.auth.constants import (
     ERROR_MESSAGE_UNVERIFIED_ACCESS_DENIED,
 )
 from app.entities.auth.controller import PermissionController
-from app.entities.user.crud import UserRepository
-from app.entities.user.model import User
-from app.entities.user.schemas import UserCreate, UserUpdatePrivileges
+from app.entities.core_user.crud import UserRepository
+from app.entities.core_user.model import User
+from app.entities.core_user.schemas import UserCreate, UserUpdatePrivileges
 from app.services.auth0 import AuthUser, auth_controller
 from app.services.permission import (
     AclPrivilege,

@@ -4,18 +4,18 @@ from typing import List
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.organization.crud import OrganizationRepository
-from app.entities.organization.model import Organization
-from app.entities.organization.schemas import OrganizationCreate, OrganizationRead
+from app.entities.core_organization.crud import OrganizationRepository
+from app.entities.core_organization.model import Organization
+from app.entities.core_organization.schemas import OrganizationCreate, OrganizationRead
+from app.entities.core_user_organization.crud import UserOrganizationRepository
+from app.entities.core_user_organization.model import UserOrganization
+from app.entities.core_user_organization.schemas import UserOrganizationCreate
 from app.entities.organization_platform.crud import OrganizationPlatformRepository
 from app.entities.organization_platform.model import OrganizationPlatform
 from app.entities.organization_platform.schemas import OrganizationPlatformCreate
 from app.entities.organization_website.crud import OrganizationWebsiteRepository
 from app.entities.organization_website.model import OrganizationWebsite
 from app.entities.organization_website.schemas import OrganizationWebsiteCreate
-from app.entities.user_organization.crud import UserOrganizationRepository
-from app.entities.user_organization.model import UserOrganization
-from app.entities.user_organization.schemas import UserOrganizationCreate
 from tests.utils.utils import random_lower_string
 
 
@@ -49,9 +49,13 @@ async def assign_platform_to_organization(
     platform_id: UUID4,
     organization_id: UUID4,
 ) -> OrganizationPlatform:
-    repo: OrganizationPlatformRepository = OrganizationPlatformRepository(session=db_session)
+    repo: OrganizationPlatformRepository = OrganizationPlatformRepository(
+        session=db_session
+    )
     organization_platform: OrganizationPlatform = await repo.create(
-        schema=OrganizationPlatformCreate(organization_id=organization_id, platform_id=platform_id)
+        schema=OrganizationPlatformCreate(
+            organization_id=organization_id, platform_id=platform_id
+        )
     )
     return organization_platform
 
@@ -61,9 +65,13 @@ async def assign_website_to_organization(
     website_id: UUID4,
     organization_id: UUID4,
 ) -> OrganizationWebsite:
-    repo: OrganizationWebsiteRepository = OrganizationWebsiteRepository(session=db_session)
+    repo: OrganizationWebsiteRepository = OrganizationWebsiteRepository(
+        session=db_session
+    )
     organization_website: OrganizationWebsite = await repo.create(
-        schema=OrganizationWebsiteCreate(website_id=website_id, organization_id=organization_id)
+        schema=OrganizationWebsiteCreate(
+            website_id=website_id, organization_id=organization_id
+        )
     )
     return organization_website
 

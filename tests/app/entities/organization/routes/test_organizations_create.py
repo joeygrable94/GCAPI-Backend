@@ -10,7 +10,7 @@ from app.db.constants import (
     DB_STR_TINYTEXT_MAXLEN_INPUT,
 )
 from app.entities.auth.constants import ERROR_MESSAGE_UNVERIFIED_ACCESS_DENIED
-from app.entities.organization.constants import ERROR_MESSAGE_ORGANIZATION_EXISTS
+from app.entities.core_organization.constants import ERROR_MESSAGE_ORGANIZATION_EXISTS
 from tests.constants.schema import ClientAuthorizedUser
 from tests.utils.utils import random_lower_string
 

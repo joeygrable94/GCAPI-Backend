@@ -7,11 +7,11 @@ from sqlalchemy import Select
 from app.core.pagination import PageParams, Paginated, paginated_query
 from app.db.base_class import Base
 from app.entities.api.dependencies import AsyncDatabaseSession
-from app.entities.organization.crud import OrganizationRepository
-from app.entities.user.crud import UserRepository
-from app.entities.user.model import User
-from app.entities.user.schemas import UserUpdatePrivileges
-from app.entities.user_organization.crud import UserOrganizationRepository
+from app.entities.core_organization.crud import OrganizationRepository
+from app.entities.core_user.crud import UserRepository
+from app.entities.core_user.model import User
+from app.entities.core_user.schemas import UserUpdatePrivileges
+from app.entities.core_user_organization.crud import UserOrganizationRepository
 from app.services.permission import (
     ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_ACCESS,
     ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_ACTION,

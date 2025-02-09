@@ -1,12 +1,12 @@
 from app.core.logger import logger
-from app.entities.ipaddress.crud_utilities import (
+from app.entities.core_ipaddress.crud_utilities import (
     assign_ip_address_to_user,
     create_or_update_ipaddress,
     get_ipaddress_from_db,
 )
-from app.entities.ipaddress.model import Ipaddress
-from app.entities.ipaddress.schemas import IpinfoResponse
-from app.entities.ipaddress.utilities import get_ipinfo_details
+from app.entities.core_ipaddress.model import Ipaddress
+from app.entities.core_ipaddress.schemas import IpinfoResponse
+from app.entities.core_ipaddress.utilities import get_ipinfo_details
 from app.entities.website_pagespeedinsight.crud_utilities import (
     create_website_pagespeedinsights,
 )
@@ -27,7 +27,9 @@ async def bg_task_request_to_delete_user(user_id: str) -> None:
     )  # pragma: no cover
 
 
-async def bg_task_request_to_delete_organization(user_id: str, organization_id: str) -> None:
+async def bg_task_request_to_delete_organization(
+    user_id: str, organization_id: str
+) -> None:
     # TODO: Send email to organization admin emails to confirm deletion
     # TODO: flag organization as pending delete.
     logger.info(

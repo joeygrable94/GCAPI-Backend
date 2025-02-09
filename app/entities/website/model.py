@@ -23,11 +23,11 @@ from app.services.permission import (
 from app.utilities.uuids import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
+    from app.entities.core_organization.model import Organization
     from app.entities.go_ga4.model import GoAnalytics4Property
     from app.entities.go_ga4_stream.model import GoAnalytics4Stream
     from app.entities.go_gads.model import GoAdsProperty
     from app.entities.go_gsc.model import GoSearchConsoleProperty
-    from app.entities.organization.model import Organization
     from app.entities.website_keywordcorpus.model import WebsiteKeywordCorpus
     from app.entities.website_page.model import WebsitePage
     from app.entities.website_pagespeedinsight.model import WebsitePageSpeedInsights

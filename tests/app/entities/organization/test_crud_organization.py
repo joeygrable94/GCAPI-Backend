@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.organization.crud import OrganizationRepository
-from app.entities.organization.model import Organization
+from app.entities.core_organization.crud import OrganizationRepository
+from app.entities.core_organization.model import Organization
 
 pytestmark = pytest.mark.asyncio
 

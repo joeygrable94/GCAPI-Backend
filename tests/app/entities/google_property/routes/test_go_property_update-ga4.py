@@ -6,8 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.constants import DB_STR_TINYTEXT_MAXLEN_INPUT
 from app.entities.api.constants import ERROR_MESSAGE_ENTITY_EXISTS
+from app.entities.core_organization.constants import (
+    ERROR_MESSAGE_ORGANIZATION_NOT_FOUND,
+)
 from app.entities.go_property.schemas import GooglePlatformType
-from app.entities.organization.constants import ERROR_MESSAGE_ORGANIZATION_NOT_FOUND
 from app.utilities.uuids import get_uuid_str
 from tests.constants.schema import ClientAuthorizedUser
 from tests.utils.ga4 import create_random_ga4_property
@@ -47,7 +49,9 @@ async def test_update_go_property_ga4_as_user(
     if assign_organization:
         this_user = await get_user_by_email(db_session, current_user.email)
         await assign_user_to_organization(db_session, this_user.id, a_organization.id)
-    a_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
+    a_ga4 = await create_random_ga4_property(
+        db_session, a_organization.id, a_platform.id
+    )
     data_in: dict[str, Any] = {
         "title": random_lower_string(),
         "organization_id": str(a_organization.id),
@@ -101,7 +105,9 @@ async def test_update_go_property_ga4_as_superuser_limits(
     a_organization = await create_random_organization(db_session)
     this_user = await get_user_by_email(db_session, admin_user.email)
     await assign_user_to_organization(db_session, this_user.id, a_organization.id)
-    a_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
+    a_ga4 = await create_random_ga4_property(
+        db_session, a_organization.id, a_platform.id
+    )
     data_in: dict[str, Any] = {
         "title": title,
         "organization_id": str(a_organization.id),
@@ -132,8 +138,12 @@ async def test_update_go_property_ga4_as_superuser_title_exists(
     a_organization = await create_random_organization(db_session)
     this_user = await get_user_by_email(db_session, admin_user.email)
     await assign_user_to_organization(db_session, this_user.id, a_organization.id)
-    a_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
-    b_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
+    a_ga4 = await create_random_ga4_property(
+        db_session, a_organization.id, a_platform.id
+    )
+    b_ga4 = await create_random_ga4_property(
+        db_session, a_organization.id, a_platform.id
+    )
     data_in: dict[str, Any] = {
         "title": b_ga4.title,
         "organization_id": str(a_organization.id),
@@ -158,7 +168,9 @@ async def test_update_go_property_ga4_as_superuser_organization_not_found(
     a_organization = await create_random_organization(db_session)
     this_user = await get_user_by_email(db_session, admin_user.email)
     await assign_user_to_organization(db_session, this_user.id, a_organization.id)
-    a_ga4 = await create_random_ga4_property(db_session, a_organization.id, a_platform.id)
+    a_ga4 = await create_random_ga4_property(
+        db_session, a_organization.id, a_platform.id
+    )
     title = random_lower_string()
     bad_organization_id = get_uuid_str()
     data_in: dict[str, Any] = {

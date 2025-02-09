@@ -233,6 +233,15 @@ def validate_mime_type_optional(cls: Any, value: str | None) -> str | None:
     )
 
 
+def validate_change_type_required(cls: Any, value: str) -> str:
+    return require_string_name_min_max_len(
+        v=value,
+        name="change_type",
+        min_len=3,
+        max_len=DB_STR_64BIT_MAXLEN_INPUT,
+    )
+
+
 def validate_slug_required(cls: Any, value: str) -> str:
     return require_string_name_min_max_len(
         v=value,

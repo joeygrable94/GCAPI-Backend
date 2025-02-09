@@ -9,20 +9,20 @@ from app.core.logger import logger
 from app.db.base import Base
 from app.db.constants import DB_STR_USER_PICTURE_DEFAULT, MASTER_PLATFORM_INDEX
 from app.db.session import async_session, engine
-from app.entities.organization.crud import OrganizationRepository
-from app.entities.organization.model import Organization
-from app.entities.organization.schemas import OrganizationCreate
+from app.entities.core_organization.crud import OrganizationRepository
+from app.entities.core_organization.model import Organization
+from app.entities.core_organization.schemas import OrganizationCreate
+from app.entities.core_user.crud import UserRepository
+from app.entities.core_user.model import User
+from app.entities.core_user.schemas import UserCreate
+from app.entities.core_user_organization.crud import UserOrganizationRepository
+from app.entities.core_user_organization.model import UserOrganization
+from app.entities.core_user_organization.schemas import UserOrganizationCreate
 from app.entities.organization_platform.crud import OrganizationPlatformRepository
 from app.entities.organization_platform.schemas import OrganizationPlatformCreate
 from app.entities.platform.crud import PlatformRepository
 from app.entities.platform.model import Platform
 from app.entities.platform.schemas import PlatformCreate
-from app.entities.user.crud import UserRepository
-from app.entities.user.model import User
-from app.entities.user.schemas import UserCreate
-from app.entities.user_organization.crud import UserOrganizationRepository
-from app.entities.user_organization.model import UserOrganization
-from app.entities.user_organization.schemas import UserOrganizationCreate
 from app.services.auth0 import auth_settings
 from app.services.permission import AclPrivilege
 

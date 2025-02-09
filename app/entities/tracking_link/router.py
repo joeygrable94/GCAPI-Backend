@@ -16,7 +16,7 @@ from app.entities.auth.dependencies import (
     get_current_user,
     get_permission_controller,
 )
-from app.entities.organization.errors import OrganizationNotFound
+from app.entities.core_organization.errors import OrganizationNotFound
 from app.entities.tracking_link.crud import TrackingLinkRepository
 from app.entities.tracking_link.dependencies import get_tracking_link_or_404
 from app.entities.tracking_link.model import TrackingLink
@@ -151,10 +151,13 @@ async def tracking_link_create(
     """
 
     await permissions.verify_user_can_access(
-        privileges=[RoleAdmin, RoleManager], organization_id=tracking_link_in.organization_id
+        privileges=[RoleAdmin, RoleManager],
+        organization_id=tracking_link_in.organization_id,
     )
     if tracking_link_in.organization_id is not None:
-        organization_exists = await permissions.organization_repo.read(tracking_link_in.organization_id)
+        organization_exists = await permissions.organization_repo.read(
+            tracking_link_in.organization_id
+        )
         if organization_exists is None:
             raise OrganizationNotFound()
     links_repo = TrackingLinkRepository(permissions.db)
@@ -278,7 +281,9 @@ async def tracking_link_update(
             privileges=[RoleAdmin, RoleManager],
             organization_id=tracking_link_in.organization_id,
         )
-        organization_exists = await permissions.organization_repo.read(tracking_link_in.organization_id)
+        organization_exists = await permissions.organization_repo.read(
+            tracking_link_in.organization_id
+        )
         if organization_exists is None:
             raise OrganizationNotFound()
     links_repo = TrackingLinkRepository(permissions.db)

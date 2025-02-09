@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.constants import DB_STR_DESC_MAXLEN_INPUT, DB_STR_TINYTEXT_MAXLEN_INPUT
 from app.entities.auth.constants import ERROR_MESSAGE_UNVERIFIED_ACCESS_DENIED
-from app.entities.organization.constants import ERROR_MESSAGE_ORGANIZATION_EXISTS
+from app.entities.core_organization.constants import ERROR_MESSAGE_ORGANIZATION_EXISTS
 from app.services.permission.constants import (
     ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_ACTION,
 )

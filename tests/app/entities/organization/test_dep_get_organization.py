@@ -2,9 +2,9 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.entities.api.errors import InvalidID
-from app.entities.organization.dependencies import get_organization_or_404
-from app.entities.organization.errors import OrganizationNotFound
-from app.entities.organization.model import Organization
+from app.entities.core_organization.dependencies import get_organization_or_404
+from app.entities.core_organization.errors import OrganizationNotFound
+from app.entities.core_organization.model import Organization
 from app.utilities import get_uuid_str
 from tests.utils.organizations import create_random_organization
 

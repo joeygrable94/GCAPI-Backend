@@ -1,9 +1,9 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.ipaddress.crud_utilities import assign_ip_address_to_user
-from app.entities.user_ipaddress.crud import UserIpaddressRepository
-from app.entities.user_ipaddress.model import UserIpaddress
+from app.entities.core_ipaddress.crud_utilities import assign_ip_address_to_user
+from app.entities.core_user_ipaddress.crud import UserIpaddressRepository
+from app.entities.core_user_ipaddress.model import UserIpaddress
 from app.services.auth0.settings import auth_settings
 from tests.utils.ipaddress import create_random_ipaddress
 from tests.utils.users import get_user_by_email

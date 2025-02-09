@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.ipaddress.crud import IpaddressRepository
-from app.entities.ipaddress.model import Ipaddress
+from app.entities.core_ipaddress.crud import IpaddressRepository
+from app.entities.core_ipaddress.model import Ipaddress
 
 pytestmark = pytest.mark.asyncio
 

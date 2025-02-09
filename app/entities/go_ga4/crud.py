@@ -4,15 +4,15 @@ from sqlalchemy import BinaryExpression, Select, and_
 from sqlalchemy import select as sql_select
 
 from app.core.crud import BaseRepository
+from app.entities.core_organization.model import Organization
+from app.entities.core_user.model import User
+from app.entities.core_user_organization.model import UserOrganization
 from app.entities.go_ga4.model import GoAnalytics4Property
 from app.entities.go_ga4.schemas import (
     GoAnalytics4PropertyCreate,
     GoAnalytics4PropertyRead,
     GoAnalytics4PropertyUpdate,
 )
-from app.entities.organization.model import Organization
-from app.entities.user.model import User
-from app.entities.user_organization.model import UserOrganization
 
 
 class GoAnalytics4PropertyRepository(

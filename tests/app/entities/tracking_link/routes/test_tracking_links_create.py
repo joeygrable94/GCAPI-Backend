@@ -5,7 +5,9 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.entities.api.constants import ERROR_MESSAGE_ENTITY_EXISTS
-from app.entities.organization.constants import ERROR_MESSAGE_ORGANIZATION_NOT_FOUND
+from app.entities.core_organization.constants import (
+    ERROR_MESSAGE_ORGANIZATION_NOT_FOUND,
+)
 from app.services.permission.constants import (
     ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_ACCESS,
 )

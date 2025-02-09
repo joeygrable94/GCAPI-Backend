@@ -7,7 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.config import settings
-from app.entities.ipaddress.dependencies import get_request_ip
+from app.entities.core_ipaddress.dependencies import get_request_ip
 
 
 def configure_middleware(app: FastAPI) -> None:

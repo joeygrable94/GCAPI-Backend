@@ -4,10 +4,10 @@ import pytest
 from ipinfo.details import Details  # type: ignore
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.ipaddress.crud import IpaddressRepository
-from app.entities.ipaddress.model import Ipaddress
-from app.entities.user_ipaddress.crud import UserIpaddressRepository
-from app.entities.user_ipaddress.model import UserIpaddress
+from app.entities.core_ipaddress.crud import IpaddressRepository
+from app.entities.core_ipaddress.model import Ipaddress
+from app.entities.core_user_ipaddress.crud import UserIpaddressRepository
+from app.entities.core_user_ipaddress.model import UserIpaddress
 from app.services.auth0.settings import auth_settings
 from app.tasks.background import bg_task_track_user_ipinfo
 from tests.utils.users import get_user_by_email
@@ -44,7 +44,7 @@ async def test_worker_task_fetch_ipinfo(
     user_a = await get_user_by_email(db_session, auth_settings.first_admin)
     ip_address = "8.8.8.8"
     with unittest.mock.patch(
-        "app.entities.ipaddress.utilities.ipinfo_handler.getDetails"
+        "app.entities.core_ipaddress.utilities.ipinfo_handler.getDetails"
     ) as mock_ipinfo_details:
         mock_details = Details(
             details=dict(
@@ -78,7 +78,7 @@ async def test_worker_task_fetch_ipinfo_random_ipaddress(
     user_a = await get_user_by_email(db_session, auth_settings.first_admin)
     ip_address = random_ipaddress()
     with unittest.mock.patch(
-        "app.entities.ipaddress.utilities.ipinfo_handler.getDetails"
+        "app.entities.core_ipaddress.utilities.ipinfo_handler.getDetails"
     ) as mock_ipinfo_details:
         mock_details = Details(
             details=dict(

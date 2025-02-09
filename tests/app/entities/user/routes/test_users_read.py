@@ -5,9 +5,9 @@ from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.entities.api.constants import ERROR_MESSAGE_ID_INVALID
-from app.entities.user.constants import ERROR_MESSAGE_USER_NOT_FOUND
-from app.entities.user.crud import UserRepository
-from app.entities.user.model import User
+from app.entities.core_user.constants import ERROR_MESSAGE_USER_NOT_FOUND
+from app.entities.core_user.crud import UserRepository
+from app.entities.core_user.model import User
 from app.services.auth0.settings import auth_settings
 from app.services.permission.constants import ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS
 from app.utilities import get_uuid_str

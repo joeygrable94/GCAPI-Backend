@@ -4,15 +4,15 @@ from sqlalchemy import BinaryExpression, Select, and_
 from sqlalchemy import select as sql_select
 
 from app.core.crud import BaseRepository
+from app.entities.core_organization.model import Organization
+from app.entities.core_user.model import User
+from app.entities.core_user_organization.model import UserOrganization
 from app.entities.go_gads.model import GoAdsProperty
 from app.entities.go_gads.schemas import (
     GoAdsPropertyCreate,
     GoAdsPropertyRead,
     GoAdsPropertyUpdate,
 )
-from app.entities.organization.model import Organization
-from app.entities.user.model import User
-from app.entities.user_organization.model import UserOrganization
 from app.entities.website_go_gads.model import WebsiteGoAdsProperty
 
 
@@ -38,13 +38,20 @@ class GoAdsPropertyRepository(
         conditions: list[BinaryExpression[bool]] = []
         if user_id:
             stmt = (
-                stmt.join(Organization, GoAdsProperty.organization_id == Organization.id)
-                .join(UserOrganization, Organization.id == UserOrganization.organization_id)
+                stmt.join(
+                    Organization, GoAdsProperty.organization_id == Organization.id
+                )
+                .join(
+                    UserOrganization,
+                    Organization.id == UserOrganization.organization_id,
+                )
                 .join(User, UserOrganization.user_id == User.id)
             )
             conditions.append(User.id.like(user_id))
         if organization_id:
-            stmt = stmt.join(Organization, GoAdsProperty.organization_id == Organization.id)
+            stmt = stmt.join(
+                Organization, GoAdsProperty.organization_id == Organization.id
+            )
             conditions.append(Organization.id.like(organization_id))
         if website_id:
             stmt = stmt.join(

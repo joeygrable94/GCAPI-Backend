@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 
+from app.entities.core_organization.router import router as organization_router
+from app.entities.core_user.router import router as users_router
 from app.entities.go_property.router import router as go_property_router
-from app.entities.organization.router import router as organization_router
 from app.entities.platform.router import router as platform_router
 from app.entities.public.router import router as public_router
 from app.entities.security.router import router as security_router
 from app.entities.tracking_link.router import router as tracking_links_router
-from app.entities.user.router import router as users_router
 from app.entities.website.router import router as websites_router
 from app.entities.website_keywordcorpus.router import router as web_keywordcorpus_router
 from app.entities.website_page.router import router as web_pages_router

@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
 from app.entities.api.exceptions import configure_api_exceptions
-from app.entities.organization.exceptions import configure_organization_exceptions
-from app.entities.user.exceptions import configure_user_exceptions
+from app.entities.core_organization.exceptions import configure_organization_exceptions
+from app.entities.core_user.exceptions import configure_user_exceptions
 from app.entities.website.exceptions import configure_website_exceptions
 from app.services.auth0 import configure_authorization_exceptions
 from app.services.csrf import configure_csrf_exceptions

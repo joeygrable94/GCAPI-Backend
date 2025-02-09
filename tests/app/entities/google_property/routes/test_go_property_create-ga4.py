@@ -9,8 +9,10 @@ from app.entities.api.constants import (
     ERROR_MESSAGE_ENTITY_EXISTS,
     ERROR_MESSAGE_INPUT_SCHEMA_INVALID,
 )
+from app.entities.core_organization.constants import (
+    ERROR_MESSAGE_ORGANIZATION_NOT_FOUND,
+)
 from app.entities.go_property.schemas import GooglePlatformType
-from app.entities.organization.constants import ERROR_MESSAGE_ORGANIZATION_NOT_FOUND
 from app.utilities.uuids import get_uuid_str
 from tests.constants.schema import ClientAuthorizedUser
 from tests.utils.ga4 import create_random_ga4_property

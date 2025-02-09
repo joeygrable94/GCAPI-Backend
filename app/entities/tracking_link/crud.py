@@ -4,15 +4,15 @@ from sqlalchemy import BinaryExpression, Select, and_
 from sqlalchemy import select as sql_select
 
 from app.core.crud import BaseRepository
-from app.entities.organization.model import Organization
+from app.entities.core_organization.model import Organization
+from app.entities.core_user.model import User
+from app.entities.core_user_organization.model import UserOrganization
 from app.entities.tracking_link.model import TrackingLink
 from app.entities.tracking_link.schemas import (
     TrackingLinkCreate,
     TrackingLinkRead,
     TrackingLinkUpdate,
 )
-from app.entities.user.model import User
-from app.entities.user_organization.model import UserOrganization
 
 
 class TrackingLinkRepository(
@@ -44,7 +44,10 @@ class TrackingLinkRepository(
         if user_id:
             stmt = (
                 stmt.join(Organization, TrackingLink.organization_id == Organization.id)
-                .join(UserOrganization, Organization.id == UserOrganization.organization_id)
+                .join(
+                    UserOrganization,
+                    Organization.id == UserOrganization.organization_id,
+                )
                 .join(User, UserOrganization.user_id == User.id)
             )
             conditions.append(User.id.like(user_id))

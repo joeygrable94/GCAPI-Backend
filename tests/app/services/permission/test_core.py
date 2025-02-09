@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.user.model import User
+from app.entities.core_user.model import User
 from app.services.permission import (
     DENY_ALL,
     AclAction,

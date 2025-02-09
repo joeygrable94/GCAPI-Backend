@@ -29,8 +29,8 @@ from app.services.permission import (
 from app.utilities.uuids import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
+    from app.entities.core_organization.model import Organization
     from app.entities.go_ga4_stream.model import GoAnalytics4Stream
-    from app.entities.organization.model import Organization
     from app.entities.website.model import Website
 
 

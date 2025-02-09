@@ -4,8 +4,10 @@ import pytest
 from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.organization.constants import ERROR_MESSAGE_ORGANIZATION_NOT_FOUND
-from app.entities.organization.crud import OrganizationRepository
+from app.entities.core_organization.constants import (
+    ERROR_MESSAGE_ORGANIZATION_NOT_FOUND,
+)
+from app.entities.core_organization.crud import OrganizationRepository
 from app.utilities import get_uuid_str
 from tests.constants.schema import ClientAuthorizedUser
 from tests.utils.organizations import (

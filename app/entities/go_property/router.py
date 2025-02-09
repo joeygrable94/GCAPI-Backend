@@ -13,6 +13,9 @@ from app.entities.auth.dependencies import (
     get_current_user,
     get_permission_controller,
 )
+from app.entities.core_organization.crud import OrganizationRepository
+from app.entities.core_organization.errors import OrganizationNotFound
+from app.entities.core_organization.model import Organization
 from app.entities.go_ga4.crud import GoAnalytics4PropertyRepository
 from app.entities.go_ga4.model import GoAnalytics4Property
 from app.entities.go_ga4.schemas import (
@@ -47,9 +50,6 @@ from app.entities.go_gsc.schemas import (
 )
 from app.entities.go_property.dependencies import get_go_property_or_404
 from app.entities.go_property.schemas import GooglePlatformType
-from app.entities.organization.crud import OrganizationRepository
-from app.entities.organization.errors import OrganizationNotFound
-from app.entities.organization.model import Organization
 from app.entities.platform.crud import PlatformRepository
 from app.entities.website.crud import WebsiteRepository
 from app.entities.website.model import Website
@@ -119,7 +119,8 @@ async def go_property_list(
             )
         else:
             select_stmt = ga4_repo.query_list(
-                user_id=permissions.current_user.id, organization_id=query.organization_id
+                user_id=permissions.current_user.id,
+                organization_id=query.organization_id,
             )
         response_out: Paginated[
             GoAnalytics4PropertyRead
@@ -296,7 +297,9 @@ async def go_property_create(
             raise EntityAlreadyExists(
                 entity_info=f"GoAnalytics4Property {go_property_in.title}"
             )
-        organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
+        organization_repo: OrganizationRepository = OrganizationRepository(
+            session=permissions.db
+        )
         a_organization: Organization | None = await organization_repo.read(
             entry_id=go_property_in.organization_id
         )
@@ -398,7 +401,9 @@ async def go_property_create(
                     a_go_sc_organization_website.id,
                 )
             )
-        organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
+        organization_repo: OrganizationRepository = OrganizationRepository(
+            session=permissions.db
+        )
         a_organization: Organization | None = await organization_repo.read(
             entry_id=go_property_in.organization_id
         )
@@ -438,7 +443,9 @@ async def go_property_create(
             raise EntityAlreadyExists(
                 entity_info=f"GoAdsProperty({go_property_in.title})"
             )
-        organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
+        organization_repo: OrganizationRepository = OrganizationRepository(
+            session=permissions.db
+        )
         a_organization: Organization | None = await organization_repo.read(
             entry_id=go_property_in.organization_id
         )
@@ -597,7 +604,9 @@ async def go_property_update(
                 entity_info=f"GoAnalytics4property title = {go_property_in.title})"
             )
         if hasattr(go_property_in, "organization_id"):
-            organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
+            organization_repo: OrganizationRepository = OrganizationRepository(
+                session=permissions.db
+            )
             a_organization: Organization | None = await organization_repo.read(
                 entry_id=go_property_in.organization_id
             )
@@ -671,8 +680,12 @@ async def go_property_update(
                 entity_info=f"GoSearchConsoleProperty title = {go_property_in.title})"
             )
         if check_organization_id is not None:
-            organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
-            a_organization: Organization | None = await organization_repo.read(entry_id=check_organization_id)
+            organization_repo: OrganizationRepository = OrganizationRepository(
+                session=permissions.db
+            )
+            a_organization: Organization | None = await organization_repo.read(
+                entry_id=check_organization_id
+            )
             if a_organization is None:
                 raise OrganizationNotFound()
             await permissions.verify_user_can_access(
@@ -713,7 +726,9 @@ async def go_property_update(
                 entity_info=f"GoAdsProperty title = {go_property_in.title})"
             )
         if hasattr(go_property_in, "organization_id"):
-            organization_repo: OrganizationRepository = OrganizationRepository(session=permissions.db)
+            organization_repo: OrganizationRepository = OrganizationRepository(
+                session=permissions.db
+            )
             a_organization: Organization | None = await organization_repo.read(
                 entry_id=go_property_in.organization_id
             )

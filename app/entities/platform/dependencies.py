@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from app.entities.api.dependencies import AsyncDatabaseSession
 from app.entities.api.errors import EntityNotFound
-from app.entities.organization.crud import Organization
+from app.entities.core_organization.crud import Organization
 from app.entities.platform.crud import Platform, PlatformRepository
 from app.utilities import parse_id
 

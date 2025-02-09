@@ -4,7 +4,9 @@ from sqlalchemy import Select
 from sqlalchemy import select as sql_select
 
 from app.core.crud import BaseRepository
-from app.entities.organization.model import Organization
+from app.entities.core_organization.model import Organization
+from app.entities.core_user.model import User
+from app.entities.core_user_organization.model import UserOrganization
 from app.entities.organization_platform.model import OrganizationPlatform
 from app.entities.platform.model import Platform
 from app.entities.platform.schemas import (
@@ -12,8 +14,6 @@ from app.entities.platform.schemas import (
     PlatformRead,
     PlatformUpdateAsAdmin,
 )
-from app.entities.user.model import User
-from app.entities.user_organization.model import UserOrganization
 
 
 class PlatformRepository(
@@ -32,16 +32,31 @@ class PlatformRepository(
         stmt: Select = sql_select(self._table)
         if user_id:
             stmt = (
-                stmt.join(OrganizationPlatform, Platform.id == OrganizationPlatform.platform_id)
-                .join(Organization, OrganizationPlatform.organization_id == Organization.id)
-                .join(UserOrganization, Organization.id == UserOrganization.organization_id)
+                stmt.join(
+                    OrganizationPlatform,
+                    Platform.id == OrganizationPlatform.platform_id,
+                )
+                .join(
+                    Organization,
+                    OrganizationPlatform.organization_id == Organization.id,
+                )
+                .join(
+                    UserOrganization,
+                    Organization.id == UserOrganization.organization_id,
+                )
                 .join(User, UserOrganization.user_id == User.id)
                 .where(User.id == user_id)
             )
         if organization_id:
             stmt = (
-                stmt.join(OrganizationPlatform, Platform.id == OrganizationPlatform.platform_id)
-                .join(Organization, OrganizationPlatform.organization_id == Organization.id)
+                stmt.join(
+                    OrganizationPlatform,
+                    Platform.id == OrganizationPlatform.platform_id,
+                )
+                .join(
+                    Organization,
+                    OrganizationPlatform.organization_id == Organization.id,
+                )
                 .where(Organization.id == organization_id)
             )
         if is_active is not None:

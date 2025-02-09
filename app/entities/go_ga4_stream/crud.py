@@ -4,6 +4,9 @@ from sqlalchemy import BinaryExpression, Select, and_
 from sqlalchemy import select as sql_select
 
 from app.core.crud import BaseRepository
+from app.entities.core_organization.model import Organization
+from app.entities.core_user.model import User
+from app.entities.core_user_organization.model import UserOrganization
 from app.entities.go_ga4.model import GoAnalytics4Property
 from app.entities.go_ga4_stream.model import GoAnalytics4Stream
 from app.entities.go_ga4_stream.schemas import (
@@ -11,10 +14,7 @@ from app.entities.go_ga4_stream.schemas import (
     GoAnalytics4StreamRead,
     GoAnalytics4StreamUpdate,
 )
-from app.entities.organization.model import Organization
 from app.entities.organization_website.model import OrganizationWebsite
-from app.entities.user.model import User
-from app.entities.user_organization.model import UserOrganization
 from app.entities.website.model import Website
 
 
@@ -42,8 +42,13 @@ class GoAnalytics4StreamRepository(
             stmt = (
                 stmt.join(Website, GoAnalytics4Stream.website_id == Website.id)
                 .join(OrganizationWebsite, Website.id == OrganizationWebsite.website_id)
-                .join(Organization, OrganizationWebsite.organization_id == Organization.id)
-                .join(UserOrganization, Organization.id == UserOrganization.organization_id)
+                .join(
+                    Organization, OrganizationWebsite.organization_id == Organization.id
+                )
+                .join(
+                    UserOrganization,
+                    Organization.id == UserOrganization.organization_id,
+                )
                 .join(User, UserOrganization.user_id == User.id)
             )
             conditions.append(User.id.like(user_id))
