@@ -14,7 +14,7 @@ app = Typer()
 
 @app.command()
 @cli_coro()
-async def check_db_connection() -> None:
+async def check() -> None:
     try:
         await check_db_connected()
     except Exception as e:
@@ -23,7 +23,7 @@ async def check_db_connection() -> None:
 
 @app.command()
 @cli_coro()
-async def create_db() -> None:
+async def create() -> None:
     try:
         logger.info("Create Database")
         await build_database()
@@ -33,7 +33,7 @@ async def create_db() -> None:
 
 @app.command()
 @cli_coro()
-async def add_initial_data() -> None:
+async def seed() -> None:
     try:
         logger.info("Load Initial Data")
         count = await create_init_data()
@@ -43,7 +43,7 @@ async def add_initial_data() -> None:
 
 
 @app.command()
-def generate_schema_graph() -> None:
+def make_schema_graph() -> None:
     try:
         logger.info("Generating Schema Graph")
         app_name = settings.api.name.lower()
