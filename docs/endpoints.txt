@@ -1,5 +1,4 @@
 /api/v1/status
-/api/v1/test-scope
 /api/v1/csrf
 /api/v1/csrf
 /api/v1/encrypt/message

@@ -10,7 +10,7 @@ from app.entities.website_page.utilities import create_or_update_website_page
 from tests.utils.utils import random_domain
 from tests.utils.websites import create_random_website
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 class MockRequestUrlopenResponse:

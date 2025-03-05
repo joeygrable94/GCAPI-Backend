@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import UUID4
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import UUIDType
 
 from app.db.base_class import Base
@@ -22,7 +22,7 @@ from app.services.permission import (
 from app.utilities.uuids import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
-    pass
+    from app.entities.core_user.model import User
 
 
 class Role(Base):
@@ -42,6 +42,10 @@ class Role(Base):
         index=True,
         unique=True,
         nullable=False,
+    )
+
+    users: Mapped[list["User"]] = relationship(
+        "User", secondary="user_role", back_populates="roles"
     )
 
     def __acl__(

@@ -8,10 +8,10 @@ def configure_clerk_authorization_exceptions(app: FastAPI) -> None:
     @app.exception_handler(ClerkUnauthenticatedException)
     async def clerk_unauthenticated_exception_handler(
         request: Request, exc: ClerkUnauthenticatedException
-    ) -> Response:
+    ) -> Response:  # pragma: no cover
         request_headers: dict[str, str] = {}
         if exc.headers is not None:
-            request_headers.update(exc.headers)  # pragma: no cover
+            request_headers.update(exc.headers)
         return await http_exception_handler(
             request,
             HTTPException(
@@ -24,7 +24,7 @@ def configure_clerk_authorization_exceptions(app: FastAPI) -> None:
     @app.exception_handler(ClerkUnauthorizedException)
     async def clerk_unauthorized_exception_handler(
         request: Request, exc: ClerkUnauthorizedException
-    ) -> Response:
+    ) -> Response:  # pragma: no cover
         request_headers: dict[str, str] = {}
         if exc.headers is not None:
             request_headers.update(exc.headers)

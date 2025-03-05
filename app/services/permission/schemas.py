@@ -22,7 +22,7 @@ Authenticated: AclPrivilege = AclPrivilege("system:authenticated")
 # role based privileges: client, employee, manager, user
 RoleAdmin: AclPrivilege = AclPrivilege("role:admin")
 RoleManager: AclPrivilege = AclPrivilege("role:manager")
-RoleClient: AclPrivilege = AclPrivilege("role:client")
+RoleClient: AclPrivilege = AclPrivilege("role:organization")
 RoleEmployee: AclPrivilege = AclPrivilege("role:employee")
 RoleUser: AclPrivilege = AclPrivilege("role:user")
 

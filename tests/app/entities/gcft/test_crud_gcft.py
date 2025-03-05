@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.entities.gcft.crud import GcftRepository
 from app.entities.gcft.model import Gcft
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_gcft_repo_table(db_session: AsyncSession) -> None:

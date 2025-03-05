@@ -15,21 +15,21 @@ from app.entities.api.dependencies import (
 )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_dep_verify_content_length_okay() -> None:
     underload_limit: int = settings.api.payload_limit - 10
     await verify_content_length(content_length=underload_limit)
     assert True
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_dep_verify_content_length_too_large() -> None:
     with pytest.raises(HTTPException):
         overload_limit: int = settings.api.payload_limit + 10
         await verify_content_length(content_length=overload_limit)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_dep_verify_content_type_accepted() -> None:
     await verify_content_type(content_type="pdf")
     await verify_content_type(content_type="csv")
@@ -37,7 +37,7 @@ async def test_dep_verify_content_type_accepted() -> None:
     assert True
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_dep_verify_content_type_not_accepted() -> None:
     with pytest.raises(HTTPException):
         await verify_content_type(content_type="c")
@@ -47,7 +47,7 @@ async def test_dep_verify_content_type_not_accepted() -> None:
         await verify_content_type(content_type="zip")
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_async_db() -> None:
     async for session in get_async_db():
         assert session is not None

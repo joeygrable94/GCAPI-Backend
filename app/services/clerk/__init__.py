@@ -6,7 +6,6 @@ from .settings import ClerkSettings, clerk_settings, get_clerk_settings
 
 clerk_controller = ClerkAuth(
     secret_key=clerk_settings.secret_key,
-    jwks_url=clerk_settings.jwks_url,
     issuer=clerk_settings.issuer,
     pem_public_key=clerk_settings.pem_public_key,
 )
@@ -21,4 +20,5 @@ __all__: list[str] = [
     "ClerkSettings",
     "clerk_settings",
     "get_clerk_settings",
+    "clerk_controller",
 ]

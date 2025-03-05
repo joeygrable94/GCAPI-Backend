@@ -8,12 +8,11 @@ from app.entities.core_ipaddress.crud import IpaddressRepository
 from app.entities.core_ipaddress.model import Ipaddress
 from app.entities.core_user_ipaddress.crud import UserIpaddressRepository
 from app.entities.core_user_ipaddress.model import UserIpaddress
-from app.services.auth0.settings import auth_settings
 from app.tasks.background import bg_task_track_user_ipinfo
-from tests.utils.users import get_user_by_email
+from tests.utils.users import create_core_user
 from tests.utils.utils import random_ipaddress
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 mock_details_dict = dict(
@@ -41,7 +40,7 @@ mock_details_dict = dict(
 async def test_worker_task_fetch_ipinfo(
     db_session: AsyncSession,
 ) -> None:
-    user_a = await get_user_by_email(db_session, auth_settings.first_admin)
+    user_a = await create_core_user(db_session, "admin")
     ip_address = "8.8.8.8"
     with unittest.mock.patch(
         "app.entities.core_ipaddress.utilities.ipinfo_handler.getDetails"
@@ -75,7 +74,7 @@ async def test_worker_task_fetch_ipinfo(
 async def test_worker_task_fetch_ipinfo_random_ipaddress(
     db_session: AsyncSession,
 ) -> None:
-    user_a = await get_user_by_email(db_session, auth_settings.first_admin)
+    user_a = await create_core_user(db_session, "admin")
     ip_address = random_ipaddress()
     with unittest.mock.patch(
         "app.entities.core_ipaddress.utilities.ipinfo_handler.getDetails"

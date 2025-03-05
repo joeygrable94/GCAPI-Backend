@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.routing import APIRoute
 
 
-def make_routes_map(app: FastAPI) -> None:
+def make_routes_map(app: FastAPI) -> None:  # pragma: no cover
     endpoints = []
     for route in app.routes:
         if isinstance(route, APIRoute):

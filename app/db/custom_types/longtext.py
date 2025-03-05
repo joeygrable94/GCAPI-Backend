@@ -15,7 +15,7 @@ class LongText(types.UserDefinedType):
         self.length = length
 
     def get_col_spec(self, **kw: dict) -> str:
-        return "LONGBLOB"
+        return "TEXT"
 
     def bind_processor(
         self, dialect: Dialect

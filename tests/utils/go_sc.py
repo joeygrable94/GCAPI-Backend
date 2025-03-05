@@ -12,7 +12,10 @@ from tests.utils.utils import random_lower_string
 
 
 async def create_random_go_search_console_property(
-    db_session: AsyncSession, organization_id: UUID4, website_id: UUID4, platform_id: UUID4
+    db_session: AsyncSession,
+    organization_id: UUID4,
+    website_id: UUID4,
+    platform_id: UUID4,
 ) -> GoSearchConsolePropertyRead:
     repo: GoSearchConsolePropertyRepository = GoSearchConsolePropertyRepository(
         session=db_session

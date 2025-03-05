@@ -21,7 +21,9 @@ exp.py
 !app_cert.pem
 !app_key.pem
 
-# PyTest / Coverage / Lint
+# PyTest / Coverage / Lint / Profiling
+prof
+_profiles.md
 htmlcov
 coverage.xml
 .pytest_cache

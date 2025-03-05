@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.entities.website.crud import WebsiteRepository
 from app.entities.website.model import Website
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_website_repo_table(db_session: AsyncSession) -> None:

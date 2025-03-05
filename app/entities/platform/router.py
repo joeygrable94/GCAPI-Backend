@@ -26,8 +26,6 @@ from app.entities.platform.schemas import (
 )
 from app.services.permission import (
     AccessDelete,
-    AccessDeleteRelated,
-    AccessDeleteSelf,
     AccessRead,
     AccessReadRelated,
     AccessReadSelf,
@@ -238,7 +236,8 @@ async def platform_update(
         schema_privileges={
             RoleAdmin: PlatformUpdateAsAdmin,
             RoleManager: PlatformUpdateAsManager,
-            RoleUser: PlatformUpdate,
+            RoleEmployee: PlatformUpdate,
+            RoleClient: None,
         },
     )
     await permissions.verify_user_can_access(
@@ -282,9 +281,7 @@ async def platform_update(
     response_model=None,
 )
 async def platform_delete(
-    platform: Platform = Permission(
-        [AccessDelete, AccessDeleteSelf, AccessDeleteRelated], get_platform_404
-    ),
+    platform: Platform = Permission([AccessDelete], get_platform_404),
     permissions: PermissionController = Depends(get_permission_controller),
 ) -> None:
     """Delete a platform account by id.

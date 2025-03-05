@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.entities.core_user_ipaddress.crud import UserIpaddressRepository
 from app.entities.core_user_ipaddress.model import UserIpaddress
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_user_ipaddress_repo_table(db_session: AsyncSession) -> None:

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, Response, Security
+from fastapi import APIRouter, Depends, Request, Response
 
 from app.config import Settings, get_settings
 from app.entities.auth.dependencies import CurrentUser, get_current_user
@@ -6,21 +6,10 @@ from app.entities.security.dependencies import (
     SecureMessageEncryption,
     get_secure_message_encryption,
 )
-from app.services.auth0 import AuthUser, auth_controller
 from app.services.csrf import CsrfProtect, CsrfToken, csrf_settings
 from app.services.encryption import EncryptedMessage, PlainMessage
 
 router: APIRouter = APIRouter()
-
-
-@router.get(
-    "/test-scope",
-    name="secure:test_security_scope",
-)
-async def check_test_token_scope(
-    user: AuthUser = Security(auth_controller.get_user, scopes=["access:test"]),
-) -> dict[str, str]:
-    return {"status": "ok"}
 
 
 @router.get(

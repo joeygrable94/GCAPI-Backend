@@ -6,9 +6,9 @@ import pytest
 from app.db.validators import validate_mime_type_optional, validate_mime_type_required
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def mock_settings() -> Any:
-    return MagicMock(api=MagicMock(allowed_mime_types=["jpg", "png"]))
+    yield MagicMock(api=MagicMock(allowed_mime_types=["jpg", "png"]))
 
 
 def test_validate_mime_type_required(mock_settings: Any) -> None:

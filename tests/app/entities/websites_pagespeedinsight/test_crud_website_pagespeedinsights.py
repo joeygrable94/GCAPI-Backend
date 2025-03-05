@@ -6,7 +6,7 @@ from app.entities.website_pagespeedinsight.crud import (
 )
 from app.entities.website_pagespeedinsight.model import WebsitePageSpeedInsights
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_website_pagespeedinsights_repo_table(db_session: AsyncSession) -> None:

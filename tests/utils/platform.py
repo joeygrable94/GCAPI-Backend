@@ -13,14 +13,18 @@ async def create_random_platform(
     is_active: bool = True,
 ) -> PlatformRead:
     repo: PlatformRepository = PlatformRepository(session=db_session)
-    if title is None:
-        title = random_lower_string()
     if slug is None:
         slug = random_lower_string()
-    platform: Platform = await repo.create(
-        PlatformCreate(slug=slug, title=title, is_active=is_active)
+    if title is None:
+        title = random_lower_string()
+    a_platform: Platform | None = await repo.read_by(
+        field_name="slug", field_value=slug
     )
-    return PlatformRead.model_validate(platform)
+    if a_platform is None:
+        a_platform: Platform = await repo.create(
+            PlatformCreate(slug=slug, title=title, is_active=is_active)
+        )
+    return PlatformRead.model_validate(a_platform)
 
 
 async def get_platform_by_slug(db_session: AsyncSession, slug: str) -> PlatformRead:

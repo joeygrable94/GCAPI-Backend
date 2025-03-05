@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import UUID4
 from sqlalchemy import JSON, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import JSONType, UUIDType
 
 from app.db.base_class import Base
@@ -22,7 +22,7 @@ from app.services.permission import (
 from app.utilities.uuids import get_uuid
 
 if TYPE_CHECKING:  # pragma: no cover
-    pass
+    from app.entities.core_user.model import User
 
 
 class Permission(Base):
@@ -46,6 +46,10 @@ class Permission(Base):
     spec: Mapped[JSON] = mapped_column(
         JSONType(),
         nullable=False,
+    )
+
+    users: Mapped[list["User"]] = relationship(
+        "User", secondary="user_permission", back_populates="permissions"
     )
 
     def __acl__(

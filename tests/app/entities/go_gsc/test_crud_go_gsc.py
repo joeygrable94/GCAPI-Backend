@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.entities.go_gsc.crud import GoSearchConsolePropertyRepository
 from app.entities.go_gsc.model import GoSearchConsoleProperty
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_go_sc_repo_table(db_session: AsyncSession) -> None:

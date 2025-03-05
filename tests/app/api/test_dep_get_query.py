@@ -166,7 +166,9 @@ def test_common_user_query_params() -> None:
 
 def test_common_organization_query_params() -> None:
     uuid_1 = get_uuid_str()
-    query_params = CommonOrganizationPlatformQueryParams(page=2, size=10, organization_id=uuid_1)
+    query_params = CommonOrganizationPlatformQueryParams(
+        page=2, size=10, organization_id=uuid_1
+    )
     assert query_params.page == 2
     assert query_params.size == 10
     assert query_params.organization_id == uuid.UUID(uuid_1)
@@ -176,7 +178,9 @@ def test_common_organization_query_params() -> None:
     assert query_params.size == 1000
     assert query_params.organization_id is None
 
-    query_params = CommonOrganizationPlatformQueryParams(page=None, size=None, organization_id=None)
+    query_params = CommonOrganizationPlatformQueryParams(
+        page=None, size=None, organization_id=None
+    )
     assert query_params.page == 1
     assert query_params.size == 1000
     assert query_params.organization_id is None

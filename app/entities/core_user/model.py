@@ -17,9 +17,10 @@ from app.db.constants import (
     DB_STR_TINYTEXT_MAXLEN_STORED,
     DB_STR_USER_PICTURE_DEFAULT,
 )
-from app.db.custom_types import Scopes
+from app.db.custom_types.scopes import Scopes
 from app.services.encryption import encryption_settings
-from app.services.permission import (
+from app.services.permission import AclPrivilege
+from app.services.permission.schemas import (
     AccessCreate,
     AccessDelete,
     AccessDeleteSelf,
@@ -30,7 +31,6 @@ from app.services.permission import (
     AccessUpdateSelf,
     AclAction,
     AclPermission,
-    AclPrivilege,
     RoleAdmin,
     RoleManager,
     RoleUser,
@@ -42,6 +42,8 @@ if TYPE_CHECKING:  # pragma: no cover
     from app.entities.core_audit_log.model import AuditLog
     from app.entities.core_ipaddress.model import Ipaddress
     from app.entities.core_organization.model import Organization
+    from app.entities.core_permission.model import Permission
+    from app.entities.core_role.model import Role
 
 
 class User(Base):
@@ -126,6 +128,12 @@ class User(Base):
     organizations: Mapped[list["Organization"]] = relationship(
         "Organization", secondary="user_organization", back_populates="users"
     )
+    roles: Mapped[list["Role"]] = relationship(
+        "Role", secondary="user_role", back_populates="users"
+    )
+    permissions: Mapped[list["Permission"]] = relationship(
+        "Permission", secondary="user_permission", back_populates="users"
+    )
     ipaddresses: Mapped[list["Ipaddress"]] = relationship(
         "Ipaddress", secondary="user_ipaddress", back_populates="users"
     )
@@ -168,10 +176,11 @@ class User(Base):
         ]
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = "User(%s, Active[%s] Real[%s] Super[%s])" % (
+        repr_str: str = "User(%s, Active[%s] Verified[%s] Super[%s] Scopes[%d])" % (
             self.username,
             self.is_active,
             self.is_verified,
             self.is_superuser,
+            len(self.scopes),
         )
         return repr_str

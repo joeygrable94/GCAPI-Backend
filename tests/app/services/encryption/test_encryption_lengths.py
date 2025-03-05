@@ -39,7 +39,7 @@ import pytest
 from app.config import settings
 from app.core.security.encryption import SecureMessage
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_sign_and_encrypt() -> None:

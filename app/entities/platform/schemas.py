@@ -23,7 +23,16 @@ class PlatformBase(BaseSchema):
 
 
 class PlatformCreate(PlatformBase):
-    pass
+    slug: str
+    title: str
+    description: str | None = None
+    is_active: bool = True
+
+    _validate_slug = field_validator("slug", mode="before")(validate_slug_required)
+    _validate_title = field_validator("title", mode="before")(validate_title_required)
+    _validate_description = field_validator("description", mode="before")(
+        validate_description_optional
+    )
 
 
 class PlatformUpdate(BaseSchema):

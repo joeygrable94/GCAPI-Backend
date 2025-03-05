@@ -65,7 +65,7 @@ class CsrfProtect(CsrfConfig):
                     f'Bad {header_name} header. Expected value "<Token>"'
                 )
             token = header_parts[0]
-        else:
+        else:  # pragma: no cover
             # <HeaderName>: <HeaderType> <Token>
             if (
                 not re.match(r"{}\s".format(header_type), headers[header_name])

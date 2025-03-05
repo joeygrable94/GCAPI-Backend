@@ -60,5 +60,5 @@ class GoAdsPropertyRepository(
             conditions.append(WebsiteGoAdsProperty.website_id.like(website_id))
         if len(conditions) > 0:
             stmt = stmt.where(and_(*conditions))
-        print(stmt)
+        # print(stmt)
         return stmt

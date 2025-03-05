@@ -14,7 +14,7 @@ from app.services.permission import (
 )
 from tests.utils.users import create_random_user
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_list_permissions(db_session: AsyncSession) -> None:

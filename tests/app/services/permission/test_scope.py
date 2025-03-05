@@ -2,7 +2,7 @@ import pytest
 
 from app.services.permission import Scope
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_permission_scope_type() -> None:

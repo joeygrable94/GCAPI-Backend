@@ -13,7 +13,7 @@ from app.services.encryption import (
 )
 from tests.utils.utils import random_boolean
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_encrypt_secure_msg() -> None:

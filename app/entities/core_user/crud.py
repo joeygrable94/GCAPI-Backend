@@ -4,7 +4,6 @@ from uuid import UUID
 from sqlalchemy import Result, Select
 from sqlalchemy import select as sql_select
 
-from app.config import settings
 from app.core.crud import BaseRepository
 from app.entities.core_user.model import User
 from app.entities.core_user.schemas import (
@@ -16,29 +15,12 @@ from app.entities.core_user.schemas import (
 from app.entities.core_user_organization.model import UserOrganization
 from app.entities.organization_platform.model import OrganizationPlatform
 from app.entities.organization_website.model import OrganizationWebsite
-from app.utilities import paginate
 
 
 class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
     @property
     def _table(self) -> User:
         return User
-
-    async def get_list(
-        self,
-        page: int = 1,
-    ) -> list[User] | list[None]:
-        self._db.begin()
-        skip, limit = paginate(
-            page,
-            default=settings.api.query_limit_rows_default,
-            max=settings.api.query_limit_rows_max,
-        )
-        query: Select = sql_select(self._table).offset(skip).limit(limit)
-        result: Result = await self._db.execute(query)
-        data: Sequence[User] = result.scalars().all()
-        data_list = list(data)
-        return data_list
 
     async def verify_relationship(
         self,
@@ -63,6 +45,13 @@ class UserRepository(BaseRepository[UserCreate, UserRead, UserUpdate, User]):
         get all the organizations of the current user and see if there is an intersection
 
         """
+        if (
+            user_id is None
+            and organization_id is None
+            and platform_id is None
+            and website_id is None
+        ):
+            return 0
         stmt: Select = sql_select(self._table)
         # 1
         if user_id:

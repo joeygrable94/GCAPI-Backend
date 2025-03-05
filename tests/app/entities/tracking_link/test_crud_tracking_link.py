@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.entities.tracking_link.crud import TrackingLinkRepository
 from app.entities.tracking_link.model import TrackingLink
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_organization_platform_repo_table(db_session: AsyncSession) -> None:

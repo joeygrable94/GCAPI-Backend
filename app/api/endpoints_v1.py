@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from app.entities.core_organization.router import router as organization_router
 from app.entities.core_user.router import router as users_router
@@ -13,11 +13,8 @@ from app.entities.website_page.router import router as web_pages_router
 from app.entities.website_pagespeedinsight.router import (
     router as web_pagespeedinsights_router,
 )
-from app.services.auth0 import auth_controller
 
-router_v1 = APIRouter(
-    prefix="/v1", dependencies=[Depends(auth_controller.implicit_scheme)]
-)
+router_v1 = APIRouter(prefix="/v1")
 
 
 # Public routes

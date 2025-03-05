@@ -38,6 +38,30 @@ def build_utm_link(
     return utm_link
 
 
+async def create_random_tracking_link_url(
+    scheme: str | None = None,
+    domain: str | None = None,
+    path: str | None = None,
+    utm_campaign: str | None = None,
+    utm_medium: str | None = None,
+    utm_source: str | None = None,
+    utm_content: str | None = None,
+    utm_term: str | None = None,
+) -> TrackingLinkRead:
+    scheme = scheme if scheme is not None else "https"
+    domain_name = domain if domain is not None else random_domain()
+    url_path = path if path is not None else "/%s" % random_lower_string(16)
+    utm_cmpn = random_lower_string(16) if utm_campaign is None else utm_campaign
+    utm_mdm = random_lower_string(16) if utm_medium is None else utm_medium
+    utm_src = random_lower_string(16) if utm_source is None else utm_source
+    utm_cnt = random_lower_string(16) if utm_content is None else utm_content
+    utm_trm = random_lower_string(16) if utm_term is None else utm_term
+    tracked_url = build_utm_link(
+        scheme, domain_name, url_path, utm_cmpn, utm_mdm, utm_src, utm_cnt, utm_trm
+    )
+    return tracked_url
+
+
 async def create_random_tracking_link(
     db_session: AsyncSession,
     organization_id: UUID4,

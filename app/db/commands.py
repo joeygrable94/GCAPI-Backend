@@ -23,8 +23,8 @@ from app.entities.organization_platform.schemas import OrganizationPlatformCreat
 from app.entities.platform.crud import PlatformRepository
 from app.entities.platform.model import Platform
 from app.entities.platform.schemas import PlatformCreate
-from app.services.auth0 import auth_settings
-from app.services.permission import AclPrivilege
+from app.services.clerk.settings import clerk_settings
+from app.services.permission.schemas import AclPrivilege
 
 max_tries = 60 * 5  # 5 minutes
 wait_seconds = 3
@@ -83,8 +83,8 @@ async def create_init_data() -> int:  # pragma: no cover
     admin1: User | None
     manager1: User | None
     employee1: User | None
-    organization_a: User | None
-    organization_b: User | None
+    user_client_a: User | None
+    user_client_b: User | None
     user_verified: User | None
     user_unverified: User | None
     c1: Organization | None
@@ -102,17 +102,19 @@ async def create_init_data() -> int:  # pragma: no cover
     platform_repo: PlatformRepository
     organization_platform_repo: OrganizationPlatformRepository
 
-    # first admin
+    # first users
     async with async_session() as session:
         user_repo = UserRepository(session)
-        admin1 = await user_repo.read_by("auth_id", auth_settings.first_admin_auth_id)
+
+        # first admin
+        admin1 = await user_repo.read_by("auth_id", clerk_settings.first_admin_auth_id)
         if not admin1:
             admin1 = await user_repo.create(
                 UserCreate(
-                    username=auth_settings.first_admin,
-                    email=auth_settings.first_admin,
-                    auth_id=auth_settings.first_admin_auth_id,
-                    picture=auth_settings.first_admin_picture,
+                    username=clerk_settings.first_admin,
+                    email=clerk_settings.first_admin,
+                    auth_id=clerk_settings.first_admin_auth_id,
+                    picture=clerk_settings.first_admin_picture,
                     is_active=True,
                     is_verified=True,
                     is_superuser=True,
@@ -125,19 +127,17 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    # first manager
-    async with async_session() as session:
-        user_repo = UserRepository(session)
+        # first manager
         manager1 = await user_repo.read_by(
-            "auth_id", auth_settings.first_manager_auth_id
+            "auth_id", clerk_settings.first_manager_auth_id
         )
         if not manager1:
             manager1 = await user_repo.create(
                 UserCreate(
-                    username=auth_settings.first_manager,
-                    email=auth_settings.first_manager,
-                    auth_id=auth_settings.first_manager_auth_id,
-                    picture=auth_settings.first_manager_picture,
+                    username=clerk_settings.first_manager,
+                    email=clerk_settings.first_manager,
+                    auth_id=clerk_settings.first_manager_auth_id,
+                    picture=clerk_settings.first_manager_picture,
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
@@ -150,40 +150,39 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    # first employee
-    async with async_session() as session:
-        user_repo = UserRepository(session)
+        # first employee
         employee1 = await user_repo.read_by(
-            "auth_id", auth_settings.first_employee_auth_id
+            "auth_id", clerk_settings.first_employee_auth_id
         )
         if not employee1:
             employee1 = await user_repo.create(
                 UserCreate(
-                    username=auth_settings.first_employee,
-                    email=auth_settings.first_employee,
-                    auth_id=auth_settings.first_employee_auth_id,
-                    picture=auth_settings.first_employee_picture,
+                    username=clerk_settings.first_employee,
+                    email=clerk_settings.first_employee,
+                    auth_id=clerk_settings.first_employee_auth_id,
+                    picture=clerk_settings.first_employee_picture,
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
-                    scopes=[AclPrivilege("role:user"), AclPrivilege("role:employee")],
+                    scopes=[
+                        AclPrivilege("role:user"),
+                        AclPrivilege("role:employee"),
+                    ],
                 )
             )
             i_count += 1
 
-    # first users that is a business organization
-    async with async_session() as session:
-        user_repo = UserRepository(session)
-        organization_a = await user_repo.read_by(
-            "auth_id", auth_settings.first_client_a_auth_id
+        # first users that is a business organization
+        user_client_a = await user_repo.read_by(
+            "auth_id", clerk_settings.first_client_a_auth_id
         )
-        if not organization_a:
-            organization_a = await user_repo.create(
+        if not user_client_a:
+            user_client_a = await user_repo.create(
                 UserCreate(
-                    username=auth_settings.first_client_a,
-                    email=auth_settings.first_client_a,
-                    auth_id=auth_settings.first_client_a_auth_id,
-                    picture=auth_settings.first_client_a_picture,
+                    username=clerk_settings.first_client_a,
+                    email=clerk_settings.first_client_a,
+                    auth_id=clerk_settings.first_client_a_auth_id,
+                    picture=clerk_settings.first_client_a_picture,
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
@@ -195,16 +194,16 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-        organization_b = await user_repo.read_by(
-            "auth_id", auth_settings.first_client_b_auth_id
+        user_client_b = await user_repo.read_by(
+            "auth_id", clerk_settings.first_client_b_auth_id
         )
-        if not organization_b:
-            organization_b = await user_repo.create(
+        if not user_client_b:
+            user_client_b = await user_repo.create(
                 UserCreate(
-                    username=auth_settings.first_client_b,
-                    email=auth_settings.first_client_b,
-                    auth_id=auth_settings.first_client_b_auth_id,
-                    picture=auth_settings.first_client_b_picture,
+                    username=clerk_settings.first_client_b,
+                    email=clerk_settings.first_client_b,
+                    auth_id=clerk_settings.first_client_b_auth_id,
+                    picture=clerk_settings.first_client_b_picture,
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
@@ -216,44 +215,44 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    # first user verified
-    async with async_session() as session:
-        user_repo = UserRepository(session)
+        # first user verified
         user_verified = await user_repo.read_by(
-            "auth_id", auth_settings.first_user_verified_auth_id
+            "auth_id", clerk_settings.first_user_verified_auth_id
         )
         if not user_verified:
             user_verified = await user_repo.create(
                 UserCreate(
-                    username=auth_settings.first_user_verified,
-                    email=auth_settings.first_user_verified,
-                    auth_id=auth_settings.first_user_verified_auth_id,
+                    username=clerk_settings.first_user_verified,
+                    email=clerk_settings.first_user_verified,
+                    auth_id=clerk_settings.first_user_verified_auth_id,
                     picture=DB_STR_USER_PICTURE_DEFAULT,
                     is_active=True,
                     is_verified=True,
                     is_superuser=False,
-                    scopes=[AclPrivilege("role:user")],
+                    scopes=[
+                        AclPrivilege("role:user"),
+                    ],
                 )
             )
             i_count += 1
 
-    # first user unverified
-    async with async_session() as session:
-        user_repo = UserRepository(session)
+        # first user unverified
         user_unverified = await user_repo.read_by(
-            "auth_id", auth_settings.first_user_unverified_auth_id
+            "auth_id", clerk_settings.first_user_unverified_auth_id
         )
         if not user_unverified:
             user_unverified = await user_repo.create(
                 UserCreate(
-                    username=auth_settings.first_user_unverified,
-                    email=auth_settings.first_user_unverified,
-                    auth_id=auth_settings.first_user_unverified_auth_id,
+                    username=clerk_settings.first_user_unverified,
+                    email=clerk_settings.first_user_unverified,
+                    auth_id=clerk_settings.first_user_unverified_auth_id,
                     picture=DB_STR_USER_PICTURE_DEFAULT,
                     is_active=True,
                     is_verified=False,
                     is_superuser=False,
-                    scopes=[AclPrivilege("role:user")],
+                    scopes=[
+                        AclPrivilege("role:user"),
+                    ],
                 )
             )
             i_count += 1
@@ -275,8 +274,6 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    # assign users to organization1: admin1
-    async with async_session() as session:
         user_organization_repo = UserOrganizationRepository(session)
         c1_admin1 = await user_organization_repo.exists_by_fields(
             {"user_id": admin1.id, "organization_id": c1.id}
@@ -327,11 +324,12 @@ async def create_init_data() -> int:  # pragma: no cover
             )
             i_count += 1
 
-    for slug, title in MASTER_PLATFORM_INDEX.items():
-        async with async_session() as session:
-            platform_repo = PlatformRepository(session)
+    # create platforms
+    async with async_session() as session:
+        platform_repo = PlatformRepository(session)
+        for slug, title in MASTER_PLATFORM_INDEX.items():
             p1 = await platform_repo.exists_by_fields({"slug": slug, "title": title})
-            if not p1:
+            if p1 is None:
                 p1 = await platform_repo.create(PlatformCreate(slug=slug, title=title))
                 i_count += 1
 

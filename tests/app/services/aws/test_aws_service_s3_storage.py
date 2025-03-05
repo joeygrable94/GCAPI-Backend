@@ -5,7 +5,7 @@ from app.services.aws import S3Storage
 from app.services.aws.settings import aws_settings
 from tests.utils.utils import get_tests_root_directory
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_s3_storage_service_list_objects() -> None:

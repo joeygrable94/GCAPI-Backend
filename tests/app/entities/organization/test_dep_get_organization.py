@@ -8,7 +8,7 @@ from app.entities.core_organization.model import Organization
 from app.utilities import get_uuid_str
 from tests.utils.organizations import create_random_organization
 
-pytestmark = pytest.mark.asyncio
+pytestmark = pytest.mark.anyio
 
 
 async def test_get_organization_or_404(db_session: AsyncSession) -> None:

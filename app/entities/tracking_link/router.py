@@ -361,7 +361,8 @@ async def tracking_link_delete(
     """
     if tracked_link.organization_id is not None:
         await permissions.verify_user_can_access(
-            privileges=[RoleAdmin], organization_id=tracked_link.organization_id
+            privileges=[RoleAdmin, RoleManager],
+            organization_id=tracked_link.organization_id,
         )
     links_repo = TrackingLinkRepository(permissions.db)
     await links_repo.delete(entry=tracked_link)

@@ -208,14 +208,12 @@ async def website_update(
     `WebsiteRead` : the updated website
 
     """
-
     permissions.verify_input_schema_by_role(
         input_object=website_in,
         schema_privileges={
             RoleUser: WebsiteUpdate,
         },
     )
-
     await permissions.verify_user_can_access(
         privileges=[RoleAdmin, RoleManager],
         website_id=website.id,

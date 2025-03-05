@@ -13,8 +13,3 @@ class ClerkUser(BaseModel):
     is_verified: bool | None = Field(False)
     created_at: datetime | None = Field(None)
     updated_at: datetime | None = Field(None)
-    role: str | None = Field("org:member")
-    org_id: str | None = Field(None)
-    org_permissions: list[str] | None = Field(None)
-    org_role: str | None = Field(None)
-    org_slug: str | None = Field(None)

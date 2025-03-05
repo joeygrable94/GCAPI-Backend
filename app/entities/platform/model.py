@@ -22,7 +22,6 @@ from app.services.permission import (
     AccessReadSelf,
     AccessUpdate,
     AccessUpdateRelated,
-    AccessUpdateSelf,
     AclAction,
     AclPermission,
     AclPrivilege,
@@ -97,11 +96,10 @@ class Platform(Base):
             (AclAction.allow, RoleAdmin, AccessUpdate),
             (AclAction.allow, RoleManager, AccessUpdate),
             (AclAction.allow, RoleEmployee, AccessUpdateRelated),
-            (AclAction.allow, RoleClient, AccessUpdateSelf),
             # delete
             (AclAction.allow, RoleAdmin, AccessDelete),
         ]
 
     def __repr__(self) -> str:  # pragma: no cover
-        repr_str: str = f"Platform({self.title})"
+        repr_str: str = f"Platform({self.title} Slug[{self.slug}])"
         return repr_str

@@ -6,37 +6,32 @@ from sentry_sdk import Client
 
 from app.api.exceptions import configure_exceptions
 from app.api.middleware import configure_middleware
-from app.config import settings
+from app.config import ApiModes, settings
 from app.core.templates import static_files
-from app.db.commands import check_db_connected, check_db_disconnected
 from app.services.csrf import CsrfProtect, CsrfSettings
 from app.services.sentry import configure_sentry_monitoring
-from app.utilities.route_map import make_routes_map
 
-if settings.api.mode == "production":  # pragma: no cover
-    sentry_client: Client | None = configure_sentry_monitoring() 
+if settings.api.mode != ApiModes.test.value:  # pragma: no cover
+    sentry_client: Client | None = configure_sentry_monitoring()
 
 
 @asynccontextmanager
 async def application_lifespan(app: FastAPI) -> AsyncGenerator:  # pragma: no cover
-    await check_db_connected()
-
     @CsrfProtect.load_config
     def get_csrf_config() -> CsrfSettings:
         return CsrfSettings()
 
     yield
-    await check_db_disconnected()
 
 
 def configure_routers(app: FastAPI) -> None:
     from app.api.endpoints_v1 import router_v1
 
     app.include_router(router_v1, prefix=settings.api.prefix)
-    make_routes_map(app)
+    # make_routes_map(app)
 
 
-def configure_static(app: FastAPI) -> None:
+def configure_static(app: FastAPI) -> None:  # pragma: no cover
     app.mount("/static", static_files, name="static")
 
 
@@ -53,7 +48,7 @@ def create_app() -> FastAPI:
     )
     configure_middleware(app)
     configure_exceptions(app)
-    configure_static(app)
+    # configure_static(app)
     configure_routers(app)
     return app
 
