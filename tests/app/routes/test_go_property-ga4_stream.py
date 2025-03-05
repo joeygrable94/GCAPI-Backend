@@ -44,6 +44,8 @@ async def ga4_stream_db_session(
 
 
 async def perform_test_list(
+    status_code: int,
+    error_msg: str | None,
     item_count: int,
     client: AsyncClient,
     ga4_stream_db_session: AsyncSession,
@@ -71,11 +73,14 @@ async def perform_test_list(
         headers=current_user.token_headers,
     )
     data: dict[str, Any] = response.json()
-    assert 200 <= response.status_code < 300
-    assert data["page"] == 1
-    assert data["total"] == item_count
-    assert data["size"] == 1000
-    assert len(data["results"]) == item_count
+    assert response.status_code == status_code
+    if error_msg is None:
+        assert data["page"] == 1
+        assert data["total"] == item_count
+        assert data["size"] == 1000
+        assert len(data["results"]) == item_count
+    else:
+        assert error_msg in data["detail"]
 
 
 async def perform_test_create(
@@ -385,23 +390,33 @@ class TestListGoPropertyGa4Stream:
     async def test_list_go_property_ga4_stream_by_id_as_admin_user(
         self, client, ga4_stream_db_session, admin_user
     ) -> None:
-        await perform_test_list(2, client, ga4_stream_db_session, admin_user)
+        await perform_test_list(200, None, 2, client, ga4_stream_db_session, admin_user)
 
     async def test_list_go_property_ga4_stream_by_id_as_manager_user(
         self, client, ga4_stream_db_session, manager_user
     ) -> None:
-        await perform_test_list(4, client, ga4_stream_db_session, manager_user)
+        await perform_test_list(
+            200, None, 4, client, ga4_stream_db_session, manager_user
+        )
 
     async def test_list_go_property_ga4_stream_by_id_as_employee_user(
         self, client, ga4_stream_db_session, employee_user
     ) -> None:
-        await perform_test_list(0, client, ga4_stream_db_session, employee_user)
+        await perform_test_list(
+            200, None, 0, client, ga4_stream_db_session, employee_user
+        )
 
-    @pytest.mark.xfail(reason=ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_PAGINATION)
     async def test_list_go_property_ga4_stream_by_id_as_verified_user(
         self, client, ga4_stream_db_session, verified_user
     ) -> None:
-        await perform_test_list(0, client, ga4_stream_db_session, verified_user)
+        await perform_test_list(
+            405,
+            ERROR_MESSAGE_INSUFFICIENT_PERMISSIONS_PAGINATION,
+            0,
+            client,
+            ga4_stream_db_session,
+            verified_user,
+        )
 
     # CASES
     async def test_list_go_property_ga4_stream_as_superuser_by_website_id(

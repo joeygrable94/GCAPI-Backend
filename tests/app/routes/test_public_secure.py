@@ -2,7 +2,6 @@ from hashlib import sha1
 from os import urandom
 from typing import Any
 
-import pytest
 from httpx import AsyncClient, Headers, Response
 from itsdangerous import URLSafeTimedSerializer
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,10 +15,18 @@ from tests.utils.utils import random_lower_string
 
 
 async def perform_status_test(
-    client_user: ClientAuthorizedUser, status_code: int, client: AsyncClient
+    status_code: int,
+    error_msg: str | None,
+    client: AsyncClient,
+    current_user: ClientAuthorizedUser,
 ) -> None:
-    response = await client.get("/status", headers=client_user.token_headers)
+    response = await client.get("/status", headers=current_user.token_headers)
     assert response.status_code == status_code
+    entry: dict[str, Any] = response.json()
+    if error_msg is None:
+        assert entry["status"] == "ok"
+    else:
+        assert entry["detail"] == error_msg
 
 
 class TestPublicSecureRoutes:
@@ -54,38 +61,39 @@ class TestPublicSecureRoutes:
     async def test_public_status_as_admin_user(
         self, admin_user: ClientAuthorizedUser, client: AsyncClient
     ) -> None:
-        await perform_status_test(admin_user, 200, client)
+        await perform_status_test(200, None, client, admin_user)
 
     async def test_public_status_as_manager_user(
         self, manager_user: ClientAuthorizedUser, client: AsyncClient
     ) -> None:
-        await perform_status_test(manager_user, 200, client)
+        await perform_status_test(200, None, client, manager_user)
 
     async def test_public_status_as_employee_user(
         self, employee_user: ClientAuthorizedUser, client: AsyncClient
     ) -> None:
-        await perform_status_test(employee_user, 200, client)
+        await perform_status_test(200, None, client, employee_user)
 
     async def test_public_status_as_client_a_user(
         self, client_a_user: ClientAuthorizedUser, client: AsyncClient
     ) -> None:
-        await perform_status_test(client_a_user, 200, client)
+        await perform_status_test(200, None, client, client_a_user)
 
     async def test_public_status_as_client_b_user(
         self, client_b_user: ClientAuthorizedUser, client: AsyncClient
     ) -> None:
-        await perform_status_test(client_b_user, 200, client)
+        await perform_status_test(200, None, client, client_b_user)
 
     async def test_public_status_as_verified_user(
         self, verified_user: ClientAuthorizedUser, client: AsyncClient
     ) -> None:
-        await perform_status_test(verified_user, 200, client)
+        await perform_status_test(200, None, client, verified_user)
 
-    @pytest.mark.xfail(reason=ERROR_MESSAGE_UNVERIFIED_ACCESS_DENIED)
     async def test_public_status_as_unverified_user(
         self, unverified_user: ClientAuthorizedUser, client: AsyncClient
     ) -> None:
-        await perform_status_test(unverified_user, 403, client)
+        await perform_status_test(
+            403, ERROR_MESSAGE_UNVERIFIED_ACCESS_DENIED, client, unverified_user
+        )
 
 
 class TestCsrfProtection:

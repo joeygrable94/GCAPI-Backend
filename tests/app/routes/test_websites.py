@@ -97,6 +97,7 @@ async def perform_test_create(
 
 
 async def perform_test_limits_create(
+    check_domain: bool,
     domain: str,
     is_secure: bool,
     status_code: int,
@@ -109,15 +110,22 @@ async def perform_test_limits_create(
 ) -> None:
     data: dict[str, Any] = {"domain": domain, "is_secure": is_secure}
     response: Response
-    with unittest.mock.patch(
-        "app.entities.website.crud.WebsiteRepository.validate"
-    ) as mock_validate_website_domain:
-        mock_validate_website_domain.return_value = valid_domain
+    if check_domain:
         response = await client.post(
             "websites/",
             headers=admin_user.token_headers,
             json=data,
         )
+    else:
+        with unittest.mock.patch(
+            "app.entities.website.crud.WebsiteRepository.validate"
+        ) as mock_validate_website_domain:
+            mock_validate_website_domain.return_value = valid_domain
+            response = await client.post(
+                "websites/",
+                headers=admin_user.token_headers,
+                json=data,
+            )
     assert response.status_code == status_code
     entry: dict[str, Any] = response.json()
     if error_type == "message":
@@ -182,6 +190,7 @@ async def perform_test_update(
 
 
 async def perform_test_limits_update(
+    check_domain: bool,
     domain: str | None,
     status_code: int,
     error_type: str,
@@ -197,17 +206,23 @@ async def perform_test_limits_update(
         update_dict = {"domain": a_website.domain, "is_secure": not a_website.is_secure}
     else:
         update_dict = {"domain": domain, "is_secure": not a_website.is_secure}
-
     response: Response
-    with unittest.mock.patch(
-        "app.entities.website.crud.WebsiteRepository.validate"
-    ) as mock_validate_website_domain:
-        mock_validate_website_domain.return_value = valid_domain
+    if check_domain:
         response: Response = await client.patch(
             f"websites/{a_website.id}",
             headers=admin_user.token_headers,
             json=update_dict,
         )
+    else:
+        with unittest.mock.patch(
+            "app.entities.website.crud.WebsiteRepository.validate"
+        ) as mock_validate_website_domain:
+            mock_validate_website_domain.return_value = valid_domain
+            response: Response = await client.patch(
+                f"websites/{a_website.id}",
+                headers=admin_user.token_headers,
+                json=update_dict,
+            )
     entry: dict[str, Any] = response.json()
     assert response.status_code == status_code
     if error_type == "message":
@@ -319,14 +334,14 @@ class TestCreateWebsite:
         )
 
     # LIMITS
-    @pytest.mark.xfail(reason=ERROR_MESSAGE_DOMAIN_INVALID)
     async def test_create_website_as_admin_user_website_limits_domain_invalid(
         self, client, db_session, admin_user
     ) -> None:
         await perform_test_limits_create(
+            True,
             random_domain(16, "co"),
             random_boolean(),
-            400,
+            422,
             "message",
             ERROR_MESSAGE_DOMAIN_INVALID,
             True,
@@ -339,6 +354,7 @@ class TestCreateWebsite:
         self, client, db_session, admin_user
     ) -> None:
         await perform_test_limits_create(
+            False,
             random_domain(1, "co"),
             random_boolean(),
             422,
@@ -354,6 +370,7 @@ class TestCreateWebsite:
         self, client, db_session, admin_user
     ) -> None:
         await perform_test_limits_create(
+            False,
             random_domain(DB_STR_TINYTEXT_MAXLEN_INPUT + 1, "com"),
             random_boolean(),
             422,
@@ -371,6 +388,7 @@ class TestCreateWebsite:
         self, client, db_session, admin_user
     ) -> None:
         await perform_test_limits_create(
+            False,
             "https://" + random_domain(3, "pub"),
             random_boolean(),
             422,
@@ -543,6 +561,7 @@ class TestUpdateWebsite:
         self, client, db_session, admin_user
     ) -> None:
         await perform_test_limits_update(
+            False,
             None,
             400,
             "message",
@@ -553,13 +572,13 @@ class TestUpdateWebsite:
             admin_user,
         )
 
-    @pytest.mark.xfail(reason=ERROR_MESSAGE_DOMAIN_INVALID)
     async def test_update_website_as_superuser_website_limits_domain_invalid(
         self, client, db_session, admin_user
     ) -> None:
         await perform_test_limits_update(
+            True,
             random_domain(16, "co"),
-            400,
+            422,
             "message",
             ERROR_MESSAGE_DOMAIN_INVALID,
             True,
@@ -572,6 +591,7 @@ class TestUpdateWebsite:
         self, client, db_session, admin_user
     ) -> None:
         await perform_test_limits_update(
+            False,
             "a.co",
             422,
             "detail",
@@ -586,6 +606,7 @@ class TestUpdateWebsite:
         self, client, db_session, admin_user
     ) -> None:
         await perform_test_limits_update(
+            False,
             random_lower_string() * 10 + ".com",
             422,
             "detail",
@@ -602,6 +623,7 @@ class TestUpdateWebsite:
         self, client, db_session, admin_user
     ) -> None:
         await perform_test_limits_update(
+            False,
             "https://" + random_lower_string() + ".com",
             422,
             "detail",
